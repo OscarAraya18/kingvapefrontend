@@ -396,7 +396,7 @@ export default {
         console.log(response.data)
         this.allContactsInformation = response.data;
         for (var contact in response.data){
-          var center = {lat: parseInt(response.data[contact].contactLocation.latitude), lng: parseInt(response.data[contact].contactLocation.longitude)}
+          var center = {lat: parseInt(response.data[contact]['CASA'].contactLocation.latitude), lng: parseInt(response.data[contact]['CASA'].contactLocation.longitude)}
           var email = '';
           if (response.data[contact].contactEmail != ''){
             email = response.data[contact].contactEmail;
