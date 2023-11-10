@@ -396,24 +396,26 @@ export default {
         console.log(response.data)
         this.allContactsInformation = response.data;
         for (var contact in response.data){
-          var center = {lat: parseInt(response.data[contact]['CASA'].contactLocation.latitude), lng: parseInt(response.data[contact]['CASA'].contactLocation.longitude)}
-          var email = '';
-          if (response.data[contact].contactEmail != ''){
-            email = response.data[contact].contactEmail;
-          } else {
-            email = 'No email';
-          }
-          this.rows.push(
-            {
-              name: response.data[contact].contactName,
-              location: center,
-              email: email,
-              phone: response.data[contact].contactPhoneNumber,
-              locationDetails: response.data[contact].contactLocationDetails,
-              note: response.data[contact].contactNote,
-              button: contact
+          if (response.data['contactLocation'] != undefined){
+            var center = {lat: parseInt(response.data[contact]['CASA'].contactLocation.latitude), lng: parseInt(response.data[contact]['CASA'].contactLocation.longitude)}
+            var email = '';
+            if (response.data[contact].contactEmail != ''){
+              email = response.data[contact].contactEmail;
+            } else {
+              email = 'No email';
             }
-          )
+            this.rows.push(
+              {
+                name: response.data[contact].contactName,
+                location: center,
+                email: email,
+                phone: response.data[contact].contactPhoneNumber,
+                locationDetails: response.data[contact].contactLocationDetails,
+                note: response.data[contact].contactNote,
+                button: contact
+              }
+            )
+          }
         }
         
 
