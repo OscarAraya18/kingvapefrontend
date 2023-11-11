@@ -2493,6 +2493,7 @@ export default {
             this.zapoteConversations = [];
             aux.push(
               {
+                storeName: websocketMessageJSON['storeName'],
                 recipientPhoneNumber: websocketMessageJSON['recipientPhoneNumber'],
                 recipientProfileName: websocketMessageJSON['recipientProfileName'],
                 startDate: websocketMessageJSON['startDate'],
@@ -2508,6 +2509,7 @@ export default {
             this.escazuConversations = [];
             aux.push(
               {
+                storeName: websocketMessageJSON['storeName'],
                 recipientPhoneNumber: websocketMessageJSON['recipientPhoneNumber'],
                 recipientProfileName: websocketMessageJSON['recipientProfileName'],
                 startDate: websocketMessageJSON['startDate'],
@@ -2523,6 +2525,7 @@ export default {
             this.cartagoConversations = [];
             aux.push(
               {
+                storeName: websocketMessageJSON['storeName'],
                 recipientPhoneNumber: websocketMessageJSON['recipientPhoneNumber'],
                 recipientProfileName: websocketMessageJSON['recipientProfileName'],
                 startDate: websocketMessageJSON['startDate'],
