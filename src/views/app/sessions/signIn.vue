@@ -171,13 +171,20 @@ export default {
 
           router.push('/app/apps/chat');
         } else {
-          this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-          title: "Error al iniciar sesión",
-          variant: "danger",
-          solid: true
-          });
+          if (response.data.applicationStatus == 'on'){
+            this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+              title: "Error al iniciar sesión",
+              variant: "danger",
+              solid: true
+            });
+          } else {
+            this.$bvToast.toast("En este momento, la aplicación se encuentra fuera de línea. Contacte con su administrador de sistema o con soporte técnico si considera que esto se trata de un error.", {
+              title: "Aplicación fuera de línea",
+              variant: "danger",
+              solid: true
+            });
+          }
         }
-
       })
       
       .catch(error =>{

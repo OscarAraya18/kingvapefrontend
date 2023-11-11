@@ -11,6 +11,8 @@
     <div style="margin: auto"></div>
 
     <div class="header-part-right">
+      <button @click="updateApplicationStatus()" :class="getApplicationStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="(ranking == false) && (agentType == 'admin')"><strong>{{ applicationStatus }}</strong></button>
+
       <button @click="updateAgentStatus()" :class="getAgentStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="ranking == false"><strong>{{ agentStatus }}</strong></button>
       <div style="width: 50px; height: 50px; border-radius: 100%; margin-right: 15px;" v-if="ranking == false">
         <b-dropdown id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
@@ -163,6 +165,10 @@ export default {
   data() {
     return {
       agentStatus: '',
+      applicationStatus: '',
+
+      agentType: '',
+
       ranking: false,
       isDisplay: true,
 
@@ -193,6 +199,8 @@ export default {
   },
   mounted() {
     if (localStorage.getItem('ranking') != 'yes'){
+      this.agentType = localStorage.getItem('agentType');
+
       this.agentName = localStorage.getItem('agentName');
       this.agentProfilePicture = localStorage.getItem('agentProfilePicture');
       this.agentUsername = localStorage.getItem('agentUsername');
@@ -208,12 +216,17 @@ export default {
       this.agentDefaultProfilePicture = constants.agentDefaultProfilePicture;
 
       this.getAgentStatus();
+      this.getApplicationStatus();
 
       try {
         webSocket.onmessage = (websocketMessage) => {
           const websocketMessageJSON = JSON.parse(websocketMessage.data);
           if (websocketMessageJSON['websocketMessageID'] == 'updateAgentStatus'){
             this.getAgentStatus();
+          } else if (websocketMessageJSON['websocketMessageID'] == 'turnOffApplication'){
+            if (this.agentType != 'admin'){
+              this.logoutUser();
+            }
           }
         }
       } catch {
@@ -436,6 +449,27 @@ export default {
       });
     },
 
+    getApplicationStatus(){
+      axios.post(constants.routes.backendAPI+'/getApplicationStatus')
+        .then(response =>{ 
+          if (response.data.applicationStatus == 'on'){
+            this.applicationStatus = 'ON';
+          } else {
+            this.applicationStatus = 'OFF';
+            if (this.agentType == 'agent'){
+              this.logoutUser();
+            }
+          }
+      })
+      .catch(() =>{
+        this.$bvToast.toast("Ha ocurrido un error inesperado al consultar el estado de la aplicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+          title: "Error al consultar el estado de la aplicación",
+          variant: "danger",
+          solid: true
+        });
+      });
+    },
+
 
     changeWelcomeImage(){
       document.getElementById('welcomeImageDownloader').click();
@@ -482,6 +516,37 @@ export default {
       }
       return 'btn btn-icon btn-rounded btn-danger mr-2';
     },
+
+    getApplicationStatusClass(){
+      if (this.applicationStatus == 'ON'){
+        return 'btn btn-icon btn-rounded btn-success mr-2';
+      }
+      return 'btn btn-icon btn-rounded btn-danger mr-2';
+    },
+
+    updateApplicationStatus(){
+      var temp = '';
+      if (this.applicationStatus == 'ON'){
+        temp = 'off';
+        this.applicationStatus = 'OFF';
+      } else {
+        temp = 'on';
+        this.applicationStatus = 'ON';
+      }
+      axios.post(constants.routes.backendAPI+'/updateApplicationStatus',{
+        applicationStatus: temp 
+      })
+      .then(() =>{ 
+      })
+      .catch(() =>{
+        this.$bvToast.toast('Ha ocurrido un error inesperado al modificar el estado de la aplicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+          title: 'Error al modificar el estado de la aplicación',
+          variant: 'danger',
+          solid: true
+        });
+      })
+    },
+
     updateAgentStatus(){
       var temp = '';
       if (this.agentStatus == 'ONLINE'){
