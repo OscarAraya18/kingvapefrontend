@@ -553,7 +553,7 @@ const routes = [
 
 const router = new Router({
   mode: "history",
-  base: '/',
+  base: '/', 
   linkActiveClass: "open",
   routes,
   scrollBehavior(to, from, savedPosition) {
