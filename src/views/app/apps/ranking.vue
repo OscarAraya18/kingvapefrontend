@@ -49,7 +49,6 @@
 import axios from 'axios';
 const constants = require('@../../../src/constants.js'); 
 const webSocket = new WebSocket('wss:'+constants.routes.websocketAPI);
-import router from "../../../router";
 
 export default {
 
