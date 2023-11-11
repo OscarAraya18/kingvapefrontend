@@ -178,7 +178,7 @@ export default {
               solid: true
             });
           } else {
-            this.$bvToast.toast("En este momento, la aplicación se encuentra fuera de línea. Contacte con su administrador de sistema o con soporte técnico si considera que esto se trata de un error.", {
+            this.$bvToast.toast("En este momento, la aplicación se encuentra fuera de línea para su uso. Contacte con su administrador de sistema o con soporte técnico si considera que esto se trata de un error.", {
               title: "Aplicación fuera de línea",
               variant: "danger",
               solid: true
