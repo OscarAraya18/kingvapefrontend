@@ -106,6 +106,28 @@ export default {
 
   mounted(){
     this.getAllAgents();
+
+    try {
+      webSocket.onmessage = (websocketMessage) => {
+        const websocketMessageJSON = JSON.parse(websocketMessage.data);
+
+        if (websocketMessageJSON['websocketMessageID'] == 'addMessageCount'){
+          const agentID = websocketMessageJSON['agentID'];
+          var tempAgents = this.agents;
+          this.agents = []
+          for (var agentIndex in this.tempAgents){
+            if (this.tempAgents[agentIndex]['agentID'] == agentID){
+              this.tempAgents[agentIndex]['agentMessages'] = this.tempAgents[agentIndex]['agentMessages'] + 1;
+            }
+          }
+          this.agents = tempAgents;
+          this.agents.sort((a, b) => b.agentMessages - a.agentMessages);
+
+        }
+      }
+    } catch {
+
+    }
   },
   created: function() {
    

@@ -23,7 +23,14 @@
                 
               >   
                 <div>
+                  
+                  <div v-if="loaderConversations == true" style="text-align: center;">
+                    <br><br><br>
+                    <span class="spinner-glow spinner-glow-primary"></span>
+                  </div>
+
                   <div
+                    v-else
                     style="cursor: pointer;"
                     class="p-3 d-flex border-bottom align-items-center"
                     v-for="activeConversation in activeConversations"
@@ -55,7 +62,6 @@
                 <b-dropdown-item href="#" v-b-modal.zapoteConversationsModal>Zapote ({{zapoteConversations.length}})</b-dropdown-item>
                 <b-dropdown-item href="#" v-b-modal.cartagoConversationsModal>Cartago ({{cartagoConversations.length}})</b-dropdown-item>
                 <b-dropdown-item href="#" v-b-modal.pendingConversationsModal>Pendientes ({{pendingConversations.length}})</b-dropdown-item>
-
               </b-dropdown>
             </div>
           </div>
@@ -318,178 +324,188 @@
               </div>
             </vue-perfect-scrollbar>
             
+            
+
             <div class="pl-3 pr-3 pt-4 pb-3 box-shadow-1 chat-input-area" style="position: absolute; bottom: 0; width: 100%; z-index: 1000; background-color:white">
-                <div class="form-group">
-                  <b-form-textarea
-                    class="form-control"
-                    placeholder="Escribe un mensaje"
-                    @keyup.enter="sendNewTextMessage()"
-                    v-model="newTextMessageContent"
-                    style="margin-bottom: 20px;"
-                    no-resize
-                    rows="3"
-                  />
-                </div>
-                                
-                <div class="d-flex">
+              <div v-if="fileSharingLoader == true" style="text-align: center;">
+                <br><br>
+                <span class="spinner-glow spinner-glow-primary"></span>
+              </div>
+              
+                <div v-else>
+                  <div class="form-group">
+                    <b-form-textarea
+                      class="form-control"
+                      placeholder="Escribe un mensaje"
+                      @keyup.enter="sendNewTextMessage()"
+                      v-model="newTextMessageContent"
+                      style="margin-bottom: 20px;"
+                      no-resize
+                      rows="3"
+                    />
+                  </div>
+                                  
+                  <div class="d-flex">
 
-                  
-                  <button class="btn btn-primary mr-2" type="button" v-b-modal.endConversationModal>Finalizar</button>
+                    
+                    <button class="btn btn-primary mr-2" type="button" v-b-modal.endConversationModal>Finalizar</button>
 
-                  <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación" @ok="endConversation()">
-                    <div>
-                      <b-dropdown variant="primary" text="Motivos frecuentes" style="width: 100%">
-                        <b-dropdown-item @click="addCloseConversationReason('Consulta sobre producto sin venta')">Consulta sobre producto sin venta</b-dropdown-item>
-                        <b-dropdown-item @click="addCloseConversationReason('Consulta sobre horarios')">Consulta sobre horarios</b-dropdown-item>
-                        <b-dropdown-item @click="addCloseConversationReason('Consulta sobre sucursales')">Consulta sobre sucursales</b-dropdown-item>
-                        <b-dropdown-item @click="addCloseConversationReason('Número equivocado')">Número equivocado</b-dropdown-item>
-                        <b-dropdown-item @click="addCloseConversationReason('Cliente no deseado')">Cliente no deseado</b-dropdown-item>
+                    <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación" @ok="endConversation()">
+                      <div>
+                        <b-dropdown variant="primary" text="Motivos frecuentes" style="width: 100%">
+                          <b-dropdown-item @click="addCloseConversationReason('Consulta sobre producto sin venta')">Consulta sobre producto sin venta</b-dropdown-item>
+                          <b-dropdown-item @click="addCloseConversationReason('Consulta sobre horarios')">Consulta sobre horarios</b-dropdown-item>
+                          <b-dropdown-item @click="addCloseConversationReason('Consulta sobre sucursales')">Consulta sobre sucursales</b-dropdown-item>
+                          <b-dropdown-item @click="addCloseConversationReason('Número equivocado')">Número equivocado</b-dropdown-item>
+                          <b-dropdown-item @click="addCloseConversationReason('Cliente no deseado')">Cliente no deseado</b-dropdown-item>
 
-                      </b-dropdown>
-                      <br><br>
-                      <b-form-textarea
-                        no-resize
-                        rows="5"
-                        class="form-control"
-                        placeholder="Motivo de la finalización de la conversación"
-                        v-model="closeConversationReason"
-                      />
+                        </b-dropdown>
+                        <br><br>
+                        <b-form-textarea
+                          no-resize
+                          rows="5"
+                          class="form-control"
+                          placeholder="Motivo de la finalización de la conversación"
+                          v-model="closeConversationReason"
+                        />
 
-                      
-                    </div>
-                  </b-modal>
-
-
-                  <b-dropdown dropup variant="primary" text="Transferir" style="margin-right: 10px;">
-                    <template v-for="agent in agents">
-                      <b-dropdown-item style="z-index: 1000;" @click="transferConversation(agent)">{{agent.agentName}}</b-dropdown-item>
-                    </template>
-                    <b-dropdown-item style="z-index: 1000;" v-if="agents.length == 0">No agents available</b-dropdown-item>
-                  </b-dropdown>
-
-                  <div class="flex-grow-1"></div>
-                  
-                  <b-dropdown dropup variant="primary" text="Tiendas" style="margin-right: 10px;">
-                    <b-dropdown-item style="z-index: 1000;" @click="sendStoreLocationToClient('Zapote')">Zapote</b-dropdown-item>
-                    <b-dropdown-item style="z-index: 1000;" @click="sendStoreLocationToClient('Escazu')">Escazu</b-dropdown-item>
-                    <b-dropdown-item style="z-index: 1000;" @click="sendStoreLocationToClient('Cartago')">Cartago</b-dropdown-item>
-                  </b-dropdown>
-                 
-
-                  <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-right: 10px;">
-                    <b-dropdown-item style="z-index: 1000;" @click="sendLocationToClient('Casa')">Casa</b-dropdown-item>
-                    <b-dropdown-item style="z-index: 1000;" @click="sendLocationToClient('Trabajo')">Trabajo</b-dropdown-item>
-                    <b-dropdown-item style="z-index: 1000;" @click="sendLocationToClient('Otro')">Otro</b-dropdown-item>
-                  </b-dropdown>
-
-                  
-
-                  <button
-                    class="btn btn-icon btn-rounded btn-primary mr-2"
-                    type="button"
-                    @click="uploadImage()"
-                  >
-                    <i class="i-Folder-With-Document"></i>
-                  </button>
-                  <input type="file" accept="image/png, image/jpeg" @change="uploadFile('image/png')" ref="imageFile" style="display: none;" id="imageUploader">
-
-
-                  <button class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal>
-                    <i class="i-File-Video"></i>
-                  </button>
-                  <b-modal @ok="sendFavoriteImages()" scrollable title="Imágenes favoritas" size="m" centered id="imageModal">
-                    <div>
-                      <b-list-group>
-                        <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()"
-                        >Seleccionar todas las imágenes favoritas</b-list-group-item>
                         
-                        <b-list-group-item style="cursor: pointer;"
-                          v-for="agentFavoriteImage in agentFavoriteImages"
-                          :variant="getImageVariant(agentFavoriteImage)"
-                          button
-                          @click="selectFavoriteImage(agentFavoriteImage)"
-                          >
-                          <div style="display:flex; ">
-                            <img :src="agentFavoriteImage.content" style="width: 80px; height: auto;"/>
-                            <div style="margin: 0; left: 35%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
-                              <h6>{{agentFavoriteImage.title}}</h6>
-                            </div>
-                            
-
-                          </div>
-
-                        </b-list-group-item>
-                      </b-list-group>
-                    </div>
-                  </b-modal>
-
-                  <button class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.favoriteModal @click="openAgentFavoriteMessagesModal()">
-                    <i class="i-Love"></i>
-                  </button>
-                  <b-modal scrollable title="Mensajes favoritos" size="m" centered hide-footer id="favoriteModal">
-                    <div>
-                      <b-list-group>
-                        <b-list-group-item style="cursor: pointer;"
-                          v-for="agentFavoriteMessage in agentFavoriteMessages"
-                          button
-                          @click="sendFavoriteMessage(agentFavoriteMessage.content)"
-                          >
-                          <h6><strong>{{agentFavoriteMessage.title}}</strong></h6>
-                          {{agentFavoriteMessage.content}}
-                        </b-list-group-item>
-                      </b-list-group>
-                    </div>
-                  </b-modal>
+                      </div>
+                    </b-modal>
 
 
-                  <button
-                    class="btn btn-icon btn-rounded btn-primary mr-2"
-                    type="button"
-                    @click="startRecording()"
-                    v-b-modal.recordAudioModal
-                  >
-                    <i class="i-Microphone-3"></i>
-                  </button>
+                    <b-dropdown dropup variant="primary" text="Transferir" style="margin-right: 10px;">
+                      <template v-for="agent in agents">
+                        <b-dropdown-item style="z-index: 1000;" @click="transferConversation(agent)">{{agent.agentName}}</b-dropdown-item>
+                      </template>
+                      <b-dropdown-item style="z-index: 1000;" v-if="agents.length == 0">No agents available</b-dropdown-item>
+                    </b-dropdown>
 
-                  <b-modal id="recordAudioModal" hide-footer hide-header size="sm" centered>
-                    <div v-if="!isRecording">
-                      <audio controls :src="recordedAudioFile" style="width:270px;"></audio>
-                      <br>
-                    </div>
-
-                    <div v-if="isRecording" style="text-align: center;">
-                      <h2>{{recordedTime}}</h2>
-                    </div>
-
-                    <div style="text-align: center;">
-                      <button
-                        v-if="isRecording"
-                        class="btn btn-icon btn-primary"
-                        type="button"
-                        @click="pauseAudioRecording()"
-                      >
-                      <i class="i-Pause"></i>
-                      </button>
-                      
-                      <button
-                        class="btn btn-icon btn-primary"
-                        type="button"
-                        @click="sendRecordedAudio()"
-                        v-if="!isRecording"
-                      >
-                      <i class="i-Paper-Plane"></i>
-                      </button>
-
-                    </div>
-
-                  </b-modal>
-
-                  <button class="btn btn-icon btn-rounded btn-primary mr-2" @click="sendNewTextMessage()">
-                    <i class="i-Paper-Plane"></i>
-                  </button>
+                    <div class="flex-grow-1"></div>
+                    
+                    <b-dropdown dropup variant="primary" text="Tiendas" style="margin-right: 10px;">
+                      <b-dropdown-item style="z-index: 1000;" @click="sendStoreLocationToClient('Zapote')">Zapote</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 1000;" @click="sendStoreLocationToClient('Escazu')">Escazu</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 1000;" @click="sendStoreLocationToClient('Cartago')">Cartago</b-dropdown-item>
+                    </b-dropdown>
                   
 
+                    <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-right: 10px;">
+                      <b-dropdown-item style="z-index: 1000;" @click="sendLocationToClient('Casa')">Casa</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 1000;" @click="sendLocationToClient('Trabajo')">Trabajo</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 1000;" @click="sendLocationToClient('Otro')">Otro</b-dropdown-item>
+                    </b-dropdown>
+
+                    
+
+                    <button
+                      class="btn btn-icon btn-rounded btn-primary mr-2"
+                      type="button"
+                      @click="uploadImage()"
+                    >
+                      <i class="i-Folder-With-Document"></i>
+                    </button>
+                    <input type="file" accept="image/png, image/jpeg" @change="uploadFile('image/png')" ref="imageFile" style="display: none;" id="imageUploader">
+
+
+                    <button class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal>
+                      <i class="i-File-Video"></i>
+                    </button>
+                    <b-modal @ok="sendFavoriteImages()" scrollable title="Imágenes favoritas" size="m" centered id="imageModal">
+                      <div>
+                        <b-list-group>
+                          <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()"
+                          >Seleccionar todas las imágenes favoritas</b-list-group-item>
+                          
+                          <b-list-group-item :style="getImageStyle(agentFavoriteImage)"
+                            v-for="(agentFavoriteImage, index) in agentFavoriteImages"
+                            :variant="getImageVariant(agentFavoriteImage)"
+                            button
+                            @click="selectFavoriteImage(index)"
+                            >
+                            <div style="display:flex; ">
+                              <img :src="agentFavoriteImage.content" style="width: 80px; height: auto;"/>
+                              <div style="margin: 0; left: 35%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
+                                <h6>{{agentFavoriteImage.title}}</h6>
+                              </div>
+                              
+
+                            </div>
+
+                          </b-list-group-item>
+                        </b-list-group>
+                      </div>
+                    </b-modal>
+
+                    <button class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.favoriteModal @click="openAgentFavoriteMessagesModal()">
+                      <i class="i-Love"></i>
+                    </button>
+                    <b-modal scrollable title="Mensajes favoritos" size="m" centered hide-footer id="favoriteModal">
+                      <div>
+                        <b-list-group>
+                          <b-list-group-item style="cursor: pointer;"
+                            v-for="agentFavoriteMessage in agentFavoriteMessages"
+                            button
+                            @click="sendFavoriteMessage(agentFavoriteMessage.content)"
+                            >
+                            <h6><strong>{{agentFavoriteMessage.title}}</strong></h6>
+                            {{agentFavoriteMessage.content}}
+                          </b-list-group-item>
+                        </b-list-group>
+                      </div>
+                    </b-modal>
+
+
+                    <button
+                      class="btn btn-icon btn-rounded btn-primary mr-2"
+                      type="button"
+                      @click="startRecording()"
+                      v-b-modal.recordAudioModal
+                      style='display: none;'
+                    >
+                      <i class="i-Microphone-3"></i>
+                    </button>
+
+                    <b-modal id="recordAudioModal" hide-footer hide-header size="sm" centered>
+                      <div v-if="!isRecording">
+                        <audio controls :src="recordedAudioFile" style="width:270px;"></audio>
+                        <br>
+                      </div>
+
+                      <div v-if="isRecording" style="text-align: center;">
+                        <h2>{{recordedTime}}</h2>
+                      </div>
+
+                      <div style="text-align: center;">
+                        <button
+                          v-if="isRecording"
+                          class="btn btn-icon btn-primary"
+                          type="button"
+                          @click="pauseAudioRecording()"
+                        >
+                        <i class="i-Pause"></i>
+                        </button>
+                        
+                        <button
+                          class="btn btn-icon btn-primary"
+                          type="button"
+                          @click="sendRecordedAudio()"
+                          v-if="!isRecording"
+                        >
+                        <i class="i-Paper-Plane"></i>
+                        </button>
+
+                      </div>
+
+                    </b-modal>
+
+                    <button class="btn btn-icon btn-rounded btn-primary mr-2" @click="sendNewTextMessage()">
+                      <i class="i-Paper-Plane"></i>
+                    </button>
+                  
+                  </div>
                 </div>
+
             </div>
           </div>
 
@@ -520,7 +536,13 @@
               <br><br>
               <span class="spinner-glow spinner-glow-primary"></span>
             </div>
-            <div class="ul-widget__body">
+
+            <div v-if="enviandoProductoLoader == true" style="text-align: center;">
+              <br><br>
+              <span class="spinner-glow spinner-glow-primary"></span>
+            </div>
+
+            <div class="ul-widget__body" v-else>
               <div class="ul-widget1" v-for="producto in productos" :key="producto.codigoProducto">
                 <div class="ul-widget__item ul-widget4__users">
                   <div class="ul-widget4__img">
@@ -552,7 +574,7 @@
                     <div style="display: flex">
                       
                       <button class="btn btn-icon btn-success mr-2" @click="sendProductToClient(producto)">
-                        Send
+                        Enviar
                       </button>
                       <button v-if="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistencia(producto.codigoProducto)">
                         Stock
@@ -837,6 +859,9 @@ export default {
 
       loaderGrabPendingConversation: false,
       loader2: false,
+      fileSharingLoader: false,
+      loaderConversations: false,
+      enviandoProductoLoader: false,
       textoSucursales: 'Sucursales ',
 
       closeConversationReason: '', 
@@ -1030,7 +1055,14 @@ export default {
               psContainer.scrollTop = psContainer.scrollHeight;
             }
           });
-        });
+        })
+        .catch(() => {
+          me.$bvToast.toast("Ha ocurrido un error inesperado al enviar el audio. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+            title: "Error al consultar enviar el audio",
+            variant: "danger",
+            solid: true
+          });
+        })
     },
 
     async startRecording() {
@@ -1083,7 +1115,6 @@ export default {
     sendFavoriteImages(){
       for (var image in this.agentFavoriteImages){
         if (this.agentFavoriteImages[image].selected){
-        alert(this.agentFavoriteImages[image].title)
           const httpBodyToSendRecordedAudio = 
         {
           'mediaContent':this.agentFavoriteImages[image].src,
@@ -1125,6 +1156,7 @@ export default {
       axios.get(constants.routes.backendAPI
             +'/sendWhatsappMessage?'
             +'type=text'
+            +'&agentID='+localStorage.getItem('agentID')
             +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
             +'&messageContent='+favoriteMessage
             +'&sendedProduct=0')
@@ -1223,6 +1255,7 @@ export default {
       axios.get(constants.routes.backendAPI
             +'/sendWhatsappMessage?'
             +'type=text'
+            +'&agentID='+localStorage.getItem('agentID')
             +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
             +'&messageContent='+newMessage
             +'&sendedProduct=0')
@@ -1280,17 +1313,27 @@ export default {
     },
 
     sendLocationToClient(locationName){
-      axios.post(constants.routes.backendAPI+'/sendWhatsappLocation',{
-        recipientPhoneNumber: this.currentActiveConversation.recipientPhoneNumber,
-        latitude: this.locations[locationName].latitude,
-        longitude: this.locations[locationName].longitude,
-      })
-      .then(() =>{ 
-        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {owner:'agent',messageContent:{locationLatitude:this.locations[locationName].latitude, locationLongitude:this.locations[locationName].longitude},messageType:'location',messageSentHour: Date().toString().slice(16,24)});
-      })
-      .catch(error =>{
-        console.log(error);
-      })
+      console.log(this.locations)
+      if (this.locations[locationName]){
+        axios.post(constants.routes.backendAPI+'/sendWhatsappLocation',{
+          agentID: localStorage.getItem('agentID'),
+          recipientPhoneNumber: this.currentActiveConversation.recipientPhoneNumber,
+          latitude: this.locations[locationName].latitude,
+          longitude: this.locations[locationName].longitude,
+        })
+        .then(() =>{ 
+          this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {owner:'agent',messageContent:{locationLatitude:this.locations[locationName].latitude, locationLongitude:this.locations[locationName].longitude},messageType:'location',messageSentHour: Date().toString().slice(16,24)});
+        })
+        .catch(error =>{
+          console.log(error);
+        })
+      } else {
+        this.$bvToast.toast('El cliente no cuenta con una ubicación asignada a "' + locationName + '." Por favor, agregue la dirección correctamente, e intentelo nuevamente.', {
+          title: 'Error al enviar la ubicación',
+          variant: 'danger',
+          solid: true
+        });
+      }
     },
 
     sendStoreLocationToClient(locationName){
@@ -1307,6 +1350,7 @@ export default {
         var longitud = -83.925354;
       }
       axios.post(constants.routes.backendAPI+'/sendWhatsappLocation',{
+        agentID: localStorage.getItem('agentID'),
         recipientPhoneNumber: this.currentActiveConversation.recipientPhoneNumber,
         latitude: latitud,
         longitude: longitud,
@@ -1383,6 +1427,12 @@ export default {
       }
     },
 
+    getImageStyle(image){
+      if (image.selected){
+        return 'cursor: pointer';
+      }
+    },
+
     getAllFavoriteVariant(){
       var variant = 'success';
       for(var imageIndex in this.agentFavoriteImages){
@@ -1394,7 +1444,7 @@ export default {
     },
 
     selectFavoriteImage(image){
-      image.selected = !image.selected;
+      this.agentFavoriteImages[image].selected = true;
     },
 
     selectAllFavoriteImage(){
@@ -1465,7 +1515,6 @@ export default {
         for (var productoIndex in ordenesActualesLocalStorage[this.phone]){
           if (ordenesActualesLocalStorage[this.phone][productoIndex]['CodigoP'] == codigoProducto){
             ordenesActualesLocalStorage[this.phone][productoIndex]['descuento'] = value;
-            alert(ordenesActualesLocalStorage[this.phone][productoIndex]['descuento']);
 
           }
         }
@@ -1835,7 +1884,6 @@ export default {
       for (var product of this.orden){
         total = total + product.precioVenta*product.cantidad
       }
-      alert(total);
     },
 
     startNewConversation(){
@@ -1843,6 +1891,7 @@ export default {
         axios.get(constants.routes.backendAPI
                   +'/sendWhatsappMessage?'
                   +'type=text'
+                  +'&agentID='+localStorage.getItem('agentID')
                   +'&recipientPhoneNumber='+this.newConversationPhoneNumber
                   +'&messageContent='+this.newConversationTextMessage
                   +'&agentID='+localStorage.getItem('agentID'))
@@ -1915,7 +1964,7 @@ export default {
     async sendProductToClient(product){
 
       
-
+      this.enviandoProductoLoader = true;
       var httpBodyToSendRecordedAudio = 
         {
           'mediaURL':product.localizacion,
@@ -1928,7 +1977,7 @@ export default {
 
       axios.post(constants.routes.backendAPI+'/sendWhatsappMediaURL', httpBodyToSendRecordedAudio)
         .then(() =>{
-
+          this.enviandoProductoLoader = false;
           this.$set(this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]= {
             owner:'agent',
             messageContent:{'mediaExtension':'image/png', 'mediaContent':product.localizacion, 'mediaName':'media'},
@@ -1945,6 +1994,7 @@ export default {
           axios.get(constants.routes.backendAPI
                 +'/sendWhatsappMessage?'
                 +'type=text'
+                +'&agentID='+localStorage.getItem('agentID')
                 +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
                 +'&messageContent='+this.newTextMessageContent
                 +'&sendedProduct=1')
@@ -2017,9 +2067,13 @@ export default {
           'agentID': localStorage.getItem('agentID'),
           'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber
         }
-          
+        
+        this.fileSharingLoader = true;
+
         axios.post(constants.routes.backendAPI+'/sendWhatsappMedia', httpBodyToSendRecordedAudio)
         .then(() =>{
+          this.fileSharingLoader = false;
+
           this.$set(this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]= {
             owner:'agent',
             messageContent:{'mediaExtension':type, 'mediaContent':reader.result.split(',')[1], 'mediaName':'media', isBase64: '1'},
@@ -2067,6 +2121,7 @@ export default {
         axios.get(constants.routes.backendAPI
                   +'/sendWhatsappMessage?'
                   +'type=text'
+                  +'&agentID='+localStorage.getItem('agentID')
                   +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
                   +'&messageContent='+this.newTextMessageContent)
         .then(() =>{ 
@@ -2092,6 +2147,7 @@ export default {
       }
     },
     getAgentActiveConversations(){
+      this.loaderConversations = true;
       axios.get(constants.routes.backendAPI+'/getAgentActiveConversations?agentID='+localStorage.getItem('agentID'))
       .then(response =>{
         const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
@@ -2113,6 +2169,7 @@ export default {
         }
 
         localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
+        this.loaderConversations = false;
 
       })
       .catch(error =>{
@@ -2323,14 +2380,16 @@ export default {
     this.agentName = localStorage.getItem('agentName');
     this.agentFavoriteMessages = JSON.parse(localStorage.getItem('agentFavoriteMessages'));
     this.agentFavoriteImages = JSON.parse(localStorage.getItem('agentFavoriteImages'));
+
     for (var agentFavoriteImageIndex in this.agentFavoriteImages){
       this.agentFavoriteImages[agentFavoriteImageIndex]['selected'] = false;
+
     }
 
     this.getAgentActiveConversations();
     this.getPendingConversations();
     this.getAllAgents();
-    this.getAllContacts();
+    //this.getAllContacts();
     this.getStoreConversations();
 
     try {

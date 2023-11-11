@@ -1,7 +1,16 @@
 <template>
   
   <div class="main-content">
-    <b-card>
+
+    <b-form-select v-model="contactLetter" class="mb-3" :options="contactLettersOptions" @change="getContacts">
+    </b-form-select>
+
+    <div v-if="loaderContact==true" style="text-align: center;">
+      <br>
+      <span class="spinner-glow spinner-glow-primary"></span>
+    </div>
+
+    <b-card v-else>
       <vue-good-table
         :columns="columns"
         :line-numbers="false"
@@ -12,6 +21,7 @@
         styleClass="tableOne vgt-table"
         :rows="rows"
       >
+      
         <div slot="table-actions" class="m-3">
           <b-button
             @click="openCreateContactModal()"
@@ -21,6 +31,8 @@
             ><i class="i-Add-User mr-2"> </i>Crear contacto
           </b-button>
         </div>
+        
+
 
         <template slot="table-row" slot-scope="props">
           <span v-if="props.column.field == 'button'">
@@ -38,17 +50,19 @@
           </span>
 
           <span v-else-if="props.column.field == 'location'">
-            <div style="border-radius: 15px; width: 250px; overflow: hidden;">
-            <GmapMap :center="props.row.location" :zoom="15" style="width: 300px; height: 200px;">
-              <GmapMarker
-                    :position="props.row.location"
-                              :draggable="false"
-                            /></GmapMap>
-            </div>
+              <div style="width: 250px; overflow: hidden;">
+                <b-button @click="openContactLocation(props.row.location)" variant="primary" class="btn d-sm-block" v-b-modal.modalOpenContact>Abrir ubicación</b-button>
+              </div>
           </span>
         </template>
       </vue-good-table>
-
+      
+      <b-modal id="modalOpenContact" size="lg" hide-footer hide-header centered>
+        <div class="p-2" style="text-align: center;">
+          <GmapMap :center="selectedContactLocation" :zoom="15" style="width: 740px; height: 500px; margin: 0 auto;">
+          <GmapMarker :position="selectedContactLocation" :draggable="false"/></GmapMap>
+        </div>
+      </b-modal>
 
       <b-modal id="modalContactar" title="Enviar mensaje al contacto" @ok="sendMessage()" ref="modalContactar" centered>
         <div class="p-3">
@@ -210,11 +224,16 @@ export default {
   },
   data() {
     return {
+      contactLetter: null,
+      contactLettersOptions: [{value:null,text:'Seleccione una letra para buscar los contactos'},{value:'A',text:'A'},{value:'B',text:'B'},{value:'C',text:'C'},{value:'D',text:'D'},{value:'E',text:'E'},{value:'F',text:'F'},{value:'G',text:'G'},{value:'H',text:'H'},{value:'I',text:'I'},{value:'J',text:'J'},{value:'K',text:'K'},{value:'L',text:'L'},{value:'M',text:'M'},{value:'N',text:'N'},{value:'O',text:'O'},{value:'P',text:'P'},{value:'Q',text:'Q'},{value:'R',text:'R'},{value:'S',text:'S'},{value:'T',text:'T'},{value:'U',text:'U'},{value:'V',text:'V'},{value:'W',text:'W'},{value:'X',text:'X'},{value:'Y',text:'Y'},{value:'Z',text:'Z'},{value:'Otro',text:'Otro'}],
+
+      selectedContactLocation: '',
+      loaderContact: false,
+
       allContactsInformation: [],
 
       sendingMessage: '',
 
-      foods: ["apple", "orrange"],
       columns: [
         {
           label: "Nombre",
@@ -270,11 +289,14 @@ export default {
   },
 
   mounted(){
-    this.getAllContacts();
     this.sendingMessage = localStorage.getItem('agentWelcomeMessage');
   },
 
   methods: {
+    openContactLocation(location){
+      this.selectedContactLocation = location;
+    },
+
     openCreateContactModal(){
       this.creatingPhoneNumber = '';
       this.creatingName = '';
@@ -322,8 +344,8 @@ export default {
         this.creatingLocationDetails = '';
         this.creatingNote = '';
         this.rows = [];
-        this.getAllContacts();
         this.$refs['modalCrear'].hide();
+        this.getContacts();
       })
       
       .catch(error =>{
@@ -344,7 +366,7 @@ export default {
           solid: true
         });
         this.rows = [];
-        this.getAllContacts();
+        this.getContacts();
       })
       
       .catch(error =>{
@@ -377,8 +399,8 @@ export default {
           solid: true
         });
         this.rows = [];
-        this.getAllContacts();
         this.$refs['modalEditar'].hide();
+        this.getContacts();
       })
       
       .catch(error =>{
@@ -390,10 +412,12 @@ export default {
       })
     },
 
-    getAllContacts(){
-      axios.get(constants.routes.backendAPI+'/getAllContacts')
+    getContacts(){
+      this.loaderContact = true;
+      axios.post(constants.routes.backendAPI+'/getContacts', {'contactLetter':this.contactLetter})
       .then(response =>{ 
-        console.log(response.data)
+        this.allContactsInformation = [];
+        this.rows = [];
         this.allContactsInformation = response.data;
         for (var contact in response.data){
           var center = {lat: parseInt(response.data[contact].contactLocation['CASA'].latitude), lng: parseInt(response.data[contact].contactLocation['CASA'].longitude)}
@@ -401,7 +425,7 @@ export default {
           if (response.data[contact].contactEmail != ''){
             email = response.data[contact].contactEmail;
           } else {
-            email = 'No email';
+            email = 'NA';
           }
           this.rows.push(
             {
@@ -416,7 +440,7 @@ export default {
           )
           
         }
-        
+        this.loaderContact = false;
 
       })
       
