@@ -2415,12 +2415,11 @@ export default {
               
               if (this.temp == websocketMessageJSON['conversationID']){
                 var temp = false;
-                for (var activeConversationMessage in this.activeConversationsAsJSON[clickedActiveConversationID].messages){
+                for (var activeConversationMessage in this.activeConversationsAsJSON[websocketMessageJSON['conversationID']].messages){
                   if (this.activeConversationsAsJSON[websocketMessageJSON['conversationID']].messages[activeConversationMessage].owner == 'client') {
                     temp = true;
                   }
                 }
-                alert(temp); 
                 this.$set(this.availableConversation, temp);
               }
               
