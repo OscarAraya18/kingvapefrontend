@@ -326,7 +326,7 @@
             
             
 
-            <div v-if="availabeConversation == true" class="pl-3 pr-3 pt-4 pb-3 box-shadow-1 chat-input-area" style="position: absolute; bottom: 0; width: 100%; z-index: 1000; background-color:white">
+            <div v-if="availableConversation == true" class="pl-3 pr-3 pt-4 pb-3 box-shadow-1 chat-input-area" style="position: absolute; bottom: 0; width: 100%; z-index: 1000; background-color:white">
               <div v-if="fileSharingLoader == true" style="text-align: center;">
                 <br><br>
                 <span class="spinner-glow spinner-glow-primary"></span>
@@ -2196,7 +2196,9 @@ export default {
 
       var temp = false;
       for (var activeConversationMessage in this.activeConversationsAsJSON[clickedActiveConversationID].messages){
-        console.log(activeConversationMessage)
+        if (this.activeConversationsAsJSON[clickedActiveConversationID].messages[activeConversationMessage].owner == 'client') {
+          temp = true;
+        }
       }
       this.availableConversation = temp;
 
@@ -2410,6 +2412,8 @@ export default {
           if (localStorage.getItem('agentID') == websocketMessageJSON['agentID']) {
             if (this.activeConversationsAsJSON[websocketMessageJSON['conversationID']]){
               this.$set(this.activeConversationsAsJSON[websocketMessageJSON['conversationID']].messages, websocketMessageJSON['messageID'], websocketMessageJSON['messageInformation']);
+              alert(this.temp); 
+              
               this.$nextTick(() => {
               if (this.$refs.scrollRef) {
                 const psContainer = this.$refs.scrollRef.$el;
