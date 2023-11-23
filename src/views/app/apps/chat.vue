@@ -262,8 +262,11 @@
                           </a>
                         </div>
 
-                        <audio controls v-if="cuurentActiveConversationMessage.messageType=='audio'" :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`">
+                        <audio controls v-if="cuurentActiveConversationMessage.messageType=='audio'" :src="`data:audio/ogg;base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`">
+                        
                         </audio>
+
+                        <h1 v-if="cuurentActiveConversationMessage.messageType=='audio'">HOLA</h1>
 
                         
 
