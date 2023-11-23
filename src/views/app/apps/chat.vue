@@ -2420,7 +2420,8 @@ export default {
                     temp = true;
                   }
                 }
-                this.availableConversation = temp;
+                alert(temp); 
+                this.$set(this.availableConversation, temp);
               }
               
               this.$nextTick(() => {
