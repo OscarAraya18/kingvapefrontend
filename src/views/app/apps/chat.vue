@@ -197,11 +197,11 @@
                 <div class="flex-grow-1"></div>
 
 
-                <button @click="vistaItems = 'Productos'" class="btn btn-icon btn-primary mr-2">
+                <button @click="vistaItems = 'Productos'" class="btn btn-icon btn-primary mr-2" v-if="availableConversation == true">
                   <i class="i-Shopping-Cart"></i>
                   Buscar productos
                 </button>
-                <button @click="vistaItems = 'Orden'" class="btn btn-icon btn-primary">
+                <button @click="vistaItems = 'Orden'" class="btn btn-icon btn-primary" v-if="availableConversation == true">
                   <i class="i-Check"></i>
                   Resumen de la orden
                 </button>
@@ -513,7 +513,7 @@
         </div>
       </div>
 
-      <div class="col-md-3 scrollable-container" v-if="temp != ''">
+      <div class="col-md-3 scrollable-container" v-if="(temp != '') && (availableConversation == true)">
           <b-card v-if="vistaItems == 'Productos'">
             <div class="d-flex" style="align-items: center;">
               <h3 class="ul-widget__head-title">
@@ -2412,7 +2412,16 @@ export default {
           if (localStorage.getItem('agentID') == websocketMessageJSON['agentID']) {
             if (this.activeConversationsAsJSON[websocketMessageJSON['conversationID']]){
               this.$set(this.activeConversationsAsJSON[websocketMessageJSON['conversationID']].messages, websocketMessageJSON['messageID'], websocketMessageJSON['messageInformation']);
-              alert(this.temp); 
+              
+              if (this.temp == websocketMessageJSON['conversationID']){
+                var temp = false;
+                for (var activeConversationMessage in this.activeConversationsAsJSON[clickedActiveConversationID].messages){
+                  if (this.activeConversationsAsJSON[websocketMessageJSON['conversationID']].messages[activeConversationMessage].owner == 'client') {
+                    temp = true;
+                  }
+                }
+                this.availableConversation = temp;
+              }
               
               this.$nextTick(() => {
               if (this.$refs.scrollRef) {
