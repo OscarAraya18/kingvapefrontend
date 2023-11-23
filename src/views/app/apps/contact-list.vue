@@ -308,12 +308,10 @@ export default {
     sendMessage(){
       const phoneNumber = this.allContactsInformation[this.sendingID].contactPhoneNumber;
       axios.get(constants.routes.backendAPI
-            +'/sendWhatsappMessage?'
-            +'type=text'
-            +'&recipientPhoneNumber='+phoneNumber
+            +'/sendWhatsappContactMessage?'
             +'&messageContent='+this.sendingMessage
             +'&agentID='+localStorage.getItem('agentID')
-            +'&sendedProduct=0')
+      )
       .then(() =>{ 
         this.$bvToast.toast("Se ha enviado exitosamente el mensaje al contacto con el número '" + phoneNumber + "'.", {
           title: "Mensaje enviado",
