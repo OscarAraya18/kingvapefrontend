@@ -1617,6 +1617,15 @@ export default {
     },
     OrdenExpress(){
         if(this.ValidarData() == 1){
+          var metodoEnvioCorregido = '';
+          if (this.MetodoEnvio == 'Retiro en sucursal'){
+            metodoEnvioCorregido = 'Retira en sucursal';
+          } else if (this.MetodoEnvio == 'Envío por motorizado'){
+            metodoEnvioCorregido = 'Envio Propio';
+          } else {
+            metodoEnvioCorregido = 'Correos de CR';
+          }
+
           var me = this;
           this.loading = true;
           var momentoActual = new Date(); 
@@ -1639,7 +1648,7 @@ export default {
             'localidad': this.Sucursal,
             'estado': 0,
             'nota':" Estado Pago: " +this.estadoPago+" "+this.pagaCon+" "+this.nota,
-            'tipoCompra' :this.MetodoEnvio,
+            'tipoCompra': metodoEnvioCorregido,
             'detalles': this.orden,
             'correo': this.email,
             'latitud': this.latitud,
