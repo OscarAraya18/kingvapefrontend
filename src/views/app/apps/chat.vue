@@ -2196,9 +2196,7 @@ export default {
 
       var temp = false;
       for (var activeConversationMessage in this.activeConversationsAsJSON[clickedActiveConversationID].messages){
-        if (this.activeConversationsAsJSON[clickedActiveConversationID].messages[activeConversationMessage].owner != 'agent'){
-          temp = true;
-        }
+        console.log(activeConversationMessage)
       }
       this.availableConversation = temp;
 
