@@ -1928,10 +1928,10 @@ export default {
       })
       .then(() =>{ 
         axios.post(constants.routes.backendAPI+'/acceptTransfer',{
-        agentToNotify: this.transferFromAgentID
+          agentToNotify: this.transferFromAgentID
         })
         .then(() =>{ 
-          
+          delete this.activeConversationsAsJSON[this.transferConversationID]; 
         })
         
         .catch(error =>{
