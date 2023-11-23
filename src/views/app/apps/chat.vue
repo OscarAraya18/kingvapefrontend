@@ -2414,13 +2414,7 @@ export default {
               this.$set(this.activeConversationsAsJSON[websocketMessageJSON['conversationID']].messages, websocketMessageJSON['messageID'], websocketMessageJSON['messageInformation']);
               
               if (this.temp == websocketMessageJSON['conversationID']){
-                var temp = false;
-                for (var activeConversationMessage in this.activeConversationsAsJSON[websocketMessageJSON['conversationID']].messages){
-                  if (this.activeConversationsAsJSON[websocketMessageJSON['conversationID']].messages[activeConversationMessage].owner == 'client') {
-                    temp = true;
-                  }
-                }
-                this.$set(this.availableConversation, temp);
+                this.changeCurrentActiveConversation(this.temp);
               }
               
               this.$nextTick(() => {
