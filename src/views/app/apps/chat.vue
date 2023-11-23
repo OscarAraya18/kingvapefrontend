@@ -2419,6 +2419,8 @@ export default {
 
         } else if (websocketMessageJSON['websocketMessageID'] == 'receiveWhatsappMessage'){
           if (localStorage.getItem('agentID') == websocketMessageJSON['agentID']) {
+
+            console.log(websocketMessageJSON['messageInformation']);
             if (this.activeConversationsAsJSON[websocketMessageJSON['conversationID']]){
               this.$set(this.activeConversationsAsJSON[websocketMessageJSON['conversationID']].messages, websocketMessageJSON['messageID'], websocketMessageJSON['messageInformation']);
               
