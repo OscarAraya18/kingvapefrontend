@@ -3,7 +3,7 @@ module.exports = {
     routes: {
         backendAPI: 'https://telasmasbackend.onrender.com',
         websocketAPI: 'telasmasbackend.onrender.com:10000'
-    }, 
+    },
 
     credentials: 
     {
