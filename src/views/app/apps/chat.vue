@@ -454,13 +454,14 @@
                     <button class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal @click="openImageModal()">
                       <i class="i-File-Video"></i>
                     </button>
-                    <div v-if="loaderImages == true" style="text-align: center;">
-                      <br><br>
-                      <span class="spinner-glow spinner-glow-primary"></span>
-                    </div>
 
-                    <b-modal v-else @ok="sendFavoriteImages()" scrollable title="Imágenes favoritas" size="m" centered id="imageModal">
-                      <div>
+                    <b-modal @ok="sendFavoriteImages()" scrollable title="Imágenes favoritas" size="m" centered id="imageModal">
+                      <div v-if="loaderImages == true" style="text-align: center;">
+                        <br>
+                        <span class="spinner-glow spinner-glow-primary"></span>
+                      </div>
+                      
+                      <div v-else>
                         <b-list-group>
                           <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()"
                           >Seleccionar todas las imágenes favoritas</b-list-group-item>
@@ -473,7 +474,7 @@
                             >
                             <div style="display:flex; ">
                               <img :src="agentFavoriteImage.src" style="width: 80px; height: auto;"/>
-                              <div style="margin: 0; left: 35%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
+                              <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
                                 <h6>{{agentFavoriteImage.title}}</h6>
                               </div>
                               
@@ -1071,10 +1072,14 @@ export default {
       axios.post(constants.routes.backendAPI+'/getFavoriteImages')
         .then((response) =>{
           this.agentFavoriteImages = response.data;
+          for (var agentFavoriteImageIndex in this.agentFavoriteImages){
+            this.agentFavoriteImages[agentFavoriteImageIndex]['selected'] = false;
+          }
+
           this.loaderImages = false;
         })
-        .catch(() => {
-          
+        .catch((error) => {
+          console.log(error);
         })
     },
 
@@ -1174,42 +1179,43 @@ export default {
     },
 
 
-    sendFavoriteImages(){
+    async sendFavoriteImages(){
       for (var image in this.agentFavoriteImages){
         if (this.agentFavoriteImages[image].selected){
           const httpBodyToSendRecordedAudio = 
-        {
-          'mediaContent':this.agentFavoriteImages[image].src,
-          'mediaType': 'image/png',
-          'mediaName': 'media',
-          'agentID': localStorage.getItem('agentID'),
-          'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber
-        }
+          {
+            'mediaContent':this.agentFavoriteImages[image].src,
+            'mediaType': 'image/png',
+            'mediaName': 'media',
+            'agentID': localStorage.getItem('agentID'),
+            'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber
+          }
           
-        axios.post(constants.routes.backendAPI+'/sendWhatsappMedia', httpBodyToSendRecordedAudio)
-        .then((result) =>{
-          this.$set(this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]= {
-            owner:'agent',
-            messageContent:{'mediaExtension':'image/png', 'mediaContent':this.agentFavoriteImages[image].src.split(',')[1], 'mediaName':'media', isBase64: '1'},
-            messageType: 'image',
-            messageSentHour: Date().toString().slice(16,24),
-            messageID: result.data
-          });
-          
-          var messages = this.currentActiveConversation.messages;
-          this.currentActiveConversation.messages = {};
-          this.currentActiveConversation.messages = messages;
-          
-          this.$nextTick(() => {
-          if (this.$refs.scrollRef) {
-              const psContainer = this.$refs.scrollRef.$el;
-              psContainer.scrollTop = psContainer.scrollHeight;
-            }
-          });
+          await axios.post(constants.routes.backendAPI+'/sendWhatsappMedia', httpBodyToSendRecordedAudio)
+          .then((result) =>{
+            alert(result.data);
+            this.$set(this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]= {
+              owner:'agent',
+              messageContent:{'mediaExtension':'image/png', 'mediaContent':this.agentFavoriteImages[image].src.split(',')[1], 'mediaName':'media', isBase64: '1'},
+              messageType: 'image',
+              messageSentHour: Date().toString().slice(16,24),
+              messageID: result.data
+            });
+            
+            var messages = this.currentActiveConversation.messages;
+            this.currentActiveConversation.messages = {};
+            this.currentActiveConversation.messages = messages;
+            
+            this.$nextTick(() => {
+            if (this.$refs.scrollRef) {
+                const psContainer = this.$refs.scrollRef.$el;
+                psContainer.scrollTop = psContainer.scrollHeight;
+              }
+            });
 
-          this.agentFavoriteImages[image].selected = false;
+            this.agentFavoriteImages[image].selected = false;
 
-        });
+          });
 
         }
       }
@@ -1486,33 +1492,31 @@ export default {
       if (image.selected == true) {
         return 'success'
       } else {
-        return ''
+        return 'default'
       }
     },
 
     getImageStyle(image){
-      if (image.selected){
-        return 'cursor: pointer';
-      }
+      return 'cursor: pointer';
     },
 
     getAllFavoriteVariant(){
       var variant = 'success';
       for(var imageIndex in this.agentFavoriteImages){
         if (this.agentFavoriteImages[imageIndex].selected == false){
-          variant = '';
+          variant = 'default';
         };
       } 
       return variant;
     },
 
     selectFavoriteImage(image){
-      this.agentFavoriteImages[image].selected = true;
+      this.$set(this.agentFavoriteImages, image, { ...this.agentFavoriteImages[image], selected: !this.agentFavoriteImages[image].selected });
     },
 
     selectAllFavoriteImage(){
-      for(var imageIndex in this.agentFavoriteImages){
-        this.agentFavoriteImages[imageIndex].selected = true;
+      for (var imageIndex in this.agentFavoriteImages) {
+        this.$set(this.agentFavoriteImages, imageIndex, { ...this.agentFavoriteImages[imageIndex], selected: true });
       }
     },
 
@@ -2462,12 +2466,6 @@ export default {
     this.$notification.requestPermission().then();
 
     this.agentName = localStorage.getItem('agentName');
-    this.agentFavoriteMessages = JSON.parse(localStorage.getItem('agentFavoriteMessages'));
-
-    for (var agentFavoriteImageIndex in this.agentFavoriteImages){
-      this.agentFavoriteImages[agentFavoriteImageIndex]['selected'] = false;
-
-    }
 
     this.getAgentActiveConversations();
     this.getPendingConversations();
