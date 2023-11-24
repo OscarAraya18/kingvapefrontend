@@ -1741,13 +1741,13 @@ export default {
             'Facturacion': false
               },configuracion).then(function (response) {
                 me.$swal({
-                title: "Orden Enviada con éxito!",
-                text: "Quieres cerrar la conversación?",
+                title: "Se ha enviado la orden al sistema de comandas de la pantalla",
+                text: "¿Quiere archivar la conversación?",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, delete it!"
+                confirmButtonText: "Confirmar"
               }).then(result => {
                 axios.post(constants.routes.backendAPI+'/createContact',
                 {
@@ -1772,7 +1772,7 @@ export default {
                   }
                   axios.get(constants.routes.backendAPI+
                   '/closeConversation?conversationID='+me.temp+
-                  '&conversationStatus=converted'+
+                  '&conversationStatus="converted"'+
                   '&amount='+total).then(function (){
                     me.getAgentActiveConversations();
                     me.temp = '';
