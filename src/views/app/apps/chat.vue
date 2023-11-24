@@ -225,8 +225,9 @@
                       <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="cuurentActiveConversationMessage.owner != 'agent'">
                         
                         <div v-if="cuurentActiveConversationMessage.messageContext != ''">
-                          RESPUESTA
+                          <div style="min-width: 80%; background-color: #ceefff;">
 
+                          </div>
                         </div>
 
 
