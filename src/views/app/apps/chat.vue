@@ -269,11 +269,13 @@
 
                         <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.messageType == 'text'">{{cuurentActiveConversationMessage.messageContent}}</p>
                         
-                        <img
-                          v-if="cuurentActiveConversationMessage.messageType=='image'"
-                          style="width: 250px;"
-                          :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
-                        >
+                        <div v-if="cuurentActiveConversationMessage.messageType=='image'"> 
+                          <img
+                            style="width: 250px;"
+                            :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
+                          >
+                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="cuurentActiveConversationMessage.messageCaption != ''">{{cuurentActiveConversationMessage.messageCaption}}</p>
+                        </div>
                         
                         <div v-if="cuurentActiveConversationMessage.messageType=='location'" class="m-0">
                           <GmapMap
