@@ -2443,6 +2443,7 @@ export default {
           }
 
         } else if (websocketMessageJSON['websocketMessageID'] == 'startNewConversation'){
+          console.log(websocketMessageJSON);
           if (localStorage.getItem('agentID') == websocketMessageJSON['agentID']) {
             this.$set(this.activeConversationsAsJSON, websocketMessageJSON['conversationID'], websocketMessageJSON['conversationInformation']);
             var activeConversation = websocketMessageJSON['conversationInformation'];
