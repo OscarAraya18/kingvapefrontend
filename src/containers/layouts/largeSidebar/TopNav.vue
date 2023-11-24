@@ -59,23 +59,16 @@
       <b-button v-b-toggle.automaticMessagesCollapseMenu style="width: 100%; font-size: large; background-color: #F9E530;">Mensajes automáticos</b-button>
       <b-collapse id="automaticMessagesCollapseMenu">
         <b-card>
-          <div style="display: flex;">
-            <div style="width: 200px;">
-              <img v-if="agentWelcomeImage != ''" :src="agentWelcomeImage" style="width: auto; height: 250px; cursor: pointer;" id="tooltip-target-2" @click="changeWelcomeImage()">
-              <img v-else :src="agentDefaultProfilePicture" style="width: auto; height: 250px; cursor: pointer;" id="tooltip-target-2" @click="changeWelcomeImage()">
-
-              <input type="file" accept="image/png, image/jpeg" @change="uploadFiles()" ref="imageFile" style="display: none;" id="welcomeImageDownloader">
-              <b-tooltip target="tooltip-target-2" triggers="hover">Click para cambiar la foto de bienvenida</b-tooltip>
-            </div>
-            <div style="margin-left: 30px;">
-              <p style="font-size: medium;"><strong>Mensaje de bienvenida:</strong></p>
-              <b-form-textarea v-model="agentWelcomeMessage" placeholder="Mensaje de bienvenida" rows="3"></b-form-textarea>
-              <br>
-              <p style="font-size: medium;"><strong>Mensaje de despedida:</strong></p>
-              <b-form-textarea v-model="agentEndMessage" placeholder="Mensaje de despedida" rows="3"></b-form-textarea>
-              <br><br>
+          <div>
+            <p style="font-size: medium;"><strong>Mensaje de bienvenida:</strong></p>
+            <b-form-textarea v-model="agentWelcomeMessage" placeholder="Mensaje de bienvenida" rows="3"></b-form-textarea>
+            <br>
+            <p style="font-size: medium;"><strong>Mensaje de despedida:</strong></p>
+            <b-form-textarea v-model="agentEndMessage" placeholder="Mensaje de despedida" rows="3"></b-form-textarea>
+            <br>
+            <div style="text-align: center;">
               <button @click="updateAgentAutomaticMessages()" class="btn btn-icon" style="background-color: #F9E530; font-size: 15px"><i class="i-Data-Save"></i>Guardar cambios</button>
-            </div>
+            </div>  
           </div>
         </b-card>
       </b-collapse>
@@ -107,34 +100,7 @@
         </b-card>
       </b-collapse>
 
-      <br><br>
-
-      <b-button v-b-toggle.favoriteImagesCollapseMenu style="width: 100%; font-size: large; background-color: #F9E530;">Imágenes favoritas</b-button>
-      <b-collapse id="favoriteImagesCollapseMenu">
-        <b-card>
-          <div v-for="agentFavoriteImage in agentFavoriteImages" style="display: flex;">
-            <img :src="agentFavoriteImage.content" style="width: auto; height: 150px;">
-            <div style="top: 45px; position: relative; display: flex; width: 100%;">
-              <p style="font-size: medium; margin-left: 20px;"><strong>{{agentFavoriteImage.title}}</strong></p>
-              <i @click="deleteAgentFavoriteImage(agentFavoriteImage)" class="i-Close-Window text-25 ml-2 text-danger" style="cursor: pointer; right: 0; position: absolute;"></i>
-            </div>
-          </div>
-          <br><br>
-          <div style="text-align: center;">
-            <button @click="openCreateFavoriteImageModal()" v-b-modal.newFavoriteImageModal class="btn btn-icon" style="background-color: #F9E530; font-size: 15px"><i class="i-Data-Save"></i>Nueva imagen favorita</button>
-            <b-modal scrollable size="sm" centered id="newFavoriteImageModal" title="Nueva imagen favorita" @ok="createAgentFavoriteImage()">
-              <b-form-input v-model="newFavoriteImageTitle" placeholder="Título de la nueva imagen favorita"></b-form-input>
-              <br>
-              <div style="text-align: center;">
-                <img :src="newFavoriteImageContent" style="width: auto; height: 150px; cursor: pointer;" id="tooltip-target-1" @click="changeNewFavoriteImage()">
-                <br><br>
-                <input type="file" accept="image/png, image/jpeg" @change="uploadNewFavoriteImage()" ref="profilePictureFile" id="newFavoriteImageFileDownloader">
-              </div>
-              <br>
-            </b-modal>
-          </div>
-        </b-card>
-      </b-collapse>
+      <br>
 
     </b-modal>
 
@@ -211,7 +177,6 @@ export default {
       this.agentEndMessage = localStorage.getItem('agentEndMessage');
 
       this.agentFavoriteMessages = JSON.parse(localStorage.getItem('agentFavoriteMessages'));
-      this.agentFavoriteImages =  JSON.parse(localStorage.getItem('agentFavoriteImages'));
 
       this.agentDefaultProfilePicture = constants.agentDefaultProfilePicture;
 
