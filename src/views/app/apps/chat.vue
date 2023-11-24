@@ -451,10 +451,15 @@
                     <input type="file" accept="image/png, image/jpeg" @change="uploadFile('image/png')" ref="imageFile" style="display: none;" id="imageUploader">
 
 
-                    <button class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal>
+                    <button class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal @click="openImageModal()">
                       <i class="i-File-Video"></i>
                     </button>
-                    <b-modal @ok="sendFavoriteImages()" scrollable title="Imágenes favoritas" size="m" centered id="imageModal">
+                    <div v-if="loaderImages == true" style="text-align: center;">
+                      <br><br>
+                      <span class="spinner-glow spinner-glow-primary"></span>
+                    </div>
+
+                    <b-modal v-else @ok="sendFavoriteImages()" scrollable title="Imágenes favoritas" size="m" centered id="imageModal">
                       <div>
                         <b-list-group>
                           <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()"
@@ -467,7 +472,7 @@
                             @click="selectFavoriteImage(index)"
                             >
                             <div style="display:flex; ">
-                              <img :src="agentFavoriteImage.content" style="width: 80px; height: auto;"/>
+                              <img :src="agentFavoriteImage.src" style="width: 80px; height: auto;"/>
                               <div style="margin: 0; left: 35%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
                                 <h6>{{agentFavoriteImage.title}}</h6>
                               </div>
@@ -901,6 +906,7 @@ export default {
       waxLogoSRC: `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAwCAYAAABqkJjhAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAMLSURBVGhD7Zg/kAtxFMe/d7nj5s5xc8gkjAIFlU6loqIwVCoVnYYGDZVKp6JBRXMVGjRGo9LpzBgKkiGXy925/JNkE9+fezuTWZG835/E3Ew+M5l9e7ez89m37/f27U50CLYQk7LdMoyFh81YeNiE7xLLz4FKDth+Hsjukz+GI6xw8TF/92VnG7DwFshwG5CwJVF+KIGhAVTfSxyOcMLRB6BOyW4a74BfEgcinPDyKwm6WWKJbEgchkDClCpTrhfVlxKEIYxwiVItiZNET5hliQMQQJh1u3ZP4l7k+f9e5eKGv3CRGWwkFluSFltdYcAxSvyEI2ZvNe67/TDH8cIi2fXAT/gHZbUSHR6bp7gn7sI19tiflrVZuQusS+yIozDbWP66xDbwIs2s4VEabsLfbgFNx0XUugN85VPREXthM+CUmSkf6pR27Bp2wtFHYEXTFQbxZbO71GTXAjvhHBdNqGG0wzZXYAIs0QubrlB1r72e1B6xvCRWohcu8uTBecMSs8uyUpg1Vwuc3Zg675xFm9MJr1O2LXFoOs+4ACVWoBOuM8NDg4/rhn7I1wk3k8IngMUXwK4Lsu9JW9+T9Yuum9QpIM1X+Oxp+cPo0AlPyDYmykmwH5iScETohKePSBDDVvRn6toNzLA8fJnmeZTohOeOShBjRkuZbbNX/r4DVvCCZyVUoBQ+zixIHFPhLGCeUilm/8ADnsnxC49ZD/MSK1AuOp5xLtkROLx/56u9GWBmeUGHX7Nr3GBN8wImD24eMhBe5PwZiXVYfFtbAT6d5TybaEGTF4HMNWCn7MfkKL/BR28/UreBQ+e4lX0FygwbuDD23pS4izanrvxJPr35JrHGB0D8fSIa9DGCtZu2kzVYZFgosHZLHOK9YMksPqWwfd1bZFhIsyvs4c+ZY7xZvGAHWYN9hmPMbJy7yltv8bEvxQvNXLLqCknchWNW2ZNLnJWb/xo/aTfFWl24zDvjYSr4C8dE7B51ZrvyWV6j2DZ2cN6YoaTlwupHOOERYb/o/jNj4WEzFh4uwG9BieBgJKlt7QAAAABJRU5ErkJggg==`,
       hierbaLogoSRC: `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC8AAAAqCAYAAAAj6gIfAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAQ9SURBVGhD7ZhfSFt3FMe/iSZqNNHMjKHbJHMP+lAflkkHzhep0OEg3YNlD4KwkYeBD5XSQqllYw/tU9lfBnnoKghSxgajwgIjDxksDaykHSx7MC/WpW10602MXk3ivdHsl/Q4Y3L/1dxrEfZ5yTnnJd977jnnd37XVGTgmGKm32OJoeJXnszjxt9xZMnXG+PEZ37A19mvcDfvw7dPBArqi0HieYQ2vwRXtgXEcvNYLJQdXTFEvJiaxe2dimwXbyKY0T/7BojnEWaZPljnLPvZBSTI0wv9xW9GcGeH7EqK8/hljWyd0F38RvaOTIaTuJ+Pk60POovncU/4mexaskIEi2Trgb7i8zH8KVUy/xFCLEOmDugrfiuKGJnSxBHfTpFdP/LiCzwSqRiWeAEihdRYEqNkyZMoPCBLHXFzGTEuDk7mjJBdzDb++RgXcnv160aPZQJjbe/A47BSrBp2MD0axS3FsmGYLuJSzzh6ya2mJPg3/iZus95Zp5ir+Udce6mbvH1kM++wvAYb2cAyEuJV+NdOYerhLMIZnuKVpMDtkqlEMSmZSZGP4tYjH6ZT72OuQniJLrOLrIPIl419CB4y92EltOvH3Ppo+SHuHngGHilNy/UDcBUnmMjH8P3jSUylpxDaiUmU6GmcsEm/bXnxjX14w1r7qvYoPcSN9Cg+SUbBlU7+LQ7PNEhYTy2uXsJ02odgQWH+N4zgzVayq1CcNgO2CUi/sD14rIhTuLx6FYFsEjmKKhNBIh+BPzmGz7ZDKsPAioHmt+EgrxqVm1SpCcdYExqz0qrCmvsKa+4ecqtRzDwrfIy0fljRuEcJy3qLV1Z4CRXxDOc4zjTIjUcDMZ3Du07l/1UXX8p+2zmV2tebbnhavehtJFcGDeIZHeOYtLrJOQIaL2KyU/1taxPP6HdewUkTOYbCEvXCkKY+0ywezQPwdcwoNlD9uOFhJTrcQq4K2sQXBKykIwhsxTUvaYejCZntBQRTy+DyFFJAcc6Xju4gW5J+EiMGi5bCjvaGD3DWcRYnZZZBefFrs5je8Bv2wUg7VvTbAjj/op38fbTX/HOjiX5rUV4PtpYR3ji4Wx8dneiyfIQzdi88tUkvo7LbEKxhuc04fs+HcI/dllZ3jfj+6Ea7uQ+vNw7iRNMg3nJ0w6JySGkTr4iA8ONTmGMP+EyYZ/Dpq150kXsY6q/59QUEJIRb2B7+VFg3XCyjNezOIpgm+5DULX4pt0AfVPcYxHBrAF+8MkHi3Rhun8N1xwz6TZUjL4lwLlrXCK4/88Xt8o/FdBojtu9w/eVvMOnqhKUc3cfh9OJ8z6+41jYDj7nzabDIa7zASKNDzQPZrABbzT0zBv9fPtzHEN5zfo6xquuQmGMXYItdtSmV0GXO1wpXx9JSn/ASumReGgGJ1B9YLdrR29EHV51CpTBQvPEcg/VAnv/FPx+AfwHCw33sgBcIGAAAAABJRU5ErkJggg==`,
 
+      loaderImages: false,
       loaderGrabPendingConversation: false,
       loader2: false,
       fileSharingLoader: false,
@@ -1060,6 +1066,18 @@ export default {
   },
 
   methods: {
+    openImageModal(){
+      this.loaderImages = true;
+      axios.post(constants.routes.backendAPI+'/getFavoriteImages')
+        .then((response) =>{
+          this.agentFavoriteImages = response.data;
+          this.loaderImages = false;
+        })
+        .catch(() => {
+          
+        })
+    },
+
     openAgentFavoriteMessagesModal(){
       this.agentFavoriteMessages = JSON.parse(localStorage.getItem('agentFavoriteMessages'));
     },
@@ -1169,12 +1187,13 @@ export default {
         }
           
         axios.post(constants.routes.backendAPI+'/sendWhatsappMedia', httpBodyToSendRecordedAudio)
-        .then(() =>{
+        .then((result) =>{
           this.$set(this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]= {
             owner:'agent',
             messageContent:{'mediaExtension':'image/png', 'mediaContent':this.agentFavoriteImages[image].src.split(',')[1], 'mediaName':'media', isBase64: '1'},
             messageType: 'image',
-            messageSentHour: Date().toString().slice(16,24)
+            messageSentHour: Date().toString().slice(16,24),
+            messageID: result.data
           });
           
           var messages = this.currentActiveConversation.messages;
@@ -1204,8 +1223,8 @@ export default {
             +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
             +'&messageContent='+favoriteMessage
             +'&sendedProduct=0')
-      .then(() =>{ 
-        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {sendedProduct: '0', owner:'agent',messageContent:favoriteMessage,messageType:'text',messageSentHour: Date().toString().slice(16,24)});
+      .then((result) =>{ 
+        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageID: result.data, sendedProduct: '0', owner:'agent', messageContent:favoriteMessage,messageType:'text',messageSentHour: Date().toString().slice(16,24)});
 
         this.$nextTick(() => {
         if (this.$refs.scrollRef) {
@@ -1303,8 +1322,8 @@ export default {
             +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
             +'&messageContent='+newMessage
             +'&sendedProduct=0')
-      .then(() =>{ 
-        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {sendedProduct: '0', owner:'agent',messageContent:'Se ha compartido el carrito con el cliente',messageType:'text',messageSentHour: Date().toString().slice(16,24)});
+      .then((result) =>{ 
+        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageID: result.data, sendedProduct: '0', owner:'agent',messageContent:'Se ha compartido el carrito con el cliente',messageType:'text',messageSentHour: Date().toString().slice(16,24)});
 
         this.$nextTick(() => {
         if (this.$refs.scrollRef) {
@@ -1365,8 +1384,8 @@ export default {
           latitude: this.locations[locationName].latitude,
           longitude: this.locations[locationName].longitude,
         })
-        .then(() =>{ 
-          this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {owner:'agent',messageContent:{locationLatitude:this.locations[locationName].latitude, locationLongitude:this.locations[locationName].longitude},messageType:'location',messageSentHour: Date().toString().slice(16,24)});
+        .then((result) =>{
+          this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageID: result.data, owner:'agent',messageContent:{locationLatitude:this.locations[locationName].latitude, locationLongitude:this.locations[locationName].longitude},messageType:'location',messageSentHour: Date().toString().slice(16,24)});
         })
         .catch(error =>{
           console.log(error);
@@ -1399,8 +1418,8 @@ export default {
         latitude: latitud,
         longitude: longitud,
       })
-      .then(() =>{ 
-        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {owner:'agent',messageContent:{locationLatitude:latitud, locationLongitude:longitud},messageType:'location',messageSentHour: Date().toString().slice(16,24)});
+      .then((result) =>{
+        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageID: result.data,owner:'agent',messageContent:{locationLatitude:latitud, locationLongitude:longitud},messageType:'location',messageSentHour: Date().toString().slice(16,24)});
       })
       .catch(error =>{
         console.log(error);
@@ -2029,11 +2048,11 @@ export default {
       
 
       axios.post(constants.routes.backendAPI+'/sendWhatsappMediaURL', httpBodyToSendRecordedAudio)
-        .then(() =>{
+        .then((result) =>{
           this.enviandoProductoLoader = false;
           this.$set(this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]= {
             owner:'agent',
-            messageContent:{'mediaExtension':'image/png', 'mediaContent':product.localizacion, 'mediaName':'media'},
+            messageContent:{messageID: result.data, 'mediaExtension':'image/png', 'mediaContent':product.localizacion, 'mediaName':'media'},
             messageType: 'image',
             messageSentHour: Date().toString().slice(16,24)
           });
@@ -2051,11 +2070,11 @@ export default {
                 +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
                 +'&messageContent='+this.newTextMessageContent
                 +'&sendedProduct=1')
-          .then(() =>{ 
+          .then((result) =>{ 
 
             this.newTextMessageContent = this.newTextMessageContent.split('*').join('');
 
-            this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]={sendedProduct: '1', owner:'agent',messageContent:{productName:this.newTextMessageContent.split('%0a')[0].split(': ')[1], productPrice:this.newTextMessageContent.split('%0a')[1].split(': ')[1],productDescription:this.newTextMessageContent.split('%0a')[2].split(': ')[1]},messageType:'text',messageSentHour: Date().toString().slice(16,24)};
+            this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]={messageID: result.data, sendedProduct: '1', owner:'agent',messageContent:{productName:this.newTextMessageContent.split('%0a')[0].split(': ')[1], productPrice:this.newTextMessageContent.split('%0a')[1].split(': ')[1],productDescription:this.newTextMessageContent.split('%0a')[2].split(': ')[1]},messageType:'text',messageSentHour: Date().toString().slice(16,24)};
             this.newTextMessageContent = '';
 
 
@@ -2124,14 +2143,16 @@ export default {
         this.fileSharingLoader = true;
 
         axios.post(constants.routes.backendAPI+'/sendWhatsappMedia', httpBodyToSendRecordedAudio)
-        .then(() =>{
+        .then((result) =>{
+          
           this.fileSharingLoader = false;
 
           this.$set(this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]= {
             owner:'agent',
             messageContent:{'mediaExtension':type, 'mediaContent':reader.result.split(',')[1], 'mediaName':'media', isBase64: '1'},
             messageType: fileTypeDisplay,
-            messageSentHour: Date().toString().slice(16,24)
+            messageSentHour: Date().toString().slice(16,24),
+            messageContext: result.data
           });
           
           var messages = this.currentActiveConversation.messages;
@@ -2177,8 +2198,8 @@ export default {
                   +'&agentID='+localStorage.getItem('agentID')
                   +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
                   +'&messageContent='+this.newTextMessageContent)
-        .then(() =>{ 
-          this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]={owner:'agent',messageContent:this.newTextMessageContent,messageType:'text',messageSentHour: Date().toString().slice(16,24)};
+        .then((result) =>{ 
+          this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]={owner:'agent',messageID: result.data, messageContent:this.newTextMessageContent,messageType:'text',messageSentHour: Date().toString().slice(16,24)};
           this.newTextMessageContent = '';
           this.$nextTick(() => {
           if (this.$refs.scrollRef) {
@@ -2430,6 +2451,8 @@ export default {
 
   mounted(){
 
+    
+
     if (localStorage.getItem('agentID') == null){
       router.push("/app/sessions/signIn");
     }
@@ -2440,7 +2463,6 @@ export default {
 
     this.agentName = localStorage.getItem('agentName');
     this.agentFavoriteMessages = JSON.parse(localStorage.getItem('agentFavoriteMessages'));
-    this.agentFavoriteImages = JSON.parse(localStorage.getItem('agentFavoriteImages'));
 
     for (var agentFavoriteImageIndex in this.agentFavoriteImages){
       this.agentFavoriteImages[agentFavoriteImageIndex]['selected'] = false;
@@ -2461,9 +2483,9 @@ export default {
           this.getAllAgents();
 
         } else if (websocketMessageJSON['websocketMessageID'] == 'receiveWhatsappMessage'){
-          console.log(localStorage.getItem('agentID'))
-          console.log(websocketMessageJSON);
+
           if (localStorage.getItem('agentID') == websocketMessageJSON['agentID']) {
+            console.log(this.activeConversationsAsJSON[websocketMessageJSON['conversationID']].messages);
 
             console.log(websocketMessageJSON['messageInformation']);
             if (this.activeConversationsAsJSON[websocketMessageJSON['conversationID']]){

@@ -167,7 +167,7 @@ export default {
           localStorage.setItem('agentEndMessage', response.data.agentEndMessage);
 
           localStorage.setItem('agentFavoriteMessages', JSON.stringify(response.data.agentFavoriteMessages));
-          localStorage.setItem('agentFavoriteImages', JSON.stringify(response.data.agentFavoriteImages));
+
 
           router.push('/app/apps/chat');
         } else {
