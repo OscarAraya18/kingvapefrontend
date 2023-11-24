@@ -1937,12 +1937,11 @@ export default {
         products: this.transferConversationProducts
       })
       .then(() =>{ 
-        this.getAgentActiveConversations();
         axios.post(constants.routes.backendAPI+'/acceptTransfer',{
           agentToNotify: this.transferFromAgentID
         })
         .then(() =>{ 
-          delete this.activeConversationsAsJSON[this.transferConversationID]; 
+          this.getAgentActiveConversations();
         })
         
         .catch(error =>{
