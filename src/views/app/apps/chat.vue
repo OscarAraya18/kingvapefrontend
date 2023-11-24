@@ -2189,6 +2189,8 @@ export default {
     },
 
     changeCurrentActiveConversation (clickedActiveConversationID){
+      console.log(this.activeConversationsAsJSON);
+      console.log(clickedActiveConversationID);
       this.producto = '';
       this.temp = clickedActiveConversationID;
       this.currentActiveConversation = this.activeConversationsAsJSON[clickedActiveConversationID];
