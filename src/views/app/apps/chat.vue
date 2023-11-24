@@ -266,8 +266,6 @@
                         
                         </audio>
 
-                        <h1 v-if="cuurentActiveConversationMessage.messageType=='audio'">HOLA</h1>
-
                         
 
                       </div>
@@ -2421,6 +2419,8 @@ export default {
           this.getAllAgents();
 
         } else if (websocketMessageJSON['websocketMessageID'] == 'receiveWhatsappMessage'){
+          console.log(localStorage.getItem('agentID'))
+          console.log(websocketMessageJSON);
           if (localStorage.getItem('agentID') == websocketMessageJSON['agentID']) {
 
             console.log(websocketMessageJSON['messageInformation']);
