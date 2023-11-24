@@ -256,7 +256,8 @@
                                   </a>
                                 </div>
 
-                                <audio controls v-if="answeredMessage.messageType=='audio'" :src="`data:audio/ogg;base64,${answeredMessage.messageContent.mediaContent}`">
+                                <audio controls v-if="answeredMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${answeredMessage.messageContent.mediaContent}`">
+                                  {{cuurentActiveConversationMessage.messageContent.mediaContent}}
                                 </audio>
 
 
@@ -304,10 +305,10 @@
                           </a>
                         </div>
 
-                        <audio controls v-if="cuurentActiveConversationMessage.messageType=='audio'" :src="`data:audio/ogg;base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`">
-                        
+                        <audio controls v-if="cuurentActiveConversationMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`">
+                          
                         </audio>
-
+                        
                         
 
                       </div>
@@ -900,6 +901,8 @@ export default {
   },
   data() {
     return { 
+      allImageSelected: false,
+
       availableConversation: true,
       iceLogoSRC: `data:image/png;base64,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`,
       postreLogoSRC: `data:image/png;base64,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`,
@@ -1193,7 +1196,6 @@ export default {
           
           await axios.post(constants.routes.backendAPI+'/sendWhatsappMedia', httpBodyToSendRecordedAudio)
           .then((result) =>{
-            alert(result.data);
             this.$set(this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]= {
               owner:'agent',
               messageContent:{'mediaExtension':'image/png', 'mediaContent':this.agentFavoriteImages[image].src.split(',')[1], 'mediaName':'media', isBase64: '1'},
@@ -1515,9 +1517,16 @@ export default {
     },
 
     selectAllFavoriteImage(){
-      for (var imageIndex in this.agentFavoriteImages) {
-        this.$set(this.agentFavoriteImages, imageIndex, { ...this.agentFavoriteImages[imageIndex], selected: true });
+      if (this.allImageSelected == false){
+        for (var imageIndex in this.agentFavoriteImages) {
+          this.$set(this.agentFavoriteImages, imageIndex, { ...this.agentFavoriteImages[imageIndex], selected: true });
+        }
+      } else {
+        for (var imageIndex in this.agentFavoriteImages) {
+          this.$set(this.agentFavoriteImages, imageIndex, { ...this.agentFavoriteImages[imageIndex], selected: false });
+        }
       }
+      this.allImageSelected = !this.allImageSelected;
     },
 
     getAllContacts(){
@@ -2483,10 +2492,9 @@ export default {
         } else if (websocketMessageJSON['websocketMessageID'] == 'receiveWhatsappMessage'){
 
           if (localStorage.getItem('agentID') == websocketMessageJSON['agentID']) {
-            console.log(this.activeConversationsAsJSON[websocketMessageJSON['conversationID']].messages);
 
-            console.log(websocketMessageJSON['messageInformation']);
             if (this.activeConversationsAsJSON[websocketMessageJSON['conversationID']]){
+              
               this.$set(this.activeConversationsAsJSON[websocketMessageJSON['conversationID']].messages, websocketMessageJSON['messageID'], websocketMessageJSON['messageInformation']);
               
               if (this.temp == websocketMessageJSON['conversationID']){
@@ -2505,7 +2513,6 @@ export default {
           }
 
         } else if (websocketMessageJSON['websocketMessageID'] == 'startNewConversation'){
-          console.log(websocketMessageJSON);
           if (localStorage.getItem('agentID') == websocketMessageJSON['agentID']) {
             this.$set(this.activeConversationsAsJSON, websocketMessageJSON['conversationID'], websocketMessageJSON['conversationInformation']);
             var activeConversation = websocketMessageJSON['conversationInformation'];
