@@ -225,8 +225,43 @@
                       <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="cuurentActiveConversationMessage.owner != 'agent'">
                         
                         <div v-if="cuurentActiveConversationMessage.messageContext != ''">
-                          <div style="min-width: 80%; background-color: #ceefff;">
+                          <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                            <div v-for="answeredMessage in currentActiveConversation.messages">
+                              <div v-if="answeredMessage.messageID == cuurentActiveConversationMessage.messageContext">
+                                <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="answeredMessage.messageType == 'text'">{{answeredMessage.messageContent}}</p>
+                                
+                                <img
+                                  v-if="answeredMessage.messageType=='image'"
+                                  style="width: 150px;"
+                                  :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
+                                >
 
+                                <div v-if="answeredMessage.messageType=='location'" class="m-0">
+                                  <GmapMap
+                                  :center="getLocation(answeredMessage.messageContent)"
+                                  :zoom="zoom"
+                                  style="width: 1000px; height: 450px"
+                                  >
+                                    <GmapMarker
+                                      :position="getLocation(answeredMessage.messageContent)"
+                                      :draggable="false"
+                                    />
+                                  </GmapMap>
+                                  <br>
+                                </div>
+
+                                <div v-if="answeredMessage.messageType=='document'" class="m-0">
+                                  <a :href="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`" :download="answeredMessage.messageContent.mediaName">
+                                    <p style="size: 10%;">Archivo: <strong>{{answeredMessage.messageContent.mediaName}}</strong></p>
+                                  </a>
+                                </div>
+
+                                <audio controls v-if="answeredMessage.messageType=='audio'" :src="`data:audio/ogg;base64,${answeredMessage.messageContent.mediaContent}`">
+                                </audio>
+
+
+                              </div>
+                            </div>
                           </div>
                         </div>
 
