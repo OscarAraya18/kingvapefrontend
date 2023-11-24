@@ -309,7 +309,7 @@ export default {
       const phoneNumber = this.allContactsInformation[this.sendingID].contactPhoneNumber;
       axios.get(constants.routes.backendAPI
             +'/sendWhatsappContactMessage?'
-            +'phoneNumber='+phoneNumber
+            +'recipientPhoneNumber='+phoneNumber
             +'&messageContent='+this.sendingMessage
             +'&agentID='+localStorage.getItem('agentID')
       )
