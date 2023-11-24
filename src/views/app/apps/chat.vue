@@ -4,7 +4,7 @@
     <button class="btn btn-primary mr-2" style="display: none;" type="button" v-b-modal.transferConversationModal ref="buttonTransfer">Finalizar</button>
     <b-modal scrollable size="m" centered id="transferConversationModal" title="Solicitud de transferencia" @ok="transferConversationRequestAccepted()">
       <div style="text-align: center;">
-        <p class="m-0" style="font-size: medium;">{{transferRequestName}} ha solicitado transferir una conversación</p>
+        <p class="m-0">{{transferRequestName}} ha solicitado transferir una conversación</p>
       </div>
     </b-modal>
 
@@ -1937,6 +1937,7 @@ export default {
         products: this.transferConversationProducts
       })
       .then(() =>{ 
+        this.getAgentActiveConversations();
         axios.post(constants.routes.backendAPI+'/acceptTransfer',{
           agentToNotify: this.transferFromAgentID
         })
@@ -2189,8 +2190,6 @@ export default {
     },
 
     changeCurrentActiveConversation (clickedActiveConversationID){
-      console.log(this.activeConversationsAsJSON);
-      console.log(clickedActiveConversationID);
       this.producto = '';
       this.temp = clickedActiveConversationID;
       this.currentActiveConversation = this.activeConversationsAsJSON[clickedActiveConversationID];
