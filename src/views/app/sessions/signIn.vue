@@ -163,7 +163,6 @@ export default {
           localStorage.setItem('agentProfilePicture', response.data.agentProfilePicture)
           localStorage.setItem('agentType', response.data.agentType);
           localStorage.setItem('agentWelcomeMessage', response.data.agentWelcomeMessage);
-          localStorage.setItem('agentWelcomeImage', response.data.agentWelcomeImage);
           localStorage.setItem('agentEndMessage', response.data.agentEndMessage);
 
           localStorage.setItem('agentFavoriteMessages', JSON.stringify(response.data.agentFavoriteMessages));

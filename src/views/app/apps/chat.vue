@@ -257,7 +257,6 @@
                                 </div>
 
                                 <audio controls v-if="answeredMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${answeredMessage.messageContent.mediaContent}`">
-                                  {{cuurentActiveConversationMessage.messageContent.mediaContent}}
                                 </audio>
 
 
@@ -359,7 +358,10 @@
                           <p class="m-0" style="font-size: large;"><strong>Longitude:</strong> {{cuurentActiveConversationMessage.messageContent.locationLongitude}}</p>
                           <br>
                         </div>
-
+                        
+                        <audio controls v-if="cuurentActiveConversationMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`">
+                          
+                        </audio>
                         
 
                       </div>
@@ -513,13 +515,12 @@
                       type="button"
                       @click="startRecording()"
                       v-b-modal.recordAudioModal
-                      style='display: none;'
                     >
                       <i class="i-Microphone-3"></i>
                     </button>
-
+                    
                     <b-modal id="recordAudioModal" hide-footer hide-header size="sm" centered>
-                      <div v-if="!isRecording">
+                      <div v-if="(!isRecording) && (loaderAudio == false)">
                         <audio controls :src="recordedAudioFile" style="width:270px;"></audio>
                         <br>
                       </div>
@@ -529,23 +530,32 @@
                       </div>
 
                       <div style="text-align: center;">
-                        <button
-                          v-if="isRecording"
-                          class="btn btn-icon btn-primary"
-                          type="button"
-                          @click="pauseAudioRecording()"
-                        >
-                        <i class="i-Pause"></i>
-                        </button>
                         
-                        <button
-                          class="btn btn-icon btn-primary"
-                          type="button"
-                          @click="sendRecordedAudio()"
-                          v-if="!isRecording"
-                        >
-                        <i class="i-Paper-Plane"></i>
-                        </button>
+                        <div v-if="loaderAudio == false">
+                          <button
+                            v-if="isRecording"
+                            class="btn btn-icon btn-primary"
+                            type="button"
+                            @click="pauseAudioRecording()"
+                          >
+                          <i class="i-Pause"></i>
+                          </button>
+                          
+                          <button
+                            class="btn btn-icon btn-primary"
+                            type="button"
+                            @click="sendRecordedAudio()"
+                            v-if="!isRecording"
+                          >
+                          <i class="i-Paper-Plane"></i>
+                          </button>
+                        </div>
+
+                        <div v-if="loaderAudio == true" style="text-align: center;">
+                          <br>
+                          <span class="spinner-glow spinner-glow-primary"></span>
+                          <br>
+                        </div>
 
                       </div>
 
@@ -778,7 +788,6 @@
                                 >Compartir orden con el cliente</b-button
                               >
                               <br><br>
-                              <b-button type="reset" variant="danger">Limpiar orden</b-button>
                             </div>
                         </b-tab>
                         <b-tab>
@@ -903,6 +912,8 @@ export default {
   },
   data() {
     return { 
+      loaderAudio: false,
+
       allImageSelected: false,
 
       availableConversation: true,
@@ -1110,14 +1121,19 @@ export default {
         'agentID': localStorage.getItem('agentID'),
         'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber
       }
+      this.loaderAudio = true;
       axios.post(constants.routes.backendAPI+'/sendWhatsappAudio', httpBodyToSendRecordedAudio)
-        .then(() =>{
+        .then((result) =>{
+          this.loaderAudio = false;
           this.$set(this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]= {
             owner:'agent',
-            audioFile: this.recordedAudioFile,
+            messageContent: {mediaContent: result.data.whatsappAudioMessageFile},
+            messageContext: '',
+            messageID: result.data.whatsappAudioMessageID,
             messageType: 'audio',
             messageSentHour: Date().toString().slice(16,24)
           });
+          
           var messages = this.currentActiveConversation.messages;
           this.currentActiveConversation.messages = {};
           this.currentActiveConversation.messages = messages;
@@ -1127,9 +1143,11 @@ export default {
               psContainer.scrollTop = psContainer.scrollHeight;
             }
           });
+
+          this.$root.$emit('bv::hide::modal','recordAudioModal')
         })
         .catch(() => {
-          me.$bvToast.toast("Ha ocurrido un error inesperado al enviar el audio. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+          this.$bvToast.toast("Ha ocurrido un error inesperado al enviar el audio. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
             title: "Error al consultar enviar el audio",
             variant: "danger",
             solid: true
@@ -1765,7 +1783,7 @@ export default {
                 }).then(function (){
                 })
                 if (result.value) {
-                  me.$swal("Archivada!", "La conversación ha sido archivada.", "success");
+                  me.$swal("Conversación finalizada", "La conversación ha sido finalizada exitosamente.", "success");
                   var total = 0;
                   for (var productIndex in me.activeConversationsAsJSON[me.temp].products){
                     total = total + (me.activeConversationsAsJSON[me.temp].products[productIndex].cantidad * me.activeConversationsAsJSON[me.temp].products[productIndex].precio)

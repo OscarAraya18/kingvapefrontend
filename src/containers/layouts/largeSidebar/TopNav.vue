@@ -172,7 +172,6 @@ export default {
       this.agentUsername = localStorage.getItem('agentUsername');
       this.agentPassword = localStorage.getItem('agentPassword');
 
-      this.agentWelcomeImage = localStorage.getItem('agentWelcomeImage');
       this.agentWelcomeMessage = localStorage.getItem('agentWelcomeMessage');
       this.agentEndMessage = localStorage.getItem('agentEndMessage');
 
@@ -241,12 +240,10 @@ export default {
       axios.post(constants.routes.backendAPI+'/updateAgentAutomaticMessages',
       {
         agentID: localStorage.getItem('agentID'),
-        agentWelcomeImage: this.agentWelcomeImage,
         agentWelcomeMessage: this.agentWelcomeMessage,
         agentEndMessage: this.agentEndMessage 
       })
       .then(() =>{ 
-        localStorage.setItem('agentWelcomeImage', this.agentWelcomeImage);
         localStorage.setItem('agentWelcomeMessage', this.agentWelcomeMessage);
         localStorage.setItem('agentEndMessage', this.agentEndMessage);
         this.$bvToast.toast('Se han editados los mensajes automáticos del agente.', {
