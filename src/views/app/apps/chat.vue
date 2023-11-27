@@ -36,6 +36,7 @@
                     v-for="activeConversation in activeConversations"
                     :key="activeConversation"
                     @click="changeCurrentActiveConversation(activeConversation.activeConversationID)"
+                    id="hint"
                   >
                     <h6 style="padding-top: 10px;">{{ activeConversation.recipientProfileName }} {{activeConversation.recipientPhoneNumber}}</h6>
                     <div class="flex-grow-1"></div>
@@ -50,7 +51,13 @@
 
                     <div v-else style="height: 15px; width: 15px; background-color: green; border-radius: 100px;">
                     </div>
+
+                    <b-tooltip target="hint" v-if="hints[activeConversation.recipientPhoneNumber]">{{hints[activeConversation.recipientPhoneNumber]}}</b-tooltip>
+
                   </div>
+
+
+
                   
                 </div>
               </vue-perfect-scrollbar>
@@ -175,6 +182,182 @@
             </div>
           </b-modal>
 
+          <b-modal scrollable size="m" centered hide-footer id="historyConversationsModal" title="Historial de conversaciones">
+            <b-list-group v-if="historyLoader == false">
+              <b-list-group-item v-if="historyConversations.length == 0">
+                No hay conversaciones en el historial
+              </b-list-group-item>
+              <b-list-group-item 
+                v-b-modal.historyOpenModal
+                style="cursor: pointer"
+                v-for="historyConversation in historyConversations"
+                button
+                @click="openHistoryConversation(historyConversation)">
+                {{historyConversation.startDate}} a las {{historyConversation.startHour}} (atendido por {{historyConversation.assignedAgentName}})
+              </b-list-group-item>
+            </b-list-group>
+            <div v-else style="text-align: center;">
+              <br>
+              <span class="spinner-glow spinner-glow-primary"></span>
+            </div>
+          </b-modal>
+
+          <b-modal scrollable size="lg" centered hide-footer id="historyOpenModal" hide-header>
+            <div v-if="openHistoryLoader == true" style="text-align: center;">
+              <br>
+              <span class="spinner-glow spinner-glow-primary"></span>
+            </div>
+            <div v-else>
+              <div v-for="cuurentActiveConversationMessage in currentHistoryConversation.messages" :key="cuurentActiveConversationMessage">
+                <div class="d-flex mb-30" :class="GetOwner(cuurentActiveConversationMessage.owner)">
+                  <div :style="getColorChat(cuurentActiveConversationMessage.owner)" class="message flex-grow-1">
+                    <div class="d-flex">
+                      
+                      <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="cuurentActiveConversationMessage.owner != 'agent'">
+                        
+                        <div v-if="cuurentActiveConversationMessage.messageContext != ''">
+                          <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                            
+                            <div v-for="answeredMessage in currentHistoryConversation.messages">
+                              <div v-if="answeredMessage.messageID == cuurentActiveConversationMessage.messageContext">
+                                <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="answeredMessage.messageType == 'text'">{{answeredMessage.messageContent}}</p>
+                                
+                                <img
+                                  v-if="answeredMessage.messageType=='image'"
+                                  style="width: 150px;"
+                                  :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
+                                >
+
+                                <div v-if="answeredMessage.messageType=='location'" class="m-0">
+                                  <GmapMap
+                                  :center="getLocation(answeredMessage.messageContent)"
+                                  :zoom="zoom"
+                                  style="width: 500px; height: 200px"
+                                  >
+                                    <GmapMarker
+                                      :position="getLocation(answeredMessage.messageContent)"
+                                      :draggable="false"
+                                    />
+                                  </GmapMap>
+                                  <br>
+                                </div>
+
+                                <div v-if="answeredMessage.messageType=='document'" class="m-0">
+                                  <a :href="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`" :download="answeredMessage.messageContent.mediaName">
+                                    <p style="size: 10%;">Archivo: <strong>{{answeredMessage.messageContent.mediaName}}</strong></p>
+                                  </a>
+                                </div>
+
+                                <audio controls v-if="answeredMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${answeredMessage.messageContent.mediaContent}`">
+                                </audio>
+
+
+                              </div>
+                            </div>
+
+                          </div>
+                        </div>
+
+
+                        <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.messageType == 'text'">{{cuurentActiveConversationMessage.messageContent}}</p>
+                        
+                        <div v-if="cuurentActiveConversationMessage.messageType=='image'"> 
+                          <img
+                            style="width: 250px;"
+                            :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
+                          >
+                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="cuurentActiveConversationMessage.messageCaption != ''">{{cuurentActiveConversationMessage.messageCaption}}</p>
+                        </div>
+                        
+                        <div v-if="cuurentActiveConversationMessage.messageType=='location'" class="m-0">
+                          <GmapMap
+                          :center="getLocation(cuurentActiveConversationMessage.messageContent)"
+                          :zoom="zoom"
+                          style="width: 1000px; height: 450px"
+                          >
+                            <GmapMarker
+                              :position="getLocation(cuurentActiveConversationMessage.messageContent)"
+                              :draggable="false"
+                            />
+                          </GmapMap>
+                          <br>
+                          <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{cuurentActiveConversationMessage.messageContent.locationLatitude}}</p>
+                          <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{cuurentActiveConversationMessage.messageContent.locationLongitude}}</p>
+                          <br>
+
+                        </div>
+
+                        <div v-if="cuurentActiveConversationMessage.messageType=='document'" class="m-0">
+                          <a :href="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`" :download="cuurentActiveConversationMessage.messageContent.mediaName">
+                            <p style="size: 10%;">Archivo: <strong>{{cuurentActiveConversationMessage.messageContent.mediaName}}</strong></p>
+                          </a>
+                        </div>
+
+                        <audio controls v-if="cuurentActiveConversationMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`">
+                        </audio>
+                        
+                        
+
+                      </div>
+                      <span v-if="cuurentActiveConversationMessage.owner == 'agent'" style="margin-left: 0; margin-right:auto;" class="text-small text-muted">{{cuurentActiveConversationMessage.messageSentHour}}</span>
+                      <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{cuurentActiveConversationMessage.messageReceivedHour}}</span>
+                      
+                      <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="cuurentActiveConversationMessage.owner == 'agent'">
+                        
+                        <div v-if="cuurentActiveConversationMessage.messageType == 'text'">
+                          <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.sendedProduct != '1'">{{cuurentActiveConversationMessage.messageContent}}</p>
+                          
+                          <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.sendedProduct == '1'"><strong>Nombre: </strong>{{cuurentActiveConversationMessage.messageContent.productName}}</p>
+                          <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.sendedProduct == '1'"><strong>Precio: </strong>{{cuurentActiveConversationMessage.messageContent.productPrice}}</p>
+                          <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.sendedProduct == '1'"><strong>Descripción: </strong>{{cuurentActiveConversationMessage.messageContent.productDescription}}</p>
+                        </div>
+
+                        <div v-if="cuurentActiveConversationMessage.messageType=='image' || cuurentActiveConversationMessage.messageType=='sticker'">
+
+                          <img
+                            v-if="cuurentActiveConversationMessage.messageContent.isBase64=='1'"
+                            style="width: 250px;"
+                            :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
+                          >
+
+                          <img
+                            v-else
+                            style="width: 250px;"
+                            :src="cuurentActiveConversationMessage.messageContent.mediaContent"
+                          >
+
+                        </div>
+                        
+                        <div v-if="cuurentActiveConversationMessage.messageType=='location'" class="m-0">
+                          <GmapMap
+                          :center="getLocation(cuurentActiveConversationMessage.messageContent)"
+                          :zoom="zoom"
+                          style="width: 500px; height: 200px"
+                          >
+                            <GmapMarker
+                              :position="getLocation(cuurentActiveConversationMessage.messageContent)"
+                              :draggable="false"
+                            />
+                          </GmapMap>
+                          <br>
+                          <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{cuurentActiveConversationMessage.messageContent.locationLatitude}}</p>
+                          <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{cuurentActiveConversationMessage.messageContent.locationLongitude}}</p>
+                          <br>
+                        </div>
+                        
+                        <audio controls v-if="cuurentActiveConversationMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`">
+                        </audio>
+                        
+
+                      </div>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </b-modal>
+
 
           <!-- Barra Superior -->
           <div class="chat-content-wrap sidebar-content" v-if="temp != ''">
@@ -196,7 +379,10 @@
 
                 <div class="flex-grow-1"></div>
 
-
+                <button @click="getHistoryConversations()" class="btn btn-icon btn-primary mr-2" v-if="availableConversation == true" v-b-modal.historyConversationsModal>
+                  <i class="i-Clock"></i>
+                  Historial
+                </button>
                 <button @click="vistaItems = 'Productos'" class="btn btn-icon btn-primary mr-2" v-if="availableConversation == true">
                   <i class="i-Shopping-Cart"></i>
                   Buscar productos
@@ -217,8 +403,8 @@
               class="chat-content perfect-scrollbar rtl-ps-none ps scroll"
               style="padding-bottom: 30px;"
             >
-              <div v-for="cuurentActiveConversationMessage in currentActiveConversation.messages" :key="cuurentActiveConversationMessage">
-                <div class="d-flex mb-30" :class="GetOwner(cuurentActiveConversationMessage.owner)" >
+              <div v-for="cuurentActiveConversationMessage in currentActiveConversation.messages" :key="cuurentActiveConversationMessage" @contextmenu.prevent="replyMessageRightClick(cuurentActiveConversationMessage)">
+                <div class="d-flex mb-30" :class="GetOwner(cuurentActiveConversationMessage.owner)">
                   <div :style="getColorChat(cuurentActiveConversationMessage.owner)" class="message flex-grow-1">
                     <div class="d-flex">
                       
@@ -226,6 +412,7 @@
                         
                         <div v-if="cuurentActiveConversationMessage.messageContext != ''">
                           <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                            
                             <div v-for="answeredMessage in currentActiveConversation.messages">
                               <div v-if="answeredMessage.messageID == cuurentActiveConversationMessage.messageContext">
                                 <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="answeredMessage.messageType == 'text'">{{answeredMessage.messageContent}}</p>
@@ -262,6 +449,7 @@
 
                               </div>
                             </div>
+
                           </div>
                         </div>
 
@@ -288,8 +476,8 @@
                             />
                           </GmapMap>
                           <br>
-                          <p class="m-0" style="font-size: large;"><strong>Latitude:</strong> {{cuurentActiveConversationMessage.messageContent.locationLatitude}}</p>
-                          <p class="m-0" style="font-size: large;"><strong>Longitude:</strong> {{cuurentActiveConversationMessage.messageContent.locationLongitude}}</p>
+                          <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{cuurentActiveConversationMessage.messageContent.locationLatitude}}</p>
+                          <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{cuurentActiveConversationMessage.messageContent.locationLongitude}}</p>
                           <br>
 
                           <b-dropdown variant="primary" text="Save location" style="margin-right: 10px;">
@@ -354,8 +542,8 @@
                             />
                           </GmapMap>
                           <br>
-                          <p class="m-0" style="font-size: large;"><strong>Latitude:</strong> {{cuurentActiveConversationMessage.messageContent.locationLatitude}}</p>
-                          <p class="m-0" style="font-size: large;"><strong>Longitude:</strong> {{cuurentActiveConversationMessage.messageContent.locationLongitude}}</p>
+                          <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{cuurentActiveConversationMessage.messageContent.locationLatitude}}</p>
+                          <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{cuurentActiveConversationMessage.messageContent.locationLongitude}}</p>
                           <br>
                         </div>
                         
@@ -381,6 +569,60 @@
               </div>
               
                 <div v-else>
+                  
+                  <div v-if="repliedMessageID != ''">
+
+                    <div v-for="answeredMessage in currentActiveConversation.messages">
+                      <div v-if="answeredMessage.messageID == repliedMessageID" style="background-color: rgb(255, 216, 251); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+
+                        <div>
+                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Respondiendo a:</strong></p>
+                          <i class="i-Close-Window text-25 text-danger" style="float: right; position: relative; top:-25px; cursor: pointer;" @click="cancelReply()"></i>
+
+                        </div>
+                        
+                        <br>
+
+                        <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="answeredMessage.messageType == 'text'">{{answeredMessage.messageContent}}</p>
+
+                        <img
+                          v-if="answeredMessage.messageType=='image'"
+                          style="width: 150px;"
+                          :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
+                        >
+
+                        <div v-if="answeredMessage.messageType=='location'" class="m-0">
+                          <GmapMap
+                          :center="getLocation(answeredMessage.messageContent)"
+                          :zoom="zoom"
+                          style="width: 1000px; height: 450px"
+                          >
+                            <GmapMarker
+                              :position="getLocation(answeredMessage.messageContent)"
+                              :draggable="false"
+                            />
+                          </GmapMap>
+                          <br>
+                        </div>
+
+                        <div v-if="answeredMessage.messageType=='document'" class="m-0">
+                          <a :href="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`" :download="answeredMessage.messageContent.mediaName">
+                            <p style="size: 10%;">Archivo: <strong>{{answeredMessage.messageContent.mediaName}}</strong></p>
+                          </a>
+                        </div>
+
+                        <audio controls v-if="answeredMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${answeredMessage.messageContent.mediaContent}`">
+                        </audio>
+
+
+                      </div>
+                    </div>
+                    
+                    <br>
+                  </div>
+
+
+
                   <div class="form-group">
                     <b-form-textarea
                       class="form-control"
@@ -426,7 +668,7 @@
                       <template v-for="agent in agents">
                         <b-dropdown-item style="z-index: 1000;" @click="transferConversation(agent)">{{agent.agentName}}</b-dropdown-item>
                       </template>
-                      <b-dropdown-item style="z-index: 1000;" v-if="agents.length == 0">No agents available</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 1000;" v-if="agents.length == 0">No hay agentes disponibles</b-dropdown-item>
                     </b-dropdown>
 
                     <div class="flex-grow-1"></div>
@@ -457,7 +699,8 @@
 
 
                     <button class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal @click="openImageModal()">
-                      <i class="i-File-Video"></i>
+                      <i class="i-Folder"></i>
+
                     </button>
 
                     <b-modal @ok="sendFavoriteImages()" scrollable title="Imágenes favoritas" size="m" centered id="imageModal">
@@ -638,20 +881,35 @@
                       <button class="btn btn-icon btn-success mr-2" @click="sendProductToClient(producto)">
                         Enviar
                       </button>
-                      <button v-if="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistencia(producto.codigoProducto)">
+                      <button v-b-modal.stockModal v-if="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistencia(producto.codigoProducto)">
                         Stock
                       </button>
 
-                      <button v-else="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistenciaNicotina(producto.productosAsociados)">
+                      <button v-b-modal.stockModal  v-else="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistenciaNicotina(producto.productosAsociados)">
                         Stock
                       </button>
                     </div> 
+
+
                    
 
                   </div>
                 </div>
               </div>
             </div> 
+
+            <b-modal scrollable size="sm" centered hide-header hide-footer id="stockModal">
+                      <div>
+                        <div v-if="stockLoader == true" style="text-align: center;">
+                          <br>
+                          <span class="spinner-glow spinner-glow-primary"></span>
+                        </div>
+                        <div v-else>
+                          <p class="m-0" style="white-space: pre-line; font-size: medium;">{{stockContent}}</p>
+                        </div>
+                      </div>
+                    </b-modal>
+
           </b-card>
           <b-card v-else title="Resumen de la orden">
             <b-tabs  
@@ -912,6 +1170,17 @@ export default {
   },
   data() {
     return { 
+      openHistoryLoader: false,
+      historyLoader: false,
+      historyConversations: [],
+      currentHistoryConversation: {},
+
+      hints: {},
+
+
+      repliedMessageID: '',
+      stockLoader: false,
+      stockContent: '',
       loaderAudio: false,
 
       allImageSelected: false,
@@ -1083,6 +1352,52 @@ export default {
   },
 
   methods: {
+    openHistoryConversation(historyConversation){
+      this.openHistoryLoader = true;
+      this.currentHistoryConversation = {};
+      console.log(historyConversation);
+      axios.post(constants.routes.backendAPI+'/openHistoryConversation', {conversationID: historyConversation.conversationID})
+      .then((response) =>{
+        console.log(response.data);
+        this.$root.$emit('bv::hide::modal','historyConversationsModal');
+        this.currentHistoryConversation = response.data;
+        this.openHistoryLoader = false;
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+    },
+
+    getHistoryConversations(){
+
+      this.historyLoader = true;
+      this.historyConversations = [];
+      axios.post(constants.routes.backendAPI+'/getHistoryConversations', {recipientPhoneNumber: this.currentActiveConversation.recipientPhoneNumber})
+      .then((response) =>{
+        for (var conversationID in response.data){
+          this.historyConversations.push({
+            startDate: response.data[conversationID].startDate,
+            endDate: response.data[conversationID].endDate,
+            startHour: response.data[conversationID].startHour,
+            endHour: response.data[conversationID].endHour,
+            assignedAgentName: response.data[conversationID].assignedAgentName,
+            conversationID: conversationID,
+          })
+        }
+        this.historyLoader = false;
+
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+    },
+
+    replyMessageRightClick(message){
+      this.repliedMessageID = message.messageID;
+    },
+    cancelReply(){
+      this.repliedMessageID = '';
+    },
     openImageModal(){
       this.loaderImages = true;
       axios.post(constants.routes.backendAPI+'/getFavoriteImages')
@@ -1119,7 +1434,8 @@ export default {
       {
         'audioFile': this.recordedAudioFile,
         'agentID': localStorage.getItem('agentID'),
-        'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber
+        'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber,
+        'repliedMessageID': this.repliedMessageID
       }
       this.loaderAudio = true;
       axios.post(constants.routes.backendAPI+'/sendWhatsappAudio', httpBodyToSendRecordedAudio)
@@ -1128,12 +1444,12 @@ export default {
           this.$set(this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]= {
             owner:'agent',
             messageContent: {mediaContent: result.data.whatsappAudioMessageFile},
-            messageContext: '',
-            messageID: result.data.whatsappAudioMessageID,
+            messageContext: this.repliedMessageID,
+            messageID: result.data.whatsappMessageID,
             messageType: 'audio',
             messageSentHour: Date().toString().slice(16,24)
           });
-          
+          this.repliedMessageID = '';
           var messages = this.currentActiveConversation.messages;
           this.currentActiveConversation.messages = {};
           this.currentActiveConversation.messages = messages;
@@ -1250,9 +1566,11 @@ export default {
             +'&agentID='+localStorage.getItem('agentID')
             +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
             +'&messageContent='+favoriteMessage
+            +'&repliedMessageID='+this.repliedMessageID
             +'&sendedProduct=0')
       .then((result) =>{ 
-        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageID: result.data, sendedProduct: '0', owner:'agent', messageContent:favoriteMessage,messageType:'text',messageSentHour: Date().toString().slice(16,24)});
+        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageContext: this.repliedMessageID,messageID: result.data, sendedProduct: '0', owner:'agent', messageContent:favoriteMessage,messageType:'text',messageSentHour: Date().toString().slice(16,24)});
+        this.repliedMessageID = '';
 
         this.$nextTick(() => {
         if (this.$refs.scrollRef) {
@@ -1290,20 +1608,19 @@ export default {
     },
 
     async cargarExistenciaNicotina(productosPorNicotina){
+      this.stockLoader = true;
       var texto = '';
       for (var indiceProducto in productosPorNicotina){
         var codigoProducto = productosPorNicotina[indiceProducto].codigoAsoiado;
         var a = await this.cargarTesting(codigoProducto);
         texto = texto + productosPorNicotina[indiceProducto].nicotina + 'MG:\n' + a;
       }
-      this.$bvToast.toast(texto, {
-        title: "Stock",
-        variant: "info",
-        solid: true
-      });
+      this.stockLoader = false;
+      this.stockContent = texto;
     },
 
     cargarExistencia(codigoProducto){
+      this.stockLoader = true;
       let me = this;
       axios.get('https://noah.cr/BackendKingVape/api/ProductosWebs/'+codigoProducto).then(function(response){
         var textoExistencia = '';
@@ -1314,11 +1631,8 @@ export default {
             textoExistencia = textoExistencia + '\n' + response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
           }
         }
-        me.$bvToast.toast(textoExistencia, {
-          title: "Stock",
-          variant: "info",
-          solid: true
-        });
+        me.stockLoader = false;
+        me.stockContent = textoExistencia;
         
       }).catch(function(error){
         me.$bvToast.toast("Ha ocurrido un error inesperado al consultar el stock. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
@@ -1394,6 +1708,7 @@ export default {
         messageID: storeConversation.messageID
       })
       .then(() =>{
+        this.hints[storeConversation.recipientPhoneNumber] = storeConversation.clientOrder;
         this.getAgentActiveConversations();
         this.getStoreConversations();
       })
@@ -1404,16 +1719,17 @@ export default {
     },
 
     sendLocationToClient(locationName){
-      console.log(this.locations)
       if (this.locations[locationName]){
         axios.post(constants.routes.backendAPI+'/sendWhatsappLocation',{
           agentID: localStorage.getItem('agentID'),
           recipientPhoneNumber: this.currentActiveConversation.recipientPhoneNumber,
           latitude: this.locations[locationName].latitude,
           longitude: this.locations[locationName].longitude,
+          repliedMessageID: this.repliedMessageID
         })
         .then((result) =>{
-          this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageID: result.data, owner:'agent',messageContent:{locationLatitude:this.locations[locationName].latitude, locationLongitude:this.locations[locationName].longitude},messageType:'location',messageSentHour: Date().toString().slice(16,24)});
+          this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageContext: repliedMessageID, messageID: result.data, owner:'agent',messageContent:{locationLatitude:this.locations[locationName].latitude, locationLongitude:this.locations[locationName].longitude},messageType:'location',messageSentHour: Date().toString().slice(16,24)});
+          this.repliedMessageID = '';
         })
         .catch(error =>{
           console.log(error);
@@ -1440,14 +1756,17 @@ export default {
         var latitud = 9.864751;
         var longitud = -83.925354;
       }
+      const me = this;
       axios.post(constants.routes.backendAPI+'/sendWhatsappLocation',{
         agentID: localStorage.getItem('agentID'),
         recipientPhoneNumber: this.currentActiveConversation.recipientPhoneNumber,
         latitude: latitud,
         longitude: longitud,
+        repliedMessageID: me.repliedMessageID
       })
       .then((result) =>{
-        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageID: result.data,owner:'agent',messageContent:{locationLatitude:latitud, locationLongitude:longitud},messageType:'location',messageSentHour: Date().toString().slice(16,24)});
+        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageContext: repliedMessageID, messageID: result.data,owner:'agent',messageContent:{locationLatitude:latitud, locationLongitude:longitud},messageType:'location',messageSentHour: Date().toString().slice(16,24)});
+        me.repliedMessageID = '';
       })
       .catch(error =>{
         console.log(error);
@@ -1461,54 +1780,7 @@ export default {
     getLocation(location){
       return {lat: location.locationLatitude, lng: location.locationLongitude}
     },
-    sendMassMessage(){
-      var recipientPhoneNumbers = [];
-      for (var contactIndex in this.contactsList){
-        if (this.contactsList[contactIndex].selected){
-          recipientPhoneNumbers.push(this.contactsList[contactIndex].contactPhoneNumber);
-        }
-      }
-      axios.post(constants.routes.backendAPI+'/sendWhatsappMassMessage',{
-        messageContent: this.massTextMessageContent,
-        recipientPhoneNumbers: recipientPhoneNumbers
-      })
-      .then(() =>{ 
-        this.allContactSelected = false;
-        for (var contactIndex in this.contactsList){
-          this.contactsList[contactIndex].selected = false;
-        }
-      })
-      
-      .catch(error =>{
-        console.log(error);
-      })
-    },
-    selectAllContacts(){
-      this.allContactSelected = !this.allContactSelected;
-      for (var contactIndex in this.contactsList){
-        this.contactsList[contactIndex].selected = this.allContactSelected
-      }
-    },
-    getAllContactsVariant(){
-      if (this.allContactSelected){
-        return 'success'
-      } else {
-        return ''
-      }
-    },
-    selectContact(contact){
-      contact.selected = !contact.selected;
-      if (contact.selected == false){
-        this.allContactSelected = false;
-      }
-    },
-    getContactVariant(contact){
-      if (contact.selected) {
-        return 'success'
-      } else {
-        return ''
-      }
-    },
+
 
     getImageVariant(image){
       if (image.selected == true) {
@@ -1867,7 +2139,7 @@ export default {
       AgregarItemVariacion(item, codigoVariacion, descripcionVariacion, variant = null){
         this.orden.push({
           CodigoP: codigoVariacion,
-          descripcion: item.descripcion + ' ' + descripcionVariacion,
+          descripcion: item.descripcion + '. Variación: ' + descripcionVariacion,
           cantidad: 1,
           precio: item.precioVenta,
           id: item.id,
@@ -2285,6 +2557,7 @@ export default {
     },
 
     changeCurrentActiveConversation (clickedActiveConversationID){
+      this.repliedMessageID = '';
       this.producto = '';
       this.temp = clickedActiveConversationID;
       this.currentActiveConversation = this.activeConversationsAsJSON[clickedActiveConversationID];
@@ -2483,7 +2756,6 @@ export default {
   },
 
   mounted(){
-
     
 
     if (localStorage.getItem('agentID') == null){
@@ -2517,9 +2789,6 @@ export default {
               
               this.$set(this.activeConversationsAsJSON[websocketMessageJSON['conversationID']].messages, websocketMessageJSON['messageID'], websocketMessageJSON['messageInformation']);
               
-              if (this.temp == websocketMessageJSON['conversationID']){
-                this.changeCurrentActiveConversation(this.temp);
-              }
               
               this.$nextTick(() => {
               if (this.$refs.scrollRef) {
