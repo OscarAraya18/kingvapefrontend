@@ -68,6 +68,8 @@
                 <b-dropdown-item href="#" v-b-modal.escazuConversationsModal>Escazú ({{escazuConversations.length}})</b-dropdown-item>
                 <b-dropdown-item href="#" v-b-modal.zapoteConversationsModal>Zapote ({{zapoteConversations.length}})</b-dropdown-item>
                 <b-dropdown-item href="#" v-b-modal.cartagoConversationsModal>Cartago ({{cartagoConversations.length}})</b-dropdown-item>
+                <b-dropdown-item href="#" v-b-modal.herediaConversationsModal>Heredia ({{herediaConversations.length}})</b-dropdown-item>
+
                 <b-dropdown-item href="#" v-b-modal.pendingConversationsModal>Pendientes ({{pendingConversations.length}})</b-dropdown-item>
               </b-dropdown>
             </div>
@@ -92,7 +94,7 @@
                 <br>
                 <strong>Cédula:</strong> {{ escazuConversation.clientID }}
                 <br>
-                <strong>Fecha:</strong> {{escazuConversation.startDate}} a las {{escazuConversation.startHour}}
+                <strong>Fecha:</strong> {{escazuConversation.startDate}} a las {{parseHour(escazuConversation.startHour)}}
               </b-list-group-item>
               </b-list-group>
               <div v-else style="text-align: center;">
@@ -122,7 +124,7 @@
                 <br>
                 <strong>Cédula:</strong> {{ zapoteConversation.clientID }}
                 <br>
-                <strong>Fecha:</strong> {{zapoteConversation.startDate}} a las {{zapoteConversation.startHour}}  
+                <strong>Fecha:</strong> {{zapoteConversation.startDate}} a las {{parseHour(zapoteConversation.startHour)}}  
               </b-list-group-item>
               </b-list-group>
               <div v-else style="text-align: center;">
@@ -151,7 +153,37 @@
                 <br>
                 <strong>Cédula:</strong> {{ cartagoConversation.clientID }}
                 <br>
-                <strong>Fecha:</strong> {{cartagoConversation.startDate}} a las {{cartagoConversation.startHour}}  
+                <strong>Fecha:</strong> {{cartagoConversation.startDate}} a las {{parseHour(cartagoConversation.startHour)}}  
+              
+              </b-list-group-item>
+              </b-list-group>
+              <div v-else style="text-align: center;">
+                <br>
+                <span class="spinner-glow spinner-glow-primary"></span>
+              </div>
+            </div>
+          </b-modal>
+
+          <b-modal scrollable size="m" centered hide-footer id="herediaConversationsModal" title="Conversaciones pendientes de Heredia">
+            <div>
+              <b-list-group v-if="loaderGrabPendingConversation == false">
+                <b-list-group-item v-if="herediaConversations.length == 0">
+                  No hay conversaciones pendientes
+                </b-list-group-item>
+                <b-list-group-item 
+                style="cursor: pointer"
+                v-for="herediaConversation in herediaConversations"
+                button
+                @click="grabStoreConversation(herediaConversation)">
+                <strong>Nombre:</strong> {{herediaConversation.recipientProfileName}}
+                <br>
+                <strong>Número:</strong> {{herediaConversation.recipientPhoneNumber}}
+                <br>
+                <strong>Pedido:</strong> {{ herediaConversation.clientOrder }}
+                <br>
+                <strong>Cédula:</strong> {{ herediaConversation.clientID }}
+                <br>
+                <strong>Fecha:</strong> {{herediaConversation.startDate}} a las {{parseHour(herediaConversation.startHour)}}  
               
               </b-list-group-item>
               </b-list-group>
@@ -173,7 +205,7 @@
                 v-for="pendingConversation in pendingConversations"
                 button
                 @click="grabPendingConversation(pendingConversation)">
-                {{pendingConversation.recipientPhoneNumber}} ({{pendingConversation.startDate}} a las {{pendingConversation.startHour}})</b-list-group-item>
+                {{pendingConversation.recipientPhoneNumber}} ({{pendingConversation.startDate}} a las {{parseHour(pendingConversation.startHour)}})</b-list-group-item>
               </b-list-group>
               <div v-else style="text-align: center;">
                 <br>
@@ -193,7 +225,7 @@
                 v-for="historyConversation in historyConversations"
                 button
                 @click="openHistoryConversation(historyConversation)">
-                {{historyConversation.startDate}} a las {{historyConversation.startHour}} (atendido por {{historyConversation.assignedAgentName}})
+                {{historyConversation.startDate}} a las {{parseHour(historyConversation.startHour)}} (atendido por {{historyConversation.assignedAgentName}})
               </b-list-group-item>
             </b-list-group>
             <div v-else style="text-align: center;">
@@ -208,7 +240,7 @@
               <span class="spinner-glow spinner-glow-primary"></span>
             </div>
             <div v-else>
-              <div v-for="cuurentActiveConversationMessage in currentHistoryConversation.messages" :key="cuurentActiveConversationMessage">
+              <div v-for="cuurentActiveConversationMessage in currentHistoryConversation.messages" :key="cuurentActiveConversationMessage" @contextmenu.prevent="replyMessageRightClick(cuurentActiveConversationMessage)">
                 <div class="d-flex mb-30" :class="GetOwner(cuurentActiveConversationMessage.owner)">
                   <div :style="getColorChat(cuurentActiveConversationMessage.owner)" class="message flex-grow-1">
                     <div class="d-flex">
@@ -273,7 +305,7 @@
                           <GmapMap
                           :center="getLocation(cuurentActiveConversationMessage.messageContent)"
                           :zoom="zoom"
-                          style="width: 1000px; height: 450px"
+                          style="width: 500px; height: 250px"
                           >
                             <GmapMarker
                               :position="getLocation(cuurentActiveConversationMessage.messageContent)"
@@ -300,7 +332,7 @@
 
                       </div>
                       <span v-if="cuurentActiveConversationMessage.owner == 'agent'" style="margin-left: 0; margin-right:auto;" class="text-small text-muted">{{cuurentActiveConversationMessage.messageSentHour}}</span>
-                      <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{cuurentActiveConversationMessage.messageReceivedHour}}</span>
+                      <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(cuurentActiveConversationMessage.messageReceivedHour)}}</span>
                       
                       <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="cuurentActiveConversationMessage.owner == 'agent'">
                         
@@ -332,7 +364,7 @@
                           <GmapMap
                           :center="getLocation(cuurentActiveConversationMessage.messageContent)"
                           :zoom="zoom"
-                          style="width: 500px; height: 200px"
+                          style="width: 500px; height: 250px"
                           >
                             <GmapMarker
                               :position="getLocation(cuurentActiveConversationMessage.messageContent)"
@@ -501,8 +533,8 @@
                         
 
                       </div>
-                      <span v-if="cuurentActiveConversationMessage.owner == 'agent'" style="margin-left: 0; margin-right:auto;" class="text-small text-muted">{{cuurentActiveConversationMessage.messageSentHour}}</span>
-                      <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{cuurentActiveConversationMessage.messageReceivedHour}}</span>
+                      <span v-if="cuurentActiveConversationMessage.owner == 'agent'" style="margin-left: 0; margin-right:auto;" class="text-small text-muted">{{parseHour(cuurentActiveConversationMessage.messageSentHour)}}</span>
+                      <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(cuurentActiveConversationMessage.messageReceivedHour)}}</span>
                       
                       <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="cuurentActiveConversationMessage.owner == 'agent'">
                         
@@ -570,54 +602,50 @@
               
                 <div v-else>
                   
-                  <div v-if="repliedMessageID != ''">
+                  <div v-if="repliedMessage != null">
+                        <div style="background-color: rgb(255, 216, 251); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
 
-                    <div v-for="answeredMessage in currentActiveConversation.messages">
-                      <div v-if="answeredMessage.messageID == repliedMessageID" style="background-color: rgb(255, 216, 251); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                          <div>
+                            <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Respondiendo a:</strong></p>
+                            <i class="i-Close-Window text-25 text-danger" style="float: right; position: relative; top:-25px; cursor: pointer;" @click="cancelReply()"></i>
 
-                        <div>
-                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Respondiendo a:</strong></p>
-                          <i class="i-Close-Window text-25 text-danger" style="float: right; position: relative; top:-25px; cursor: pointer;" @click="cancelReply()"></i>
-
-                        </div>
-                        
-                        <br>
-
-                        <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="answeredMessage.messageType == 'text'">{{answeredMessage.messageContent}}</p>
-
-                        <img
-                          v-if="answeredMessage.messageType=='image'"
-                          style="width: 150px;"
-                          :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
-                        >
-
-                        <div v-if="answeredMessage.messageType=='location'" class="m-0">
-                          <GmapMap
-                          :center="getLocation(answeredMessage.messageContent)"
-                          :zoom="zoom"
-                          style="width: 1000px; height: 450px"
-                          >
-                            <GmapMarker
-                              :position="getLocation(answeredMessage.messageContent)"
-                              :draggable="false"
-                            />
-                          </GmapMap>
+                          </div>
+                          
                           <br>
+
+                          <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="repliedMessage.messageType == 'text'">{{repliedMessage.messageContent}}</p>
+
+                          <img
+                            v-if="repliedMessage.messageType=='image'"
+                            style="width: 150px;"
+                            :src="`data:${repliedMessage.messageContent.mediaExtension};base64,${repliedMessage.messageContent.mediaContent}`"
+                          >
+
+                          <div v-if="repliedMessage.messageType=='location'" class="m-0">
+                            <GmapMap
+                            :center="getLocation(repliedMessage.messageContent)"
+                            :zoom="zoom"
+                            style="width: 1000px; height: 450px"
+                            >
+                              <GmapMarker
+                                :position="getLocation(repliedMessage.messageContent)"
+                                :draggable="false"
+                              />
+                            </GmapMap>
+                            <br>
+                          </div>
+
+                          <div v-if="repliedMessage.messageType=='document'" class="m-0">
+                            <a :href="`data:${repliedMessage.messageContent.mediaExtension};base64,${repliedMessage.messageContent.mediaContent}`" :download="repliedMessage.messageContent.mediaName">
+                              <p style="size: 10%;">Archivo: <strong>{{repliedMessage.messageContent.mediaName}}</strong></p>
+                            </a>
+                          </div>
+
+                          <audio controls v-if="repliedMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${repliedMessage.messageContent.mediaContent}`">
+                          </audio>
+
+
                         </div>
-
-                        <div v-if="answeredMessage.messageType=='document'" class="m-0">
-                          <a :href="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`" :download="answeredMessage.messageContent.mediaName">
-                            <p style="size: 10%;">Archivo: <strong>{{answeredMessage.messageContent.mediaName}}</strong></p>
-                          </a>
-                        </div>
-
-                        <audio controls v-if="answeredMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${answeredMessage.messageContent.mediaContent}`">
-                        </audio>
-
-
-                      </div>
-                    </div>
-                    
                     <br>
                   </div>
 
@@ -677,6 +705,8 @@
                       <b-dropdown-item style="z-index: 1000;" @click="sendStoreLocationToClient('Zapote')">Zapote</b-dropdown-item>
                       <b-dropdown-item style="z-index: 1000;" @click="sendStoreLocationToClient('Escazu')">Escazu</b-dropdown-item>
                       <b-dropdown-item style="z-index: 1000;" @click="sendStoreLocationToClient('Cartago')">Cartago</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 1000;">Heredia</b-dropdown-item>
+
                     </b-dropdown>
                   
 
@@ -1036,9 +1066,9 @@
                               ></b-form-textarea>
                             </b-form-group>
 
-                            <div style="text-align: center;">
+                            <div style="text-align: center;" v-if="loaderOrdenEnviada == false">
                               <br>
-                              <b-button :class="{'loading-effect': loading}" @click="OrdenExpress()" variant="primary"
+                              <b-button @click="OrdenExpress()" variant="primary"
                                 >Enviar orden a la central</b-button
                               >
                               <br><br>
@@ -1046,6 +1076,11 @@
                                 >Compartir orden con el cliente</b-button
                               >
                               <br><br>
+                            </div>
+
+                            <div v-else style="text-align: center;">
+                              <br>
+                              <span class="spinner-glow spinner-glow-primary"></span>
                             </div>
                         </b-tab>
                         <b-tab>
@@ -1170,6 +1205,8 @@ export default {
   },
   data() {
     return { 
+      loaderOrdenEnviada: false,
+      
       openHistoryLoader: false,
       historyLoader: false,
       historyConversations: [],
@@ -1178,7 +1215,7 @@ export default {
       hints: {},
 
 
-      repliedMessageID: '',
+      repliedMessage: null,
       stockLoader: false,
       stockContent: '',
       loaderAudio: false,
@@ -1352,6 +1389,39 @@ export default {
   },
 
   methods: {
+    parseHour(originalHour){
+      const hour = originalHour.substring(0,2);
+      const hoursConversion = 
+      {
+        '24': '18',
+        '23': '17',
+        '22': '16',
+        '21': '15',
+        '20': '14',
+        '19': '13',
+        '18': '12',
+        '17': '11',
+        '16': '10',
+        '15': '09',
+        '14': '08',
+        '13': '07',
+        '12': '06',
+        '11': '05',
+        '10': '04',
+        '09': '03',
+        '08': '02',
+        '07': '01',
+        '06': '00',
+        '05': '23',
+        '04': '22',
+        '03': '21',
+        '02': '20',
+        '01': '19',
+        '00': '18'
+      }
+      return hoursConversion[hour] + originalHour.substring(2,8);
+    },
+
     openHistoryConversation(historyConversation){
       this.openHistoryLoader = true;
       this.currentHistoryConversation = {};
@@ -1393,10 +1463,10 @@ export default {
     },
 
     replyMessageRightClick(message){
-      this.repliedMessageID = message.messageID;
+      this.repliedMessage = message;
     },
     cancelReply(){
-      this.repliedMessageID = '';
+      this.repliedMessage = null;
     },
     openImageModal(){
       this.loaderImages = true;
@@ -1752,7 +1822,10 @@ export default {
       } else if (locationName == 'Escazu'){
         var latitud = 9.949093;
         var longitud = -84.163117;
-      } else {
+      } else if (locationName == 'Cartago') {
+        var latitud = 9.864751;
+        var longitud = -83.925354;
+      } else if (locationName == 'Heredia') {
         var latitud = 9.864751;
         var longitud = -83.925354;
       }
@@ -1992,7 +2065,7 @@ export default {
           } else {
             metodoEnvioCorregido = 'Correos de CR';
           }
-
+          this.loaderOrdenEnviada = true;
           var me = this;
           this.loading = true;
           var momentoActual = new Date(); 
@@ -2036,6 +2109,7 @@ export default {
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
+                cancelButtonText: 'Cancelar',
                 cancelButtonColor: "#d33",
                 confirmButtonText: "Confirmar"
               }).then(result => {
@@ -2077,6 +2151,7 @@ export default {
 
                 me.CleanData();
                 me.loading = false;
+                me.loaderOrdenEnviada = false;
               });
         })
           .catch(function (error) {
