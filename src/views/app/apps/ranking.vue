@@ -24,7 +24,7 @@
       <div style="overflow-y: auto;">
         
         <div style="text-align: center;">
-          <h1 style="font-size: 50px">VENTAS CONCRETADAS:</h1>
+          <h1 style="font-size: 50px">CONVERSACIONES ATENDIDAS:</h1>
         </div>
         
         <br><br>
@@ -34,7 +34,30 @@
               <h1 style="font-size: 35px;"><strong>{{ index + 1 }}</strong> - {{agent.agentName}}</h1>
             </div>
             <div style="flex: 0; margin-right: 20px;">
-              <h1>{{agent.agentConversations}}</h1>
+              <h1>{{agent.agentActiveConversations}}</h1>
+            </div>
+          </div>
+          <br>
+        </div>
+      </div>
+    </div>
+
+
+    <div style="flex: 1; padding: 40px;">
+      <div style="overflow-y: auto;">
+        
+        <div style="text-align: center;">
+          <h1 style="font-size: 50px">CONVERSACIONES VENDIDAS:</h1>
+        </div>
+        
+        <br><br>
+        <div v-for="(agent,index) in agents3">
+          <div :style="calcularClase(index + 1)">
+            <div style="flex: 1;">
+              <h1 style="font-size: 35px;"><strong>{{ index + 1 }}</strong> - {{agent.agentName}}</h1>
+            </div>
+            <div style="flex: 0; margin-right: 20px;">
+              <h1>{{agent.agentFinishedConversations}}</h1>
             </div>
           </div>
           <br>
@@ -48,14 +71,15 @@
 <script>
 import axios from 'axios';
 const constants = require('@../../../src/constants.js'); 
-const webSocket = new WebSocket('wss:'+constants.routes.websocketAPI);
+const webSocket = new WebSocket('wss:telasmasbackend.onrender.com');
 
 export default {
 
   data() {
     return {
       agents: [],
-      agents2: []
+      agents2: [],
+      agents3: []
     };
   },
 
@@ -65,19 +89,27 @@ export default {
       .then(response =>{
         this.agents = [];
         this.agents2 = [];
+        this.agents3 = [];
+
         for (var agentID in response.data){
-          const newAgent = {
-            agentID: agentID,
-            agentName: response.data[agentID].agentName,
-            agentUsername: response.data[agentID].agentUsername,
-            agentMessages: response.data[agentID].agentSendedMessages,
-            agentConversations: response.data[agentID].agentActiveConversations.length + response.data[agentID].agentFinishedConversations.length
+          if (response.data[agentID].agentType == 'agent'){
+            const newAgent = {
+              agentID: agentID,
+              agentName: response.data[agentID].agentName,
+              agentUsername: response.data[agentID].agentUsername,
+              agentMessages: response.data[agentID].agentSendedMessages,
+              agentActiveConversations: response.data[agentID].agentActiveConversations.length + response.data[agentID].agentFinishedConversations.length,
+              agentFinishedConversations: response.data[agentID].agentFinishedConversations.length
+            }
+            this.agents.push(newAgent);
+            this.agents2.push(newAgent);
+            this.agents3.push(newAgent);
           }
-          this.agents.push(newAgent);
-          this.agents2.push(newAgent);
+
         }
         this.agents.sort((a, b) => b.agentMessages - a.agentMessages);
-        this.agents2.sort((a, b) => b.agentConversations - a.agentConversations);
+        this.agents2.sort((a, b) => b.agentActiveConversations - a.agentActiveConversations);
+        this.agents3.sort((a, b) => b.agentFinishedConversations - a.agentFinishedConversations);
 
       })
       .catch(error =>{
@@ -109,19 +141,34 @@ export default {
     try {
       webSocket.onmessage = (websocketMessage) => {
         const websocketMessageJSON = JSON.parse(websocketMessage.data);
-
         if (websocketMessageJSON['websocketMessageID'] == 'addMessageCount'){
           const agentID = websocketMessageJSON['agentID'];
-          var tempAgents = this.agents;
-          this.agents = []
-          for (var agentIndex in this.tempAgents){
-            if (this.tempAgents[agentIndex]['agentID'] == agentID){
-              this.tempAgents[agentIndex]['agentMessages'] = this.tempAgents[agentIndex]['agentMessages'] + 1;
+          for (var agentIndex in this.agents){
+            if (this.agents[agentIndex]['agentID'] == agentID){
+              this.agents[agentIndex]['agentMessages'] = this.agents[agentIndex]['agentMessages'] + 1;
             }
           }
-          this.agents = tempAgents;
           this.agents.sort((a, b) => b.agentMessages - a.agentMessages);
+        }
 
+        else if (websocketMessageJSON['websocketMessageID'] == 'addActiveCount'){
+          const agentID = websocketMessageJSON['agentID'];
+          for (var agentIndex in this.agents){
+            if (this.agents[agentIndex]['agentID'] == agentID){
+              this.agents[agentIndex]['agentActiveConversations'] = this.agents[agentIndex]['agentActiveConversations'] + 1;
+            }
+          }
+          this.agents.sort((a, b) => b.agentActiveConversations - a.agentActiveConversations);
+        }
+
+        else if (websocketMessageJSON['websocketMessageID'] == 'addClosedCount'){
+          const agentID = websocketMessageJSON['agentID'];
+          for (var agentIndex in this.agents){
+            if (this.agents[agentIndex]['agentID'] == agentID){
+              this.agents[agentIndex]['agentFinishedConversations'] = this.agents[agentIndex]['agentFinishedConversations'] + 1;
+            }
+          }
+          this.agents.sort((a, b) => b.agentFinishedConversations - a.agentFinishedConversations);
         }
       }
     } catch {

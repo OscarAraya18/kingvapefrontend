@@ -1538,7 +1538,7 @@ export default {
         'audioFile': this.recordedAudioFile,
         'agentID': localStorage.getItem('agentID'),
         'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber,
-        'messageContext': repliedMessageID
+        'messageContext': repliedMessageID      
       }
       this.loaderAudio = true;
       axios.post(constants.routes.backendAPI+'/sendWhatsappAudio', httpBodyToSendRecordedAudio)
@@ -2195,6 +2195,7 @@ export default {
                   axios.get(constants.routes.backendAPI+
                   '/closeConversation?conversationID='+me.temp+
                   '&conversationStatus="converted"'+
+                  '&agentID='+localStorage.getItem('agentID')+
                   '&amount='+total).then(function (){
                     me.getAgentActiveConversations();
                     me.temp = '';
@@ -2360,7 +2361,8 @@ export default {
       const me = this;
       axios.get(constants.routes.backendAPI
                   +'/closeConversation?'
-                  +'&conversationID='+this.temp
+                  +'&conversationID='+this.temp+
+                  '&agentID='+localStorage.getItem('agentID')+
                   +'&conversationStatus='+type)
         .then(() =>{ 
           this.getAgentActiveConversations();
