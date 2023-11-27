@@ -251,6 +251,8 @@
                         
                         <div v-if="cuurentActiveConversationMessage.messageType=='image'"> 
                           <img
+                            v-b-modal.bigImageModal
+                            @click="openBigImage(`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`)"
                             style="width: 250px;"
                             :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
                           >
@@ -304,12 +306,16 @@
                         <div v-if="cuurentActiveConversationMessage.messageType=='image' || cuurentActiveConversationMessage.messageType=='sticker'">
 
                           <img
+                            v-b-modal.bigImageModal
+                            @click="openBigImage(`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`)"
                             v-if="cuurentActiveConversationMessage.messageContent.isBase64=='1'"
                             style="width: 250px;"
                             :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
                           >
 
                           <img
+                            v-b-modal.bigImageModal
+                            @click="openBigImage(cuurentActiveConversationMessage.messageContent.mediaContent)"
                             v-else
                             style="width: 250px;"
                             :src="cuurentActiveConversationMessage.messageContent.mediaContent"
@@ -407,6 +413,8 @@
                                 <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="answeredMessage.messageType == 'text'">{{answeredMessage.messageContent}}</p>
                                 
                                 <img
+                                  v-b-modal.bigImageModal
+                                  @click="openBigImage(`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`)"
                                   v-if="answeredMessage.messageType=='image'"
                                   style="width: 150px;"
                                   :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
@@ -447,6 +455,8 @@
                         
                         <div v-if="cuurentActiveConversationMessage.messageType=='image'"> 
                           <img
+                            v-b-modal.bigImageModal
+                            @click="openBigImage(`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`)"
                             style="width: 250px;"
                             :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
                           >
@@ -503,6 +513,8 @@
                                 <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="answeredMessage.messageType == 'text'">{{answeredMessage.messageContent}}</p>
                                 
                                 <img
+                                  v-b-modal.bigImageModal
+                                  @click="openBigImage(`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`)"
                                   v-if="answeredMessage.messageType=='image'"
                                   style="width: 150px;"
                                   :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
@@ -549,12 +561,16 @@
                         <div v-if="cuurentActiveConversationMessage.messageType=='image' || cuurentActiveConversationMessage.messageType=='sticker'">
 
                           <img
+                            v-b-modal.bigImageModal
+                            @click="openBigImage(`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`)"
                             v-if="cuurentActiveConversationMessage.messageContent.isBase64=='1'"
                             style="width: 250px;"
                             :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
                           >
 
                           <img
+                            v-b-modal.bigImageModal
+                            @click="openBigImage(cuurentActiveConversationMessage.messageContent.mediaContent)"
                             v-else
                             style="width: 250px;"
                             :src="cuurentActiveConversationMessage.messageContent.mediaContent"
@@ -616,6 +632,8 @@
                           <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="repliedMessage.messageType == 'text'">{{repliedMessage.messageContent}}</p>
 
                           <img
+                            v-b-modal.bigImageModal
+                            @click="openBigImage(`data:${repliedMessage.messageContent.mediaExtension};base64,${repliedMessage.messageContent.mediaContent}`)"
                             v-if="repliedMessage.messageType=='image'"
                             style="width: 150px;"
                             :src="`data:${repliedMessage.messageContent.mediaExtension};base64,${repliedMessage.messageContent.mediaContent}`"
@@ -689,6 +707,14 @@
 
                         
                       </div>
+                    </b-modal>
+
+
+                    <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
+                      <img
+                        style="width: 1000px;"
+                        :src="bigImageSource"
+                      >
                     </b-modal>
 
 
@@ -1384,11 +1410,14 @@ export default {
       recordedAudioFile: null,
       startTime: '',
       chunks: [],
-
+      bigImageSource: ''
     };
   },
 
   methods: {
+    openBigImage(bigImageSource){
+      this.bigImageSource = bigImageSource;
+    },
     parseHour(originalHour){
       const hour = originalHour.substring(0,2);
       const hoursConversion = 
@@ -2412,6 +2441,7 @@ export default {
           agentToNotify: this.transferFromAgentID
         })
         .then(() =>{ 
+          
           this.getAgentActiveConversations();
         })
         
@@ -2453,7 +2483,8 @@ export default {
           'mediaType': 'image/png',
           'mediaName': 'media',
           'agentID': localStorage.getItem('agentID'),
-          'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber
+          'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber,
+          'messageContext': ''
         }
       
 
@@ -2464,7 +2495,8 @@ export default {
             owner:'agent',
             messageContent:{messageID: result.data, 'mediaExtension':'image/png', 'mediaContent':product.localizacion, 'mediaName':'media'},
             messageType: 'image',
-            messageSentHour: Date().toString().slice(16,24)
+            messageSentHour: Date().toString().slice(16,24),
+            messageContext: ''
           });
           
           var messages = this.currentActiveConversation.messages;
@@ -2479,17 +2511,18 @@ export default {
                 +'&agentID='+localStorage.getItem('agentID')
                 +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
                 +'&messageContent='+this.newTextMessageContent
+                +'&messageContext=""'+
                 +'&sendedProduct=1')
           .then((result) =>{ 
 
             this.newTextMessageContent = this.newTextMessageContent.split('*').join('');
 
-            this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]={messageID: result.data, sendedProduct: '1', owner:'agent',messageContent:{productName:this.newTextMessageContent.split('%0a')[0].split(': ')[1], productPrice:this.newTextMessageContent.split('%0a')[1].split(': ')[1],productDescription:this.newTextMessageContent.split('%0a')[2].split(': ')[1]},messageType:'text',messageSentHour: Date().toString().slice(16,24)};
+            this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]={messageContext: '',messageID: result.data, sendedProduct: '1', owner:'agent',messageContent:{productName:this.newTextMessageContent.split('%0a')[0].split(': ')[1], productPrice:this.newTextMessageContent.split('%0a')[1].split(': ')[1],productDescription:this.newTextMessageContent.split('%0a')[2].split(': ')[1]},messageType:'text',messageSentHour: Date().toString().slice(16,24)};
             this.newTextMessageContent = '';
 
 
-            this.$bvToast.toast("Product sended to client", {
-              title: `${product.descripcion || "Product sended to client"}`,
+            this.$bvToast.toast("Producto enviado al cliente", {
+              title: `${product.descripcion || "Product enviado exitosamente al cliente"}`,
               variant: 'info',
               solid: true
             });
@@ -2682,14 +2715,13 @@ export default {
       this.currentActiveConversation = this.activeConversationsAsJSON[clickedActiveConversationID];
       this.orden = this.activeConversationsAsJSON[clickedActiveConversationID].products;
       this.phone = this.activeConversationsAsJSON[clickedActiveConversationID].recipientPhoneNumber;
-      
       this.name = '';
       this.cedula = '';
       this.email = '';
       this.latitud = '';
       this.longitud = '';
       this.address = '';
-      this.nota = '';
+      this.nota = ''; 
       this.locations = [];
 
       var temp = false;

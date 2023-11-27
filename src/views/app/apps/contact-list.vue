@@ -40,7 +40,7 @@
               
               <i class="i-Eraser-2 text-25 text-success mr-2" @click="openEdit(props.row.button)" v-b-modal.modalEditar style="cursor: pointer"></i>
             
-              <i class="i-Close-Window text-25 text-danger" @click="deleteContact(props.row.button)" style="cursor: pointer"></i>
+              <i class="i-Close-Window text-25 text-danger" @click="deleteContact(props.row.button)" style="cursor: pointer" v-if="agentType == 'admin'"></i>
 
           </span>
           <span v-else-if="props.column.field == 'name'">
@@ -282,7 +282,8 @@ export default {
       creatingLocationDetails: '',
       creatingNote: '',
 
-      sendingID: ''
+      sendingID: '',
+      agentType: ''
     };
 
     
@@ -290,6 +291,7 @@ export default {
 
   mounted(){
     this.sendingMessage = localStorage.getItem('agentWelcomeMessage');
+    this.agentType = localStorage.getItem('agentType');
   },
 
   methods: {
