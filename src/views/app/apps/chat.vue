@@ -247,50 +247,6 @@
                       
                       <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="cuurentActiveConversationMessage.owner != 'agent'">
                         
-                        <div v-if="cuurentActiveConversationMessage.messageContext != ''">
-                          <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
-                            
-                            <div v-for="answeredMessage in currentHistoryConversation.messages">
-                              <div v-if="answeredMessage.messageID == cuurentActiveConversationMessage.messageContext">
-                                <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="answeredMessage.messageType == 'text'">{{answeredMessage.messageContent}}</p>
-                                
-                                <img
-                                  v-if="answeredMessage.messageType=='image'"
-                                  style="width: 150px;"
-                                  :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
-                                >
-
-                                <div v-if="answeredMessage.messageType=='location'" class="m-0">
-                                  <GmapMap
-                                  :center="getLocation(answeredMessage.messageContent)"
-                                  :zoom="zoom"
-                                  style="width: 500px; height: 200px"
-                                  >
-                                    <GmapMarker
-                                      :position="getLocation(answeredMessage.messageContent)"
-                                      :draggable="false"
-                                    />
-                                  </GmapMap>
-                                  <br>
-                                </div>
-
-                                <div v-if="answeredMessage.messageType=='document'" class="m-0">
-                                  <a :href="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`" :download="answeredMessage.messageContent.mediaName">
-                                    <p style="size: 10%;">Archivo: <strong>{{answeredMessage.messageContent.mediaName}}</strong></p>
-                                  </a>
-                                </div>
-
-                                <audio controls v-if="answeredMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${answeredMessage.messageContent.mediaContent}`">
-                                </audio>
-
-
-                              </div>
-                            </div>
-
-                          </div>
-                        </div>
-
-
                         <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.messageType == 'text'">{{cuurentActiveConversationMessage.messageContent}}</p>
                         
                         <div v-if="cuurentActiveConversationMessage.messageType=='image'"> 
@@ -336,6 +292,7 @@
                       
                       <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="cuurentActiveConversationMessage.owner == 'agent'">
                         
+
                         <div v-if="cuurentActiveConversationMessage.messageType == 'text'">
                           <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.sendedProduct != '1'">{{cuurentActiveConversationMessage.messageContent}}</p>
                           
@@ -538,6 +495,49 @@
                       
                       <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="cuurentActiveConversationMessage.owner == 'agent'">
                         
+                        <div v-if="cuurentActiveConversationMessage.messageContext != ''">  
+                          <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                            
+                            <div v-for="answeredMessage in currentActiveConversation.messages">
+                              <div v-if="answeredMessage.messageID == cuurentActiveConversationMessage.messageContext">
+                                <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="answeredMessage.messageType == 'text'">{{answeredMessage.messageContent}}</p>
+                                
+                                <img
+                                  v-if="answeredMessage.messageType=='image'"
+                                  style="width: 150px;"
+                                  :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
+                                >
+
+                                <div v-if="answeredMessage.messageType=='location'" class="m-0">
+                                  <GmapMap
+                                  :center="getLocation(answeredMessage.messageContent)"
+                                  :zoom="zoom"
+                                  style="width: 500px; height: 200px"
+                                  >
+                                    <GmapMarker
+                                      :position="getLocation(answeredMessage.messageContent)"
+                                      :draggable="false"
+                                    />
+                                  </GmapMap>
+                                  <br>
+                                </div>
+
+                                <div v-if="answeredMessage.messageType=='document'" class="m-0">
+                                  <a :href="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`" :download="answeredMessage.messageContent.mediaName">
+                                    <p style="size: 10%;">Archivo: <strong>{{answeredMessage.messageContent.mediaName}}</strong></p>
+                                  </a>
+                                </div>
+
+                                <audio controls v-if="answeredMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${answeredMessage.messageContent.mediaContent}`">
+                                </audio>
+
+
+                              </div>
+                            </div>
+
+                          </div>
+                        </div>
+
                         <div v-if="cuurentActiveConversationMessage.messageType == 'text'">
                           <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.sendedProduct != '1'">{{cuurentActiveConversationMessage.messageContent}}</p>
                           
@@ -1500,12 +1500,16 @@ export default {
     },
 
     sendRecordedAudio(){
+      var repliedMessageID = '';
+      if (this.repliedMessage != null){
+        repliedMessageID = this.repliedMessage.messageID
+      }
       const httpBodyToSendRecordedAudio = 
       {
         'audioFile': this.recordedAudioFile,
         'agentID': localStorage.getItem('agentID'),
         'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber,
-        'repliedMessageID': this.repliedMessageID
+        'messageContext': repliedMessageID
       }
       this.loaderAudio = true;
       axios.post(constants.routes.backendAPI+'/sendWhatsappAudio', httpBodyToSendRecordedAudio)
@@ -1514,7 +1518,7 @@ export default {
           this.$set(this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]= {
             owner:'agent',
             messageContent: {mediaContent: result.data.whatsappAudioMessageFile},
-            messageContext: this.repliedMessageID,
+            messageContext: repliedMessageID,
             messageID: result.data.whatsappMessageID,
             messageType: 'audio',
             messageSentHour: Date().toString().slice(16,24)
@@ -1529,6 +1533,8 @@ export default {
               psContainer.scrollTop = psContainer.scrollHeight;
             }
           });
+
+          this.repliedMessage = null;
 
           this.$root.$emit('bv::hide::modal','recordAudioModal')
         })
@@ -1591,13 +1597,18 @@ export default {
     async sendFavoriteImages(){
       for (var image in this.agentFavoriteImages){
         if (this.agentFavoriteImages[image].selected){
+          var repliedMessageID = ''
+          if (this.repliedMessage != null){
+            repliedMessageID = this.repliedMessage.messageID;
+          }
           const httpBodyToSendRecordedAudio = 
           {
             'mediaContent':this.agentFavoriteImages[image].src,
             'mediaType': 'image/png',
             'mediaName': 'media',
             'agentID': localStorage.getItem('agentID'),
-            'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber
+            'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber,
+            'messageContext': repliedMessageID
           }
           
           await axios.post(constants.routes.backendAPI+'/sendWhatsappMedia', httpBodyToSendRecordedAudio)
@@ -1607,7 +1618,8 @@ export default {
               messageContent:{'mediaExtension':'image/png', 'mediaContent':this.agentFavoriteImages[image].src.split(',')[1], 'mediaName':'media', isBase64: '1'},
               messageType: 'image',
               messageSentHour: Date().toString().slice(16,24),
-              messageID: result.data
+              messageID: result.data,
+              messageContext: repliedMessageID
             });
             
             var messages = this.currentActiveConversation.messages;
@@ -1622,7 +1634,7 @@ export default {
             });
 
             this.agentFavoriteImages[image].selected = false;
-
+            this.repliedMessage = null;
           });
 
         }
@@ -1630,17 +1642,21 @@ export default {
     },
 
     sendFavoriteMessage(favoriteMessage){
+      var repliedMessageID = ''
+      if (this.repliedMessage != null){
+        repliedMessageID = this.repliedMessage.messageID;
+      }
       axios.get(constants.routes.backendAPI
             +'/sendWhatsappMessage?'
             +'type=text'
             +'&agentID='+localStorage.getItem('agentID')
             +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
             +'&messageContent='+favoriteMessage
-            +'&repliedMessageID='+this.repliedMessageID
+            +'&messageContext='+repliedMessageID
             +'&sendedProduct=0')
       .then((result) =>{ 
-        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageContext: this.repliedMessageID,messageID: result.data, sendedProduct: '0', owner:'agent', messageContent:favoriteMessage,messageType:'text',messageSentHour: Date().toString().slice(16,24)});
-        this.repliedMessageID = '';
+        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageContext: repliedMessageID,messageID: result.data, sendedProduct: '0', owner:'agent', messageContent:favoriteMessage,messageType:'text',messageSentHour: Date().toString().slice(16,24)});
+        this.repliedMessage = null;
 
         this.$nextTick(() => {
         if (this.$refs.scrollRef) {
@@ -1727,15 +1743,20 @@ export default {
       newMessage = newMessage + `%0a%0a*SUBTOTAL*: ₡` + this.calcularSubTotal;
       newMessage = newMessage + `%0a*DESCUENTO*: ₡` + this.calcularDescuento;
       newMessage = newMessage + `%0a*TOTAL*: ₡` + this.calcularTotal;
+      var repliedMessageID = ''
+      if (this.repliedMessage != null){
+        repliedMessageID = this.repliedMessage.messageID;
+      }
       axios.get(constants.routes.backendAPI
             +'/sendWhatsappMessage?'
             +'type=text'
             +'&agentID='+localStorage.getItem('agentID')
             +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
             +'&messageContent='+newMessage
+            +'&messageContext='+repliedMessageID
             +'&sendedProduct=0')
       .then((result) =>{ 
-        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageID: result.data, sendedProduct: '0', owner:'agent',messageContent:'Se ha compartido el carrito con el cliente',messageType:'text',messageSentHour: Date().toString().slice(16,24)});
+        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageContext: repliedMessageID, messageID: result.data, sendedProduct: '0', owner:'agent',messageContent:'Se ha compartido el carrito con el cliente',messageType:'text',messageSentHour: Date().toString().slice(16,24)});
 
         this.$nextTick(() => {
         if (this.$refs.scrollRef) {
@@ -1789,17 +1810,21 @@ export default {
     },
 
     sendLocationToClient(locationName){
+      var repliedMessageID = '';
+      if (this.repliedMessage != null){
+        repliedMessageID = this.repliedMessage.messageID
+      }
       if (this.locations[locationName]){
         axios.post(constants.routes.backendAPI+'/sendWhatsappLocation',{
           agentID: localStorage.getItem('agentID'),
           recipientPhoneNumber: this.currentActiveConversation.recipientPhoneNumber,
           latitude: this.locations[locationName].latitude,
           longitude: this.locations[locationName].longitude,
-          repliedMessageID: this.repliedMessageID
+          messageContext: repliedMessageID
         })
         .then((result) =>{
           this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageContext: repliedMessageID, messageID: result.data, owner:'agent',messageContent:{locationLatitude:this.locations[locationName].latitude, locationLongitude:this.locations[locationName].longitude},messageType:'location',messageSentHour: Date().toString().slice(16,24)});
-          this.repliedMessageID = '';
+          this.repliedMessage = null;
         })
         .catch(error =>{
           console.log(error);
@@ -1830,16 +1855,20 @@ export default {
         var longitud = -83.925354;
       }
       const me = this;
+      var repliedMessageID = '';
+      if (this.repliedMessage != null){
+        repliedMessageID = this.repliedMessage.messageID
+      }
       axios.post(constants.routes.backendAPI+'/sendWhatsappLocation',{
         agentID: localStorage.getItem('agentID'),
         recipientPhoneNumber: this.currentActiveConversation.recipientPhoneNumber,
         latitude: latitud,
         longitude: longitud,
-        repliedMessageID: me.repliedMessageID
+        messageContext: repliedMessageID
       })
       .then((result) =>{
         this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageContext: repliedMessageID, messageID: result.data,owner:'agent',messageContent:{locationLatitude:latitud, locationLongitude:longitud},messageType:'location',messageSentHour: Date().toString().slice(16,24)});
-        me.repliedMessageID = '';
+        me.repliedMessage = null;
       })
       .catch(error =>{
         console.log(error);
@@ -2252,6 +2281,7 @@ export default {
 
 
       selectProductos(){
+        this.repliedMessage = null;
         let me=this;
         let Objeto = [];
         let myInput = document.getElementById('buscador');
@@ -2414,7 +2444,7 @@ export default {
 
 
     async sendProductToClient(product){
-
+      this.repliedMessageID = null;
       
       this.enviandoProductoLoader = true;
       var httpBodyToSendRecordedAudio = 
@@ -2511,13 +2541,19 @@ export default {
       var reader = new FileReader();
       reader.readAsDataURL(this.file);
       reader.onload = () => {
+
+        var repliedMessageID = '';
+        if (this.repliedMessage != null){
+          repliedMessageID = this.repliedMessage.messageID
+        }
         const httpBodyToSendRecordedAudio = 
         {
           'mediaContent':reader.result,
           'mediaType': type,
           'mediaName': 'media',
           'agentID': localStorage.getItem('agentID'),
-          'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber
+          'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber,
+          'messageContext': repliedMessageID
         }
         
         this.fileSharingLoader = true;
@@ -2532,7 +2568,8 @@ export default {
             messageContent:{'mediaExtension':type, 'mediaContent':reader.result.split(',')[1], 'mediaName':'media', isBase64: '1'},
             messageType: fileTypeDisplay,
             messageSentHour: Date().toString().slice(16,24),
-            messageContext: result.data
+            messageContext: repliedMessageID,
+            messageID: result.data
           });
           
           var messages = this.currentActiveConversation.messages;
@@ -2547,7 +2584,7 @@ export default {
           });
 
           this.file = null;
-
+          this.repliedMessage = null;
         });
         
       };
@@ -2571,15 +2608,20 @@ export default {
       } 
     },
     sendNewTextMessage(){
+      var repliedMessageID = '';
+      if (this.repliedMessage != null){
+        repliedMessageID = this.repliedMessage.messageID
+      }
       if (this.newTextMessageContent.trim().length != 0){
         axios.get(constants.routes.backendAPI
                   +'/sendWhatsappMessage?'
                   +'type=text'
                   +'&agentID='+localStorage.getItem('agentID')
+                  +'&messageContext='+repliedMessageID
                   +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
                   +'&messageContent='+this.newTextMessageContent)
         .then((result) =>{ 
-          this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]={owner:'agent',messageID: result.data, messageContent:this.newTextMessageContent,messageType:'text',messageSentHour: Date().toString().slice(16,24)};
+          this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]={owner:'agent',messageID: result.data, messageContext: repliedMessageID, messageContent:this.newTextMessageContent,messageType:'text',messageSentHour: Date().toString().slice(16,24)};
           this.newTextMessageContent = '';
           this.$nextTick(() => {
           if (this.$refs.scrollRef) {
@@ -2587,6 +2629,8 @@ export default {
               psContainer.scrollTop = psContainer.scrollHeight;
             }
           });
+
+          this.repliedMessage = null;
         })
         
         .catch(error =>{
@@ -2632,7 +2676,7 @@ export default {
     },
 
     changeCurrentActiveConversation (clickedActiveConversationID){
-      this.repliedMessageID = '';
+      this.repliedMessage = null;
       this.producto = '';
       this.temp = clickedActiveConversationID;
       this.currentActiveConversation = this.activeConversationsAsJSON[clickedActiveConversationID];
