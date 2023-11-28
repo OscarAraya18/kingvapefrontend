@@ -290,7 +290,7 @@ export default {
 
       cuurrentActiveConversation: {},
       currentTranferHistory: [],
-      view: 'closedConversations',
+      view: 'activeConversations',
 
       dashboardOne,
       dashboardTwo,
