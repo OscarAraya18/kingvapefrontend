@@ -34,26 +34,80 @@
     </b-row>
     
     <div v-if="view == 'closedConversations'">
-      <b-form-datepicker v-model="dateFiltered" locale="en"></b-form-datepicker>
-      <br>
-      <button class="btn btn-outline-primary text-black btn-rounded" @click="filterByDate()">Filter</button>
-      <br>
-      <br>
+
+      <br><br>
+      <div style="display:flex;">
+        <div style="width: 50%; padding-right: 100px; padding-left: 50px;">
+          <h4><strong>Filtro por fecha inicial:</strong></h4>
+          <b-form-datepicker v-model="initialDateFiltered"></b-form-datepicker>
+          <br><br>
+          <h4><strong>Filtro por fecha final:</strong></h4>
+          <b-form-datepicker v-model="endDateFiltered"></b-form-datepicker>
+          <br><br>
+          <h4><strong>Filtro por agente:</strong></h4>
+          <b-form-select v-model="agentFiltered" class="mb-3" :options="agentOptions"></b-form-select>
+          <br><br>
+          <h4><strong>Filtro por conversación:</strong></h4>
+          <b-form-select v-model="conversationFiltered" class="mb-3" :options="conversationOptions"></b-form-select>
+          <br><br>
+          <button class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="filter()"><i class="i-Search-People"></i>Aplicar filtro</button>
+        </div>
+
+        <div style="width: 50%; padding-right: 100px; padding-left: 50px;">
+          <h4><strong>Ordenar por:</strong></h4>
+          <b-form-group>
+            <b-form-radio-group
+              id="radio-group-1"
+              v-model="selected"
+              :options="options"
+              name="radio-options"
+              stacked
+            ></b-form-radio-group>
+          </b-form-group>
+          <br>
+          <button class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="order()"><i class="i-Search-People"></i>Aplicar ordenamiento</button>
+        </div>
+
+      </div>
+      
+      <br><br><br><br><br><br>
     </div>
 
     <div class="col-md-12">
 
 
       <div v-if="view == 'activeConversations'">
-      <p style="font-size: medium;"><strong>Conversaciones recibidas:</strong> {{todayConversationsAmount}}</p>
-      <p style="font-size: medium;"><strong>Conversaciones vendidas:</strong> {{todayConvertedConversationsAmount}}</p>
-      <p style="font-size: medium;"><strong>Conversaciones no vendidas:</strong> {{todayNotConvertedConversationsAmount}}</p>
-      <p style="font-size: medium;"><strong>Mensajes recibidos:</strong> {{todayReceivedMessages}}</p>
-      <p style="font-size: medium;"><strong>Mensajes enviados:</strong> {{todaySendedMessages}}</p>
-      <p style="font-size: medium;"><strong>Total de ventas:</strong> ₡{{todaySells}}</p>
+        <p style="font-size: medium;"><strong>Conversaciones recibidas:</strong> {{todayConversationsAmount}}</p>
+        <p style="font-size: medium;"><strong>Conversaciones vendidas:</strong> {{todayConvertedConversationsAmount}}</p>
+        <p style="font-size: medium;"><strong>Conversaciones no vendidas:</strong> {{todayNotConvertedConversationsAmount}}</p>
+        <p style="font-size: medium;"><strong>Mensajes recibidos:</strong> {{todayReceivedMessages}}</p>
+        <p style="font-size: medium;"><strong>Mensajes enviados:</strong> {{todaySendedMessages}}</p>
+        <p style="font-size: medium;"><strong>Total de ventas:</strong> ₡{{todaySells}}</p>
 
       <br>
-      <button class="btn btn-icon" style="background-color: #F9E530; font-size: 15px"><i class="i-Engineering"></i>Reporte rápido de ventas</button>
+
+      <button class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" v-b-modal.todayReport @click="openTodayReport()"><i class="i-Engineering"></i>Reporte rápido de ventas</button>
+
+
+      <b-modal scrollable hide-footer hide-header size="lg" centered hide-backdrop id="todayReport">
+        <vue-perfect-scrollbar ref="scrollRef">
+          <b-list-group>
+            <b-list-group-item v-for="agent in todayReport">
+              <h4>
+                <strong>{{agent.agentName}}: </strong>
+              </h4>
+              <br>
+              <p style="font-size: medium;"><strong>Conversaciones recibidas:</strong> {{agent.todayConversations}}</p>
+              <p style="font-size: medium;"><strong>Conversaciones vendidas:</strong> {{agent.todayConvertedConversations}}</p>
+              <p style="font-size: medium;"><strong>Conversaciones no vendidas:</strong> {{agent.todayNotConvertedConversations}}</p>
+              <p style="font-size: medium;"><strong>Mensajes recibidos:</strong> {{agent.todayReceived}}</p>
+              <p style="font-size: medium;"><strong>Mensajes enviados:</strong> {{agent.todaySent}}</p>
+              <p style="font-size: medium;"><strong>Ventas generadas:</strong> ₡{{agent.todayAmount}}</p>
+            </b-list-group-item>
+          </b-list-group>
+          
+        </vue-perfect-scrollbar>
+      </b-modal>
 
       <br><br><br>
       </div>
@@ -71,8 +125,8 @@
             v-if="view == 'activeConversations'"
           >
             <template slot="table-row" slot-scope="props">
-              <button v-b-modal.conversationModal  v-if="props.column.field == 'openConversation'" class="btn btn-outline-primary text-black btn-rounded" @click="openConversation(props.row.activeConversationID, 'active')">Open</button>
-              <button v-b-modal.transferHistoryModal v-else-if="props.column.field == 'openTransferHistory'" class="btn btn-outline-primary text-black btn-rounded" @click="openTransferHistory(props.row.activeConversationID, 'active')">Transfer history</button>
+              <button v-b-modal.conversationModal  v-if="props.column.field == 'openConversation'" class="btn btn-outline-primary text-black btn-rounded" @click="openConversation(props.row.activeConversationID, 'active')">Abrir</button>
+              <button v-b-modal.transferHistoryModal v-else-if="props.column.field == 'openTransferHistory'" class="btn btn-outline-primary text-black btn-rounded" @click="openTransferHistory(props.row.activeConversationID, 'active')">Transferencias</button>
             </template>
           </vue-good-table>
 
@@ -84,8 +138,8 @@
             v-if="view == 'closedConversations'"
           >
             <template slot="table-row" slot-scope="props">
-              <button v-b-modal.conversationModal  v-if="props.column.field == 'openConversation'" class="btn btn-outline-primary text-black btn-rounded" @click="openConversation(props.row.activeConversationID, 'closed')">Open</button>
-              <button v-b-modal.transferHistoryModal v-else-if="props.column.field == 'openTransferHistory'" class="btn btn-outline-primary text-black btn-rounded" @click="openTransferHistory(props.row.activeConversationID, 'closed')">Transfer history</button>
+              <button v-b-modal.conversationModal  v-if="props.column.field == 'openConversation'" class="btn btn-outline-primary text-black btn-rounded" @click="openConversation(props.row.activeConversationID, 'closed')">Abrir</button>
+              <button v-b-modal.transferHistoryModal v-else-if="props.column.field == 'openTransferHistory'" class="btn btn-outline-primary text-black btn-rounded" @click="openTransferHistory(props.row.activeConversationID, 'closed')">Transferencias</button>
             </template>
           </vue-good-table>
 
@@ -93,7 +147,7 @@
       </div>
     </div>
 
-    <b-modal scrollable hide-footer hide-title size="lg" centered hide-backdrop id="conversationModal">
+    <b-modal scrollable hide-footer hide-header size="lg" centered hide-backdrop id="conversationModal">
       <div class="chat-content-wrap sidebar-content">
         <vue-perfect-scrollbar ref="scrollRef"
         :settings="{ suppressScrollX: true, wheelPropagation: false }"
@@ -161,14 +215,16 @@
       </div>
     </b-modal>
 
-    <b-modal scrollable hide-footer hide-title size="lg" centered hide-backdrop id="transferHistoryModal">
+    <b-modal scrollable hide-footer hide-title size="m" centered hide-backdrop id="transferHistoryModal">
       <vue-perfect-scrollbar ref="scrollRef" style="text-align: center;">
         <h5 v-for="transfer in currentTranferHistory">
           <strong>{{transfer.previousAgentName}}</strong> to <strong>{{transfer.newAgentName}}</strong> ({{transfer.transferDate}} at {{transfer.transferHour}})
         </h5>
-        <h5 v-if="currentTranferHistory.length == 0">No transfers</h5>
+        <h5 v-if="currentTranferHistory.length == 0">Sin transferencias</h5>
       </vue-perfect-scrollbar>
     </b-modal>
+
+    
 
 
   </div>
@@ -184,7 +240,7 @@ import {
 import axios from 'axios';
 const constants = require('@../../../src/constants.js'); 
 
-const webSocket = new WebSocket('ws:'+constants.routes.websocketAPI);
+const webSocket = new WebSocket('wss:telasmasbackend.onrender.com');
 
 
 export default {
@@ -193,12 +249,36 @@ export default {
   },
   data() {
     return {
+      selected: 0,
+      options: [
+        {text: 'Fecha (más reciente a más antiguo)', value: 1},
+        {text: 'Fecha (más antiguo a más reciente)', value: 2},
+        {text: 'Monto vendido (mayor cantidad a menor cantidad)', value: 3},
+        {text: 'Monto vendido (menor cantidad a mayor cantidad)', value: 4},
+        {text: 'Cantidad de mensajes (mayor cantidad a menor cantidad)', value: 5},
+        {text: 'Cantidad de mensajes (menor cantidad a mayor cantidad)', value: 6},
+
+      ],
+
       todayConversationsAmount: 0,
       todayConvertedConversationsAmount: 0,
       todayNotConvertedConversationsAmount: 0,
       todayReceivedMessages: 0,
       todaySendedMessages: 0,
       todaySells: 0,
+
+      todayReport: {},
+
+      initialDateFiltered: '',
+      endDateFiltered: '',
+
+      agentOptions: [{value:null,text:'Seleccione un agente para filtrar'}],
+      agentFiltered: '',
+
+      conversationOptions: [{value:null,text:'Seleccione un tipo de conversación para filtrar'}, {value:'Vendido', text:'Vendido'}, {value:'No vendido', text:'No vendido'}],
+      conversationFiltered: '',
+
+
 
 
       closedConversationsAmount: 0,
@@ -210,7 +290,7 @@ export default {
 
       cuurrentActiveConversation: {},
       currentTranferHistory: [],
-      view: 'activeConversations',
+      view: 'closedConversations',
 
       dashboardOne,
       dashboardTwo,
@@ -287,50 +367,50 @@ export default {
           tdClass: "text-left pl-3",
         },
         {
-          label: "Client",
+          label: "Número del cliente",
           field: "recipientPhoneNumber",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
-          label: "Agent",
+          label: "Nombre del agente",
           field: "assignedAgentID",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
-          label: "Payment",
+          label: "Tipo de pago",
           field: "payment",
           html: true,
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
-          label: "Amount",
+          label: "Cantidad",
           field: "amount",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
-          label: "Start date",
+          label: "Fecha de inicio",
           field: "startDate",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
-          label: "Start hour",
+          label: "Hora de inicio",
           field: "startHour",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
-          label: "End date",
+          label: "Fecha de finalización",
           field: "endDate",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
-          label: "End hour",
+          label: "Hora de finalización",
           field: "endHour",
           thClass: "text-left",
           tdClass: "text-left",
@@ -348,8 +428,6 @@ export default {
           tdClass: "text-left",
         }
       ],
-
-      dateFiltered: ''
 
     };
   },
@@ -377,7 +455,24 @@ export default {
       }
 
       axios.get(constants.routes.backendAPI+'/getTodaysDashboardInformation').then((response) =>{ 
-        
+        this.todayConversationsAmount = response.data.currentTodayConversation;
+        this.todayConvertedConversationsAmount = response.data.currentTodayConverted;
+        this.todayNotConvertedConversationsAmount = response.data.currentTodayNotConverted;
+        this.todayReceivedMessages = response.data.currentTodayReceived;
+        this.todaySendedMessages = response.data.currentTodaySent;
+        this.todaySells = response.data.currentTodayAmount;
+
+
+        axios.get(constants.routes.backendAPI+'/getAgentOptions').then((response) =>{ 
+          for (var agentID in response.data){
+            this.agentOptions.push(response.data[agentID]);
+          }
+        })
+        .catch(error =>{
+          console.log(error);
+        })
+
+
       })
       .catch(error =>{
         console.log(error);
@@ -453,9 +548,36 @@ export default {
   },
 
   methods: {
-    filterByDate(){
-      var date = this.dateFiltered.substring(5, this.dateFiltered.length) + '-' + this.dateFiltered.substring(0, 4);
-      
+    openTodayReport(){
+      axios.get(constants.routes.backendAPI+'/getTodayReport').then((response) =>{ 
+        this.todayReport = response.data;
+        
+      })
+      .catch(error =>{
+        console.log(error);
+      })
+    },
+
+
+    filter(){
+
+      var initialDate = null;
+      if (this.initialDateFiltered != ''){
+        initialDate = this.initialDateFiltered.substring(5, this.initialDateFiltered.length) + '-' + this.initialDateFiltered.substring(0, 4);
+      }
+
+      var endDate = null;
+      if (this.endDateFiltered != ''){
+        endDate = this.endDateFiltered.substring(5, this.endDateFiltered.length) + '-' + this.endDateFiltered.substring(0, 4);
+      }
+
+      var agent = null;
+      if (this.endDateFiltered != ''){
+        endDate = this.endDateFiltered.substring(5, this.endDateFiltered.length) + '-' + this.endDateFiltered.substring(0, 4);
+      }
+      alert(this.agentFiltered);
+
+      /*
       axios.get(constants.routes.backendAPI+'/getAllClosedConversations?').then((response) =>{ 
       this.closedConversations = response.data;
       this.closedConversationsRows = [];
@@ -500,6 +622,8 @@ export default {
       .catch(error =>{
         console.log(error);
       })
+
+      */
       
     },
     getClosedConversations(){
@@ -551,9 +675,9 @@ export default {
         return '<span class="badge badge-pill badge-warning p-2 " style="background-color="red"">Not assigned ('+elapsedSeconds+')</span>'
       }
       else if (conversation.messages[(Object.keys(conversation.messages).length).toString()].owner == 'client'){
-        return '<span class="badge badge-pill badge-danger p-2 " style="background-color="red"">Waiting for agent ('+elapsedSeconds+')</span>'
+        return '<span class="badge badge-pill badge-danger p-2 " style="background-color="red"">Esperando al agente ('+elapsedSeconds+')</span>'
       } 
-      return '<span class="badge badge-pill badge-success p-2 ">Waiting for client ('+elapsedSeconds+')</span>'
+      return '<span class="badge badge-pill badge-success p-2 ">Esperando al cliente ('+elapsedSeconds+')</span>'
     },
 
 

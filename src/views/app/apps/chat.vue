@@ -2213,7 +2213,7 @@ export default {
                   }
                   axios.get(constants.routes.backendAPI+
                   '/closeConversation?conversationID='+me.temp+
-                  '&conversationStatus="converted"'+
+                  '&conversationStatus=converted'+
                   '&agentID='+localStorage.getItem('agentID')+
                   '&amount='+total).then(function (){
                     me.getAgentActiveConversations();
