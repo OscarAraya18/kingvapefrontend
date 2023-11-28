@@ -140,36 +140,7 @@ export default {
 
     try {
       webSocket.onmessage = (websocketMessage) => {
-        const websocketMessageJSON = JSON.parse(websocketMessage.data);
-        if (websocketMessageJSON['websocketMessageID'] == 'addMessageCount'){
-          const agentID = websocketMessageJSON['agentID'];
-          for (var agentIndex in this.agents){
-            if (this.agents[agentIndex]['agentID'] == agentID){
-              this.agents[agentIndex]['agentMessages'] = this.agents[agentIndex]['agentMessages'] + 1;
-            }
-          }
-          this.agents.sort((a, b) => b.agentMessages - a.agentMessages);
-        }
-
-        else if (websocketMessageJSON['websocketMessageID'] == 'addActiveCount'){
-          const agentID = websocketMessageJSON['agentID'];
-          for (var agentIndex in this.agents){
-            if (this.agents[agentIndex]['agentID'] == agentID){
-              this.agents[agentIndex]['agentActiveConversations'] = this.agents[agentIndex]['agentActiveConversations'] + 1;
-            }
-          }
-          this.agents.sort((a, b) => b.agentActiveConversations - a.agentActiveConversations);
-        }
-
-        else if (websocketMessageJSON['websocketMessageID'] == 'addClosedCount'){
-          const agentID = websocketMessageJSON['agentID'];
-          for (var agentIndex in this.agents){
-            if (this.agents[agentIndex]['agentID'] == agentID){
-              this.agents[agentIndex]['agentFinishedConversations'] = this.agents[agentIndex]['agentFinishedConversations'] + 1;
-            }
-          }
-          this.agents.sort((a, b) => b.agentFinishedConversations - a.agentFinishedConversations);
-        }
+        this.getAllAgents();
       }
     } catch {
 

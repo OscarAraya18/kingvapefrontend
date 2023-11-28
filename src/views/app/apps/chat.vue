@@ -38,7 +38,9 @@
                     @click="changeCurrentActiveConversation(activeConversation.activeConversationID)"
                     id="hint"
                   >
-                    <h6 style="padding-top: 10px;">{{ activeConversation.recipientProfileName }} {{activeConversation.recipientPhoneNumber}}</h6>
+                    <h6 style="padding-top: 10px;" v-if="name != ''">{{ name }} ({{activeConversation.recipientPhoneNumber}})</h6>
+
+                    <h6 style="padding-top: 10px;" v-else>{{ activeConversation.recipientProfileName }} ({{activeConversation.recipientPhoneNumber}})</h6>
                     <div class="flex-grow-1"></div>
                     
                     <div style="top: -12px; position: relative;">
@@ -368,9 +370,15 @@
                 <input type="checkbox" v-if="verifiedUser" :checked="true" style="accent-color: #FFD733; margin-right: 10px;" onclick="return false;">
                 
 
-                <p class="m-0 text-title text-16">
-                  {{ currentActiveConversation.recipientProfileName }} {{currentActiveConversation.recipientPhoneNumber}}
+                <p class="m-0 text-title text-16" v-if="name != ''">
+                  {{ name }} ({{currentActiveConversation.recipientPhoneNumber}})
                 </p>
+
+
+                <p class="m-0 text-title text-16" v-else>
+                  {{ activeConversation.recipientProfileName }} ({{currentActiveConversation.recipientPhoneNumber}})
+                </p>
+
 
                 <div class="flex-grow-1"></div>
 
@@ -479,10 +487,10 @@
                           <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{cuurentActiveConversationMessage.messageContent.locationLongitude}}</p>
                           <br>
 
-                          <b-dropdown variant="primary" text="Save location" style="margin-right: 10px;">
-                            <b-dropdown-item @click="saveLocation('Casa' ,cuurentActiveConversationMessage.messageContent)" style="z-index: 1000;">Casa</b-dropdown-item>
-                            <b-dropdown-item @click="saveLocation('Trabajo', cuurentActiveConversationMessage.messageContent)" style="z-index: 1000;">Trabajo</b-dropdown-item>
-                            <b-dropdown-item @click="saveLocation('Otro',cuurentActiveConversationMessage.messageContent)" style="z-index: 1000;">Otro</b-dropdown-item>
+                          <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
+                            <b-dropdown-item @click="saveLocation('CASA' ,cuurentActiveConversationMessage.messageContent)" style="z-index: 1000;">CASA</b-dropdown-item>
+                            <b-dropdown-item @click="saveLocation('TRABAJO', cuurentActiveConversationMessage.messageContent)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
+                            <b-dropdown-item @click="saveLocation('OTRO',cuurentActiveConversationMessage.messageContent)" style="z-index: 1000;">OTRO</b-dropdown-item>
                           </b-dropdown>
 
                         </div>
@@ -737,9 +745,9 @@
                   
 
                     <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-right: 10px;">
-                      <b-dropdown-item style="z-index: 1000;" @click="sendLocationToClient('Casa')">Casa</b-dropdown-item>
-                      <b-dropdown-item style="z-index: 1000;" @click="sendLocationToClient('Trabajo')">Trabajo</b-dropdown-item>
-                      <b-dropdown-item style="z-index: 1000;" @click="sendLocationToClient('Otro')">Otro</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 1000;" @click="sendLocationToClient('CASA')">CASA</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 1000;" @click="sendLocationToClient('TRABAJO')">TRABAJO</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 1000;" @click="sendLocationToClient('OTRO')">OTRO</b-dropdown-item>
                     </b-dropdown>
 
                     
@@ -1202,6 +1210,7 @@ import { BDropdown } from 'bootstrap-vue';
 export default {
   watch: {
     ubicacion(newLocation, old){
+      console.log(this.locations);
       if (newLocation != 'Ubicación de envío'){
         this.latitud = this.locations[newLocation].latitude;
         this.longitud = this.locations[newLocation].longitude;
@@ -1373,7 +1382,7 @@ export default {
       letras: ["Select by letter", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
 
       ubicacion: "Ubicación de envío",
-      ubicaciones: ["Ubicación de envío", "Casa", "Trabajo", "Otro"],
+      ubicaciones: ["Ubicación de envío", "CASA", "TRABAJO", "OTRO"],
 
       estadoPago:"Estado de pago",
       estadosPagos:["Estado de pago", "Pagado","Pendiente"],
@@ -2177,10 +2186,20 @@ export default {
                   'contactPhoneNumber': me.phone,
                   'contactID': me.cedula,
                   'contactEmail': me.email,
-                  'contactLocations':
+                  'contactLocation':
                   {
-                      'latitude': me.latitud,
-                      'longitude': me.longitud
+                    'CASA': {
+                      'latitude': me.locations['CASA'].latitude,
+                      'longitude': me.locations['CASA'].longitude
+                    },
+                    'TRABAJO': {
+                      'latitude': me.locations['TRABAJO'].latitude,
+                      'longitude': me.locations['TRABAJO'].longitude
+                    },
+                    'OTRO': {
+                      'latitude': me.locations['OTRO'].latitude,
+                      'longitude': me.locations['OTRO'].longitude
+                    }
                   },
                   'contactLocationDetails': me.address,
                   'contactNote': me.nota
@@ -2737,11 +2756,12 @@ export default {
       axios.get(constants.routes.backendAPI+'/getContact?contactPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber)
       .then(response =>{
         if (response.data['contactInformation'] != null){
+          
           this.name = response.data['contactInformation'].contactName;
           this.phone = response.data['contactInformation'].contactPhoneNumber;
           this.cedula = response.data['contactInformation'].contactID;
           this.email = response.data['contactInformation'].contactEmail;
-          this.locations = response.data['contactInformation'].contactLocations;
+          this.locations = response.data['contactInformation'].contactLocation;
           this.address = response.data['contactInformation'].contactLocationDetails;
           this.nota = response.data['contactInformation'].contactNote;
           if ((this.cedula != '') && (this.cedula != undefined)){
@@ -2750,7 +2770,22 @@ export default {
             this.verifiedUser = false;
           }
         } else {
+          this.name = this.activeConversationsAsJSON[clickedActiveConversationID].recipientProfileName;
           this.verifiedUser = false;
+          this.locations = {
+            'CASA': {
+              'latitude': 0,
+              'longitude': 0
+            },
+            'TRABAJO': {
+              'latitude': 0,
+              'longitude': 0
+            },
+            'OTRO': {
+              'latitude': 0,
+              'longitude': 0
+            }
+          }
         }
         
       })
