@@ -2924,7 +2924,7 @@ export default {
       this.currentActiveConversation = this.activeConversationsAsJSON[clickedActiveConversationID];
       this.orden = this.activeConversationsAsJSON[clickedActiveConversationID].products;
       this.phone = this.activeConversationsAsJSON[clickedActiveConversationID].recipientPhoneNumber;
-      this.name = this.activeConversationsAsJSON[clickedActiveConversationID].recipientPhoneNumber;
+      this.name = this.activeConversationsAsJSON[clickedActiveConversationID].recipientProfileName;
       this.cedula = '';
       this.email = '';
       this.latitud = '';
