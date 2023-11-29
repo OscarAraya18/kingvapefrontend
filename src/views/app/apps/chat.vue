@@ -247,10 +247,92 @@
                   <div :style="getColorChat(cuurentActiveConversationMessage.owner)" class="message flex-grow-1">
                     <div class="d-flex">
                       
+
+
+                      <div v-if="cuurentActiveConversationMessage.messageContext != ''">
+                          <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                            
+                            <div v-for="answeredMessage in currentHistoryConversation.messages">
+                              
+                              <div v-if="answeredMessage.messageID == cuurentActiveConversationMessage.messageContext">
+                                <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="answeredMessage.messageType == 'text'">{{answeredMessage.messageContent}}</p>
+                                
+                                <div v-if="answeredMessage.messageType=='contacts'"> 
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.messageContent.contactName}}</p>
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.messageContent.contactPhoneNumber}}</p>
+                                </div>
+
+                                <div v-if="answeredMessage.messageType=='image'"> 
+                                  <img
+                                    v-b-modal.bigImageModal
+                                    @click="openBigImage(`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`)"
+                                    style="width: 250px;"
+                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
+                                  >
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.messageCaption != ''">{{answeredMessage.messageCaption}}</p>
+                                </div>
+
+
+
+                                <div v-if="answeredMessage.messageType=='sticker'"> 
+                                  <img
+                                    style="width: 100px;"
+                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
+                                  >
+                                </div>
+
+                                <div v-if="answeredMessage.messageType=='video'"> 
+                                  <video controls
+                                    width="400"
+                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
+                                  > 
+                                  </video>
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.messageCaption != ''">{{answeredMessage.messageCaption}}</p>
+                                </div>
+
+
+                                <div v-if="answeredMessage.messageType=='location'" class="m-0">
+                                  <GmapMap
+                                  :center="getLocation(answeredMessage.messageContent)"
+                                  :zoom="zoom"
+                                  style="width: 1000px; height: 450px"
+                                  >
+                                    <GmapMarker
+                                      :position="getLocation(answeredMessage.messageContent)"
+                                      :draggable="false"
+                                    />
+                                  </GmapMap>
+                                  <br>
+                                </div>
+
+                                <div v-if="answeredMessage.messageType=='document'" class="m-0">
+                                  <a style="color: black;" :href="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`" :download="answeredMessage.messageContent.mediaName">
+                                    <p style="size: 10%;">Archivo: <strong>{{answeredMessage.messageContent.mediaName}}</strong></p>
+                                  </a>
+                                </div>
+
+                                <audio controls v-if="answeredMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${answeredMessage.messageContent.mediaContent}`">
+                                </audio>
+
+
+                              </div>
+                            </div>
+
+                          </div>
+                        </div>
+
+
+
+
                       <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="cuurentActiveConversationMessage.owner != 'agent'">
                         
                         <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.messageType == 'text'">{{cuurentActiveConversationMessage.messageContent}}</p>
                         
+                        <div v-if="cuurentActiveConversationMessage.messageType=='contacts'"> 
+                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{cuurentActiveConversationMessage.messageContent.contactName}}</p>
+                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{cuurentActiveConversationMessage.messageContent.contactPhoneNumber}}</p>
+                        </div>
+
                         <div v-if="cuurentActiveConversationMessage.messageType=='image'"> 
                           <img
                             v-b-modal.bigImageModal
@@ -258,6 +340,23 @@
                             style="width: 250px;"
                             :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
                           >
+                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="cuurentActiveConversationMessage.messageCaption != ''">{{cuurentActiveConversationMessage.messageCaption}}</p>
+                        </div>
+
+                        <div v-if="cuurentActiveConversationMessage.messageType=='sticker'"> 
+                          <img
+                            style="width: 100px;"
+                            :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
+                          >
+                        </div>
+                        
+                        <div v-if="cuurentActiveConversationMessage.messageType=='video'"> 
+                          
+                          <video controls
+                            width="400"
+                            :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
+                          >
+                          </video>
                           <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="cuurentActiveConversationMessage.messageCaption != ''">{{cuurentActiveConversationMessage.messageCaption}}</p>
                         </div>
                         
@@ -280,17 +379,17 @@
                         </div>
 
                         <div v-if="cuurentActiveConversationMessage.messageType=='document'" class="m-0">
-                          <a :href="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`" :download="cuurentActiveConversationMessage.messageContent.mediaName">
+                          <a style="color: black;" :href="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`" :download="cuurentActiveConversationMessage.messageContent.mediaName">
                             <p style="size: 10%;">Archivo: <strong>{{cuurentActiveConversationMessage.messageContent.mediaName}}</strong></p>
                           </a>
                         </div>
 
                         <audio controls v-if="cuurentActiveConversationMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`">
                         </audio>
-                        
-                        
-
+                
                       </div>
+
+
                       <span v-if="cuurentActiveConversationMessage.owner == 'agent'" style="margin-left: 0; margin-right:auto;" class="text-small text-muted">{{cuurentActiveConversationMessage.messageSentHour}}</span>
                       <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(cuurentActiveConversationMessage.messageReceivedHour)}}</span>
                       
@@ -305,8 +404,11 @@
                           <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.sendedProduct == '1'"><strong>Descripción: </strong>{{cuurentActiveConversationMessage.messageContent.productDescription}}</p>
                         </div>
 
+                        
+
                         <div v-if="cuurentActiveConversationMessage.messageType=='image' || cuurentActiveConversationMessage.messageType=='sticker'">
 
+                          
                           <img
                             v-b-modal.bigImageModal
                             @click="openBigImage(`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`)"
@@ -418,15 +520,40 @@
                             
                             <div v-for="answeredMessage in currentActiveConversation.messages">
                               <div v-if="answeredMessage.messageID == cuurentActiveConversationMessage.messageContext">
+                                
+                                <div v-if="answeredMessage.messageType=='contacts'"> 
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.messageContent.contactName}}</p>
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.messageContent.contactPhoneNumber}}</p>
+                                </div>
+                                
                                 <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="answeredMessage.messageType == 'text'">{{answeredMessage.messageContent}}</p>
                                 
-                                <img
-                                  v-b-modal.bigImageModal
-                                  @click="openBigImage(`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`)"
-                                  v-if="answeredMessage.messageType=='image'"
-                                  style="width: 150px;"
-                                  :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
-                                >
+                                <div v-if="answeredMessage.messageType=='image'"> 
+                                  <img
+                                    v-b-modal.bigImageModal
+                                    @click="openBigImage(`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`)"
+                                    style="width: 250px;"
+                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
+                                  >
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.messageCaption != ''">{{answeredMessage.messageCaption}}</p>
+                                </div>
+
+                                <div v-if="answeredMessage.messageType=='sticker'"> 
+                                  <img
+                                    style="width: 100px;"
+                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
+                                  >
+                                </div>
+
+                                <div v-if="answeredMessage.messageType=='video'"> 
+                                  <video controls
+                                    width="400"
+                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
+                                  >
+                                  </video>
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.messageCaption != ''">{{answeredMessage.messageCaption}}</p>
+                                </div>
+
 
                                 <div v-if="answeredMessage.messageType=='location'" class="m-0">
                                   <GmapMap
@@ -443,7 +570,7 @@
                                 </div>
 
                                 <div v-if="answeredMessage.messageType=='document'" class="m-0">
-                                  <a :href="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`" :download="answeredMessage.messageContent.mediaName">
+                                  <a style="color: black;" :href="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`" :download="answeredMessage.messageContent.mediaName">
                                     <p style="size: 10%;">Archivo: <strong>{{answeredMessage.messageContent.mediaName}}</strong></p>
                                   </a>
                                 </div>
@@ -457,7 +584,11 @@
 
                           </div>
                         </div>
-
+                        
+                        <div v-if="cuurentActiveConversationMessage.messageType=='contacts'"> 
+                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{cuurentActiveConversationMessage.messageContent.contactName}}</p>
+                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{cuurentActiveConversationMessage.messageContent.contactPhoneNumber}}</p>
+                        </div>
 
                         <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.messageType == 'text'">{{cuurentActiveConversationMessage.messageContent}}</p>
                         
@@ -470,7 +601,23 @@
                           >
                           <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="cuurentActiveConversationMessage.messageCaption != ''">{{cuurentActiveConversationMessage.messageCaption}}</p>
                         </div>
-                        
+
+                        <div v-if="cuurentActiveConversationMessage.messageType=='sticker'"> 
+                          <img
+                            style="width: 100px;"
+                            :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
+                          >
+                        </div>
+
+                        <div v-if="cuurentActiveConversationMessage.messageType=='video'"> 
+                          <video controls
+                            width="400"
+                            :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
+                          >
+                          </video>
+                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="cuurentActiveConversationMessage.messageCaption != ''">{{cuurentActiveConversationMessage.messageCaption}}</p>
+                        </div>
+              
                         <div v-if="cuurentActiveConversationMessage.messageType=='location'" class="m-0">
                           <GmapMap
                           :center="getLocation(cuurentActiveConversationMessage.messageContent)"
@@ -496,7 +643,7 @@
                         </div>
 
                         <div v-if="cuurentActiveConversationMessage.messageType=='document'" class="m-0">
-                          <a :href="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`" :download="cuurentActiveConversationMessage.messageContent.mediaName">
+                          <a style="color: black;" :href="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`" :download="cuurentActiveConversationMessage.messageContent.mediaName">
                             <p style="size: 10%;">Archivo: <strong>{{cuurentActiveConversationMessage.messageContent.mediaName}}</strong></p>
                           </a>
                         </div>
@@ -518,15 +665,39 @@
                             
                             <div v-for="answeredMessage in currentActiveConversation.messages">
                               <div v-if="answeredMessage.messageID == cuurentActiveConversationMessage.messageContext">
+
+                                <div v-if="answeredMessage.messageType=='contacts'"> 
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.messageContent.contactName}}</p>
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.messageContent.contactPhoneNumber}}</p>
+                                </div>
+
                                 <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="answeredMessage.messageType == 'text'">{{answeredMessage.messageContent}}</p>
                                 
-                                <img
-                                  v-b-modal.bigImageModal
-                                  @click="openBigImage(`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`)"
-                                  v-if="answeredMessage.messageType=='image'"
-                                  style="width: 150px;"
-                                  :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
-                                >
+                                <div v-if="answeredMessage.messageType=='image'"> 
+                                  <img
+                                    v-b-modal.bigImageModal
+                                    @click="openBigImage(`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`)"
+                                    style="width: 250px;"
+                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
+                                  >
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.messageCaption != ''">{{answeredMessage.messageCaption}}</p>
+                                </div>
+
+                                <div v-if="answeredMessage.messageType=='sticker'"> 
+                                  <img
+                                    style="width: 500px;"
+                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
+                                  >
+                                </div>
+
+                                <div v-if="answeredMessage.messageType=='video'"> 
+                                  <video controls
+                                    width="200"
+                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
+                                  >
+                                  </video>
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.messageCaption != ''">{{answeredMessage.messageCaption}}</p>
+                                </div>
 
                                 <div v-if="answeredMessage.messageType=='location'" class="m-0">
                                   <GmapMap
@@ -543,7 +714,7 @@
                                 </div>
 
                                 <div v-if="answeredMessage.messageType=='document'" class="m-0">
-                                  <a :href="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`" :download="answeredMessage.messageContent.mediaName">
+                                  <a style="color: black;" :href="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`" :download="answeredMessage.messageContent.mediaName">
                                     <p style="size: 10%;">Archivo: <strong>{{answeredMessage.messageContent.mediaName}}</strong></p>
                                   </a>
                                 </div>
@@ -639,6 +810,11 @@
 
                           <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="repliedMessage.messageType == 'text'">{{repliedMessage.messageContent}}</p>
 
+                          <div v-if="repliedMessage.messageType=='contacts'"> 
+                            <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{repliedMessage.messageContent.contactName}}</p>
+                            <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{repliedMessage.messageContent.contactPhoneNumber}}</p>
+                          </div>
+
                           <img
                             v-b-modal.bigImageModal
                             @click="openBigImage(`data:${repliedMessage.messageContent.mediaExtension};base64,${repliedMessage.messageContent.mediaContent}`)"
@@ -646,6 +822,21 @@
                             style="width: 150px;"
                             :src="`data:${repliedMessage.messageContent.mediaExtension};base64,${repliedMessage.messageContent.mediaContent}`"
                           >
+
+                          <div v-if="repliedMessage.messageType=='sticker'"> 
+                            <img
+                              style="width: 50px;"
+                              :src="`data:${repliedMessage.messageContent.mediaExtension};base64,${repliedMessage.messageContent.mediaContent}`"
+                            >
+                          </div>
+
+                          <div v-if="repliedMessage.messageType=='video'"> 
+                            <video controls
+                              width="200"
+                              :src="`data:${repliedMessage.messageContent.mediaExtension};base64,${repliedMessage.messageContent.mediaContent}`"
+                            >
+                            </video>
+                          </div>
 
                           <div v-if="repliedMessage.messageType=='location'" class="m-0">
                             <GmapMap
@@ -662,7 +853,7 @@
                           </div>
 
                           <div v-if="repliedMessage.messageType=='document'" class="m-0">
-                            <a :href="`data:${repliedMessage.messageContent.mediaExtension};base64,${repliedMessage.messageContent.mediaContent}`" :download="repliedMessage.messageContent.mediaName">
+                            <a style="color: black;" :href="`data:${repliedMessage.messageContent.mediaExtension};base64,${repliedMessage.messageContent.mediaContent}`" :download="repliedMessage.messageContent.mediaName">
                               <p style="size: 10%;">Archivo: <strong>{{repliedMessage.messageContent.mediaName}}</strong></p>
                             </a>
                           </div>
@@ -1210,7 +1401,6 @@ import { BDropdown } from 'bootstrap-vue';
 export default {
   watch: {
     ubicacion(newLocation, old){
-      console.log(this.locations);
       if (newLocation != 'Ubicación de envío'){
         this.latitud = this.locations[newLocation].latitude;
         this.longitud = this.locations[newLocation].longitude;
@@ -1463,10 +1653,8 @@ export default {
     openHistoryConversation(historyConversation){
       this.openHistoryLoader = true;
       this.currentHistoryConversation = {};
-      console.log(historyConversation);
       axios.post(constants.routes.backendAPI+'/openHistoryConversation', {conversationID: historyConversation.conversationID})
       .then((response) =>{
-        console.log(response.data);
         this.$root.$emit('bv::hide::modal','historyConversationsModal');
         this.currentHistoryConversation = response.data;
         this.openHistoryLoader = false;
@@ -2376,13 +2564,13 @@ export default {
         }
       },
 
-    endConversation(type){
+    endConversation(){
       const me = this;
       axios.get(constants.routes.backendAPI
                   +'/closeConversation?'
                   +'&conversationID='+this.temp+
                   '&agentID='+localStorage.getItem('agentID')+
-                  +'&conversationStatus='+type)
+                  +'&conversationStatus='+this.closeConversationReason)
         .then(() =>{ 
           this.getAgentActiveConversations();
           me.$bvToast.toast("Se ha cerrado la conversación asociada al número '" + this.phone + "'.", {
@@ -2958,13 +3146,11 @@ export default {
     this.getAgentActiveConversations();
     this.getPendingConversations();
     this.getAllAgents();
-    //this.getAllContacts();
     this.getStoreConversations();
 
     try {
       webSocket.onmessage = (websocketMessage) => {
         const websocketMessageJSON = JSON.parse(websocketMessage.data);
-        console.log(websocketMessageJSON);
 
         if (websocketMessageJSON['websocketMessageID'] == 'updateAgentStatus'){
           this.getAllAgents();
@@ -2986,6 +3172,8 @@ export default {
               });
               var inboxAudio = new Audio(require('../../../assets/pageAssets/inbox.mp3'));
               inboxAudio.play();
+
+              this.availableConversation = true;
             }
           }
 
@@ -3060,6 +3248,7 @@ export default {
             this.activeConversations.push(activeConversation);
             var inboxAudio = new Audio(require('../../../assets/pageAssets/transfer.wav'));
             inboxAudio.play();
+            this.activeConversation = true;
           }
           this.getStoreConversations();
         } else if (websocketMessageJSON['websocketMessageID'] == 'receiveStoreMessage'){
