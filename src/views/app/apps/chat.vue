@@ -38,7 +38,7 @@
                     @click="changeCurrentActiveConversation(activeConversation.activeConversationID)"
                     id="hint"
                   >
-                    <h6 style="padding-top: 10px;" v-if="name != ''">{{ name }} ({{activeConversation.recipientPhoneNumber}})</h6>
+                    <h6 style="padding-top: 10px;" v-if="name != ''">{{ activeConversation.recipientProfileName }} ({{activeConversation.recipientPhoneNumber}})</h6>
 
                     <h6 style="padding-top: 10px;" v-else>{{ activeConversation.recipientProfileName }} ({{activeConversation.recipientPhoneNumber}})</h6>
                     <div class="flex-grow-1"></div>
@@ -376,7 +376,7 @@
 
 
                 <p class="m-0 text-title text-16" v-else>
-                  {{ activeConversation.recipientProfileName }} ({{currentActiveConversation.recipientPhoneNumber}})
+                  {{ name }} ({{currentActiveConversation.recipientPhoneNumber}})
                 </p>
 
 
@@ -2736,7 +2736,7 @@ export default {
       this.currentActiveConversation = this.activeConversationsAsJSON[clickedActiveConversationID];
       this.orden = this.activeConversationsAsJSON[clickedActiveConversationID].products;
       this.phone = this.activeConversationsAsJSON[clickedActiveConversationID].recipientPhoneNumber;
-      this.name = '';
+      this.name = this.activeConversationsAsJSON[clickedActiveConversationID].recipientPhoneNumber;
       this.cedula = '';
       this.email = '';
       this.latitud = '';
@@ -2770,7 +2770,6 @@ export default {
             this.verifiedUser = false;
           }
         } else {
-          this.name = this.activeConversationsAsJSON[clickedActiveConversationID].recipientProfileName;
           this.verifiedUser = false;
           this.locations = {
             'CASA': {
@@ -2965,6 +2964,7 @@ export default {
     try {
       webSocket.onmessage = (websocketMessage) => {
         const websocketMessageJSON = JSON.parse(websocketMessage.data);
+        console.log(websocketMessageJSON);
 
         if (websocketMessageJSON['websocketMessageID'] == 'updateAgentStatus'){
           this.getAllAgents();
