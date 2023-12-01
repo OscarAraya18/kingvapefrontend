@@ -870,6 +870,7 @@
 
                   <div class="form-group">
                     <b-form-textarea
+                      :disabled='sendingMessageDisable'
                       class="form-control"
                       placeholder="Escribe un mensaje"
                       @keyup.enter="sendNewTextMessage()"
@@ -947,16 +948,19 @@
                       class="btn btn-icon btn-rounded btn-primary mr-2"
                       type="button"
                       @click="uploadImage()"
+                      id="sendFiles"
                     >
                       <i class="i-Folder-With-Document"></i>
                     </button>
                     <input type="file" accept="image/png, image/jpeg" @change="uploadFile('image/png')" ref="imageFile" style="display: none;" id="imageUploader">
+                    <b-tooltip target="sendFiles">Enviar imágenes de la computadora</b-tooltip>
 
 
-                    <button class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal @click="openImageModal()">
+                    <button id="sendFavoriteImages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal @click="openImageModal()">
                       <i class="i-Folder"></i>
-
                     </button>
+                    <b-tooltip target="sendFavoriteImages">Enviar imágenes del catálogo</b-tooltip>
+
 
                     <b-modal @ok="sendFavoriteImages()" scrollable title="Imágenes favoritas" size="m" centered id="imageModal">
                       <div v-if="loaderImages == true" style="text-align: center;">
@@ -989,9 +993,11 @@
                       </div>
                     </b-modal>
 
-                    <button class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.favoriteModal @click="openAgentFavoriteMessagesModal()">
+                    <button id="sendFavoriteMessages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.favoriteModal @click="openAgentFavoriteMessagesModal()">
                       <i class="i-Love"></i>
                     </button>
+                    <b-tooltip target="sendFavoriteMessages">Enviar mensajes favoritos</b-tooltip>
+
                     <b-modal scrollable title="Mensajes favoritos" size="m" centered hide-footer id="favoriteModal">
                       <div>
                         <b-list-group>
@@ -1009,6 +1015,7 @@
 
 
                     <button
+                      id="sendAudio"
                       class="btn btn-icon btn-rounded btn-primary mr-2"
                       type="button"
                       @click="startRecording()"
@@ -1016,6 +1023,8 @@
                     >
                       <i class="i-Microphone-3"></i>
                     </button>
+                    <b-tooltip target="sendAudio">Enviar audio</b-tooltip>
+
                     
                     <b-modal id="recordAudioModal" hide-footer hide-header size="sm" centered>
                       <div v-if="(!isRecording) && (loaderAudio == false)">
@@ -1059,9 +1068,6 @@
 
                     </b-modal>
 
-                    <button class="btn btn-icon btn-rounded btn-primary mr-2" @click="sendNewTextMessage()">
-                      <i class="i-Paper-Plane"></i>
-                    </button>
                   
                   </div>
                 </div>
@@ -1430,6 +1436,9 @@ export default {
   },
   data() {
     return { 
+      sendingMessageDisable: false,
+
+
       loaderOrdenEnviada: false,
       
       openHistoryLoader: false,
@@ -1609,7 +1618,19 @@ export default {
       recordedAudioFile: null,
       startTime: '',
       chunks: [],
-      bigImageSource: ''
+      bigImageSource: '',
+
+
+
+
+      //INDEXED DB
+      db: null
+
+
+
+
+
+
     };
   },
 
@@ -2850,6 +2871,7 @@ export default {
       } 
     },
     sendNewTextMessage(){
+      this.sendingMessageDisable = true;
       var repliedMessageID = '';
       if (this.repliedMessage != null){
         repliedMessageID = this.repliedMessage.messageID
@@ -2863,6 +2885,7 @@ export default {
                   +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
                   +'&messageContent='+this.newTextMessageContent)
         .then((result) =>{ 
+          this.sendingMessageDisable = false;
           this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]={owner:'agent',messageID: result.data, messageContext: repliedMessageID, messageContent:this.newTextMessageContent,messageType:'text',messageSentHour: Date().toString().slice(16,24)};
           this.newTextMessageContent = '';
           this.$nextTick(() => {
@@ -3076,6 +3099,58 @@ export default {
     },
 
 
+
+
+
+
+
+    //INDEXED DB
+    insertMessage(message) {
+      var transaction = this.db.transaction(["messages"], "readwrite");
+      var objectStore = transaction.objectStore("messages");
+
+      var request = objectStore.add(message);
+
+      request.onsuccess = function (event) {
+        console.log("Message added to the database successfully");
+      };
+
+      request.onerror = function (event) {
+        console.error("Error adding message to the database: " + event.target.errorCode);
+      };
+
+      // Close the database connection once the transaction is done
+      transaction.oncomplete = function () {
+        console.log('exito')
+      };
+    },
+
+
+    async initDatabase(){
+      return new Promise((resolve, reject) => {
+        var request = window.indexedDB.open('souq', 1);
+
+        request.onerror = (event) => {
+          console.error('Database error: ' + event.target.errorCode);
+          reject(event.target.error);
+        };
+
+        request.onupgradeneeded = (event) => {
+          var db = event.target.result;
+          var objectStore = db.createObjectStore('messages', { keyPath: 'messageID' });
+          objectStore.createIndex('content', 'content', { unique: false });
+          console.log('Database setup complete');
+        };
+
+        request.onsuccess = (event) => {
+          this.db = event.target.result;
+          console.log('Database initialized successfully');
+          resolve();
+        };
+      });
+    }
+
+
   },
 
   
@@ -3130,7 +3205,9 @@ export default {
 
   },
 
-  mounted(){
+  async mounted(){
+    
+    await this.initDatabase();
     
 
     if (localStorage.getItem('agentID') == null){
@@ -3139,7 +3216,6 @@ export default {
     if (localStorage.getItem('ordenesActuales') == null){
       localStorage.setItem('ordenesActuales', JSON.stringify({}))
     }
-    this.$notification.requestPermission().then();
 
     this.agentName = localStorage.getItem('agentName');
 
