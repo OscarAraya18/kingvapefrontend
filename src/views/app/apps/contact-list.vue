@@ -40,20 +40,22 @@
               
               <i class="i-Eraser-2 text-25 text-success mr-2" @click="openEdit(props.row.button)" v-b-modal.modalEditar style="cursor: pointer"></i>
             
-              <i class="i-Close-Window text-25 text-danger" @click="deleteContact(props.row.button)" style="cursor: pointer" v-if="agentType == 'admin'"></i>
+              <i class="i-Close-Window text-25 text-danger" @click="deleteContact(props.row.button)" style="cursor: pointer"></i>
 
           </span>
-          <span v-else-if="props.column.field == 'name'">
-              <div class="ul-widget-app__profile-pic">
-                {{ props.row.name }}
-              </div>
-          </span>
+          
 
           <span v-else-if="props.column.field == 'location'">
-              <div style="width: 250px; overflow: hidden;">
-                <b-button @click="openContactLocation(props.row.location)" variant="primary" class="btn d-sm-block" v-b-modal.modalOpenContact>Abrir ubicación</b-button>
-              </div>
+            <div style="width: 150px; overflow: hidden;">
+              <b-button @click="openContactLocation(props.row.location)" variant="primary" class="btn d-sm-block" v-b-modal.modalOpenContact>Abrir ubicación</b-button>
+            </div>
           </span>
+
+          <span v-else-if="props.column.field == 'id'">
+            <p v-if="props.row.id != '0'">✅</p>
+            <p v-else>❌</p>
+          </span>
+
         </template>
       </vue-good-table>
       
@@ -64,7 +66,7 @@
         </div>
       </b-modal>
 
-      <b-modal id="modalContactar" title="Enviar mensaje al contacto" @ok="sendMessage()" ref="modalContactar" centered>
+      <b-modal id="modalContactar" title="Enviar mensaje al contacto" @ok="sendWhatsappTextMessage()" ref="modalContactar" centered>
         <div class="p-3">
 
           <b-form-group label="Mensaje a enviar:" style="font-size: medium;">
@@ -84,6 +86,15 @@
       <b-modal id="modalEditar" title="Editar contacto" hide-footer ref="modalEditar" centered> 
         <div class="p-3">
           <b-form @submit.prevent="submit">
+            <b-form-group label="Número del contacto:" style="font-size: medium;" class="pb-2">
+              <b-form-input
+                class="form-control"
+                label="ID"
+                v-model="editingPhoneNumber"
+              >
+              </b-form-input>
+            </b-form-group>
+            
             <b-form-group label="Nombre del contacto:" style="font-size: medium;" class="pb-2">
               <b-form-input
                 class="form-control"
@@ -93,7 +104,7 @@
               </b-form-input>
             </b-form-group>
 
-            <b-form-group label="Número del contacto:" style="font-size: medium;" class="pb-2">
+            <b-form-group label="Cédula del contacto:" style="font-size: medium;" class="pb-2">
               <b-form-input
                 class="form-control"
                 label="ID"
@@ -149,6 +160,16 @@
       <b-modal id="modalCrear" title="Crear contacto" hide-footer ref="modalCrear" centered>
         <div class="p-3">
           <b-form @submit.prevent="createContact">
+            
+            <b-form-group label="Número del contacto:" style="font-size: medium;" class="pb-2">
+              <b-form-input
+                class="form-control"
+                label="ID"
+                v-model="creatingPhoneNumber"
+              >
+              </b-form-input>
+            </b-form-group>
+
             <b-form-group label="Nombre del contacto:" style="font-size: medium;" class="pb-2">
               <b-form-input
                 class="form-control"
@@ -158,11 +179,11 @@
               </b-form-input>
             </b-form-group>
 
-            <b-form-group label="Número del contacto:" style="font-size: medium;" class="pb-2">
+            <b-form-group label="Cédula del cliente:" style="font-size: medium;" class="pb-2">
               <b-form-input
                 class="form-control"
                 label="ID"
-                v-model="creatingPhoneNumber"
+                v-model="creatingID"
               >
               </b-form-input>
             </b-form-group>
@@ -225,7 +246,7 @@ export default {
   data() {
     return {
       contactLetter: null,
-      contactLettersOptions: [{value:null,text:'Seleccione una letra para buscar los contactos'},{value:'A',text:'A'},{value:'B',text:'B'},{value:'C',text:'C'},{value:'D',text:'D'},{value:'E',text:'E'},{value:'F',text:'F'},{value:'G',text:'G'},{value:'H',text:'H'},{value:'I',text:'I'},{value:'J',text:'J'},{value:'K',text:'K'},{value:'L',text:'L'},{value:'M',text:'M'},{value:'N',text:'N'},{value:'O',text:'O'},{value:'P',text:'P'},{value:'Q',text:'Q'},{value:'R',text:'R'},{value:'S',text:'S'},{value:'T',text:'T'},{value:'U',text:'U'},{value:'V',text:'V'},{value:'W',text:'W'},{value:'X',text:'X'},{value:'Y',text:'Y'},{value:'Z',text:'Z'},{value:'Otro',text:'Otro'}],
+      contactLettersOptions: [{value:null,text:'Seleccione una letra para buscar los contactos'},{value:'A',text:'A'},{value:'B',text:'B'},{value:'C',text:'C'},{value:'D',text:'D'},{value:'E',text:'E'},{value:'F',text:'F'},{value:'G',text:'G'},{value:'H',text:'H'},{value:'I',text:'I'},{value:'J',text:'J'},{value:'K',text:'K'},{value:'L',text:'L'},{value:'M',text:'M'},{value:'N',text:'N'},{value:'O',text:'O'},{value:'P',text:'P'},{value:'Q',text:'Q'},{value:'R',text:'R'},{value:'S',text:'S'},{value:'T',text:'T'},{value:'U',text:'U'},{value:'V',text:'V'},{value:'W',text:'W'},{value:'X',text:'X'},{value:'Y',text:'Y'},{value:'Z',text:'Z'},{value:'Todo',text:'Todo'}],
 
       selectedContactLocation: '',
       loaderContact: false,
@@ -235,6 +256,10 @@ export default {
       sendingMessage: '',
 
       columns: [
+        {
+          label: "Cédula",
+          field: "id",
+        },
         {
           label: "Nombre",
           field: "name",
@@ -270,6 +295,8 @@ export default {
       ],
       rows: [],
 
+      originalEditingPhoneNumber: '',
+      editingPhoneNumber: '',
       editingID: '',
       editingName: '',
       editingEmail: '',
@@ -277,6 +304,7 @@ export default {
       editingNote: '',
 
       creatingPhoneNumber: '',
+      creatingID: '',
       creatingName: '',
       creatingEmail: '',
       creatingLocationDetails: '',
@@ -301,28 +329,40 @@ export default {
 
     openCreateContactModal(){
       this.creatingPhoneNumber = '';
+      this.creatingID = '';
       this.creatingName = '';
       this.creatingEmail = '';
       this.creatingLocationDetails = '';
       this.creatingNote = '';
     },
 
-    sendMessage(){
-      const phoneNumber = this.allContactsInformation[this.sendingID].contactPhoneNumber;
-      axios.get(constants.routes.backendAPI
-            +'/sendWhatsappContactMessage?'
-            +'recipientPhoneNumber='+phoneNumber
-            +'&messageContent='+this.sendingMessage
-            +'&agentID='+localStorage.getItem('agentID')
-      )
-      .then(() =>{ 
-        this.$bvToast.toast("Se ha enviado exitosamente el mensaje al contacto con el número '" + phoneNumber + "'.", {
-          title: "Mensaje enviado",
-          variant: "success",
-          solid: true
-        });
+    sendWhatsappTextMessage(){
+      const whatsappConversationRecipientPhoneNumber = this.allContactsInformation[this.sendingID].contactPhoneNumber;
+      const whatsappConversationRecipientProfileName = this.allContactsInformation[this.sendingID].contactName;
+
+      axios.post(constants.routes.backendAPI+'/sendWhatsappTextMessageFromContactList',
+      {
+        whatsappConversationRecipientPhoneNumber: whatsappConversationRecipientPhoneNumber,
+        whatsappConversationRecipientProfileName: whatsappConversationRecipientProfileName,
+        whatsappTextMessageBody: this.sendingMessage,
+        whatsappConversationAssignedAgentID: parseInt(localStorage.getItem('agentID'))
       })
-      .catch(error =>{
+      .then((response) =>{ 
+        if (response.data.success){
+          this.$bvToast.toast("Se ha enviado exitosamente el mensaje al contacto con el número '" + whatsappConversationRecipientPhoneNumber + "'.", {
+            title: "Mensaje enviado",
+            variant: "success",
+            solid: true
+          });
+        } else {
+          this.$bvToast.toast("Ha ocurrido un error inesperado al enviar el mensaje. Esto puede deberse a que el contact ya tiene una conversación activa con un agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+            title: "Error al enviar el mensaje",
+            variant: "danger",
+            solid: true
+          });
+        }
+      })
+      .catch((error) =>{
         this.$bvToast.toast("Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
           title: "Error al enviar el mensaje",
           variant: "danger",
@@ -332,45 +372,77 @@ export default {
     },
 
     createContact(){
-      axios.post(constants.routes.backendAPI+'/createContactFromContactList', {'contactID': this.creatingPhoneNumber, 'contactName': this.creatingName, 'contactEmail': this.creatingEmail, 'contactLocationDetails': this.creatingLocationDetails, 'contactNote': this.creatingNote})
-      .then(() =>{ 
-        this.$bvToast.toast("Se ha creado exitosamente el contacto con el número '" + this.creatingPhoneNumber + "'.", {
-          title: "Contacto creado",
-          variant: "success",
+      const regularExpressionChecker = /\S/;
+      if (regularExpressionChecker.test(this.creatingPhoneNumber) && regularExpressionChecker.test(this.creatingID) && regularExpressionChecker.test(this.creatingName) && regularExpressionChecker.test(this.creatingEmail) && regularExpressionChecker.test(this.creatingLocationDetails) && regularExpressionChecker.test(this.creatingNote)) {
+        axios.post(constants.routes.backendAPI+'/insertContact', 
+        {
+          'contactPhoneNumber': this.creatingPhoneNumber, 
+          'contactID': this.creatingID, 
+          'contactName': this.creatingName, 
+          'contactEmail': this.creatingEmail, 
+          'contactLocationDetails': this.creatingLocationDetails, 
+          'contactNote': this.creatingNote
+        })
+        .then((response) =>{ 
+          if (response.data.success){
+            this.$bvToast.toast("Se ha creado exitosamente el contacto con el número '" + this.creatingPhoneNumber + "'.", {
+              title: "Contacto creado",
+              variant: "success",
+              solid: true
+            });
+            this.creatingPhoneNumber = '';
+            this.creatingName = '';
+            this.creatingEmail = '';
+            this.creatingLocationDetails = '';
+            this.creatingNote = '';
+            this.rows = [];
+            this.$refs['modalCrear'].hide();
+            this.getContacts();
+          } else {
+            this.$bvToast.toast("Ya existe un cliente asociado al número '" + this.creatingPhoneNumber + "', por favor modifique la información e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+              title: "Número de contacto duplicado",
+              variant: "danger",
+              solid: true
+            });
+          }
+        })
+        .catch(error =>{
+          this.$bvToast.toast("Ha ocurrido un error inesperado al crear el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+          title: "Error al crear el contacto",
+          variant: "danger",
+          solid: true
+          });
+        })
+      } else {
+        this.$bvToast.toast('El contenido de la información del cliente no puede estar vacío. Por favor complete los espacios requeridos e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+          title: 'Error al crear el cliente',
+          variant: 'danger',
           solid: true
         });
-        this.creatingPhoneNumber = '';
-        this.creatingName = '';
-        this.creatingEmail = '';
-        this.creatingLocationDetails = '';
-        this.creatingNote = '';
-        this.rows = [];
-        this.$refs['modalCrear'].hide();
-        this.getContacts();
-      })
-      
-      .catch(error =>{
-        this.$bvToast.toast("Ha ocurrido un error inesperado al crear el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-        title: "Error al crear el contacto",
-        variant: "danger",
-        solid: true
-        });
-      })
+      }
     },
 
     deleteContact(contactID){
-      axios.post(constants.routes.backendAPI+'/deleteContact', {'contactID': contactID})
-      .then(() =>{ 
-        this.$bvToast.toast("Se ha eliminado exitosamente el contacto con el número '" + contactID + "'.", {
-          title: "Contacto eliminado",
-          variant: "success",
-          solid: true
-        });
-        this.rows = [];
-        this.getContacts();
+      axios.post(constants.routes.backendAPI+'/deleteContact', {'contactPhoneNumber': this.allContactsInformation[contactID].contactPhoneNumber})
+      .then((response) =>{ 
+        console.log(response.data);
+        if (response.data.success){
+          this.$bvToast.toast("Se ha eliminado exitosamente el contacto con el número '" + this.allContactsInformation[contactID].contactPhoneNumber + "'.", {
+            title: "Contacto eliminado",
+            variant: "success",
+            solid: true
+          });
+          this.rows = [];
+          this.getContacts();
+        } else {
+          this.$bvToast.toast("Ha ocurrido un error inesperado al eliminar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+            title: "Error al eliminar el contacto",
+            variant: "danger",
+            solid: true
+          });
+        }
       })
-      
-      .catch(error =>{
+      .catch((error) =>{
         this.$bvToast.toast("Ha ocurrido un error inesperado al eliminar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
           title: "Error al eliminar el contacto",
           variant: "danger",
@@ -378,8 +450,11 @@ export default {
         });
       })
     },
+
     openEdit(contactID){
-      this.editingID = contactID;
+      this.originalEditingPhoneNumber = this.allContactsInformation[contactID].contactPhoneNumber;
+      this.editingPhoneNumber = this.allContactsInformation[contactID].contactPhoneNumber;
+      this.editingID = this.allContactsInformation[contactID].contactID;
       this.editingName = this.allContactsInformation[contactID].contactName;
       this.editingEmail = this.allContactsInformation[contactID].contactEmail;
       this.editingLocationDetails = this.allContactsInformation[contactID].contactLocationDetails;
@@ -387,66 +462,89 @@ export default {
     },
 
     openContact(contactID){
-      this.sendingMessage = localStorage.getItem('agentWelcomeMessage');
+      this.sendingMessage = localStorage.getItem('agentStartMessage');
       this.sendingID = contactID;
     },
 
     submit(){
-      axios.post(constants.routes.backendAPI+'/updateContact', {'contactID': this.editingID, 'contactName': this.editingName, 'contactEmail': this.editingEmail, 'contactLocationDetails': this.editingLocationDetails, 'contactNote': this.editingNote})
-      .then(() =>{ 
-        this.$bvToast.toast("Se ha editado exitosamente el contacto con el número '" + this.editingID + "'.", {
-          title: "Contacto editado",
-          variant: "success",
+      const regularExpressionChecker = /\S/;
+      if (regularExpressionChecker.test(this.editingPhoneNumber) && regularExpressionChecker.test(this.editingID) && regularExpressionChecker.test(this.editingName) && regularExpressionChecker.test(this.editingEmail) && regularExpressionChecker.test(this.editingLocationDetails) && regularExpressionChecker.test(this.editingNote)) {
+        axios.post(constants.routes.backendAPI+'/updateContact', 
+        {
+          'originalContactPhoneNumber': this.originalEditingPhoneNumber,
+          'editedContactPhoneNumber': this.editingPhoneNumber,
+          'contactID': this.editingID,
+          'contactName': this.editingName, 
+          'contactEmail': this.editingEmail, 
+          'contactLocationDetails': this.editingLocationDetails, 
+          'contactNote': this.editingNote
+        }).then((response) =>{ 
+          if (response.data.success){
+            this.$bvToast.toast("Se ha editado exitosamente el contacto con el número '" + this.editingPhoneNumber + "'.", {
+              title: "Contacto editado",
+              variant: "success",
+              solid: true
+            });
+            this.rows = [];
+            this.$refs['modalEditar'].hide();
+            this.getContacts();
+          } else {
+            this.$bvToast.toast("Ya existe un cliente asociado al número '" + this.editingPhoneNumber + "', por favor modifique la información e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+              title: "Número de contacto duplicado",
+              variant: "danger",
+              solid: true
+            });
+          }
+        })
+        .catch(error =>{
+          this.$bvToast.toast("Ha ocurrido un error inesperado al editar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+            title: "Error al editar el contacto",
+            variant: "danger",
+            solid: true
+          });
+        })
+      } else {
+        this.$bvToast.toast('El contenido de la información del cliente no puede estar vacío. Por favor complete los espacios requeridos e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+          title: 'Error al editar el cliente',
+          variant: 'danger',
           solid: true
         });
-        this.rows = [];
-        this.$refs['modalEditar'].hide();
-        this.getContacts();
-      })
-      
-      .catch(error =>{
-        this.$bvToast.toast("Ha ocurrido un error inesperado al editar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-          title: "Error al editar el contacto",
-          variant: "danger",
-          solid: true
-        });
-      })
+      }
     },
 
     getContacts(){
       this.loaderContact = true;
-      axios.post(constants.routes.backendAPI+'/getContacts', {'contactLetter':this.contactLetter})
-      .then(response =>{ 
+      axios.post(constants.routes.backendAPI+'/selectContactsFromStartingLetter', 
+      {
+        'startingLetter': this.contactLetter
+      })
+      .then((response) =>{ 
         this.allContactsInformation = [];
         this.rows = [];
-        this.allContactsInformation = response.data;
-        for (var contact in response.data){
-          var center = {lat: parseInt(response.data[contact].contactLocation['CASA'].latitude), lng: parseInt(response.data[contact].contactLocation['CASA'].longitude)}
-          var email = '';
-          if (response.data[contact].contactEmail != ''){
-            email = response.data[contact].contactEmail;
-          } else {
-            email = 'NA';
-          }
-          this.rows.push(
-            {
-              name: response.data[contact].contactName,
-              location: center,
-              email: email,
-              phone: response.data[contact].contactPhoneNumber,
-              locationDetails: response.data[contact].contactLocationDetails,
-              note: response.data[contact].contactNote,
-              button: contact
-            }
-          )
-          
+        this.allContactsInformation = response.data.result;
+        for (var contact in response.data.result){
+          const locations = JSON.parse(response.data.result[contact].contactLocations);
+          var center = {lat: parseInt(locations['CASA'].latitude), lng: parseInt(locations['CASA'].longitude)}
+          this.rows.push
+          ({
+            name: response.data.result[contact].contactName,
+            location: center,
+            email: response.data.result[contact].contactEmail,
+            phone: response.data.result[contact].contactPhoneNumber,
+            id: response.data.result[contact].contactID,
+            locationDetails: response.data.result[contact].contactLocationDetails,
+            note: response.data.result[contact].contactNote,
+            button: contact
+          })
         }
         this.loaderContact = false;
-
       })
-      
-      .catch(error =>{
-        console.log(error);
+      .catch((error) =>{
+        this.$bvToast.toast("Ha ocurrido un error inesperado al consultar la lista de clientes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+          title: "Error al consultar la lista de clientes",
+          variant: "danger",
+          solid: true
+        });
       })
     }
   },

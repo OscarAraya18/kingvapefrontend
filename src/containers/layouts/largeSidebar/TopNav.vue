@@ -13,11 +13,11 @@
     <div class="header-part-right">
       <button @click="updateApplicationStatus()" :class="getApplicationStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="(ranking == false) && (agentType == 'admin')"><strong>{{ applicationStatus }}</strong></button>
 
-      <button @click="updateAgentStatus()" :class="getAgentStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="ranking == false"><strong>{{ agentStatus }}</strong></button>
+      <button @click="updateAgentStatus()" :class="getAgentStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="ranking == false && agentStatus!=''"><strong>{{ agentStatus }}</strong></button>
       <div style="width: 50px; height: 50px; border-radius: 100%; margin-right: 15px;" v-if="ranking == false">
         <b-dropdown id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
           <template slot="button-content">
-            <img v-if="agentProfilePicture!=''" :src="agentProfilePicture" style="width: 50px; height: 50px; border-radius: 100%;">
+            <img v-if="agentProfileImage!=''" :src="`data:image/png;base64,${agentProfileImage}`" style="width: 50px; height: 50px; border-radius: 100%;">
             <img v-else :src="agentDefaultProfilePicture" style="width: 50px; height: 50px; border-radius: 100%;">
 
           </template>
@@ -31,11 +31,12 @@
 
     <b-modal scrollable size="m" hide-header hide-footer centered id="updateProfileModal">
       <b-button v-b-toggle.profileCollapseMenu style="width: 100%; font-size: large; color: red;">Perfil</b-button>
+      
       <b-collapse id="profileCollapseMenu">
-        <b-card>
+        <b-card v-if="loaderPerfil == false">
           <div style="display: flex;">
             <div style="width: 200px;">
-              <img v-if="agentProfilePicture!=''" :src="agentProfilePicture" style="width: auto; height: 250px; cursor: pointer;" id="tooltip-target-1" @click="changeProfilePicture()">
+              <img v-if="agentProfileImage!=''" :src="`data:image/png;base64,${agentProfileImage}`" style="width: auto; height: 250px; cursor: pointer;" id="tooltip-target-1" @click="changeProfilePicture()">
               <img v-else :src="agentDefaultProfilePicture" style="width: auto; height: 250px; cursor: pointer;" id="tooltip-target-1" @click="changeProfilePicture()">
 
               <input type="file" accept="image/png, image/jpeg" @change="uploadProfilePicture()" ref="profilePictureFile" style="display: none;" id="profilePictureFileDownloader">
@@ -52,6 +53,10 @@
             </div>
           </div>
         </b-card>
+
+        <div v-else style="text-align: center;">
+          <br><br><span class="spinner-glow spinner-glow-primary"></span>
+        </div>
       </b-collapse>
 
       <br><br>
@@ -61,7 +66,7 @@
         <b-card>
           <div>
             <p style="font-size: medium;"><strong>Mensaje de bienvenida:</strong></p>
-            <b-form-textarea v-model="agentWelcomeMessage" placeholder="Mensaje de bienvenida" rows="3"></b-form-textarea>
+            <b-form-textarea v-model="agentStartMessage" placeholder="Mensaje de bienvenida" rows="3"></b-form-textarea>
             <br>
             <p style="font-size: medium;"><strong>Mensaje de despedida:</strong></p>
             <b-form-textarea v-model="agentEndMessage" placeholder="Mensaje de despedida" rows="3"></b-form-textarea>
@@ -80,13 +85,13 @@
         <b-card>
           <div v-for="agentFavoriteMessage in agentFavoriteMessages">
             <div style="display: flex;">
-              <p style="font-size: medium;"><strong>{{agentFavoriteMessage.title}}</strong></p>
+              <p style="font-size: medium;"><strong>{{agentFavoriteMessage.agentFavoriteMessageName}}</strong></p>
               <div style="right: 0; position: absolute; margin-right: 20px;">
               <i @click="updateAgentFavoriteMessage(agentFavoriteMessage)" class="i-Eraser-2 text-25 text-success ml-2" style="cursor: pointer"></i>
               <i @click="deleteAgentFavoriteMessage(agentFavoriteMessage)" class="i-Close-Window text-25 ml-2 text-danger" style="cursor: pointer"></i>
               </div>
             </div>
-            <b-form-textarea v-model="agentFavoriteMessage.content" placeholder="Contenido del mensaje favorito" rows="3"></b-form-textarea>
+            <b-form-textarea v-model="agentFavoriteMessage.agentFavoriteMessageTextMessageBody" placeholder="Contenido del mensaje favorito" rows="3"></b-form-textarea>
             <br>
           </div>
           <div style="text-align: center;">
@@ -133,6 +138,8 @@ export default {
       agentStatus: '',
       applicationStatus: '',
 
+      loaderPerfil: false,
+
       agentType: '',
 
       ranking: false,
@@ -146,11 +153,11 @@ export default {
       isMegaMenuOpen: false,
 
       agentName: '',
-      agentProfilePicture: '',
+      agentProfileImage: '',
       agentDefaultProfilePicture: ``,
       agentUsername: '',
       agentPassword: '',
-      agentWelcomeMessage: '',
+      agentStartMessage: '',
       agentWelcomeImage: '',
       agentEndMessage: '',
       agentFavoriteMessages: [],
@@ -164,43 +171,49 @@ export default {
     };
   },
   mounted() {
-    if (localStorage.getItem('ranking') != 'yes'){
-      this.agentType = localStorage.getItem('agentType');
+    
 
+    if (localStorage.getItem('ranking') != 'yes'){
+      this.selectApplicationStatus();
+
+      this.agentType = localStorage.getItem('agentType');
       this.agentName = localStorage.getItem('agentName');
-      this.agentProfilePicture = localStorage.getItem('agentProfilePicture');
+      this.agentProfileImage = localStorage.getItem('agentProfileImage');
       this.agentUsername = localStorage.getItem('agentUsername');
       this.agentPassword = localStorage.getItem('agentPassword');
-
-      this.agentWelcomeMessage = localStorage.getItem('agentWelcomeMessage');
+      this.agentStartMessage = localStorage.getItem('agentStartMessage');
       this.agentEndMessage = localStorage.getItem('agentEndMessage');
-
       this.agentFavoriteMessages = JSON.parse(localStorage.getItem('agentFavoriteMessages'));
-
       this.agentDefaultProfilePicture = constants.agentDefaultProfilePicture;
 
-      this.getAgentStatus();
-      this.getApplicationStatus();
+      this.selectAgentStatus();
 
       try {
         webSocket.onmessage = (websocketMessage) => {
           const websocketMessageJSON = JSON.parse(websocketMessage.data);
-          if (websocketMessageJSON['websocketMessageID'] == 'updateAgentStatus'){
-            this.getAgentStatus();
-          } else if (websocketMessageJSON['websocketMessageID'] == 'turnOffApplication'){
-            if (this.agentType != 'admin'){
+          const websocketMessageID = websocketMessageJSON.websocketMessageID;
+          const websocketMessageContent = websocketMessageJSON.websocketMessageContent.result;
+          if (websocketMessageID == '/updateAgentStatus'){
+            if (websocketMessageContent.agentID == localStorage.getItem('agentID')){
+              if (websocketMessageContent.agentStatus == 'online'){
+                this.agentStatus = 'ONLINE';
+              } else {
+                this.agentStatus = 'OFFLINE';
+              }
+            }
+          } else if (websocketMessageID == '/updateApplicationStatus'){
+            if (localStorage.getItem('agentType') == 'agent'){
               this.logoutUser();
             }
           }
         }
       } catch {
-    
+
       }
-      
     } else {
       this.ranking = true;
     }
-    
+  
   },
   computed: {
     ...mapGetters(["getSideBarToggleProperties"])
@@ -209,92 +222,129 @@ export default {
   methods: {
   
     updateAgentLoginCredentials(){
-      axios.post(constants.routes.backendAPI+'/updateAgentLoginCredentials',
+      const regularExpressionChecker = /\S/;
+      if (regularExpressionChecker.test(this.agentUsername) && regularExpressionChecker.test(this.agentPassword)){
+        this.loaderPerfil = true;
+        axios.post(constants.routes.backendAPI+'/updateAgentLoginCredentials',
         {
-          agentID: localStorage.getItem('agentID'),
-          agentProfilePicture: this.agentProfilePicture,
+          agentID: parseInt(localStorage.getItem('agentID')),
+          agentProfileImage: this.agentProfileImage,
           agentUsername: this.agentUsername,
           agentPassword: this.agentPassword 
-        }
-      )
-      .then(() =>{ 
-        localStorage.setItem('agentProfilePicture', this.agentProfilePicture);
-        localStorage.setItem('agentUsername', this.agentUsername);
-        localStorage.setItem('agentPassword', this.agentPassword);
-        this.$bvToast.toast('Se ha editado la información del agente.', {
-          title: 'Información del agente editada',
-          variant: 'success',
-          solid: true
+        })
+        .then((response) =>{ 
+          if (response.data.success){
+            this.loaderPerfil = false;
+            localStorage.setItem('agentUsername', response.data.result.agentUsername);
+            localStorage.setItem('agentPassword', response.data.result.agentPassword);
+            localStorage.setItem('agentProfileImage', response.data.result.agentProfileImage);
+            this.$bvToast.toast('Se ha editado la información del agente.', {
+              title: 'Información del agente editada',
+              variant: 'success',
+              solid: true
+            });
+          } else {
+            this.$bvToast.toast('Ha ocurrido un error inesperado al editar la información del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+              title: 'Error al editar la información del agente',
+              variant: 'danger',
+              solid: true
+            });
+          }
+        })
+        .catch((error) =>{
+          this.$bvToast.toast('Ha ocurrido un error inesperado al editar la información del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+            title: 'Error al editar la información del agente',
+            variant: 'danger',
+            solid: true
+          });
         });
-      })
-      .catch(() =>{
-        this.$bvToast.toast('Ha ocurrido un error inesperado al editar la información del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+      } else {
+        this.$bvToast.toast('El contenido de la información del agente no puede estar vacío. Por favor complete los espacios requeridos e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
           title: 'Error al editar la información del agente',
           variant: 'danger',
           solid: true
         });
-      });
+      }
     },
    
     updateAgentAutomaticMessages(){
-      axios.post(constants.routes.backendAPI+'/updateAgentAutomaticMessages',
-      {
-        agentID: localStorage.getItem('agentID'),
-        agentWelcomeMessage: this.agentWelcomeMessage,
-        agentEndMessage: this.agentEndMessage 
-      })
-      .then(() =>{ 
-        localStorage.setItem('agentWelcomeMessage', this.agentWelcomeMessage);
-        localStorage.setItem('agentEndMessage', this.agentEndMessage);
-        this.$bvToast.toast('Se han editados los mensajes automáticos del agente.', {
-          title: 'Mensajes automáticos del agente editados',
-          variant: 'success',
-          solid: true
+      const regularExpressionChecker = /\S/;
+      if (regularExpressionChecker.test(this.agentStartMessage) && regularExpressionChecker.test(this.agentEndMessage)){
+        axios.post(constants.routes.backendAPI+'/updateAgentAutomaticMessages',
+        {
+          agentID: localStorage.getItem('agentID'),
+          agentStartMessage: this.agentStartMessage,
+          agentEndMessage: this.agentEndMessage 
+        })
+        .then((response) =>{ 
+          console.log(response.data);
+
+          localStorage.setItem('agentStartMessage', response.data.result.agentStartMessage);
+          localStorage.setItem('agentEndMessage', response.data.result.agentEndMessage);
+          this.$bvToast.toast('Se han editados sus mensajes exitosamente.', {
+            title: 'Mensajes automáticos del agente editados',
+            variant: 'success',
+            solid: true
+          });
+        })
+        .catch((error) =>{
+          this.$bvToast.toast('Ha ocurrido un error inesperado al editar los mensajes automáticos del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+            title: 'Error al editar los mensajes automáticos del agente',
+            variant: 'danger',
+            solid: true
+          });
         });
-      })
-      .catch(() =>{
-        this.$bvToast.toast('Ha ocurrido un error inesperado al editar los mensajes automáticos del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+      } else {
+        this.$bvToast.toast('El contenido de los mensajes automáticos no puede estar vacío. Por favor complete los espacios requeridos e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
           title: 'Error al editar los mensajes automáticos del agente',
           variant: 'danger',
           solid: true
         });
-      });
+      }
     },
     
     updateAgentFavoriteMessage(updatedAgentFavoriteMessage){
-      axios.post(constants.routes.backendAPI+'/updateAgentFavoriteMessage',
-      {
-        agentID: localStorage.getItem('agentID'),
-        agentFavoriteMessageTitle: updatedAgentFavoriteMessage.title,
-        agentFavoriteMessageContent: updatedAgentFavoriteMessage.content
-      })
-      .then(() =>{
-        localStorage.setItem('agentFavoriteMessages', JSON.stringify(this.agentFavoriteMessages));
-        this.$bvToast.toast('Se ha editado el mensaje favorito "' + updatedAgentFavoriteMessage.title + '" del agente.', {
-          title: 'Mensajes favorito del agente editado',
-          variant: 'success',
-          solid: true
+      const regularExpressionChecker = /\S/;
+      if (regularExpressionChecker.test(updatedAgentFavoriteMessage.agentFavoriteMessageTextMessageBody)){
+        axios.post(constants.routes.backendAPI+'/updateAgentFavoriteMessage',
+        {
+          agentFavoriteMessageID: updatedAgentFavoriteMessage.agentFavoriteMessageID,
+          agentID: updatedAgentFavoriteMessage.agentFavoriteMessageAgentID,
+          agentFavoriteMessageTextMessageBody: updatedAgentFavoriteMessage.agentFavoriteMessageTextMessageBody
+        })
+        .then((response) =>{
+          localStorage.setItem('agentFavoriteMessages', JSON.stringify(this.agentFavoriteMessages));
+          this.$bvToast.toast('Se ha editado el mensaje favorito "' + updatedAgentFavoriteMessage.agentFavoriteMessageName + '" del agente.', {
+            title: 'Mensajes favorito del agente editado',
+            variant: 'success',
+            solid: true
+          });
+        })
+        .catch((error) =>{
+          this.$bvToast.toast('Ha ocurrido un error inesperado al editar el mensaje favorito del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+            title: 'Error al editar el mensaje favorito del agente',
+            variant: 'danger',
+            solid: true
+          });
         });
-      })
-      .catch(() =>{
-        this.$bvToast.toast('Ha ocurrido un error inesperado al editar el mensaje favorito del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+      } else {
+        this.$bvToast.toast('El contenido del mensaje favorito no puede estar vacío. Por favor complete el espacio requerido e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
           title: 'Error al editar el mensaje favorito del agente',
           variant: 'danger',
           solid: true
         });
-      });
+      }
     },
 
     deleteAgentFavoriteMessage(deletedAgentFavoriteMessage){
       axios.post(constants.routes.backendAPI+'/deleteAgentFavoriteMessage',
       {
-        agentID: localStorage.getItem('agentID'),
-        agentFavoriteMessageTitle: deletedAgentFavoriteMessage.title
+        agentFavoriteMessageID: deletedAgentFavoriteMessage.agentFavoriteMessageID
       })
-      .then(() =>{
-        this.agentFavoriteMessages = this.agentFavoriteMessages.filter(agentFavoriteMessage => agentFavoriteMessage.title != deletedAgentFavoriteMessage.title);
+      .then((response) =>{
+        this.agentFavoriteMessages = this.agentFavoriteMessages.filter(agentFavoriteMessage => agentFavoriteMessage.agentFavoriteMessageID != deletedAgentFavoriteMessage.agentFavoriteMessageID);
         localStorage.setItem('agentFavoriteMessages', JSON.stringify(this.agentFavoriteMessages));
-        this.$bvToast.toast('Se ha eliminado el mensaje favorito "' + deletedAgentFavoriteMessage.title + '" del agente.', {
+        this.$bvToast.toast('Se ha eliminado el mensaje favorito "' + deletedAgentFavoriteMessage.agentFavoriteMessageName + '" del agente.', {
           title: 'Mensaje favorito del agente eliminado',
           variant: 'success',
           solid: true
@@ -315,93 +365,64 @@ export default {
     },
 
     createAgentFavoriteMessage(){
-      axios.post(constants.routes.backendAPI+'/createAgentFavoriteMessage',
-      {
-        agentID: localStorage.getItem('agentID'),
-        agentFavoriteMessageTitle: this.newFavoriteMessageTitle,
-        agentFavoriteMessageContent: this.newFavoriteMessageContent,
-      })
-      .then(() =>{
-        this.agentFavoriteMessages.push({'title': this.newFavoriteMessageTitle, 'content': this.newFavoriteMessageContent});
-        localStorage.setItem('agentFavoriteMessages', JSON.stringify(this.agentFavoriteMessages));
-        this.$bvToast.toast('Se ha creado el mensaje favorito "' + this.newFavoriteMessageTitle + '" del agente.', {
-          title: 'Mensaje favorito del agente creado',
-          variant: 'success',
-          solid: true
+      const regularExpressionChecker = /\S/;
+      if (regularExpressionChecker.test(this.newFavoriteMessageTitle) && regularExpressionChecker.test(this.newFavoriteMessageContent)){
+        axios.post(constants.routes.backendAPI+'/insertAgentFavoriteMessage',
+        {
+          agentFavoriteMessageAgentID: parseInt(localStorage.getItem('agentID')),
+          agentFavoriteMessageName: this.newFavoriteMessageTitle,
+          agentFavoriteMessageTextMessageBody: this.newFavoriteMessageContent,
+        })
+        .then((response) =>{
+          this.agentFavoriteMessages.push
+          ({
+            'agentFavoriteMessageID': response.data.result.agentFavoriteMessageID, 
+            'agentFavoriteMessageAgentID': response.data.result.agentFavoriteMessageAgentID,
+            'agentFavoriteMessageName': response.data.result.agentFavoriteMessageName,
+            'agentFavoriteMessageTextMessageBody': response.data.result.agentFavoriteMessageTextMessageBody,
+          });
+          localStorage.setItem('agentFavoriteMessages', JSON.stringify(this.agentFavoriteMessages));
+          this.newFavoriteMessageContent = '';
+          this.newFavoriteMessageTitle = '';
+          this.$bvToast.toast('Se ha creado el mensaje favorito "' + response.data.result.agentFavoriteMessageName + '" del agente.', {
+            title: 'Mensaje favorito del agente creado',
+            variant: 'success',
+            solid: true
+          });
+        })
+        .catch((error) =>{
+          this.$bvToast.toast('Ha ocurrido un error inesperado al crear el mensaje favorito del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+            title: 'Error al crear el mensaje favorito del agente',
+            variant: 'danger',
+            solid: true
+          });
         });
-      })
-      .catch(() =>{
-        this.$bvToast.toast('Ha ocurrido un error inesperado al crear el mensaje favorito del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+      } else {
+        this.$bvToast.toast('El contenido del mensaje favorito puede estar vacío. Por favor complete los espacios requeridos e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
           title: 'Error al crear el mensaje favorito del agente',
           variant: 'danger',
           solid: true
         });
-      });
+      }
     },
 
-    deleteAgentFavoriteImage(deletedAgentFavoriteImage){
-      axios.post(constants.routes.backendAPI+'/deleteAgentFavoriteImage',
-      {
-        agentID: localStorage.getItem('agentID'),
-        agentFavoriteImageTitle: deletedAgentFavoriteImage.title
-      })
-      .then(() =>{
-        this.agentFavoriteImages = this.agentFavoriteImages.filter(agentFavoriteImage => agentFavoriteImage.title != deletedAgentFavoriteImage.title);
-        localStorage.setItem('agentFavoriteImages', JSON.stringify(this.agentFavoriteImages));
-        this.$bvToast.toast('Se ha eliminado la imagen favorita "' + deletedAgentFavoriteImage.title + '" del agente.', {
-          title: 'Imagen favorita del agente eliminada',
-          variant: 'success',
-          solid: true
-        });
-      })
-      .catch(() =>{
-        this.$bvToast.toast('Ha ocurrido un error inesperado al eliminar la imagen favorita del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
-          title: 'Error al eliminar la imagen favorita del agente',
-          variant: 'danger',
-          solid: true
-        });
-      });
-    },
-
-    openCreateFavoriteImageModal(){
-      this.newFavoriteImageTitle = '';
-      this.newFavoriteImageContent = '';
-    },
-
-    createAgentFavoriteImage(){
-      axios.post(constants.routes.backendAPI+'/createAgentFavoriteImage',
-      {
-        agentID: localStorage.getItem('agentID'),
-        agentFavoriteImageTitle: this.newFavoriteImageTitle,
-        agentFavoriteImageContent: this.newFavoriteImageContent,
-      })
-      .then(() =>{
-        this.agentFavoriteImages.push({'title': this.newFavoriteImageTitle, 'content': this.newFavoriteImageContent});
-        localStorage.setItem('agentFavoriteImages', JSON.stringify(this.agentFavoriteImages));
-        this.$bvToast.toast('Se ha creado la imagen favorita "' + this.newFavoriteImageTitle + '" del agente.', {
-          title: 'Imagen favorita del agente creada',
-          variant: 'success',
-          solid: true
-        });
-      })
-      .catch(() =>{
-        this.$bvToast.toast('Ha ocurrido un error inesperado al crear la imagen favorita del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
-          title: 'Error al crear la imagen favorita del agente',
-          variant: 'danger',
-          solid: true
-        });
-      });
-    },
-
-    getAgentStatus(){
-      axios.post(constants.routes.backendAPI+'/getAgentStatus', {'agentID': localStorage.getItem('agentID')})
-        .then(response =>{ 
-          if (response.data.agentStatus == 'online'){
-            this.agentStatus = 'ONLINE';
+    selectAgentStatus(){
+      axios.post(constants.routes.backendAPI+'/selectAgentStatus', {'agentID': parseInt(localStorage.getItem('agentID'))})
+        .then((response) => { 
+          if (response.data.success){
+            if (response.data.result.agentStatus == 'online'){
+              this.agentStatus = 'ONLINE';
+            } else {
+              this.agentStatus = 'OFFLINE';
+            }
           } else {
-            this.agentStatus = 'OFFLINE';
+            this.$bvToast.toast("Ha ocurrido un error inesperado al consultar el estado del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+              title: "Error al consultar el estado del agente",
+              variant: "danger",
+              solid: true
+            });
           }
-      })
+        })
       .catch(() =>{
         this.$bvToast.toast("Ha ocurrido un error inesperado al consultar el estado del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
           title: "Error al consultar el estado del agente",
@@ -411,10 +432,11 @@ export default {
       });
     },
 
-    getApplicationStatus(){
-      axios.post(constants.routes.backendAPI+'/getApplicationStatus')
-        .then(response =>{ 
-          if (response.data.applicationStatus == 'on'){
+    selectApplicationStatus(){
+      axios.post(constants.routes.backendAPI+'/selectApplicationStatus')
+      .then((response) =>{ 
+        if (response.data.success){
+          if (response.data.result){
             this.applicationStatus = 'ON';
           } else {
             this.applicationStatus = 'OFF';
@@ -422,8 +444,15 @@ export default {
               this.logoutUser();
             }
           }
+        } else {
+          this.$bvToast.toast("Ha ocurrido un error inesperado al consultar el estado de la aplicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+            title: "Error al consultar el estado de la aplicación",
+            variant: "danger",
+            solid: true
+          });
+        }
       })
-      .catch(() =>{
+      .catch((error) =>{
         this.$bvToast.toast("Ha ocurrido un error inesperado al consultar el estado de la aplicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
           title: "Error al consultar el estado de la aplicación",
           variant: "danger",
@@ -432,19 +461,10 @@ export default {
       });
     },
 
-
-    changeWelcomeImage(){
-      document.getElementById('welcomeImageDownloader').click();
-    },
-
     changeProfilePicture(){
       document.getElementById('profilePictureFileDownloader').click();
     },
 
-    changeNewFavoriteImage(){
-      document.getElementById('newFavoriteImageFileDownloader').click();
-    },
-    
     uploadFiles(){
       var reader = new FileReader();
       this.file = this.$refs.imageFile.files[0]
@@ -459,16 +479,7 @@ export default {
       this.file = this.$refs.profilePictureFile.files[0]
       reader.readAsDataURL(this.file);
       reader.onload = () => {
-        this.agentProfilePicture = reader.result;
-      };
-    },
-
-    uploadNewFavoriteImage(){
-      var reader = new FileReader();
-      this.file = this.$refs.profilePictureFile.files[0]
-      reader.readAsDataURL(this.file);
-      reader.onload = () => {
-        this.newFavoriteImageContent = reader.result;
+        this.agentProfileImage = reader.result.split(',')[1];
       };
     },
 
@@ -487,20 +498,26 @@ export default {
     },
 
     updateApplicationStatus(){
-      var temp = '';
-      if (this.applicationStatus == 'ON'){
-        temp = 'off';
-        this.applicationStatus = 'OFF';
-      } else {
-        temp = 'on';
-        this.applicationStatus = 'ON';
-      }
-      axios.post(constants.routes.backendAPI+'/updateApplicationStatus',{
-        applicationStatus: temp 
+      axios.post(constants.routes.backendAPI+'/updateApplicationStatus',
+      {
+        active: this.applicationStatus 
       })
-      .then(() =>{ 
+      .then((response) =>{ 
+        if (response.data.success){
+          if (this.applicationStatus == 'ON'){
+            this.applicationStatus = 'OFF';
+          } else {
+            this.applicationStatus = 'ON';
+          }
+        } else {
+          this.$bvToast.toast('Ha ocurrido un error inesperado al modificar el estado de la aplicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+            title: 'Error al modificar el estado de la aplicación',
+            variant: 'danger',
+            solid: true
+          });
+        }
       })
-      .catch(() =>{
+      .catch((error) =>{
         this.$bvToast.toast('Ha ocurrido un error inesperado al modificar el estado de la aplicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
           title: 'Error al modificar el estado de la aplicación',
           variant: 'danger',
@@ -510,21 +527,30 @@ export default {
     },
 
     updateAgentStatus(){
-      var temp = '';
+      var updatedAgentStatus = '';
       if (this.agentStatus == 'ONLINE'){
-        temp = 'offline';
+        updatedAgentStatus = 'offline';
         this.agentStatus = 'OFFLINE';
       } else {
-        temp = 'online';
+        updatedAgentStatus = 'online';
         this.agentStatus = 'ONLINE';
       }
       axios.post(constants.routes.backendAPI+'/updateAgentStatus',{
-        agentID: localStorage.getItem('agentID'),
-        agentStatus: temp 
+        agentID: parseInt(localStorage.getItem('agentID')),
+        agentStatus: updatedAgentStatus,
+        agentName: localStorage.getItem('agentName')
       })
-      .then(() =>{ 
+      .then((response) => {
+        if (response.data.success){
+        } else {
+          this.$bvToast.toast('Ha ocurrido un error inesperado al modificar el estado del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+            title: 'Error al modificar el estado del agente',
+            variant: 'danger',
+            solid: true
+          });
+        }
       })
-      .catch(() =>{
+      .catch((error) => {
         this.$bvToast.toast('Ha ocurrido un error inesperado al modificar el estado del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
           title: 'Error al modificar el estado del agente',
           variant: 'danger',
@@ -545,35 +571,39 @@ export default {
     handleFullScreen() {
       Util.toggleFullScreen();
     },
+
     logoutUser() {
       if (this.ranking == false){
         axios.post(constants.routes.backendAPI+'/updateAgentStatus',{
           agentID: localStorage.getItem('agentID'),
           agentStatus: 'offline' 
         })
-        .then(() =>{ 
-          localStorage.clear();
-          router.push("/app/sessions/signIn");
+        .then((response) =>{ 
+          if (response.data.success){
+            localStorage.clear();
+            router.push("/app/sessions/signIn");
+          } else {
+            this.$bvToast.toast('Ha ocurrido un error inesperado al cerrar su sesión. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+              title: 'Error al cerrar su sesión',
+              variant: 'danger',
+              solid: true
+            });
+          }
         })
-        .catch(error =>{
-          console.log(error);
+        .catch((error) =>{
+          this.$bvToast.toast('Ha ocurrido un error inesperado al cerrar su sesión. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+            title: 'Error al cerrar su sesión',
+            variant: 'danger',
+            solid: true
+          });
         })
-    } else {
-      localStorage.clear();
-      router.push("/app/sessions/signIn");
-    }
+      } else {
+        localStorage.clear();
+        router.push("/app/sessions/signIn");
+      }
       
     },
 
-    closeMegaMenu() {
-      this.isMegaMenuOpen = false;
-    },
-    toggleMegaMenu() {
-      this.isMegaMenuOpen = !this.isMegaMenuOpen;
-    },
-    toggleSearch() {
-      this.isSearchOpen = !this.isSearchOpen;
-    },
 
     sideBarToggle(el) {
       if (
@@ -600,11 +630,9 @@ export default {
         !this.getSideBarToggleProperties.isSideNavOpen &&
         !this.getSideBarToggleProperties.isSecondarySideNavOpen
       ) {
-        // console.log("4");
 
         this.changeSidebarProperties();
         this.changeSecondarySidebarProperties();
-        // console.log("4");
       }
     }
   }

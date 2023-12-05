@@ -1,218 +1,102 @@
 <template>
   <div class="no-gutters">
-
-    <button class="btn btn-primary mr-2" style="display: none;" type="button" v-b-modal.transferConversationModal ref="buttonTransfer">Finalizar</button>
-    <b-modal scrollable size="m" centered id="transferConversationModal" title="Solicitud de transferencia" @ok="transferConversationRequestAccepted()">
-      <div style="text-align: center;">
-        <p class="m-0">{{transferRequestName}} ha solicitado transferir una conversación</p>
-      </div>
-    </b-modal>
-
     <div class="row no-gutters">
       <div class="col-md-9" style="padding-right: 25px;">
         <div class="card chat-sidebar-container sidebar-container" style="z-index: 1000;">
-          <!-- Columna de contactos y conversaciones activas o entrantes -->
-          <div class="chat-sidebar-wrap sidebar" :class="{ 'ml-0': isMobile }" style="overflow-y: scroll; height: 100%;">
+          <div class="chat-sidebar-wrap sidebar" :class="{'ml-0': isMobile}" style="overflow-y: scroll; height: 100%;">
+
+            <button class="btn btn-primary mr-2" style="display: none;" type="button" v-b-modal.transferConversationModal ref="buttonTransfer">Finalizar</button>
+            <b-modal scrollable size="m" centered id="transferConversationModal" title="Solicitud de transferencia" @ok="acceptTransferWhatsappConversation()">
+              <div style="text-align: center;">
+                <p class="m-0">{{transferRequestName}} ha solicitado transferir una conversación</p>
+              </div>
+            </b-modal>
+
             <div class="border-right" style="height: 100%;">
-              
-              
-
-              <vue-perfect-scrollbar
-                :settings="{ suppressScrollX: true}"
-                class="contacts-scrollable perfect-scrollbar rtl-ps-none ps scroll"
-                
-              >   
-                <div>
-                  
-                  <div v-if="loaderConversations == true" style="text-align: center;">
-                    <br><br><br>
-                    <span class="spinner-glow spinner-glow-primary"></span>
-                  </div>
-
-                  <div
-                    v-else
-                    style="cursor: pointer;"
-                    class="p-3 d-flex border-bottom align-items-center"
-                    v-for="activeConversation in activeConversations"
-                    :key="activeConversation"
-                    @click="changeCurrentActiveConversation(activeConversation.activeConversationID)"
-                    id="hint"
-                  >
-                    <h6 style="padding-top: 10px;" v-if="name != ''">{{ activeConversation.recipientProfileName }} ({{activeConversation.recipientPhoneNumber}})</h6>
-
-                    <h6 style="padding-top: 10px;" v-else>{{ activeConversation.recipientProfileName }} ({{activeConversation.recipientPhoneNumber}})</h6>
-                    <div class="flex-grow-1"></div>
-                    
-                    <div style="top: -12px; position: relative;">
-                      <b-form-checkbox v-model="activeConversation.selected">
-                      </b-form-checkbox>
-                    </div>
-
-                    <div v-if="activeConversation.messages[(Object.keys(activeConversation.messages).length).toString()].owner == 'client'" style="height: 15px; width: 15px; background-color: red; border-radius: 100px;">
-                    </div>
-
-                    <div v-else style="height: 15px; width: 15px; background-color: green; border-radius: 100px;">
-                    </div>
-
-                    <b-tooltip target="hint" v-if="hints[activeConversation.recipientPhoneNumber]">{{hints[activeConversation.recipientPhoneNumber]}}</b-tooltip>
-
-                  </div>
-
-
-
-                  
+              <vue-perfect-scrollbar :settings="{ suppressScrollX: true}" class="contacts-scrollable perfect-scrollbar rtl-ps-none ps scroll">   
+                <div v-if="loaders.activeConversations == true" style="text-align: center;">
+                  <br><br><br><span class="spinner-glow spinner-glow-primary"></span>
+                </div>
+                <div v-else v-for="activeConversation in activeConversationsAsJSON" @click="changeCurrentActiveConversation(activeConversation)" style="cursor: pointer;" class="p-3 d-flex border-bottom align-items-center" id="hint">
+                  <h6 style="padding-top: 10px;">
+                    {{ activeConversation.whatsappConversationRecipientProfileName }} ({{activeConversation.whatsappConversationRecipientPhoneNumber}})
+                    <br><br>
+                    {{ parseHour(activeConversation.whatsappConversationMessages[activeConversation.whatsappConversationMessages.length-1].whatsappGeneralMessageCreationDateTime) }}
+                  </h6>
+                  <div class="flex-grow-1"></div>
+                  <div style="top: -12px; position: relative;"><b-form-checkbox v-model="activeConversation.selected"></b-form-checkbox></div>
+                  <div v-if="activeConversation.whatsappConversationMessages[activeConversation.whatsappConversationMessages.length-1].whatsappGeneralMessageOwnerPhoneNumber != null" style="height: 15px; width: 15px; background-color: red; border-radius: 100px;"></div>
+                  <div v-else style="height: 15px; width: 15px; background-color: green; border-radius: 100px;"></div>
+                  <b-tooltip target="hint" v-if="hints[activeConversation.whatsappConversationRecipientProfileName]">{{hints[activeConversation.whatsappConversationRecipientProfileName]}}</b-tooltip>
                 </div>
               </vue-perfect-scrollbar>
-              
             </div>
             <div style="position: absolute; width: 100%; bottom: 0; background-color: #F9E530; height: 50px; text-align: center; cursor:pointer;">
               <b-dropdown ref="dropDownSucursales" dropup :text="textoSucursalesCalcular" variant="primary" style="margin: 0 auto; font-size: medium; top: 5px" size="lg">
                 <b-dropdown-item href="#" v-b-modal.escazuConversationsModal>Escazú ({{escazuConversations.length}})</b-dropdown-item>
                 <b-dropdown-item href="#" v-b-modal.zapoteConversationsModal>Zapote ({{zapoteConversations.length}})</b-dropdown-item>
                 <b-dropdown-item href="#" v-b-modal.cartagoConversationsModal>Cartago ({{cartagoConversations.length}})</b-dropdown-item>
-                <b-dropdown-item href="#" v-b-modal.herediaConversationsModal>Heredia ({{herediaConversations.length}})</b-dropdown-item>
-
                 <b-dropdown-item href="#" v-b-modal.pendingConversationsModal>Pendientes ({{pendingConversations.length}})</b-dropdown-item>
               </b-dropdown>
             </div>
           </div>
-
           <b-modal scrollable size="m" centered hide-footer id="escazuConversationsModal" title="Conversaciones pendientes de Escazú">
-            <div>
-              <b-list-group v-if="loaderGrabPendingConversation == false">
-                <b-list-group-item v-if="escazuConversations.length == 0">
-                  No hay conversaciones pendientes
-                </b-list-group-item>
-                <b-list-group-item 
-                style="cursor: pointer"
-                v-for="escazuConversation in escazuConversations"
-                button
-                @click="grabStoreConversation(escazuConversation)">
-                <strong>Nombre:</strong> {{escazuConversation.recipientProfileName}}
-                <br>
-                <strong>Número:</strong> {{escazuConversation.recipientPhoneNumber}}
-                <br>
-                <strong>Pedido:</strong> {{ escazuConversation.clientOrder }}
-                <br>
-                <strong>Cédula:</strong> {{ escazuConversation.clientID }}
-                <br>
-                <strong>Fecha:</strong> {{escazuConversation.startDate}} a las {{parseHour(escazuConversation.startHour)}}
+            <b-list-group v-if="loaders.grabConversation == false">
+              <b-list-group-item v-if="escazuConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
+              <b-list-group-item v-for="escazuConversation in escazuConversations" @click="grabStoreConversation(escazuConversation)" button style="cursor: pointer;">
+                {{escazuConversation}}
+                <strong>Nombre:</strong> {{escazuConversation.storeMessageRecipientProfileName}}<br>
+                <strong>Número:</strong> {{escazuConversation.storeMessageRecipientPhoneNumber}}<br>
+                <strong>Pedido:</strong> {{escazuConversation.storeMessageRecipientOrder}}<br>
+                <strong>Cédula:</strong> {{escazuConversation.storeMessageRecipientID}}<br>
+                <strong>Fecha:</strong> {{escazuConversation.storeMessageStartDateTime}}
               </b-list-group-item>
-              </b-list-group>
-              <div v-else style="text-align: center;">
-                <br>
-                <span class="spinner-glow spinner-glow-primary"></span>
-              </div>
+            </b-list-group>
+            <div v-else style="text-align: center;">
+              <br><span class="spinner-glow spinner-glow-primary"></span>
             </div>
           </b-modal>
-
           <b-modal scrollable size="m" centered hide-footer id="zapoteConversationsModal" title="Conversaciones pendientes de Zapote">
-            <div>
-              <b-list-group v-if="loaderGrabPendingConversation == false">
-                <b-list-group-item v-if="zapoteConversations.length == 0">
-                  No hay conversaciones pendientes
-                </b-list-group-item>
-
-                <b-list-group-item 
-                style="cursor: pointer"
-                v-for="zapoteConversation in zapoteConversations"
-                button
-                @click="grabStoreConversation(zapoteConversation)">
-                <strong>Nombre:</strong> {{zapoteConversation.recipientProfileName}}
-                <br>
-                <strong>Número:</strong> {{zapoteConversation.recipientPhoneNumber}}
-                <br>
-                <strong>Pedido:</strong> {{ zapoteConversation.clientOrder }}
-                <br>
-                <strong>Cédula:</strong> {{ zapoteConversation.clientID }}
-                <br>
-                <strong>Fecha:</strong> {{zapoteConversation.startDate}} a las {{parseHour(zapoteConversation.startHour)}}  
+            <b-list-group v-if="loaders.grabConversation == false">
+              <b-list-group-item v-if="zapoteConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
+              <b-list-group-item v-for="zapoteConversation in zapoteConversations" @click="grabStoreConversation(zapoteConversation)" button style="cursor: pointer;">
+                <strong>Nombre:</strong> {{zapoteConversation.storeMessageRecipientProfileName}}<br>
+                <strong>Número:</strong> {{zapoteConversation.storeMessageRecipientPhoneNumber}}<br>
+                <strong>Pedido:</strong> {{zapoteConversation.storeMessageRecipientOrder}}<br>
+                <strong>Cédula:</strong> {{zapoteConversation.storeMessageRecipientID}}<br>
+                <strong>Fecha:</strong> {{zapoteConversation.storeMessageStartDateTime}}
               </b-list-group-item>
-              </b-list-group>
-              <div v-else style="text-align: center;">
-                <br>
-                <span class="spinner-glow spinner-glow-primary"></span>
-              </div>
+            </b-list-group>
+            <div v-else style="text-align: center;">
+              <br><span class="spinner-glow spinner-glow-primary"></span>
             </div>
           </b-modal>
-
           <b-modal scrollable size="m" centered hide-footer id="cartagoConversationsModal" title="Conversaciones pendientes de Cartago">
-            <div>
-              <b-list-group v-if="loaderGrabPendingConversation == false">
-                <b-list-group-item v-if="cartagoConversations.length == 0">
-                  No hay conversaciones pendientes
-                </b-list-group-item>
-                <b-list-group-item 
-                style="cursor: pointer"
-                v-for="cartagoConversation in cartagoConversations"
-                button
-                @click="grabStoreConversation(cartagoConversation)">
-                <strong>Nombre:</strong> {{cartagoConversation.recipientProfileName}}
-                <br>
-                <strong>Número:</strong> {{cartagoConversation.recipientPhoneNumber}}
-                <br>
-                <strong>Pedido:</strong> {{ cartagoConversation.clientOrder }}
-                <br>
-                <strong>Cédula:</strong> {{ cartagoConversation.clientID }}
-                <br>
-                <strong>Fecha:</strong> {{cartagoConversation.startDate}} a las {{parseHour(cartagoConversation.startHour)}}  
-              
+            <b-list-group v-if="loaders.grabConversation == false">
+              <b-list-group-item v-if="cartagoConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
+              <b-list-group-item v-for="cartagoConversation in cartagoConversations" @click="grabStoreConversation(cartagoConversation)" button style="cursor: pointer;">
+                <strong>Nombre:</strong> {{cartagoConversation.storeMessageRecipientProfileName}}<br>
+                <strong>Número:</strong> {{cartagoConversation.storeMessageRecipientPhoneNumber}}<br>
+                <strong>Pedido:</strong> {{cartagoConversation.storeMessageRecipientOrder}}<br>
+                <strong>Cédula:</strong> {{cartagoConversation.storeMessageRecipientID}}<br>
+                <strong>Fecha:</strong> {{parseHour(cartagoConversation.storeMessageStartDateTime)}}
               </b-list-group-item>
-              </b-list-group>
-              <div v-else style="text-align: center;">
-                <br>
-                <span class="spinner-glow spinner-glow-primary"></span>
-              </div>
+            </b-list-group>
+            <div v-else style="text-align: center;">
+              <br><span class="spinner-glow spinner-glow-primary"></span>
             </div>
           </b-modal>
-
-          <b-modal scrollable size="m" centered hide-footer id="herediaConversationsModal" title="Conversaciones pendientes de Heredia">
-            <div>
-              <b-list-group v-if="loaderGrabPendingConversation == false">
-                <b-list-group-item v-if="herediaConversations.length == 0">
-                  No hay conversaciones pendientes
-                </b-list-group-item>
-                <b-list-group-item 
-                style="cursor: pointer"
-                v-for="herediaConversation in herediaConversations"
-                button
-                @click="grabStoreConversation(herediaConversation)">
-                <strong>Nombre:</strong> {{herediaConversation.recipientProfileName}}
-                <br>
-                <strong>Número:</strong> {{herediaConversation.recipientPhoneNumber}}
-                <br>
-                <strong>Pedido:</strong> {{ herediaConversation.clientOrder }}
-                <br>
-                <strong>Cédula:</strong> {{ herediaConversation.clientID }}
-                <br>
-                <strong>Fecha:</strong> {{herediaConversation.startDate}} a las {{parseHour(herediaConversation.startHour)}}  
-              
-              </b-list-group-item>
-              </b-list-group>
-              <div v-else style="text-align: center;">
-                <br>
-                <span class="spinner-glow spinner-glow-primary"></span>
-              </div>
-            </div>
-          </b-modal>
-
           <b-modal scrollable size="m" centered hide-footer id="pendingConversationsModal" title="Conversaciones pendientes">
-            <div>
-              <b-list-group v-if="loader2 == false">
-                <b-list-group-item v-if="pendingConversations.length == 0">
-                  No hay conversaciones pendientes
-                </b-list-group-item>
-                <b-list-group-item 
-                style="cursor: pointer"
-                v-for="pendingConversation in pendingConversations"
-                button
-                @click="grabPendingConversation(pendingConversation)">
-                {{pendingConversation.recipientPhoneNumber}} ({{pendingConversation.startDate}} a las {{parseHour(pendingConversation.startHour)}})</b-list-group-item>
-              </b-list-group>
-              <div v-else style="text-align: center;">
-                <br>
-                <span class="spinner-glow spinner-glow-primary"></span>
-              </div>
+            <b-list-group v-if="loader2 == false">
+              <b-list-group-item v-if="pendingConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
+              <b-list-group-item style="cursor: pointer" v-for="pendingConversation in pendingConversations" button @click="grabPendingConversation(pendingConversation)">
+                <strong>Nombre:</strong> {{pendingConversation.whatsappConversationRecipientProfileName}}<br>
+                <strong>Número:</strong> {{pendingConversation.whatsappConversationRecipientPhoneNumber}}<br>
+                <strong>Fecha:</strong> {{parseHour(pendingConversation.whatsappConversationStartDateTime)}}
+              </b-list-group-item>
+            </b-list-group>
+            <div v-else style="text-align: center;">
+              <br><span class="spinner-glow spinner-glow-primary"></span>
             </div>
           </b-modal>
 
@@ -221,236 +105,193 @@
               <b-list-group-item v-if="historyConversations.length == 0">
                 No hay conversaciones en el historial
               </b-list-group-item>
-              <b-list-group-item 
-                v-b-modal.historyOpenModal
-                style="cursor: pointer"
-                v-for="historyConversation in historyConversations"
-                button
-                @click="openHistoryConversation(historyConversation)">
-                {{historyConversation.startDate}} a las {{parseHour(historyConversation.startHour)}} (atendido por {{historyConversation.assignedAgentName}})
+              <b-list-group-item v-b-modal.historyOpenModal style="cursor: pointer" v-for="historyConversation in historyConversations" button @click="openHistoryConversation(historyConversation)">
+                <strong>Atendido por:</strong> {{historyConversation.agentName}}<br>
+                <strong>Resultado:</strong> {{historyConversation.whatsappConversationCloseComment}}<br>
+                <strong>Inicio:</strong> {{parseHour(historyConversation.whatsappConversationStartDateTime)}}<br>
+                <strong>Fin:</strong> {{parseHour(historyConversation.whatsappConversationEndDateTime)}}<br>
               </b-list-group-item>
             </b-list-group>
             <div v-else style="text-align: center;">
-              <br>
-              <span class="spinner-glow spinner-glow-primary"></span>
+              <br><span class="spinner-glow spinner-glow-primary"></span>
             </div>
           </b-modal>
 
+
           <b-modal scrollable size="lg" centered hide-footer id="historyOpenModal" hide-header>
             <div v-if="openHistoryLoader == true" style="text-align: center;">
-              <br>
-              <span class="spinner-glow spinner-glow-primary"></span>
+              <br><span class="spinner-glow spinner-glow-primary"></span>
             </div>
             <div v-else>
-              <div v-for="cuurentActiveConversationMessage in currentHistoryConversation.messages" :key="cuurentActiveConversationMessage" @contextmenu.prevent="replyMessageRightClick(cuurentActiveConversationMessage)">
-                <div class="d-flex mb-30" :class="GetOwner(cuurentActiveConversationMessage.owner)">
-                  <div :style="getColorChat(cuurentActiveConversationMessage.owner)" class="message flex-grow-1">
+              <div v-for="currentActiveConversationMessage in currentHistoryConversation.whatsappConversationMessages" @contextmenu.prevent="replyMessageRightClick(currentActiveConversationMessage)">
+                
+                <div class="d-flex mb-30" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
+                  <div :style="getMessageOwnerColor(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)" class="message flex-grow-1">
                     <div class="d-flex">
-                      
-
-
-                      <div v-if="cuurentActiveConversationMessage.messageContext != ''">
+                      <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber != null">
+                        
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
                           <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
-                            
-                            <div v-for="answeredMessage in currentHistoryConversation.messages">
-                              
-                              <div v-if="answeredMessage.messageID == cuurentActiveConversationMessage.messageContext">
-                                <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="answeredMessage.messageType == 'text'">{{answeredMessage.messageContent}}</p>
+                            <div v-for="answeredMessage in currentActiveConversation.whatsappConversationMessages">
+                              <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
                                 
-                                <div v-if="answeredMessage.messageType=='contacts'"> 
-                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.messageContent.contactName}}</p>
-                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.messageContent.contactPhoneNumber}}</p>
+                                <p v-if="answeredMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
+                                <div v-if="answeredMessage.whatsappGeneralMessageType == 'contact'"> 
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.whatsappContactMessageName}}</p>
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.whatsappContactMessagePhoneNumber}}</p>
                                 </div>
-
-                                <div v-if="answeredMessage.messageType=='image'"> 
-                                  <img
-                                    v-b-modal.bigImageModal
-                                    @click="openBigImage(`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`)"
-                                    style="width: 250px;"
-                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
-                                  >
-                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.messageCaption != ''">{{answeredMessage.messageCaption}}</p>
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType == 'image'"> 
+                                  <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`">
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappImageMessageCaption}}</p>
                                 </div>
-
-
-
-                                <div v-if="answeredMessage.messageType=='sticker'"> 
-                                  <img
-                                    style="width: 100px;"
-                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
-                                  >
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType=='video'"> 
+                                  <video controls width="400" :src="`data:video/mp4;base64,${answeredMessage.whatsappVideoMessageFile}`"></video>
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappVideoMessageCaption}}</p>
                                 </div>
-
-                                <div v-if="answeredMessage.messageType=='video'"> 
-                                  <video controls
-                                    width="400"
-                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
-                                  > 
-                                  </video>
-                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.messageCaption != ''">{{answeredMessage.messageCaption}}</p>
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                                  <GmapMap :center="getLocation(answeredMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(answeredMessage)" :draggable="false"/></GmapMap><br>
+                                  <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
+                                  <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
+                                  <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
+                                    <b-dropdown-item @click="saveLocation('CASA', answeredMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
+                                    <b-dropdown-item @click="saveLocation('TRABAJO', answeredMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
+                                    <b-dropdown-item @click="saveLocation('OTRO', answeredMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
+                                  </b-dropdown>
                                 </div>
-
-
-                                <div v-if="answeredMessage.messageType=='location'" class="m-0">
-                                  <GmapMap
-                                  :center="getLocation(answeredMessage.messageContent)"
-                                  :zoom="zoom"
-                                  style="width: 1000px; height: 450px"
-                                  >
-                                    <GmapMarker
-                                      :position="getLocation(answeredMessage.messageContent)"
-                                      :draggable="false"
-                                    />
-                                  </GmapMap>
-                                  <br>
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                                  <a style="color: black;" :href="`data:${answeredMessage.whatsappDocumentMessageMimeType};base64,${answeredMessage.whatsappDocumentMessageFile}`" :download="answeredMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{answeredMessage.whatsappDocumentMessageFileName}}</strong></p></a>
                                 </div>
-
-                                <div v-if="answeredMessage.messageType=='document'" class="m-0">
-                                  <a style="color: black;" :href="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`" :download="answeredMessage.messageContent.mediaName">
-                                    <p style="size: 10%;">Archivo: <strong>{{answeredMessage.messageContent.mediaName}}</strong></p>
-                                  </a>
+                                
+                                <audio controls v-if="answeredMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${answeredMessage.whatsappAudioMessageFile}`"></audio>
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                                  <img v-b-modal.bigImageModal @click="openBigImage(answeredMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="answeredMessage.whatsappFavoriteImageMessageDriveURL">
                                 </div>
-
-                                <audio controls v-if="answeredMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${answeredMessage.messageContent.mediaContent}`">
-                                </audio>
-
 
                               </div>
                             </div>
-
                           </div>
                         </div>
-
-
-
-
-                      <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="cuurentActiveConversationMessage.owner != 'agent'">
+                        <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>
                         
-                        <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.messageType == 'text'">{{cuurentActiveConversationMessage.messageContent}}</p>
-                        
-                        <div v-if="cuurentActiveConversationMessage.messageType=='contacts'"> 
-                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{cuurentActiveConversationMessage.messageContent.contactName}}</p>
-                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{cuurentActiveConversationMessage.messageContent.contactPhoneNumber}}</p>
-                        </div>
-
-                        <div v-if="cuurentActiveConversationMessage.messageType=='image'"> 
-                          <img
-                            v-b-modal.bigImageModal
-                            @click="openBigImage(`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`)"
-                            style="width: 250px;"
-                            :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
-                          >
-                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="cuurentActiveConversationMessage.messageCaption != ''">{{cuurentActiveConversationMessage.messageCaption}}</p>
-                        </div>
-
-                        <div v-if="cuurentActiveConversationMessage.messageType=='sticker'"> 
-                          <img
-                            style="width: 100px;"
-                            :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
-                          >
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'contact'"> 
+                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{currentActiveConversationMessage.whatsappContactMessageName}}</p>
+                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{currentActiveConversationMessage.whatsappContactMessagePhoneNumber}}</p>
                         </div>
                         
-                        <div v-if="cuurentActiveConversationMessage.messageType=='video'"> 
-                          
-                          <video controls
-                            width="400"
-                            :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
-                          >
-                          </video>
-                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="cuurentActiveConversationMessage.messageCaption != ''">{{cuurentActiveConversationMessage.messageCaption}}</p>
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
+                          <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
                         </div>
                         
-                        <div v-if="cuurentActiveConversationMessage.messageType=='location'" class="m-0">
-                          <GmapMap
-                          :center="getLocation(cuurentActiveConversationMessage.messageContent)"
-                          :zoom="zoom"
-                          style="width: 500px; height: 250px"
-                          >
-                            <GmapMarker
-                              :position="getLocation(cuurentActiveConversationMessage.messageContent)"
-                              :draggable="false"
-                            />
-                          </GmapMap>
-                          <br>
-                          <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{cuurentActiveConversationMessage.messageContent.locationLatitude}}</p>
-                          <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{cuurentActiveConversationMessage.messageContent.locationLongitude}}</p>
-                          <br>
-
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='video'"> 
+                          <video controls width="400" :src="`data:video/mp4;base64,${currentActiveConversationMessage.whatsappVideoMessageFile}`"></video>
+                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappVideoMessageCaption}}</p>
                         </div>
-
-                        <div v-if="cuurentActiveConversationMessage.messageType=='document'" class="m-0">
-                          <a style="color: black;" :href="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`" :download="cuurentActiveConversationMessage.messageContent.mediaName">
-                            <p style="size: 10%;">Archivo: <strong>{{cuurentActiveConversationMessage.messageContent.mediaName}}</strong></p>
-                          </a>
+                        
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                          <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/></GmapMap><br>
+                          <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
+                          <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
+                          <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
+                            <b-dropdown-item @click="saveLocation('CASA', currentActiveConversationMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
+                            <b-dropdown-item @click="saveLocation('TRABAJO', currentActiveConversationMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
+                            <b-dropdown-item @click="saveLocation('OTRO', currentActiveConversationMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
+                          </b-dropdown>
                         </div>
-
-                        <audio controls v-if="cuurentActiveConversationMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`">
-                        </audio>
-                
-                      </div>
-
-
-                      <span v-if="cuurentActiveConversationMessage.owner == 'agent'" style="margin-left: 0; margin-right:auto;" class="text-small text-muted">{{cuurentActiveConversationMessage.messageSentHour}}</span>
-                      <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(cuurentActiveConversationMessage.messageReceivedHour)}}</span>
+                        
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                          <a style="color: black;" :href="`data:${currentActiveConversationMessage.whatsappDocumentMessageMimeType};base64,${currentActiveConversationMessage.whatsappDocumentMessageFile}`" :download="currentActiveConversationMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{currentActiveConversationMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                        </div>
+                        
+                        <audio controls v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${currentActiveConversationMessage.whatsappAudioMessageFile}`"></audio>
+                        
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                          <img v-b-modal.bigImageModal @click="openBigImage(currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL">
+                        </div>
                       
-                      <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="cuurentActiveConversationMessage.owner == 'agent'">
-                        
-
-                        <div v-if="cuurentActiveConversationMessage.messageType == 'text'">
-                          <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.sendedProduct != '1'">{{cuurentActiveConversationMessage.messageContent}}</p>
-                          
-                          <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.sendedProduct == '1'"><strong>Nombre: </strong>{{cuurentActiveConversationMessage.messageContent.productName}}</p>
-                          <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.sendedProduct == '1'"><strong>Precio: </strong>{{cuurentActiveConversationMessage.messageContent.productPrice}}</p>
-                          <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.sendedProduct == '1'"><strong>Descripción: </strong>{{cuurentActiveConversationMessage.messageContent.productDescription}}</p>
-                        </div>
-
-                        
-
-                        <div v-if="cuurentActiveConversationMessage.messageType=='image' || cuurentActiveConversationMessage.messageType=='sticker'">
-
-                          
-                          <img
-                            v-b-modal.bigImageModal
-                            @click="openBigImage(`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`)"
-                            v-if="cuurentActiveConversationMessage.messageContent.isBase64=='1'"
-                            style="width: 250px;"
-                            :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
-                          >
-
-                          <img
-                            v-b-modal.bigImageModal
-                            @click="openBigImage(cuurentActiveConversationMessage.messageContent.mediaContent)"
-                            v-else
-                            style="width: 250px;"
-                            :src="cuurentActiveConversationMessage.messageContent.mediaContent"
-                          >
-
-                        </div>
-                        
-                        <div v-if="cuurentActiveConversationMessage.messageType=='location'" class="m-0">
-                          <GmapMap
-                          :center="getLocation(cuurentActiveConversationMessage.messageContent)"
-                          :zoom="zoom"
-                          style="width: 500px; height: 250px"
-                          >
-                            <GmapMarker
-                              :position="getLocation(cuurentActiveConversationMessage.messageContent)"
-                              :draggable="false"
-                            />
-                          </GmapMap>
-                          <br>
-                          <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{cuurentActiveConversationMessage.messageContent.locationLatitude}}</p>
-                          <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{cuurentActiveConversationMessage.messageContent.locationLongitude}}</p>
-                          <br>
-                        </div>
-                        
-                        <audio controls v-if="cuurentActiveConversationMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`">
-                        </audio>
-                        
-
                       </div>
+                      <span v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null" style="margin-left: 0; margin-right:auto;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
+                      <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
+                      <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null">
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
+                          <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                            <div v-for="answeredMessage in currentActiveConversation.whatsappConversationMessages">
+                              <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
+                                
+                                <p v-if="answeredMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType == 'contact'"> 
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.whatsappContactMessageName}}</p>
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.whatsappContactMessagePhoneNumber}}</p>
+                                </div>
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType == 'image'"> 
+                                  <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`">
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappImageMessageCaption}}</p>
+                                </div>
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType=='video'"> 
+                                  <video controls width="400" :src="`data:video/mp4;base64,${answeredMessage.whatsappVideoMessageFile}`"></video>
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappVideoMessageCaption}}</p>
+                                </div>
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                                  <GmapMap :center="getLocation(answeredMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(answeredMessage)" :draggable="false"/></GmapMap><br>
+                                  <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
+                                  <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
+                                  <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
+                                    <b-dropdown-item @click="saveLocation('CASA', answeredMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
+                                    <b-dropdown-item @click="saveLocation('TRABAJO', answeredMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
+                                    <b-dropdown-item @click="saveLocation('OTRO', answeredMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
+                                  </b-dropdown>
+                                </div>
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                                  <a style="color: black;" :href="`data:${answeredMessage.whatsappDocumentMessageMimeType};base64,${answeredMessage.whatsappDocumentMessageFile}`" :download="answeredMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{answeredMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                                </div>
+                                
+                                <audio controls v-if="answeredMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${answeredMessage.whatsappAudioMessageFile}`"></audio>
+                              
+                                <div v-if="answeredMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                                  <img v-b-modal.bigImageModal @click="openBigImage(answeredMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="answeredMessage.whatsappFavoriteImageMessageDriveURL">
+                                </div>
+                              
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>
+                        
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'contact'"> 
+                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{currentActiveConversationMessage.whatsappContactMessageName}}</p>
+                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{currentActiveConversationMessage.whatsappContactMessagePhoneNumber}}</p>
+                        </div>
+                        
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
+                          <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
+                        </div>
+                        
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                          <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/></GmapMap><br>
+                          <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
+                          <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
+                        </div>
+                        
+                        <audio controls v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${currentActiveConversationMessage.whatsappAudioMessageFile}`"></audio>
+                        
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                          <img v-b-modal.bigImageModal @click="openBigImage(currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL">
+                        </div>
                       
+                      </div>
                     </div>
+
                   </div>
                 </div>
               </div>
@@ -458,628 +299,336 @@
           </b-modal>
 
 
-          <!-- Barra Superior -->
-          <div class="chat-content-wrap sidebar-content" v-if="temp != ''">
-            <div
-              class="d-flex pl-3 pr-3 pt-3 pb-3 o-hidden box-shadow-1 chat-topbar"
-            >
-              <a class="link-icon d-md-none" @click="isMobile = !isMobile">
-                <i class="icon-regular i-Right ml-0 mr-3"></i>
-              </a>
 
+          <div class="chat-content-wrap sidebar-content" v-if="currentActiveConversation!=null">
+            <div class="d-flex pl-3 pr-3 pt-3 pb-3 o-hidden box-shadow-1 chat-topbar">
+              <a class="link-icon d-md-none" @click="isMobile = !isMobile"><i class="icon-regular i-Right ml-0 mr-3"></i></a>
               <div class="d-flex align-items-center" style="width: 100%;">
-                
                 <input type="checkbox" v-if="verifiedUser" :checked="true" style="accent-color: #FFD733; margin-right: 10px;" onclick="return false;">
-                
-
-                <p class="m-0 text-title text-16" v-if="name != ''">
-                  {{ name }} ({{currentActiveConversation.recipientPhoneNumber}})
-                </p>
-
-
-                <p class="m-0 text-title text-16" v-else>
-                  {{ name }} ({{currentActiveConversation.recipientPhoneNumber}})
-                </p>
-
-
+                <p class="m-0 text-title text-16">{{ currentActiveConversation.whatsappConversationRecipientProfileName }} ({{currentActiveConversation.whatsappConversationRecipientPhoneNumber}})</p>
                 <div class="flex-grow-1"></div>
-
-                <button @click="getHistoryConversations()" class="btn btn-icon btn-primary mr-2" v-if="availableConversation == true" v-b-modal.historyConversationsModal>
-                  <i class="i-Clock"></i>
-                  Historial
-                </button>
-                <button @click="vistaItems = 'Productos'" class="btn btn-icon btn-primary mr-2" v-if="availableConversation == true">
-                  <i class="i-Shopping-Cart"></i>
-                  Buscar productos
-                </button>
-                <button @click="vistaItems = 'Orden'" class="btn btn-icon btn-primary" v-if="availableConversation == true">
-                  <i class="i-Check"></i>
-                  Resumen de la orden
-                </button>
-
+                <button @click="getHistoryConversations()" class="btn btn-icon btn-primary mr-2" v-if="availableConversation == true" v-b-modal.historyConversationsModal><i class="i-Clock"></i>Historial</button>
+                <button @click="vistaItems = 'Productos'" class="btn btn-icon btn-primary mr-2" v-if="availableConversation == true"><i class="i-Shopping-Cart"></i>Buscar productos</button>
+                <button @click="vistaItems = 'Orden'" class="btn btn-icon btn-primary" v-if="availableConversation == true"><i class="i-Check"></i>Resumen de la orden</button>
               </div>
-
             </div>
 
-
-
-            <vue-perfect-scrollbar ref="scrollRef"
-              :settings="{ suppressScrollX: true, wheelPropagation: false }"
-              class="chat-content perfect-scrollbar rtl-ps-none ps scroll"
-              style="padding-bottom: 30px;"
-            >
-              <div v-for="cuurentActiveConversationMessage in currentActiveConversation.messages" :key="cuurentActiveConversationMessage" @contextmenu.prevent="replyMessageRightClick(cuurentActiveConversationMessage)">
-                <div class="d-flex mb-30" :class="GetOwner(cuurentActiveConversationMessage.owner)">
-                  <div :style="getColorChat(cuurentActiveConversationMessage.owner)" class="message flex-grow-1">
+            <vue-perfect-scrollbar ref="scrollRef" :settings="{ suppressScrollX: true, wheelPropagation: false }" class="chat-content perfect-scrollbar rtl-ps-none ps scroll" style="padding-bottom: 30px;">
+              <div v-for="currentActiveConversationMessage in currentActiveConversation.whatsappConversationMessages" @contextmenu.prevent="replyMessageRightClick(currentActiveConversationMessage)">
+                <div class="d-flex mb-30" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
+                  <div :style="getMessageOwnerColor(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)" class="message flex-grow-1">
                     <div class="d-flex">
-                      
-                      <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="cuurentActiveConversationMessage.owner != 'agent'">
+                      <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber != null">
                         
-                        <div v-if="cuurentActiveConversationMessage.messageContext != ''">
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
                           <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
-                            
-                            <div v-for="answeredMessage in currentActiveConversation.messages">
-                              <div v-if="answeredMessage.messageID == cuurentActiveConversationMessage.messageContext">
+                            <div v-for="answeredMessage in currentActiveConversation.whatsappConversationMessages">
+                              <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
                                 
-                                <div v-if="answeredMessage.messageType=='contacts'"> 
-                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.messageContent.contactName}}</p>
-                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.messageContent.contactPhoneNumber}}</p>
+                                <p v-if="answeredMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
+                                <div v-if="answeredMessage.whatsappGeneralMessageType == 'contact'"> 
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.whatsappContactMessageName}}</p>
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.whatsappContactMessagePhoneNumber}}</p>
                                 </div>
                                 
-                                <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="answeredMessage.messageType == 'text'">{{answeredMessage.messageContent}}</p>
+                                <div v-if="answeredMessage.whatsappGeneralMessageType == 'image'"> 
+                                  <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`">
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappImageMessageCaption}}</p>
+                                </div>
                                 
-                                <div v-if="answeredMessage.messageType=='image'"> 
-                                  <img
-                                    v-b-modal.bigImageModal
-                                    @click="openBigImage(`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`)"
-                                    style="width: 250px;"
-                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
-                                  >
-                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.messageCaption != ''">{{answeredMessage.messageCaption}}</p>
+                                <div v-if="answeredMessage.whatsappGeneralMessageType=='video'"> 
+                                  <video controls width="400" :src="`data:video/mp4;base64,${answeredMessage.whatsappVideoMessageFile}`"></video>
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappVideoMessageCaption}}</p>
                                 </div>
-
-                                <div v-if="answeredMessage.messageType=='sticker'"> 
-                                  <img
-                                    style="width: 100px;"
-                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
-                                  >
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                                  <GmapMap :center="getLocation(answeredMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(answeredMessage)" :draggable="false"/></GmapMap><br>
+                                  <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
+                                  <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
+                                  <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
+                                    <b-dropdown-item @click="saveLocation('CASA', answeredMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
+                                    <b-dropdown-item @click="saveLocation('TRABAJO', answeredMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
+                                    <b-dropdown-item @click="saveLocation('OTRO', answeredMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
+                                  </b-dropdown>
                                 </div>
-
-                                <div v-if="answeredMessage.messageType=='video'"> 
-                                  <video controls
-                                    width="400"
-                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
-                                  >
-                                  </video>
-                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.messageCaption != ''">{{answeredMessage.messageCaption}}</p>
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                                  <a style="color: black;" :href="`data:${answeredMessage.whatsappDocumentMessageMimeType};base64,${answeredMessage.whatsappDocumentMessageFile}`" :download="answeredMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{answeredMessage.whatsappDocumentMessageFileName}}</strong></p></a>
                                 </div>
-
-
-                                <div v-if="answeredMessage.messageType=='location'" class="m-0">
-                                  <GmapMap
-                                  :center="getLocation(answeredMessage.messageContent)"
-                                  :zoom="zoom"
-                                  style="width: 1000px; height: 450px"
-                                  >
-                                    <GmapMarker
-                                      :position="getLocation(answeredMessage.messageContent)"
-                                      :draggable="false"
-                                    />
-                                  </GmapMap>
-                                  <br>
+                                
+                                <audio controls v-if="answeredMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${answeredMessage.whatsappAudioMessageFile}`"></audio>
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                                  <img v-b-modal.bigImageModal @click="openBigImage(answeredMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="answeredMessage.whatsappFavoriteImageMessageDriveURL">
                                 </div>
-
-                                <div v-if="answeredMessage.messageType=='document'" class="m-0">
-                                  <a style="color: black;" :href="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`" :download="answeredMessage.messageContent.mediaName">
-                                    <p style="size: 10%;">Archivo: <strong>{{answeredMessage.messageContent.mediaName}}</strong></p>
-                                  </a>
-                                </div>
-
-                                <audio controls v-if="answeredMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${answeredMessage.messageContent.mediaContent}`">
-                                </audio>
-
 
                               </div>
                             </div>
-
                           </div>
                         </div>
+                        <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>
                         
-                        <div v-if="cuurentActiveConversationMessage.messageType=='contacts'"> 
-                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{cuurentActiveConversationMessage.messageContent.contactName}}</p>
-                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{cuurentActiveConversationMessage.messageContent.contactPhoneNumber}}</p>
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'contact'"> 
+                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{currentActiveConversationMessage.whatsappContactMessageName}}</p>
+                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{currentActiveConversationMessage.whatsappContactMessagePhoneNumber}}</p>
                         </div>
-
-                        <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.messageType == 'text'">{{cuurentActiveConversationMessage.messageContent}}</p>
                         
-                        <div v-if="cuurentActiveConversationMessage.messageType=='image'"> 
-                          <img
-                            v-b-modal.bigImageModal
-                            @click="openBigImage(`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`)"
-                            style="width: 250px;"
-                            :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
-                          >
-                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="cuurentActiveConversationMessage.messageCaption != ''">{{cuurentActiveConversationMessage.messageCaption}}</p>
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
+                          <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
                         </div>
-
-                        <div v-if="cuurentActiveConversationMessage.messageType=='sticker'"> 
-                          <img
-                            style="width: 100px;"
-                            :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
-                          >
+                        
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='video'"> 
+                          <video controls width="400" :src="`data:video/mp4;base64,${currentActiveConversationMessage.whatsappVideoMessageFile}`"></video>
+                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappVideoMessageCaption}}</p>
                         </div>
-
-                        <div v-if="cuurentActiveConversationMessage.messageType=='video'"> 
-                          <video controls
-                            width="400"
-                            :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
-                          >
-                          </video>
-                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="cuurentActiveConversationMessage.messageCaption != ''">{{cuurentActiveConversationMessage.messageCaption}}</p>
-                        </div>
-              
-                        <div v-if="cuurentActiveConversationMessage.messageType=='location'" class="m-0">
-                          <GmapMap
-                          :center="getLocation(cuurentActiveConversationMessage.messageContent)"
-                          :zoom="zoom"
-                          style="width: 1000px; height: 450px"
-                          >
-                            <GmapMarker
-                              :position="getLocation(cuurentActiveConversationMessage.messageContent)"
-                              :draggable="false"
-                            />
-                          </GmapMap>
-                          <br>
-                          <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{cuurentActiveConversationMessage.messageContent.locationLatitude}}</p>
-                          <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{cuurentActiveConversationMessage.messageContent.locationLongitude}}</p>
-                          <br>
-
+                        
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                          <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/></GmapMap><br>
+                          <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
+                          <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
                           <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
-                            <b-dropdown-item @click="saveLocation('CASA' ,cuurentActiveConversationMessage.messageContent)" style="z-index: 1000;">CASA</b-dropdown-item>
-                            <b-dropdown-item @click="saveLocation('TRABAJO', cuurentActiveConversationMessage.messageContent)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
-                            <b-dropdown-item @click="saveLocation('OTRO',cuurentActiveConversationMessage.messageContent)" style="z-index: 1000;">OTRO</b-dropdown-item>
+                            <b-dropdown-item @click="saveLocation('CASA', currentActiveConversationMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
+                            <b-dropdown-item @click="saveLocation('TRABAJO', currentActiveConversationMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
+                            <b-dropdown-item @click="saveLocation('OTRO', currentActiveConversationMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
                           </b-dropdown>
-
                         </div>
-
-                        <div v-if="cuurentActiveConversationMessage.messageType=='document'" class="m-0">
-                          <a style="color: black;" :href="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`" :download="cuurentActiveConversationMessage.messageContent.mediaName">
-                            <p style="size: 10%;">Archivo: <strong>{{cuurentActiveConversationMessage.messageContent.mediaName}}</strong></p>
-                          </a>
+                        
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                          <a style="color: black;" :href="`data:${currentActiveConversationMessage.whatsappDocumentMessageMimeType};base64,${currentActiveConversationMessage.whatsappDocumentMessageFile}`" :download="currentActiveConversationMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{currentActiveConversationMessage.whatsappDocumentMessageFileName}}</strong></p></a>
                         </div>
-
-                        <audio controls v-if="cuurentActiveConversationMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`">
-                          
-                        </audio>
                         
+                        <audio controls v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${currentActiveConversationMessage.whatsappAudioMessageFile}`"></audio>
                         
-
-                      </div>
-                      <span v-if="cuurentActiveConversationMessage.owner == 'agent'" style="margin-left: 0; margin-right:auto;" class="text-small text-muted">{{parseHour(cuurentActiveConversationMessage.messageSentHour)}}</span>
-                      <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(cuurentActiveConversationMessage.messageReceivedHour)}}</span>
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                          <img v-b-modal.bigImageModal @click="openBigImage(currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL">
+                        </div>
                       
-                      <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="cuurentActiveConversationMessage.owner == 'agent'">
-                        
-                        <div v-if="cuurentActiveConversationMessage.messageContext != ''">  
+                      </div>
+                      <span v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null" style="margin-left: 0; margin-right:auto;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
+                      <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
+                      <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null">
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
                           <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
-                            
-                            <div v-for="answeredMessage in currentActiveConversation.messages">
-                              <div v-if="answeredMessage.messageID == cuurentActiveConversationMessage.messageContext">
-
-                                <div v-if="answeredMessage.messageType=='contacts'"> 
-                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.messageContent.contactName}}</p>
-                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.messageContent.contactPhoneNumber}}</p>
-                                </div>
-
-                                <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="answeredMessage.messageType == 'text'">{{answeredMessage.messageContent}}</p>
+                            <div v-for="answeredMessage in currentActiveConversation.whatsappConversationMessages">
+                              <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
                                 
-                                <div v-if="answeredMessage.messageType=='image'"> 
-                                  <img
-                                    v-b-modal.bigImageModal
-                                    @click="openBigImage(`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`)"
-                                    style="width: 250px;"
-                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
-                                  >
-                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.messageCaption != ''">{{answeredMessage.messageCaption}}</p>
+                                <p v-if="answeredMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType == 'contact'"> 
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.whatsappContactMessageName}}</p>
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.whatsappContactMessagePhoneNumber}}</p>
                                 </div>
-
-                                <div v-if="answeredMessage.messageType=='sticker'"> 
-                                  <img
-                                    style="width: 500px;"
-                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
-                                  >
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType == 'image'"> 
+                                  <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`">
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappImageMessageCaption}}</p>
                                 </div>
-
-                                <div v-if="answeredMessage.messageType=='video'"> 
-                                  <video controls
-                                    width="200"
-                                    :src="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`"
-                                  >
-                                  </video>
-                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.messageCaption != ''">{{answeredMessage.messageCaption}}</p>
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType=='video'"> 
+                                  <video controls width="400" :src="`data:video/mp4;base64,${answeredMessage.whatsappVideoMessageFile}`"></video>
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappVideoMessageCaption}}</p>
                                 </div>
-
-                                <div v-if="answeredMessage.messageType=='location'" class="m-0">
-                                  <GmapMap
-                                  :center="getLocation(answeredMessage.messageContent)"
-                                  :zoom="zoom"
-                                  style="width: 500px; height: 200px"
-                                  >
-                                    <GmapMarker
-                                      :position="getLocation(answeredMessage.messageContent)"
-                                      :draggable="false"
-                                    />
-                                  </GmapMap>
-                                  <br>
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                                  <GmapMap :center="getLocation(answeredMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(answeredMessage)" :draggable="false"/></GmapMap><br>
+                                  <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
+                                  <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
+                                  <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
+                                    <b-dropdown-item @click="saveLocation('CASA', answeredMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
+                                    <b-dropdown-item @click="saveLocation('TRABAJO', answeredMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
+                                    <b-dropdown-item @click="saveLocation('OTRO', answeredMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
+                                  </b-dropdown>
                                 </div>
-
-                                <div v-if="answeredMessage.messageType=='document'" class="m-0">
-                                  <a style="color: black;" :href="`data:${answeredMessage.messageContent.mediaExtension};base64,${answeredMessage.messageContent.mediaContent}`" :download="answeredMessage.messageContent.mediaName">
-                                    <p style="size: 10%;">Archivo: <strong>{{answeredMessage.messageContent.mediaName}}</strong></p>
-                                  </a>
+                                
+                                <div v-if="answeredMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                                  <a style="color: black;" :href="`data:${answeredMessage.whatsappDocumentMessageMimeType};base64,${answeredMessage.whatsappDocumentMessageFile}`" :download="answeredMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{answeredMessage.whatsappDocumentMessageFileName}}</strong></p></a>
                                 </div>
-
-                                <audio controls v-if="answeredMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${answeredMessage.messageContent.mediaContent}`">
-                                </audio>
-
-
+                                
+                                <audio controls v-if="answeredMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${answeredMessage.whatsappAudioMessageFile}`"></audio>
+                              
+                                <div v-if="answeredMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                                  <img v-b-modal.bigImageModal @click="openBigImage(answeredMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="answeredMessage.whatsappFavoriteImageMessageDriveURL">
+                                </div>
+                              
                               </div>
                             </div>
-
                           </div>
                         </div>
-
-                        <div v-if="cuurentActiveConversationMessage.messageType == 'text'">
-                          <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.sendedProduct != '1'">{{cuurentActiveConversationMessage.messageContent}}</p>
-                          
-                          <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.sendedProduct == '1'"><strong>Nombre: </strong>{{cuurentActiveConversationMessage.messageContent.productName}}</p>
-                          <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.sendedProduct == '1'"><strong>Precio: </strong>{{cuurentActiveConversationMessage.messageContent.productPrice}}</p>
-                          <p class="m-0" style="white-space: pre-line; font-size: large;" v-if="cuurentActiveConversationMessage.sendedProduct == '1'"><strong>Descripción: </strong>{{cuurentActiveConversationMessage.messageContent.productDescription}}</p>
-                        </div>
-
-                        <div v-if="cuurentActiveConversationMessage.messageType=='image' || cuurentActiveConversationMessage.messageType=='sticker'">
-
-                          <img
-                            v-b-modal.bigImageModal
-                            @click="openBigImage(`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`)"
-                            v-if="cuurentActiveConversationMessage.messageContent.isBase64=='1'"
-                            style="width: 250px;"
-                            :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
-                          >
-
-                          <img
-                            v-b-modal.bigImageModal
-                            @click="openBigImage(cuurentActiveConversationMessage.messageContent.mediaContent)"
-                            v-else
-                            style="width: 250px;"
-                            :src="cuurentActiveConversationMessage.messageContent.mediaContent"
-                          >
-
+                        <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>
+                        
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'contact'"> 
+                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{currentActiveConversationMessage.whatsappContactMessageName}}</p>
+                          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{currentActiveConversationMessage.whatsappContactMessagePhoneNumber}}</p>
                         </div>
                         
-                        <div v-if="cuurentActiveConversationMessage.messageType=='location'" class="m-0">
-                          <GmapMap
-                          :center="getLocation(cuurentActiveConversationMessage.messageContent)"
-                          :zoom="zoom"
-                          style="width: 1000px; height: 450px"
-                          >
-                            <GmapMarker
-                              :position="getLocation(cuurentActiveConversationMessage.messageContent)"
-                              :draggable="false"
-                            />
-                          </GmapMap>
-                          <br>
-                          <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{cuurentActiveConversationMessage.messageContent.locationLatitude}}</p>
-                          <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{cuurentActiveConversationMessage.messageContent.locationLongitude}}</p>
-                          <br>
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
+                          <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
                         </div>
                         
-                        <audio controls v-if="cuurentActiveConversationMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`">
-                          
-                        </audio>
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                          <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/></GmapMap><br>
+                          <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
+                          <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
+                        </div>
                         
-
-                      </div>
+                        <audio controls v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${currentActiveConversationMessage.whatsappAudioMessageFile}`"></audio>
+                        
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                          <img v-b-modal.bigImageModal @click="openBigImage(currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL">
+                        </div>
                       
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </vue-perfect-scrollbar>
-            
-            
-
-            <div v-if="availableConversation == true" class="pl-3 pr-3 pt-4 pb-3 box-shadow-1 chat-input-area" style="position: absolute; bottom: 0; width: 100%; z-index: 1000; background-color:white">
-              <div v-if="fileSharingLoader == true" style="text-align: center;">
-                <br><br>
-                <span class="spinner-glow spinner-glow-primary"></span>
+           <div v-if="availableConversation == true" class="pl-3 pr-3 pt-4 pb-3 box-shadow-1 chat-input-area" style="position: absolute; bottom: 0; width: 100%; z-index: 1000; background-color:white">
+              <div v-if="loaders.fileShare == true" style="text-align: center;">
+                <br><br><span class="spinner-glow spinner-glow-primary"></span>
               </div>
-              
-                <div v-else>
+              <div v-else>
+                <div v-if="repliedMessage != null">
+                  <div style="background-color: rgb(255, 216, 251); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                    <div>
+                      <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Respondiendo a:</strong></p>
+                      <i class="i-Close-Window text-25 text-danger" style="float: right; position: relative; top:-25px; cursor: pointer;" @click="cancelReply()"></i>
+                    </div><br>
+                    
+                    <p v-if="repliedMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{repliedMessage.whatsappTextMessageBody}}</p>
+                    
+                    <div v-if="repliedMessage.whatsappGeneralMessageType == 'contact'"> 
+                      <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{repliedMessage.whatsappContactMessageName}}</p>
+                      <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{repliedMessage.whatsappContactMessagePhoneNumber}}</p>
+                    </div>
+                    
+                    <div v-if="repliedMessage.whatsappGeneralMessageType == 'image'"> 
+                      <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${repliedMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${repliedMessage.whatsappImageMessageFile}`">
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="repliedMessage.whatsappImageMessageCaption != null">{{repliedMessage.whatsappImageMessageCaption}}</p>
+                    </div>
+                    
+                    <div v-if="repliedMessage.whatsappGeneralMessageType=='video'"> 
+                      <video controls width="400" :src="`data:video/mp4;base64,${repliedMessage.whatsappVideoMessageFile}`"></video>
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="repliedMessage.whatsappImageMessageCaption != null">{{repliedMessage.whatsappVideoMessageCaption}}</p>
+                    </div>
+                    
+                    <div v-if="repliedMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                      <GmapMap :center="getLocation(repliedMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(repliedMessage)" :draggable="false"/></GmapMap><br>
+                      <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{repliedMessage.whatsappLocationMessageLatitude}}</p>
+                      <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{repliedMessage.whatsappLocationMessageLongitude}}</p><br>
+                      <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
+                        <b-dropdown-item @click="saveLocation('CASA', repliedMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
+                        <b-dropdown-item @click="saveLocation('TRABAJO', repliedMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
+                        <b-dropdown-item @click="saveLocation('OTRO', repliedMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
+                      </b-dropdown>
+                    </div>
+                    
+                    <div v-if="repliedMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                      <a style="color: black;" :href="`data:${repliedMessage.whatsappDocumentMessageMimeType};base64,${repliedMessage.whatsappDocumentMessageFile}`" :download="repliedMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{repliedMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                    </div>
+                    
+                    <audio controls v-if="repliedMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${repliedMessage.whatsappAudioMessageFile}`"></audio>
                   
-                  <div v-if="repliedMessage != null">
-                        <div style="background-color: rgb(255, 216, 251); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
-
-                          <div>
-                            <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Respondiendo a:</strong></p>
-                            <i class="i-Close-Window text-25 text-danger" style="float: right; position: relative; top:-25px; cursor: pointer;" @click="cancelReply()"></i>
-
-                          </div>
-                          
-                          <br>
-
-                          <p class="m-0" style="white-space: pre-line; font-size: medium;" v-if="repliedMessage.messageType == 'text'">{{repliedMessage.messageContent}}</p>
-
-                          <div v-if="repliedMessage.messageType=='contacts'"> 
-                            <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{repliedMessage.messageContent.contactName}}</p>
-                            <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{repliedMessage.messageContent.contactPhoneNumber}}</p>
-                          </div>
-
-                          <img
-                            v-b-modal.bigImageModal
-                            @click="openBigImage(`data:${repliedMessage.messageContent.mediaExtension};base64,${repliedMessage.messageContent.mediaContent}`)"
-                            v-if="repliedMessage.messageType=='image'"
-                            style="width: 150px;"
-                            :src="`data:${repliedMessage.messageContent.mediaExtension};base64,${repliedMessage.messageContent.mediaContent}`"
-                          >
-
-                          <div v-if="repliedMessage.messageType=='sticker'"> 
-                            <img
-                              style="width: 50px;"
-                              :src="`data:${repliedMessage.messageContent.mediaExtension};base64,${repliedMessage.messageContent.mediaContent}`"
-                            >
-                          </div>
-
-                          <div v-if="repliedMessage.messageType=='video'"> 
-                            <video controls
-                              width="200"
-                              :src="`data:${repliedMessage.messageContent.mediaExtension};base64,${repliedMessage.messageContent.mediaContent}`"
-                            >
-                            </video>
-                          </div>
-
-                          <div v-if="repliedMessage.messageType=='location'" class="m-0">
-                            <GmapMap
-                            :center="getLocation(repliedMessage.messageContent)"
-                            :zoom="zoom"
-                            style="width: 1000px; height: 450px"
-                            >
-                              <GmapMarker
-                                :position="getLocation(repliedMessage.messageContent)"
-                                :draggable="false"
-                              />
-                            </GmapMap>
-                            <br>
-                          </div>
-
-                          <div v-if="repliedMessage.messageType=='document'" class="m-0">
-                            <a style="color: black;" :href="`data:${repliedMessage.messageContent.mediaExtension};base64,${repliedMessage.messageContent.mediaContent}`" :download="repliedMessage.messageContent.mediaName">
-                              <p style="size: 10%;">Archivo: <strong>{{repliedMessage.messageContent.mediaName}}</strong></p>
-                            </a>
-                          </div>
-
-                          <audio controls v-if="repliedMessage.messageType=='audio'" :src="`data:audio/mp3;base64,${repliedMessage.messageContent.mediaContent}`">
-                          </audio>
-
-
-                        </div>
-                    <br>
-                  </div>
-
-
-
-                  <div class="form-group">
-                    <b-form-textarea
-                      :disabled='sendingMessageDisable'
-                      class="form-control"
-                      placeholder="Escribe un mensaje"
-                      @keyup.enter="sendNewTextMessage()"
-                      v-model="newTextMessageContent"
-                      style="margin-bottom: 20px;"
-                      no-resize
-                      rows="3"
-                    />
-                  </div>
-                                  
-                  <div class="d-flex">
-
-                    
-                    <button class="btn btn-primary mr-2" type="button" v-b-modal.endConversationModal>Finalizar</button>
-
-                    <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación" @ok="endConversation()">
-                      <div>
-                        <b-dropdown variant="primary" text="Motivos frecuentes" style="width: 100%">
-                          <b-dropdown-item @click="addCloseConversationReason('Consulta sobre producto sin venta')">Consulta sobre producto sin venta</b-dropdown-item>
-                          <b-dropdown-item @click="addCloseConversationReason('Consulta sobre horarios')">Consulta sobre horarios</b-dropdown-item>
-                          <b-dropdown-item @click="addCloseConversationReason('Consulta sobre sucursales')">Consulta sobre sucursales</b-dropdown-item>
-                          <b-dropdown-item @click="addCloseConversationReason('Número equivocado')">Número equivocado</b-dropdown-item>
-                          <b-dropdown-item @click="addCloseConversationReason('Cliente no deseado')">Cliente no deseado</b-dropdown-item>
-
-                        </b-dropdown>
-                        <br><br>
-                        <b-form-textarea
-                          no-resize
-                          rows="5"
-                          class="form-control"
-                          placeholder="Motivo de la finalización de la conversación"
-                          v-model="closeConversationReason"
-                        />
-
-                        
-                      </div>
-                    </b-modal>
-
-
-                    <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
-                      <img
-                        style="width: 1000px;"
-                        :src="bigImageSource"
-                      >
-                    </b-modal>
-
-
-                    <b-dropdown dropup variant="primary" text="Transferir" style="margin-right: 10px;">
-                      <template v-for="agent in agents">
-                        <b-dropdown-item style="z-index: 1000;" @click="transferConversation(agent)">{{agent.agentName}}</b-dropdown-item>
-                      </template>
-                      <b-dropdown-item style="z-index: 1000;" v-if="agents.length == 0">No hay agentes disponibles</b-dropdown-item>
-                    </b-dropdown>
-
-                    <div class="flex-grow-1"></div>
-                    
-                    <b-dropdown dropup variant="primary" text="Tiendas" style="margin-right: 10px;">
-                      <b-dropdown-item style="z-index: 1000;" @click="sendStoreLocationToClient('Zapote')">Zapote</b-dropdown-item>
-                      <b-dropdown-item style="z-index: 1000;" @click="sendStoreLocationToClient('Escazu')">Escazu</b-dropdown-item>
-                      <b-dropdown-item style="z-index: 1000;" @click="sendStoreLocationToClient('Cartago')">Cartago</b-dropdown-item>
-                      <b-dropdown-item style="z-index: 1000;">Heredia</b-dropdown-item>
-
-                    </b-dropdown>
+                    <div v-if="repliedMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                      <img v-b-modal.bigImageModal @click="openBigImage(repliedMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="repliedMessage.whatsappFavoriteImageMessageDriveURL">
+                    </div>
                   
-
-                    <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-right: 10px;">
-                      <b-dropdown-item style="z-index: 1000;" @click="sendLocationToClient('CASA')">CASA</b-dropdown-item>
-                      <b-dropdown-item style="z-index: 1000;" @click="sendLocationToClient('TRABAJO')">TRABAJO</b-dropdown-item>
-                      <b-dropdown-item style="z-index: 1000;" @click="sendLocationToClient('OTRO')">OTRO</b-dropdown-item>
-                    </b-dropdown>
-
-                    
-
-                    <button
-                      class="btn btn-icon btn-rounded btn-primary mr-2"
-                      type="button"
-                      @click="uploadImage()"
-                      id="sendFiles"
-                    >
-                      <i class="i-Folder-With-Document"></i>
-                    </button>
-                    <input type="file" accept="image/png, image/jpeg" @change="uploadFile('image/png')" ref="imageFile" style="display: none;" id="imageUploader">
-                    <b-tooltip target="sendFiles">Enviar imágenes de la computadora</b-tooltip>
-
-
-                    <button id="sendFavoriteImages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal @click="openImageModal()">
-                      <i class="i-Folder"></i>
-                    </button>
-                    <b-tooltip target="sendFavoriteImages">Enviar imágenes del catálogo</b-tooltip>
-
-
-                    <b-modal @ok="sendFavoriteImages()" scrollable title="Imágenes favoritas" size="m" centered id="imageModal">
-                      <div v-if="loaderImages == true" style="text-align: center;">
-                        <br>
-                        <span class="spinner-glow spinner-glow-primary"></span>
-                      </div>
-                      
-                      <div v-else>
-                        <b-list-group>
-                          <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()"
-                          >Seleccionar todas las imágenes favoritas</b-list-group-item>
-                          
-                          <b-list-group-item :style="getImageStyle(agentFavoriteImage)"
-                            v-for="(agentFavoriteImage, index) in agentFavoriteImages"
-                            :variant="getImageVariant(agentFavoriteImage)"
-                            button
-                            @click="selectFavoriteImage(index)"
-                            >
-                            <div style="display:flex; ">
-                              <img :src="agentFavoriteImage.src" style="width: 80px; height: auto;"/>
-                              <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
-                                <h6>{{agentFavoriteImage.title}}</h6>
-                              </div>
-                              
-
-                            </div>
-
-                          </b-list-group-item>
-                        </b-list-group>
-                      </div>
-                    </b-modal>
-
-                    <button id="sendFavoriteMessages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.favoriteModal @click="openAgentFavoriteMessagesModal()">
-                      <i class="i-Love"></i>
-                    </button>
-                    <b-tooltip target="sendFavoriteMessages">Enviar mensajes favoritos</b-tooltip>
-
-                    <b-modal scrollable title="Mensajes favoritos" size="m" centered hide-footer id="favoriteModal">
-                      <div>
-                        <b-list-group>
-                          <b-list-group-item style="cursor: pointer;"
-                            v-for="agentFavoriteMessage in agentFavoriteMessages"
-                            button
-                            @click="sendFavoriteMessage(agentFavoriteMessage.content)"
-                            >
-                            <h6><strong>{{agentFavoriteMessage.title}}</strong></h6>
-                            {{agentFavoriteMessage.content}}
-                          </b-list-group-item>
-                        </b-list-group>
-                      </div>
-                    </b-modal>
-
-
-                    <button
-                      id="sendAudio"
-                      class="btn btn-icon btn-rounded btn-primary mr-2"
-                      type="button"
-                      @click="startRecording()"
-                      v-b-modal.recordAudioModal
-                    >
-                      <i class="i-Microphone-3"></i>
-                    </button>
-                    <b-tooltip target="sendAudio">Enviar audio</b-tooltip>
-
-                    
-                    <b-modal id="recordAudioModal" hide-footer hide-header size="sm" centered>
-                      <div v-if="(!isRecording) && (loaderAudio == false)">
-                        <audio controls :src="recordedAudioFile" style="width:270px;"></audio>
-                        <br>
-                      </div>
-
-                      <div v-if="isRecording" style="text-align: center;">
-                        <h2>{{recordedTime}}</h2>
-                      </div>
-
-                      <div style="text-align: center;">
-                        
-                        <div v-if="loaderAudio == false">
-                          <button
-                            v-if="isRecording"
-                            class="btn btn-icon btn-primary"
-                            type="button"
-                            @click="pauseAudioRecording()"
-                          >
-                          <i class="i-Pause"></i>
-                          </button>
-                          
-                          <button
-                            class="btn btn-icon btn-primary"
-                            type="button"
-                            @click="sendRecordedAudio()"
-                            v-if="!isRecording"
-                          >
-                          <i class="i-Paper-Plane"></i>
-                          </button>
-                        </div>
-
-                        <div v-if="loaderAudio == true" style="text-align: center;">
-                          <br>
-                          <span class="spinner-glow spinner-glow-primary"></span>
-                          <br>
-                        </div>
-
-                      </div>
-
-                    </b-modal>
-
-                  
-                  </div>
+                  </div><br>
                 </div>
-
+                <div class="form-group">
+                  <b-form-textarea :disabled='sendingMessageDisable' class="form-control" placeholder="Escribe un mensaje" @keyup.enter="sendWhatsappTextMessage()" v-model="newTextMessageContent" style="margin-bottom: 20px;" no-resize rows="3"/>
+                </div>              
+                <div class="d-flex">
+                  <button class="btn btn-primary mr-2" type="button" v-b-modal.endConversationModal>Finalizar</button>
+                  <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación" @ok="closeWhatsappConversation()">
+                    <b-dropdown variant="primary" text="Motivos frecuentes" style="width: 100%">
+                      <b-dropdown-item @click="addCloseConversationReason('Consulta sobre producto sin venta')">Consulta sobre producto sin venta</b-dropdown-item>
+                      <b-dropdown-item @click="addCloseConversationReason('Consulta sobre horarios')">Consulta sobre horarios</b-dropdown-item>
+                      <b-dropdown-item @click="addCloseConversationReason('Consulta sobre sucursales')">Consulta sobre sucursales</b-dropdown-item>
+                      <b-dropdown-item @click="addCloseConversationReason('Número equivocado')">Número equivocado</b-dropdown-item>
+                      <b-dropdown-item @click="addCloseConversationReason('Cliente no deseado')">Cliente no deseado</b-dropdown-item>
+                    </b-dropdown><br><br>
+                    <b-form-textarea no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
+                  </b-modal>
+                  <b-dropdown dropup variant="primary" text="Transferir" style="margin-right: 10px;">
+                    <template v-for="agent in agents">
+                      <b-dropdown-item style="z-index: 1000;" @click="requestTransferWhatsappConversation(agent)">{{agent.agentName}}</b-dropdown-item>
+                    </template>
+                    <b-dropdown-item style="z-index: 1000;" v-if="agents.length == 0">No hay agentes disponibles</b-dropdown-item>
+                  </b-dropdown>
+                  <div class="flex-grow-1"></div>
+                  <b-dropdown dropup variant="primary" text="Tiendas" style="margin-right: 10px;">
+                    <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappStoreLocationMessage('Zapote')">Zapote</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappStoreLocationMessage('Escazu')">Escazu</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappStoreLocationMessage('Cartago')">Cartago</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 1000;">Heredia</b-dropdown-item>
+                  </b-dropdown>
+                  <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-right: 10px;">
+                    <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappLocationMessage('CASA')">CASA</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappLocationMessage('TRABAJO')">TRABAJO</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappLocationMessage('OTRO')">OTRO</b-dropdown-item>
+                  </b-dropdown>
+                  <button class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="uploadImage()" id="sendFiles"><i class="i-Folder-With-Document"></i></button>
+                  <input type="file" accept="image/png, image/jpeg" @change="sendWhatsappImageMessage()" ref="imageFile" style="display: none;" id="imageUploader">
+                  <b-tooltip target="sendFiles">Enviar imágenes de la computadora</b-tooltip>
+                  <button id="sendFavoriteImages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal @click="openImageModal()"><i class="i-Folder"></i></button>
+                  <b-tooltip target="sendFavoriteImages">Enviar imágenes del catálogo</b-tooltip>
+                  <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
+                    <img style="width: 1000px;" :src="bigImageSource">
+                  </b-modal>
+                  <b-modal @ok="sendWhatsappFavoriteImageMessage()" scrollable title="Catálogo de desechables" size="m" centered id="imageModal">
+                    <div v-if="loaderImages == true" style="text-align: center;">
+                      <br><span class="spinner-glow spinner-glow-primary"></span>
+                    </div>
+                    <div v-else>
+                      <b-list-group>
+                        <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
+                        <b-list-group-item :style="getImageStyle(agentFavoriteImage)" v-for="(agentFavoriteImage, index) in agentFavoriteImages" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
+                          <div style="display:flex; ">
+                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
+                            <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
+                              <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
+                            </div>
+                          </div>
+                        </b-list-group-item>
+                      </b-list-group>
+                    </div>
+                  </b-modal>
+                  <button id="sendFavoriteMessages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.favoriteModal @click="openAgentFavoriteMessagesModal()"><i class="i-Love"></i></button>
+                  <b-tooltip target="sendFavoriteMessages">Enviar mensajes favoritos</b-tooltip>
+                  <b-modal scrollable title="Mensajes favoritos" size="m" centered hide-footer id="favoriteModal">
+                    <b-list-group>
+                      <b-list-group-item style="cursor: pointer;" v-for="agentFavoriteMessage in agentFavoriteMessages" button @click="sendWhatsappFavoriteTextMessage(agentFavoriteMessage.agentFavoriteMessageTextMessageBody)">
+                        <h6><strong>{{agentFavoriteMessage.agentFavoriteMessageName}}</strong></h6>
+                        {{agentFavoriteMessage.agentFavoriteMessageTextMessageBody}}
+                      </b-list-group-item>
+                    </b-list-group>
+                  </b-modal>
+                  <button id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>
+                  <b-tooltip target="sendAudio">Enviar audio</b-tooltip>
+                  <b-modal id="recordAudioModal" hide-footer hide-header size="sm" centered>
+                    <div v-if="(!isRecording) && (loaderAudio == false)"><audio controls :src="recordedAudioFile" style="width:270px;"></audio><br></div>
+                    <div v-if="isRecording" style="text-align: center;"><h2>{{recordedTime}}</h2></div>
+                    <div style="text-align: center;">
+                      <div v-if="loaderAudio == false">
+                        <button v-if="isRecording" class="btn btn-icon btn-primary" type="button" @click="pauseAudioRecording()"><i class="i-Pause"></i></button>
+                        <button class="btn btn-icon btn-primary" type="button" @click="sendWhatsappAudioMessage()" v-if="!isRecording"><i class="i-Paper-Plane"></i></button>
+                      </div>
+                      <div v-if="loaderAudio == true" style="text-align: center;">
+                        <br><span class="spinner-glow spinner-glow-primary"></span><br>
+                      </div>
+                    </div>
+                  </b-modal>
+                </div>
+              </div>
             </div>
           </div>
-
-
         </div>
       </div>
 
-      <div class="col-md-3 scrollable-container" v-if="(temp != '') && (availableConversation == true)">
+      <div class="col-md-3 scrollable-container" v-if="(currentActiveConversation != null) && (availableConversation == true)">
           <b-card v-if="vistaItems == 'Productos'">
             <div class="d-flex" style="align-items: center;">
               <h3 class="ul-widget__head-title">
@@ -1121,7 +670,6 @@
                       <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Hierba')" :src="hierbaLogoSRC"/>
                     </div>
                     <img :src="producto.localizacion" alt="Imagen no disponible"/>
-
                   </div>
                   <div class="ul-widget2__info ul-widget4__users-info">
                     <a href="#" variant="info" v-if="producto.productosAsociados.length==0" @click="AgregarItem(producto,'info')" class="ul-widget2__title">{{ producto.descripcion }}</a>
@@ -1139,7 +687,7 @@
 
                     <div style="display: flex">
                       
-                      <button class="btn btn-icon btn-success mr-2" @click="sendProductToClient(producto)">
+                      <button class="btn btn-icon btn-success mr-2" @click="sendWhatsappProductMessage(producto)">
                         Enviar
                       </button>
                       <button v-b-modal.stockModal v-if="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistencia(producto.codigoProducto)">
@@ -1303,7 +851,7 @@
                                 >Enviar orden a la central</b-button
                               >
                               <br><br>
-                              <b-button @click="sendOrderToClient()" variant="warning"
+                              <b-button @click="sendWhatsappOrderTextMessage()" variant="warning"
                                 >Compartir orden con el cliente</b-button
                               >
                               <br><br>
@@ -1397,7 +945,10 @@
 import { mapGetters, mapActions } from "vuex";
 import axios from 'axios';
 const constants = require('@../../../src/constants.js'); 
+
 const webSocket = new WebSocket('wss:telasmasbackend.onrender.com');
+
+
 import router from "../../../router";
 import {gmapApi} from 'vue2-google-maps';
 
@@ -1436,6 +987,14 @@ export default {
   },
   data() {
     return { 
+      loaders: 
+      {
+        activeConversations: false,
+        grabConversation: false,
+        fileShare: false,
+      },
+
+
       sendingMessageDisable: false,
 
 
@@ -1464,10 +1023,7 @@ export default {
       hierbaLogoSRC: `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC8AAAAqCAYAAAAj6gIfAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAQ9SURBVGhD7ZhfSFt3FMe/iSZqNNHMjKHbJHMP+lAflkkHzhep0OEg3YNlD4KwkYeBD5XSQqllYw/tU9lfBnnoKghSxgajwgIjDxksDaykHSx7MC/WpW10602MXk3ivdHsl/Q4Y3L/1dxrEfZ5yTnnJd977jnnd37XVGTgmGKm32OJoeJXnszjxt9xZMnXG+PEZ37A19mvcDfvw7dPBArqi0HieYQ2vwRXtgXEcvNYLJQdXTFEvJiaxe2dimwXbyKY0T/7BojnEWaZPljnLPvZBSTI0wv9xW9GcGeH7EqK8/hljWyd0F38RvaOTIaTuJ+Pk60POovncU/4mexaskIEi2Trgb7i8zH8KVUy/xFCLEOmDugrfiuKGJnSxBHfTpFdP/LiCzwSqRiWeAEihdRYEqNkyZMoPCBLHXFzGTEuDk7mjJBdzDb++RgXcnv160aPZQJjbe/A47BSrBp2MD0axS3FsmGYLuJSzzh6ya2mJPg3/iZus95Zp5ir+Udce6mbvH1kM++wvAYb2cAyEuJV+NdOYerhLMIZnuKVpMDtkqlEMSmZSZGP4tYjH6ZT72OuQniJLrOLrIPIl419CB4y92EltOvH3Ppo+SHuHngGHilNy/UDcBUnmMjH8P3jSUylpxDaiUmU6GmcsEm/bXnxjX14w1r7qvYoPcSN9Cg+SUbBlU7+LQ7PNEhYTy2uXsJ02odgQWH+N4zgzVayq1CcNgO2CUi/sD14rIhTuLx6FYFsEjmKKhNBIh+BPzmGz7ZDKsPAioHmt+EgrxqVm1SpCcdYExqz0qrCmvsKa+4ecqtRzDwrfIy0fljRuEcJy3qLV1Z4CRXxDOc4zjTIjUcDMZ3Du07l/1UXX8p+2zmV2tebbnhavehtJFcGDeIZHeOYtLrJOQIaL2KyU/1taxPP6HdewUkTOYbCEvXCkKY+0ywezQPwdcwoNlD9uOFhJTrcQq4K2sQXBKykIwhsxTUvaYejCZntBQRTy+DyFFJAcc6Xju4gW5J+EiMGi5bCjvaGD3DWcRYnZZZBefFrs5je8Bv2wUg7VvTbAjj/op38fbTX/HOjiX5rUV4PtpYR3ji4Wx8dneiyfIQzdi88tUkvo7LbEKxhuc04fs+HcI/dllZ3jfj+6Ea7uQ+vNw7iRNMg3nJ0w6JySGkTr4iA8ONTmGMP+EyYZ/Dpq150kXsY6q/59QUEJIRb2B7+VFg3XCyjNezOIpgm+5DULX4pt0AfVPcYxHBrAF+8MkHi3Rhun8N1xwz6TZUjL4lwLlrXCK4/88Xt8o/FdBojtu9w/eVvMOnqhKUc3cfh9OJ8z6+41jYDj7nzabDIa7zASKNDzQPZrABbzT0zBv9fPtzHEN5zfo6xquuQmGMXYItdtSmV0GXO1wpXx9JSn/ASumReGgGJ1B9YLdrR29EHV51CpTBQvPEcg/VAnv/FPx+AfwHCw33sgBcIGAAAAABJRU5ErkJggg==`,
 
       loaderImages: false,
-      loaderGrabPendingConversation: false,
       loader2: false,
-      fileSharingLoader: false,
-      loaderConversations: false,
       enviandoProductoLoader: false,
       textoSucursales: 'Sucursales ',
 
@@ -1479,7 +1035,7 @@ export default {
       
 
       status: 'accepted',
-      verifiedUser: true,
+      verifiedUser: false,
 			zoom: 15,
 
       agentName: '',
@@ -1489,13 +1045,12 @@ export default {
       zapoteConversations: [],
       escazuConversations: [],
       cartagoConversations: [],
-      herediaConversations: [],
 
       // Variables del chat -------
       activeConversation: '',
       activeConversations: [],
       activeConversationsAsJSON: {},
-      currentActiveConversation: {},
+      currentActiveConversation: null,
       updatedActiveConversationID: '',
       
       newTextMessageContent: '',
@@ -1621,93 +1176,71 @@ export default {
       bigImageSource: '',
 
 
-
-
-      //INDEXED DB
-      db: null
-
-
-
-
-
-
     };
   },
 
   methods: {
+    
+
+
     openBigImage(bigImageSource){
       this.bigImageSource = bigImageSource;
     },
     parseHour(originalHour){
-      const hour = originalHour.substring(0,2);
-      const hoursConversion = 
-      {
-        '24': '18',
-        '23': '17',
-        '22': '16',
-        '21': '15',
-        '20': '14',
-        '19': '13',
-        '18': '12',
-        '17': '11',
-        '16': '10',
-        '15': '09',
-        '14': '08',
-        '13': '07',
-        '12': '06',
-        '11': '05',
-        '10': '04',
-        '09': '03',
-        '08': '02',
-        '07': '01',
-        '06': '00',
-        '05': '23',
-        '04': '22',
-        '03': '21',
-        '02': '20',
-        '01': '19',
-        '00': '18'
-      }
-      return hoursConversion[hour] + originalHour.substring(2,8);
+      const parsingDate = new Date(originalHour);
+      const options = {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      };
+      const formattedDate = parsingDate.toLocaleString('en-US', options);
+      return formattedDate;
     },
 
     openHistoryConversation(historyConversation){
       this.openHistoryLoader = true;
       this.currentHistoryConversation = {};
-      axios.post(constants.routes.backendAPI+'/openHistoryConversation', {conversationID: historyConversation.conversationID})
+      axios.post(constants.routes.backendAPI+'/selectAgentConversation', 
+      {
+        whatsappConversationID: historyConversation.whatsappConversationID
+      })
       .then((response) =>{
-        this.$root.$emit('bv::hide::modal','historyConversationsModal');
-        this.currentHistoryConversation = response.data;
-        this.openHistoryLoader = false;
+        if (response.data.success){
+          this.$root.$emit('bv::hide::modal','historyConversationsModal');
+          this.currentHistoryConversation = response.data.result[historyConversation.whatsappConversationID];
+          this.openHistoryLoader = false;
+        } else {
+          this.showNotification('danger', 'Error al abrir la conversación del historial', 'Ha ocurrido un error inesperado al abrir la conversación del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
       })
       .catch((error) => {
-        console.log(error);
+        this.showNotification('danger', 'Error al abrir la conversación del historial', 'Ha ocurrido un error inesperado al abrir la conversación del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
 
     getHistoryConversations(){
-
       this.historyLoader = true;
       this.historyConversations = [];
-      axios.post(constants.routes.backendAPI+'/getHistoryConversations', {recipientPhoneNumber: this.currentActiveConversation.recipientPhoneNumber})
+      axios.post(constants.routes.backendAPI+'/selectWhatsappClosedConversationFromWhatsappConversationRecipientPhoneNumber', 
+      {
+        whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber
+      })
       .then((response) =>{
-        for (var conversationID in response.data){
-          this.historyConversations.push({
-            startDate: response.data[conversationID].startDate,
-            endDate: response.data[conversationID].endDate,
-            startHour: response.data[conversationID].startHour,
-            endHour: response.data[conversationID].endHour,
-            assignedAgentName: response.data[conversationID].assignedAgentName,
-            conversationID: conversationID,
-          })
+        if (response.data.success){
+          this.historyConversations = response.data.result;
+          this.historyLoader = false;
+        } else {
+          this.showNotification('danger', 'Error al consultar las conversaciones del historial', 'Ha ocurrido un error inesperado al consultar las conversaciones del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
-        this.historyLoader = false;
-
       })
       .catch((error) => {
-        console.log(error);
+        this.showNotification('danger', 'Error al consultar las conversaciones del historial', 'Ha ocurrido un error inesperado al consultar las conversaciones del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
+
 
     replyMessageRightClick(message){
       this.repliedMessage = message;
@@ -1717,17 +1250,21 @@ export default {
     },
     openImageModal(){
       this.loaderImages = true;
-      axios.post(constants.routes.backendAPI+'/getFavoriteImages')
+      axios.post(constants.routes.backendAPI+'/selectFavoriteImages')
         .then((response) =>{
-          this.agentFavoriteImages = response.data;
-          for (var agentFavoriteImageIndex in this.agentFavoriteImages){
-            this.agentFavoriteImages[agentFavoriteImageIndex]['selected'] = false;
+          if (response.data.success){
+            this.agentFavoriteImages = response.data.result;
+            for (var agentFavoriteImageIndex in this.agentFavoriteImages){
+              this.agentFavoriteImages[agentFavoriteImageIndex]['selected'] = false;
+            }
+            this.loaderImages = false;
+          } else {
+            this.showNotification('danger', 'Error al consultar las imágenes del catálogo', 'Ha ocurrido un error inesperado al consultar las imágenes del catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
           }
-
-          this.loaderImages = false;
         })
         .catch((error) => {
           console.log(error);
+          this.showNotification('danger', 'Error al consultar las imágenes del catálogo', 'Ha ocurrido un error inesperado al consultar las imágenes del catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         })
     },
 
@@ -1744,54 +1281,6 @@ export default {
         this.mediaRecorder.stop();
         this.isRecording = false;
       }
-    },
-
-    sendRecordedAudio(){
-      var repliedMessageID = '';
-      if (this.repliedMessage != null){
-        repliedMessageID = this.repliedMessage.messageID
-      }
-      const httpBodyToSendRecordedAudio = 
-      {
-        'audioFile': this.recordedAudioFile,
-        'agentID': localStorage.getItem('agentID'),
-        'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber,
-        'messageContext': repliedMessageID      
-      }
-      this.loaderAudio = true;
-      axios.post(constants.routes.backendAPI+'/sendWhatsappAudio', httpBodyToSendRecordedAudio)
-        .then((result) =>{
-          this.loaderAudio = false;
-          this.$set(this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]= {
-            owner:'agent',
-            messageContent: {mediaContent: result.data.whatsappAudioMessageFile},
-            messageContext: repliedMessageID,
-            messageID: result.data.whatsappMessageID,
-            messageType: 'audio',
-            messageSentHour: Date().toString().slice(16,24)
-          });
-          this.repliedMessageID = '';
-          var messages = this.currentActiveConversation.messages;
-          this.currentActiveConversation.messages = {};
-          this.currentActiveConversation.messages = messages;
-          this.$nextTick(() => {
-          if (this.$refs.scrollRef) {
-              const psContainer = this.$refs.scrollRef.$el;
-              psContainer.scrollTop = psContainer.scrollHeight;
-            }
-          });
-
-          this.repliedMessage = null;
-
-          this.$root.$emit('bv::hide::modal','recordAudioModal')
-        })
-        .catch(() => {
-          this.$bvToast.toast("Ha ocurrido un error inesperado al enviar el audio. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-            title: "Error al consultar enviar el audio",
-            variant: "danger",
-            solid: true
-          });
-        })
     },
 
     async startRecording() {
@@ -1838,88 +1327,6 @@ export default {
       const seconds = ((ms % 60000) / 1000).toFixed(0);
 
       return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-    },
-
-
-    async sendFavoriteImages(){
-      for (var image in this.agentFavoriteImages){
-        if (this.agentFavoriteImages[image].selected){
-          var repliedMessageID = ''
-          if (this.repliedMessage != null){
-            repliedMessageID = this.repliedMessage.messageID;
-          }
-          const httpBodyToSendRecordedAudio = 
-          {
-            'mediaContent':this.agentFavoriteImages[image].src,
-            'mediaType': 'image/png',
-            'mediaName': 'media',
-            'agentID': localStorage.getItem('agentID'),
-            'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber,
-            'messageContext': repliedMessageID
-          }
-          
-          await axios.post(constants.routes.backendAPI+'/sendWhatsappMedia', httpBodyToSendRecordedAudio)
-          .then((result) =>{
-            this.$set(this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]= {
-              owner:'agent',
-              messageContent:{'mediaExtension':'image/png', 'mediaContent':this.agentFavoriteImages[image].src.split(',')[1], 'mediaName':'media', isBase64: '1'},
-              messageType: 'image',
-              messageSentHour: Date().toString().slice(16,24),
-              messageID: result.data,
-              messageContext: repliedMessageID
-            });
-            
-            var messages = this.currentActiveConversation.messages;
-            this.currentActiveConversation.messages = {};
-            this.currentActiveConversation.messages = messages;
-            
-            this.$nextTick(() => {
-            if (this.$refs.scrollRef) {
-                const psContainer = this.$refs.scrollRef.$el;
-                psContainer.scrollTop = psContainer.scrollHeight;
-              }
-            });
-
-            this.agentFavoriteImages[image].selected = false;
-            this.repliedMessage = null;
-          });
-
-        }
-      }
-    },
-
-    sendFavoriteMessage(favoriteMessage){
-      var repliedMessageID = ''
-      if (this.repliedMessage != null){
-        repliedMessageID = this.repliedMessage.messageID;
-      }
-      axios.get(constants.routes.backendAPI
-            +'/sendWhatsappMessage?'
-            +'type=text'
-            +'&agentID='+localStorage.getItem('agentID')
-            +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
-            +'&messageContent='+favoriteMessage
-            +'&messageContext='+repliedMessageID
-            +'&sendedProduct=0')
-      .then((result) =>{ 
-        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageContext: repliedMessageID,messageID: result.data, sendedProduct: '0', owner:'agent', messageContent:favoriteMessage,messageType:'text',messageSentHour: Date().toString().slice(16,24)});
-        this.repliedMessage = null;
-
-        this.$nextTick(() => {
-        if (this.$refs.scrollRef) {
-            const psContainer = this.$refs.scrollRef.$el;
-            psContainer.scrollTop = psContainer.scrollHeight;
-          }
-        });
-
-        this.$root.$emit('bv::hide::modal','favoriteModal')
-        
-      })
-      
-      .catch(error =>{
-        console.log(error);
-      })
-
     },
 
     cargarTesting(codigo){
@@ -1975,159 +1382,14 @@ export default {
         });
       });
     },
-
-    sendOrderToClient(){
-      var newMessage = '';
-      var total = 0;
-      for (var productIndex in this.orden){
-        if (newMessage != ''){
-          newMessage = newMessage + `%0a%0a*Nombre*: ` + this.orden[productIndex]['descripcion'] + `%0a*Precio*: ₡` + this.orden[productIndex]['precio'] + `%0a*Cantidad*: ` + this.orden[productIndex]['cantidad'] + `%0a*Subtotal*: ₡` + this.orden[productIndex]['cantidad']*this.orden[productIndex]['precio'];
-        } else {
-          newMessage = `*Nombre*: ` + this.orden[productIndex]['descripcion'] + `%0a*Precio*: ₡` + this.orden[productIndex]['precio'] + `%0a*Cantidad*: ` + this.orden[productIndex]['cantidad'] + `%0a*Subtotal*: ₡` + this.orden[productIndex]['cantidad']*this.orden[productIndex]['precio'];
-        }
-      }
-
-      newMessage = newMessage + `%0a%0a*SUBTOTAL*: ₡` + this.calcularSubTotal;
-      newMessage = newMessage + `%0a*DESCUENTO*: ₡` + this.calcularDescuento;
-      newMessage = newMessage + `%0a*TOTAL*: ₡` + this.calcularTotal;
-      var repliedMessageID = ''
-      if (this.repliedMessage != null){
-        repliedMessageID = this.repliedMessage.messageID;
-      }
-      axios.get(constants.routes.backendAPI
-            +'/sendWhatsappMessage?'
-            +'type=text'
-            +'&agentID='+localStorage.getItem('agentID')
-            +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
-            +'&messageContent='+newMessage
-            +'&messageContext='+repliedMessageID
-            +'&sendedProduct=0')
-      .then((result) =>{ 
-        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageContext: repliedMessageID, messageID: result.data, sendedProduct: '0', owner:'agent',messageContent:'Se ha compartido el carrito con el cliente',messageType:'text',messageSentHour: Date().toString().slice(16,24)});
-
-        this.$nextTick(() => {
-        if (this.$refs.scrollRef) {
-            const psContainer = this.$refs.scrollRef.$el;
-            psContainer.scrollTop = psContainer.scrollHeight;
-          }
-        });
-      })
-      
-      .catch(error =>{
-        console.log(error);
-      })
-
-      
+  
+    saveLocation(locationName, whatsappGeneralMessage){
+      this.locations[locationName] = {latitude: whatsappGeneralMessage.whatsappLocationMessageLatitude, longitude: whatsappGeneralMessage.whatsappLocationMessageLongitude};
+      this.showNotification('success', 'Ubicación registrada', "Ha registrado la ubicación '"+locationName+"' al cliente exitosamente.");
     },
 
-    grabPendingConversation(pendingConversation){
-      this.loader2 = true;
-      axios.post(constants.routes.backendAPI+'/grabPendingConversation',{
-        agentID: localStorage.getItem('agentID'),
-        conversationID: pendingConversation.pendingConversationID
-      })
-      .then(() =>{
-        this.getAgentActiveConversations();
-        this.getPendingConversations();
-      })
-      
-      .catch(error =>{
-        console.log(error);
-      })
-    },
-
-    grabStoreConversation(storeConversation){
-      this.loaderGrabPendingConversation = true;
-
-      axios.post(constants.routes.backendAPI+'/grabStoreConversation',{
-        agentID: localStorage.getItem('agentID'),
-        recipientPhoneNumber: storeConversation.recipientPhoneNumber,
-        storeName: storeConversation.storeName,
-        messageID: storeConversation.messageID
-      })
-      .then(() =>{
-        this.hints[storeConversation.recipientPhoneNumber] = storeConversation.clientOrder;
-        this.getAgentActiveConversations();
-        this.getStoreConversations();
-      })
-      
-      .catch(error =>{
-        console.log(error);
-      })
-    },
-
-    sendLocationToClient(locationName){
-      var repliedMessageID = '';
-      if (this.repliedMessage != null){
-        repliedMessageID = this.repliedMessage.messageID
-      }
-      if (this.locations[locationName]){
-        axios.post(constants.routes.backendAPI+'/sendWhatsappLocation',{
-          agentID: localStorage.getItem('agentID'),
-          recipientPhoneNumber: this.currentActiveConversation.recipientPhoneNumber,
-          latitude: this.locations[locationName].latitude,
-          longitude: this.locations[locationName].longitude,
-          messageContext: repliedMessageID
-        })
-        .then((result) =>{
-          this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageContext: repliedMessageID, messageID: result.data, owner:'agent',messageContent:{locationLatitude:this.locations[locationName].latitude, locationLongitude:this.locations[locationName].longitude},messageType:'location',messageSentHour: Date().toString().slice(16,24)});
-          this.repliedMessage = null;
-        })
-        .catch(error =>{
-          console.log(error);
-        })
-      } else {
-        this.$bvToast.toast('El cliente no cuenta con una ubicación asignada a "' + locationName + '." Por favor, agregue la dirección correctamente, e intentelo nuevamente.', {
-          title: 'Error al enviar la ubicación',
-          variant: 'danger',
-          solid: true
-        });
-      }
-    },
-
-    sendStoreLocationToClient(locationName){
-      var latitud = 0;
-      var longitud = 0;
-      if (locationName == 'Zapote'){
-        var latitud = 9.920173;
-        var longitud = -84.051987;
-      } else if (locationName == 'Escazu'){
-        var latitud = 9.949093;
-        var longitud = -84.163117;
-      } else if (locationName == 'Cartago') {
-        var latitud = 9.864751;
-        var longitud = -83.925354;
-      } else if (locationName == 'Heredia') {
-        var latitud = 9.864751;
-        var longitud = -83.925354;
-      }
-      const me = this;
-      var repliedMessageID = '';
-      if (this.repliedMessage != null){
-        repliedMessageID = this.repliedMessage.messageID
-      }
-      axios.post(constants.routes.backendAPI+'/sendWhatsappLocation',{
-        agentID: localStorage.getItem('agentID'),
-        recipientPhoneNumber: this.currentActiveConversation.recipientPhoneNumber,
-        latitude: latitud,
-        longitude: longitud,
-        messageContext: repliedMessageID
-      })
-      .then((result) =>{
-        this.$set(this.currentActiveConversation.messages, (Object.keys(this.currentActiveConversation.messages).length+1).toString(), {messageContext: repliedMessageID, messageID: result.data,owner:'agent',messageContent:{locationLatitude:latitud, locationLongitude:longitud},messageType:'location',messageSentHour: Date().toString().slice(16,24)});
-        me.repliedMessage = null;
-      })
-      .catch(error =>{
-        console.log(error);
-      })
-    },
-
-    saveLocation(locationName, location){
-      this.locations[locationName] = {latitude: location.locationLatitude, longitude: location.locationLongitude};
-      
-    },
-    getLocation(location){
-      return {lat: location.locationLatitude, lng: location.locationLongitude}
+    getLocation(whatsappGeneralMessage){
+      return {lat: whatsappGeneralMessage.whatsappLocationMessageLatitude, lng: whatsappGeneralMessage.whatsappLocationMessageLongitude}
     },
 
 
@@ -2170,30 +1432,7 @@ export default {
       this.allImageSelected = !this.allImageSelected;
     },
 
-    getAllContacts(){
-      axios.get(constants.routes.backendAPI+'/getAllContacts')
-        .then(response =>{ 
-          for (var contactPhoneNumber in response.data){
-            this.contactsList.push(
-              {
-                'contactPhoneNumber': contactPhoneNumber,
-                'contactName': response.data[contactPhoneNumber].contactName,
-                'selected': false
-              }
-            )
-          }
-          this.contactsList.sort((a, b) => {
-            const nameA = a.contactName.toLowerCase();
-            const nameB = b.contactName.toLowerCase();
-            return nameA.localeCompare(nameB);
-          });
-        })
-        
-        .catch(error =>{
-          console.log(error);
-        })
-    },
-
+    
     CleanData(){
       this.name = "";
       this.phone = "";
@@ -2309,7 +1548,7 @@ export default {
         Valido = 0;
       
       
-      } else if(this.address === ""){
+      } else if(this.address == ""){
         this.$bvToast.toast('Por favor, agregue una nota de la dirección para generar la orden, e intentelo nuevamente.', {
           title: 'Error al generar la orden',
           variant: 'danger',
@@ -2331,126 +1570,146 @@ export default {
     return Valido;
 
     },
+
     OrdenExpress(){
-        if(this.ValidarData() == 1){
-          var metodoEnvioCorregido = '';
-          if (this.MetodoEnvio == 'Retiro en sucursal'){
-            metodoEnvioCorregido = 'Retira en sucursal';
-          } else if (this.MetodoEnvio == 'Envío por motorizado'){
-            metodoEnvioCorregido = 'Envio Propio';
-          } else {
-            metodoEnvioCorregido = 'Correos de CR';
-          }
-          this.loaderOrdenEnviada = true;
-          var me = this;
-          this.loading = true;
-          var momentoActual = new Date(); 
-          var hora = momentoActual.getHours(); 
-          var minuto = momentoActual.getMinutes(); 
-          var segundo = momentoActual.getSeconds();
-          var time = hora + ":" + minuto + ":" + segundo;
-          let header={"Authorization" : "Bearer "};
-          let configuracion= {headers : header};
-          axios.post('https://noah.cr/BackendKingVape/api/ordenexpress/CrearMesaTotal',{
-            'fecha': this.today.toString(),
-            'cajero': this.agentName,
-            'total': this.calcularTotal,
-            'Nombre': this.name,
-            'telefono': this.phone,
-            'Direccion': this.address,
-            'tipoPago1': this.MetodoPago,
-            'Hora': time,
-            'descuento': this.calcularDescuento,
-            'localidad': this.Sucursal,
-            'estado': 0,
-            'nota':" Estado Pago: " +this.estadoPago+" "+this.pagaCon+" "+this.nota,
-            'tipoCompra': metodoEnvioCorregido,
-            'detalles': this.orden,
-            'correo': this.email,
-            'latitud': this.latitud,
-            'longitud': this.longitud,
-            'Mesa':"50",
-            'TipoCedula':'FISICA',
-            'Cedula':this.cedula,
-            'Direccion2':this.DireccionCliente2,
-            'Direccion3':this.DireccionCliente3,
-            'Personas':this.dividendo,
-            'Mensajero':'',
-            'MedioOrden':'Whatsapp',
-            'Facturacion': false
-              },configuracion).then(function (response) {
-                me.$swal({
-                title: "Se ha enviado la orden al sistema de comandas de la pantalla",
-                text: "¿Quiere archivar la conversación?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonText: 'Cancelar',
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Confirmar"
-              }).then(result => {
-                axios.post(constants.routes.backendAPI+'/createContact',
-                {
-                  'contactName': me.name,
-                  'contactPhoneNumber': me.phone,
-                  'contactID': me.cedula,
-                  'contactEmail': me.email,
-                  'contactLocation':
-                  {
-                    'CASA': {
-                      'latitude': me.locations['CASA'].latitude,
-                      'longitude': me.locations['CASA'].longitude
-                    },
-                    'TRABAJO': {
-                      'latitude': me.locations['TRABAJO'].latitude,
-                      'longitude': me.locations['TRABAJO'].longitude
-                    },
-                    'OTRO': {
-                      'latitude': me.locations['OTRO'].latitude,
-                      'longitude': me.locations['OTRO'].longitude
-                    }
-                  },
-                  'contactLocationDetails': me.address,
-                  'contactNote': me.nota
-                }).then(function (){
-                })
-                if (result.value) {
-                  me.$swal("Conversación finalizada", "La conversación ha sido finalizada exitosamente.", "success");
-                  var total = 0;
-                  for (var productIndex in me.activeConversationsAsJSON[me.temp].products){
-                    total = total + (me.activeConversationsAsJSON[me.temp].products[productIndex].cantidad * me.activeConversationsAsJSON[me.temp].products[productIndex].precio)
-                  }
-                  axios.get(constants.routes.backendAPI+
-                  '/closeConversation?conversationID='+me.temp+
-                  '&conversationStatus=converted'+
-                  '&agentID='+localStorage.getItem('agentID')+
-                  '&amount='+total).then(function (){
-                    me.getAgentActiveConversations();
-                    me.temp = '';
-                  })
-
-                  const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
-                  if (ordenesActualesLocalStorage[me.phone]){
-                    delete ordenesActualesLocalStorage[me.phone];
-                  }
-                    localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
-                  }
-
-                me.CleanData();
-                me.loading = false;
-                me.loaderOrdenEnviada = false;
-              });
-        })
-          .catch(function (error) {
-            me.$bvToast.toast('Ha ocurrido un error inesperado al general la orden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico."', {
-              title: 'Error al generar la orden',
-              variant: 'danger',
-              solid: true
-            });
-            me.loading = false; 
-          });
+      if(this.ValidarData() == 1){
+        var metodoEnvioCorregido = '';
+        if (this.MetodoEnvio == 'Retiro en sucursal'){
+          metodoEnvioCorregido = 'Retira en sucursal';
+        } else if (this.MetodoEnvio == 'Envío por motorizado'){
+          metodoEnvioCorregido = 'Envio Propio';
+        } else {
+          metodoEnvioCorregido = 'Correos de CR';
         }
-      },
+        this.loaderOrdenEnviada = true;
+        var me = this;
+        this.loading = true;
+        var momentoActual = new Date(); 
+        var hora = momentoActual.getHours(); 
+        var minuto = momentoActual.getMinutes(); 
+        var segundo = momentoActual.getSeconds();
+        var time = hora + ":" + minuto + ":" + segundo;
+        let header={"Authorization" : "Bearer "};
+        let configuracion= {headers : header};
+        axios.post('https://noah.cr/BackendKingVape/api/ordenexpress/CrearMesaTotal',
+        {
+          'fecha': this.today.toString(),
+          'cajero': this.agentName,
+          'total': this.calcularTotal,
+          'Nombre': this.name,
+          'telefono': this.phone,
+          'Direccion': this.address,
+          'tipoPago1': this.MetodoPago,
+          'Hora': time,
+          'descuento': this.calcularDescuento,
+          'localidad': this.Sucursal,
+          'estado': 0,
+          'nota':" Estado Pago: " +this.estadoPago+" "+this.pagaCon+" "+this.nota,
+          'tipoCompra': metodoEnvioCorregido,
+          'detalles': this.orden,
+          'correo': this.email,
+          'latitud': this.latitud,
+          'longitud': this.longitud,
+          'Mesa':"50",
+          'TipoCedula':'FISICA',
+          'Cedula':this.cedula,
+          'Direccion2':this.DireccionCliente2,
+          'Direccion3':this.DireccionCliente3,
+          'Personas':this.dividendo,
+          'Mensajero':'',
+          'MedioOrden':'Whatsapp',
+          'Facturacion': false
+        },configuracion)
+        
+        .then(function (response) {
+          me.$swal({
+            title: "Se ha enviado la orden al sistema de comandas de la pantalla",
+            text: "¿Quiere archivar la conversación?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonText: 'Cancelar',
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Confirmar"
+          })
+          .then((result) => {
+            axios.post(constants.routes.backendAPI+'/insertOrUpdateContact',
+            {
+              'contactName': me.name,
+              'contactPhoneNumber': me.phone,
+              'contactID': me.cedula,
+              'contactEmail': me.email,
+              'contactLocations':
+              {
+                'CASA': {
+                  'latitude': me.locations['CASA'].latitude,
+                  'longitude': me.locations['CASA'].longitude
+                },
+                'TRABAJO': {
+                  'latitude': me.locations['TRABAJO'].latitude,
+                  'longitude': me.locations['TRABAJO'].longitude
+                },
+                'OTRO': {
+                  'latitude': me.locations['OTRO'].latitude,
+                  'longitude': me.locations['OTRO'].longitude
+                }
+              },
+              'contactLocationDetails': me.address,
+              'contactNote': me.nota
+            }).then(function (){
+              
+            })
+            if (result.value) {
+              const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
+              if (ordenesActualesLocalStorage[me.phone]){
+                delete ordenesActualesLocalStorage[me.phone];
+              }
+              localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
+
+              var whatsappConversationID = null;
+              for (var conversationID in me.activeConversationsAsJSON) {
+                if (me.activeConversationsAsJSON.hasOwnProperty(conversationID) && me.activeConversationsAsJSON[conversationID] === me.currentActiveConversation) {
+                  whatsappConversationID = conversationID;
+                }
+              }
+
+              var total = 0;
+              for (var productIndex in me.activeConversationsAsJSON[whatsappConversationID].products){
+                total = total + (me.activeConversationsAsJSON[whatsappConversationID].products[productIndex].cantidad * me.activeConversationsAsJSON[whatsappConversationID].products[productIndex].precio)
+              }
+              axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
+              {
+                whatsappConversationRecipientPhoneNumber: me.phone,
+                whatsappConversationCloseComment: 'Venta',
+                whatsappConversationAmount: total,
+                whatsappTextMessageBody: localStorage.getItem('agentEndMessage')
+              })
+              .then((response) =>{ 
+                if (response.data.success){
+                  me.showNotification('success', 'Conversación finalizada', 'Ha finalizado la conversación exitosamente.')
+
+                  delete me.activeConversationsAsJSON[whatsappConversationID];
+                  me.currentActiveConversation = null;
+                } else {
+                  this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+                }
+              })
+              .catch((error) =>{
+                this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+              })
+
+            }
+            me.CleanData();
+            me.loading = false;
+            me.loaderOrdenEnviada = false;
+          });
+        })
+        .catch(function (error) {
+          this.showNotification('danger', 'Error al generar la orden', 'Ha ocurrido un error inesperado al general la orden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          this.loading = false; 
+        });
+      }
+    },
 
       EliminarLinea(id){
         this.orden = this.orden.filter(e => e.id != id)
@@ -2585,369 +1844,379 @@ export default {
         }
       },
 
-    endConversation(){
-      const me = this;
-      axios.get(constants.routes.backendAPI
-                  +'/closeConversation?'
-                  +'&conversationID='+this.temp+
-                  '&agentID='+localStorage.getItem('agentID')+
-                  +'&conversationStatus='+this.closeConversationReason)
-        .then(() =>{ 
-          this.getAgentActiveConversations();
-          me.$bvToast.toast("Se ha cerrado la conversación asociada al número '" + this.phone + "'.", {
-            title: "Conversación cerrada",
-            variant: "success",
-            solid: true
-          });
-
-          const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
-          if (ordenesActualesLocalStorage[this.phone]){
-            delete ordenesActualesLocalStorage[this.phone];
-          }
-          localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
-
-          this.getAgentActiveConversations();
-          this.temp = '';
-
-        })
-        
-        .catch(error =>{
-          me.$bvToast.toast("Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-            title: "Error al cerrar la conversación",
-            variant: "danger",
-            solid: true
-          });
-        })
-    },
-
-    generateOrder() {
-      var total = 0;
-      for (var product of this.orden){
-        total = total + product.precioVenta*product.cantidad
-      }
-    },
-
-    startNewConversation(){
-      if ((this.newConversationTextMessage.trim().length != 0) && (this.newConversationPhoneNumber.trim().length != 0)){
-        axios.get(constants.routes.backendAPI
-                  +'/sendWhatsappMessage?'
-                  +'type=text'
-                  +'&agentID='+localStorage.getItem('agentID')
-                  +'&recipientPhoneNumber='+this.newConversationPhoneNumber
-                  +'&messageContent='+this.newConversationTextMessage
-                  +'&agentID='+localStorage.getItem('agentID'))
-        .then(() =>{ 
-          this.getAgentActiveConversations();
-          this.temp = '';
-
-        })
-        
-        .catch(error =>{
-          console.log(error);
-        })
-      }
-    },
-
-    addEmojiToTextMessage(emoji){
-      this.newTextMessageContent = this.newTextMessageContent + emoji;
-    },
-
-    noAgentsAvailable(){
-      if (this.agents.length == 0){
-        return true;
-      }
-      return false;
-    },
-
-    transferConversationRequestAccepted(){
-      axios.post(constants.routes.backendAPI+'/updateAssignedAgentToConversation',{
-        previousAgentID: this.transferFromAgentID,
-        activeConversationID: this.transferConversationID,
-        newAgentID: localStorage.getItem('agentID'),
-        products: this.transferConversationProducts
-      })
-      .then(() =>{ 
-        axios.post(constants.routes.backendAPI+'/acceptTransfer',{
-          agentToNotify: this.transferFromAgentID
-        })
-        .then(() =>{ 
-          
-          this.getAgentActiveConversations();
-        })
-        
-        .catch(error =>{
-          console.log(error);
-        })
-      })
-      
-      .catch(error =>{
-        console.log(error);
-      })
-    },
-
-    transferConversation(newAgent){
-      axios.post(constants.routes.backendAPI+'/requestTransfer',{
-        previousAgentID: localStorage.getItem('agentID'),
-        activeConversationID: this.temp,
-        newAgentID: newAgent.agentID,
-        products: this.orden
-      })
-      .then(() =>{ 
-        
-      })
-      
-      .catch(error =>{
-        console.log(error);
-      })
-      
-    },
-
-
-    async sendProductToClient(product){
-      this.repliedMessageID = null;
-      
-      this.enviandoProductoLoader = true;
-      var httpBodyToSendRecordedAudio = 
-        {
-          'mediaURL':product.localizacion,
-          'mediaType': 'image/png',
-          'mediaName': 'media',
-          'agentID': localStorage.getItem('agentID'),
-          'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber,
-          'messageContext': ''
-        }
-      
-
-      axios.post(constants.routes.backendAPI+'/sendWhatsappMediaURL', httpBodyToSendRecordedAudio)
-        .then((result) =>{
-          this.enviandoProductoLoader = false;
-          this.$set(this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]= {
-            owner:'agent',
-            messageContent:{messageID: result.data, 'mediaExtension':'image/png', 'mediaContent':product.localizacion, 'mediaName':'media'},
-            messageType: 'image',
-            messageSentHour: Date().toString().slice(16,24),
-            messageContext: ''
-          });
-          
-          var messages = this.currentActiveConversation.messages;
-          this.currentActiveConversation.messages = {};
-          this.currentActiveConversation.messages = messages;
-
-          this.newTextMessageContent = `*Nombre*: ` + product.descripcion + `%0a*Precio*: ₡` + product.precioVenta + `%0a*Descripción*: ` + product.datosAdicionales;
-
-          axios.get(constants.routes.backendAPI
-                +'/sendWhatsappMessage?'
-                +'type=text'
-                +'&agentID='+localStorage.getItem('agentID')
-                +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
-                +'&messageContent='+this.newTextMessageContent
-                +'&messageContext=""'+
-                +'&sendedProduct=1')
-          .then((result) =>{ 
-
-            this.newTextMessageContent = this.newTextMessageContent.split('*').join('');
-
-            this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]={messageContext: '',messageID: result.data, sendedProduct: '1', owner:'agent',messageContent:{productName:this.newTextMessageContent.split('%0a')[0].split(': ')[1], productPrice:this.newTextMessageContent.split('%0a')[1].split(': ')[1],productDescription:this.newTextMessageContent.split('%0a')[2].split(': ')[1]},messageType:'text',messageSentHour: Date().toString().slice(16,24)};
-            this.newTextMessageContent = '';
-
-
-            this.$bvToast.toast("Producto enviado al cliente", {
-              title: `${product.descripcion || "Product enviado exitosamente al cliente"}`,
-              variant: 'info',
-              solid: true
-            });
-
-            this.$nextTick(() => {
-            if (this.$refs.scrollRef) {
-                const psContainer = this.$refs.scrollRef.$el;
-                psContainer.scrollTop = psContainer.scrollHeight;
-              }
-            });
-          })
-          
-          .catch(error =>{
-            console.log(error);
-          })
-
-          this.$nextTick(() => {
-          if (this.$refs.scrollRef) {
-              const psContainer = this.$refs.scrollRef.$el;
-              psContainer.scrollTop = psContainer.scrollHeight;
-            }
-
-          });
-        });
-
-
-    },
-
-
 
     uploadImage(){
       document.getElementById('imageUploader').click();
     },
 
-    uploadFavoriteImage(){
-      document.getElementById('favoriteImageUploader').click();
+
+    getMessageOwnerColor(messageOwner){
+      if(messageOwner == null){
+        return "background-color:#ceefff";
+      } 
+      return "background-color:#dedede";
+    },
+    getMessageOwnerStyle(messageOwner){
+      if(messageOwner != null){
+        return 'user';
+      } 
     },
 
-    uploadFile(type){
 
-      var fileTypeDisplay = ''
-      if (type == 'image/png'){
-        this.file = this.$refs.imageFile.files[0];
-        fileTypeDisplay = 'image';
-      } else if (type == 'application/pdf'){
-        this.file = this.$refs.documentFile.files[0];
-        fileTypeDisplay = 'document';
+    sendWhatsappTextMessage(){
+      this.sendingMessageDisable = true;
+      var repliedMessageID = '';
+      if (this.repliedMessage != null){
+        repliedMessageID = this.repliedMessage.whatsappGeneralMessageID
       }
+      if (this.newTextMessageContent.trim().length != 0){
+        axios.post(constants.routes.backendAPI+'/sendWhatsappTextMessage',
+        {
+          whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+          whatsappGeneralMessageRepliedMessageID: repliedMessageID,
+          whatsappTextMessageBody: this.newTextMessageContent
+        }) 
+        .then((response) =>{ 
+          if (response.data.success){
+            this.sendingMessageDisable = false;
+            this.repliedMessage = null;
+            this.newTextMessageContent = '';
+            const whatsappConversationID = response.data.result.whatsappConversationID;
+            this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);          
+            this.scrollDown();
+          } else {
+            this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          }
+        })
+        .catch((error) =>{
+          this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        })
+      } else {
+        this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Debe colocar texto en el mensaje a enviar al cliente. Intentelo nuevamente.')
+      }
+    },
+
+    sendWhatsappFavoriteTextMessage(whatsappTextMessageContent){
+      this.sendingMessageDisable = true;
+      var repliedMessageID = '';
+      if (this.repliedMessage != null){
+        repliedMessageID = this.repliedMessage.whatsappGeneralMessageID
+      }
+      axios.post(constants.routes.backendAPI+'/sendWhatsappTextMessage',
+      {
+        whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+        whatsappGeneralMessageRepliedMessageID: repliedMessageID,
+        whatsappTextMessageBody: whatsappTextMessageContent
+      }) 
+      .then((response) =>{ 
+        if (response.data.success){
+          this.sendingMessageDisable = false;
+          this.repliedMessage = null;
+          const whatsappConversationID = response.data.result.whatsappConversationID;
+          this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);      
+          this.scrollDown();
+          this.$root.$emit('bv::hide::modal','favoriteModal');
+
+        } else {
+          this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) =>{
+        this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      }); 
+    },
+
+    sendWhatsappOrderTextMessage(){
+      if (this.orden.length != 0){
+        var whatsappTextMessageContent = '';
+        for (var productIndex in this.orden){
+          if (whatsappTextMessageContent != ''){
+            whatsappTextMessageContent = whatsappTextMessageContent + `%0a%0a*Nombre*: ` + this.orden[productIndex]['descripcion'] + `%0a*Precio*: ₡` + this.orden[productIndex]['precio'] + `%0a*Cantidad*: ` + this.orden[productIndex]['cantidad'] + `%0a*Subtotal*: ₡` + this.orden[productIndex]['cantidad']*this.orden[productIndex]['precio'];
+          } else {
+            whatsappTextMessageContent = `*Nombre*: ` + this.orden[productIndex]['descripcion'] + `%0a*Precio*: ₡` + this.orden[productIndex]['precio'] + `%0a*Cantidad*: ` + this.orden[productIndex]['cantidad'] + `%0a*Subtotal*: ₡` + this.orden[productIndex]['cantidad']*this.orden[productIndex]['precio'];
+          }
+        }
+        whatsappTextMessageContent = whatsappTextMessageContent + `%0a%0a*SUBTOTAL*: ₡` + this.calcularSubTotal;
+        whatsappTextMessageContent = whatsappTextMessageContent + `%0a*DESCUENTO*: ₡` + this.calcularDescuento;
+        whatsappTextMessageContent = whatsappTextMessageContent + `%0a*TOTAL*: ₡` + this.calcularTotal;        
+        var repliedMessageID = ''
+        if (this.repliedMessage != null){
+          repliedMessageID = this.repliedMessage.messageID;
+        }
+        this.sendingMessageDisable = true;
+        axios.get(constants.routes.backendAPI
+            +'/sendWhatsappTextMessage?'
+            +'&whatsappConversationRecipientPhoneNumber='+this.currentActiveConversation.whatsappConversationRecipientPhoneNumber
+            +'&whatsappTextMessageBody='+whatsappTextMessageContent
+            +'&whatsappGeneralMessageRepliedMessageID='+repliedMessageID
+        ).then((response) =>{ 
+          if (response.data.success){
+            this.sendingMessageDisable = false;
+            this.repliedMessage = null;
+            const whatsappConversationID = response.data.result.whatsappConversationID;
+            this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);      
+            this.scrollDown();
+          } else {
+            this.showNotification('danger', 'Error al enviar el carrito al cliente', 'Ha ocurrido un error inesperado al enviar el carrito. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          }
+        })
+        .catch((error) =>{
+          this.showNotification('danger', 'Error al enviar el carrito al cliente', 'Ha ocurrido un error inesperado al enviar el carrito. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        });  
+      } else {
+        this.showNotification('danger', 'Error al enviar el carrito al cliente', 'Debe colocar al menos un producto en el carrito para poder enviarlo al cliente.')
+      } 
+    },
+
+    sendWhatsappImageMessage(){
+      this.file = this.$refs.imageFile.files[0];
       var reader = new FileReader();
       reader.readAsDataURL(this.file);
       reader.onload = () => {
-
         var repliedMessageID = '';
         if (this.repliedMessage != null){
           repliedMessageID = this.repliedMessage.messageID
         }
-        const httpBodyToSendRecordedAudio = 
+        this.loaders.fileShare = true;
+        axios.post(constants.routes.backendAPI+'/sendWhatsappImageMessage', 
         {
-          'mediaContent':reader.result,
-          'mediaType': type,
-          'mediaName': 'media',
-          'agentID': localStorage.getItem('agentID'),
-          'recipientPhoneNumber': this.currentActiveConversation.recipientPhoneNumber,
-          'messageContext': repliedMessageID
-        }
-        
-        this.fileSharingLoader = true;
-
-        axios.post(constants.routes.backendAPI+'/sendWhatsappMedia', httpBodyToSendRecordedAudio)
-        .then((result) =>{
-          
-          this.fileSharingLoader = false;
-
-          this.$set(this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]= {
-            owner:'agent',
-            messageContent:{'mediaExtension':type, 'mediaContent':reader.result.split(',')[1], 'mediaName':'media', isBase64: '1'},
-            messageType: fileTypeDisplay,
-            messageSentHour: Date().toString().slice(16,24),
-            messageContext: repliedMessageID,
-            messageID: result.data
-          });
-          
-          var messages = this.currentActiveConversation.messages;
-          this.currentActiveConversation.messages = {};
-          this.currentActiveConversation.messages = messages;
-          
-          this.$nextTick(() => {
-          if (this.$refs.scrollRef) {
-              const psContainer = this.$refs.scrollRef.$el;
-              psContainer.scrollTop = psContainer.scrollHeight;
-            }
-          });
-
-          this.file = null;
-          this.repliedMessage = null;
-        });
-        
+          whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+          whatsappImageMessageFile: reader.result,
+          whatsappGeneralMessageRepliedMessageID: repliedMessageID
+        })
+        .then((response) =>{
+          if (response.data.success){
+            this.loaders.fileShare = false;
+            this.file = null;
+            this.repliedMessage = null;
+            const whatsappConversationID = response.data.result.whatsappConversationID;
+            this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result); 
+            this.scrollDown();
+          } else {
+            this.showNotification('danger', 'Error al enviar la imagen al cliente', 'Ha ocurrido un error inesperado al enviar la imagen. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          }
+        })
+        .catch((error) =>{
+          this.showNotification('danger', 'Error al enviar la imagen al cliente', 'Ha ocurrido un error inesperado al enviar la imagen. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        })
       };
       reader.onerror = function (error) {
-        console.log('Error: ', error);
+        this.showNotification('danger', 'Error al cargar la imagen', 'Ha ocurrido un error inesperado al cargar la imagen. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       };
     },
 
-    getColorChat(item){
-      if(item == 'agent'){
-        return "background-color:#ceefff";
-      } else
-      {
-        return "background-color:#dedede";
-      }
-
-    },
-    GetOwner(item){
-      if(item != 'agent'){
-        return "user";
-      } 
-    },
-    sendNewTextMessage(){
-      this.sendingMessageDisable = true;
+    sendWhatsappAudioMessage(){
       var repliedMessageID = '';
       if (this.repliedMessage != null){
         repliedMessageID = this.repliedMessage.messageID
       }
-      if (this.newTextMessageContent.trim().length != 0){
-        axios.get(constants.routes.backendAPI
-                  +'/sendWhatsappMessage?'
-                  +'type=text'
-                  +'&agentID='+localStorage.getItem('agentID')
-                  +'&messageContext='+repliedMessageID
-                  +'&recipientPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber
-                  +'&messageContent='+this.newTextMessageContent)
-        .then((result) =>{ 
-          this.sendingMessageDisable = false;
-          this.currentActiveConversation.messages[(Object.keys(this.currentActiveConversation.messages).length+1).toString()]={owner:'agent',messageID: result.data, messageContext: repliedMessageID, messageContent:this.newTextMessageContent,messageType:'text',messageSentHour: Date().toString().slice(16,24)};
-          this.newTextMessageContent = '';
-          this.$nextTick(() => {
-          if (this.$refs.scrollRef) {
-              const psContainer = this.$refs.scrollRef.$el;
-              psContainer.scrollTop = psContainer.scrollHeight;
-            }
-          });
-
+      this.loaderAudio = true;
+      axios.post(constants.routes.backendAPI+'/sendWhatsappAudioMessage', 
+      {
+        'whatsappConversationRecipientPhoneNumber': this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+        'whatsappGeneralMessageRepliedMessageID': repliedMessageID,
+        'whatsappAudioMessageFile': this.recordedAudioFile
+      }).then((response) =>{
+        if (response.data.success){
+          this.loaderAudio = false;
           this.repliedMessage = null;
+          const whatsappConversationID = response.data.result.whatsappConversationID;
+          this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
+          console.log(response.data.result);
+          this.$root.$emit('bv::hide::modal','recordAudioModal');
+          this.scrollDown();
+        } else {
+          this.showNotification('danger', 'Error al enviar el audio', 'Ha ocurrido un error inesperado al enviar el audio. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+        this.showNotification('danger', 'Error al enviar el audio', 'Ha ocurrido un error inesperado al enviar el audio. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+    sendWhatsappLocationMessage(locationName){
+      var repliedMessageID = '';
+      if (this.repliedMessage != null){
+        repliedMessageID = this.repliedMessage.messageID
+      }
+      if (this.locations[locationName]){
+        axios.post(constants.routes.backendAPI+'/sendWhatsappLocationMessage',{
+          whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+          whatsappGeneralMessageRepliedMessageID: repliedMessageID,
+          whatsappLocationMessageLatitude: this.locations[locationName].latitude,
+          whatsappLocationMessageLongitude: this.locations[locationName].longitude,
         })
-        
-        .catch(error =>{
-          console.log(error);
+        .then((response) =>{
+          if (response.data.success){
+            this.repliedMessage = null;
+            const whatsappConversationID = response.data.result.whatsappConversationID;
+            this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);          
+            this.scrollDown();
+          } else {
+            this.showNotification('danger', 'Error al enviar la ubicación', 'Ha ocurrido un error inesperado al enviar la ubicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          }
+        })
+        .catch((error) =>{
+          this.showNotification('danger', 'Error al enviar la ubicación', 'Ha ocurrido un error inesperado al enviar la ubicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         })
       } else {
-        this.$bvToast.toast("Debe colocar texto en el mensaje a enviar al cliente. Intentelo nuevamente.", {
-          title: 'Error al enviar el mensaje al cliente',
-          variant: 'danger',
-          solid: true
-        });
+        this.showNotification('danger', 'Error al enviar la ubicación', 'El cliente no cuenta con una ubicación asignada. Por favor complete la información e intentelo nuevamente.')
       }
     },
-    getAgentActiveConversations(){
-      this.loaderConversations = true;
-      axios.get(constants.routes.backendAPI+'/getAgentActiveConversations?agentID='+localStorage.getItem('agentID'))
-      .then(response =>{
-        const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
 
-        this.activeConversations = [];
-        this.activeConversationsAsJSON = {};
-        for (var activeConversationID in response.data){
-          var activeConversation = response.data[activeConversationID];
-          activeConversation['activeConversationID'] = activeConversationID;
-          if (ordenesActualesLocalStorage[response.data[activeConversationID]['recipientPhoneNumber']]){
-            activeConversation['products'] = ordenesActualesLocalStorage[response.data[activeConversationID]['recipientPhoneNumber']];
-          }
-          this.activeConversations.push(activeConversation);
-          this.activeConversation = this.activeConversations[0].activeConversationID;
-        }
-        this.activeConversationsAsJSON = response.data;
-        if (this.updatedActiveConversationID != ''){
-          this.changeCurrentActiveConversation(this.updatedActiveConversationID);
-        }
-
-        localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
-        this.loaderConversations = false;
-
+    sendWhatsappStoreLocationMessage(locationName){
+      var latitud = 0;
+      var longitud = 0;
+      if (locationName == 'Zapote'){
+        var latitud = 9.920173;
+        var longitud = -84.051987;
+      } else if (locationName == 'Escazu'){
+        var latitud = 9.949093;
+        var longitud = -84.163117;
+      } else if (locationName == 'Cartago') {
+        var latitud = 9.864751;
+        var longitud = -83.925354;
+      } else if (locationName == 'Heredia') {
+        var latitud = 9.864751;
+        var longitud = -83.925354;
+      }
+      var repliedMessageID = '';
+      if (this.repliedMessage != null){
+        repliedMessageID = this.repliedMessage.whatsappGeneralMessageID
+      }
+      axios.post(constants.routes.backendAPI+'/sendWhatsappLocationMessage',{
+        whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+        whatsappGeneralMessageRepliedMessageID: repliedMessageID,
+        whatsappLocationMessageLatitude: latitud,
+        whatsappLocationMessageLongitude: longitud,
       })
-      .catch(error =>{
-        console.log(error);
+      .then((response) =>{
+        if (response.data.success){
+          this.repliedMessage = null;
+          const whatsappConversationID = response.data.result.whatsappConversationID;
+          this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);          
+          this.scrollDown();
+        } else {
+          this.showNotification('danger', 'Error al enviar la ubicación', 'Ha ocurrido un error inesperado al enviar la ubicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) =>{
+        this.showNotification('danger', 'Error al enviar la ubicación', 'Ha ocurrido un error inesperado al enviar la ubicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
 
-    changeCurrentActiveConversation (clickedActiveConversationID){
+    async sendWhatsappFavoriteImageMessage(){
+      for (var image in this.agentFavoriteImages){
+        if (this.agentFavoriteImages[image].selected){       
+          await axios.post(constants.routes.backendAPI+'/sendWhatsappFavoriteImageMessage', 
+          {
+            whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+            whatsappFavoriteImageMessageContent: this.agentFavoriteImages[image]
+          })
+          .then((response) => {
+            if (response.data.success){
+              this.scrollDown();
+              this.agentFavoriteImages[image].selected = false;
+              this.repliedMessage = null;
+              const whatsappConversationID = response.data.result.whatsappConversationID;
+               this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
+            } else {
+              this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+            }
+          })
+          .catch((error) =>{
+            this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          })
+        }
+      }
+    },
+
+    async sendWhatsappProductMessage(product){
+      this.repliedMessageID = null;
+      this.enviandoProductoLoader = true;
+      const whatsappProductImageMessageCaption = `*Nombre:* ` + product.descripcion + `. *Precio:* ₡` + product.precioVenta;
+      axios.post(constants.routes.backendAPI+'/sendWhatsappProductImageMessage', 
+      {
+        'whatsappConversationRecipientPhoneNumber': this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+        'whatsappProductImageMessageURL': product.localizacion,
+        'whatsappProductImageMessageCaption': whatsappProductImageMessageCaption
+      })
+      .then((response) =>{
+        if (response.data.success){
+          const whatsappConversationID = response.data.result.whatsappConversationID;
+          this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
+          this.enviandoProductoLoader = false;
+        } else {
+          this.showNotification('danger', 'Error al enviar el producto al cliente', 'Ha ocurrido un error inesperado al enviar el producto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) =>{
+        this.showNotification('danger', 'Error al enviar el producto al cliente', 'Ha ocurrido un error inesperado al enviar el producto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+    requestTransferWhatsappConversation(transferedAgent){
+      var whatsappConversationID = null;
+      for (var conversationID in this.activeConversationsAsJSON) {
+        if (this.activeConversationsAsJSON.hasOwnProperty(conversationID) && this.activeConversationsAsJSON[conversationID] === this.currentActiveConversation) {
+          whatsappConversationID = conversationID;
+        }
+      }
+      if (whatsappConversationID != null){
+        axios.post(constants.routes.backendAPI+'/requestTransferWhatsappConversation',
+        {
+          currentAgentDI: parseInt(localStorage.getItem('agentID')),
+          currentAgentName: localStorage.getItem('agentName'),
+          newAgentID: transferedAgent.agentID,
+          whatsappConversationID: whatsappConversationID,
+          whatsappConversationProducts: this.orden
+        })
+        .then((response) =>{ 
+          if (response.data.success){
+            this.showNotification('info', 'Transferencia solicitada', 'Se ha solicitado la transferencia al otro agente. Por favor espere...');
+
+          } else {
+            this.showNotification('danger', 'Error al solicitar la transferencia', 'Ha ocurrido un error inesperado al solicitar la transferencia. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }
+        })
+        .catch((error) =>{
+          this.showNotification('danger', 'Error al solicitar la transferencia', 'Ha ocurrido un error inesperado al solicitar la transferencia. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        })
+      } else {
+        this.showNotification('danger', 'Error al solicitar la transferencia', 'Ha ocurrido un error inesperado al solicitar la transferencia. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      }  
+    },
+
+    acceptTransferWhatsappConversation(){
+      axios.post(constants.routes.backendAPI+'/acceptTransferWhatsappConversation',
+      {
+        currentAgentID: this.transferFromAgentID,
+        newAgentID: parseInt(localStorage.getItem('agentID')),
+        whatsappConversationID: this.transferConversationID
+      })
+      .then(async (response) =>{
+        if (response.data.success){
+          this.playSound('grabConversation');
+          this.showNotification('success', 'Conversación transferida', 'Ha aceptado la transferencia exitosamente.');
+          await this.selectAgentConversation(this.transferConversationID);
+        } else {
+          this.showNotification('danger', 'Error al aceptar la transferencia', 'Ha ocurrido un error inesperado al aceptar la transferencia. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch((error) =>{
+        console.log(error);
+        this.showNotification('danger', 'Error al aceptar la transferencia', 'Ha ocurrido un error inesperado al aceptar la transferencia. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+    },
+
+    changeCurrentActiveConversation(currentActiveConversation){
+      this.currentActiveConversation = currentActiveConversation;
+      this.orden = currentActiveConversation.whatsappConversationProducts;
+      this.phone = currentActiveConversation.whatsappConversationRecipientPhoneNumber;
+      this.name = currentActiveConversation.whatsappConversationRecipientProfileName;
       this.repliedMessage = null;
       this.producto = '';
-      this.temp = clickedActiveConversationID;
-      this.currentActiveConversation = this.activeConversationsAsJSON[clickedActiveConversationID];
-      this.orden = this.activeConversationsAsJSON[clickedActiveConversationID].products;
-      this.phone = this.activeConversationsAsJSON[clickedActiveConversationID].recipientPhoneNumber;
-      this.name = this.activeConversationsAsJSON[clickedActiveConversationID].recipientProfileName;
       this.cedula = '';
       this.email = '';
       this.latitud = '';
@@ -2955,206 +2224,402 @@ export default {
       this.address = '';
       this.nota = ''; 
       this.locations = [];
-
-      var temp = false;
-      for (var activeConversationMessage in this.activeConversationsAsJSON[clickedActiveConversationID].messages){
-        if (this.activeConversationsAsJSON[clickedActiveConversationID].messages[activeConversationMessage].owner == 'client') {
-          temp = true;
+      var availableConversation = false;
+      for (var activeConversationMessage in currentActiveConversation.whatsappConversationMessages){
+        if (currentActiveConversation.whatsappConversationMessages[activeConversationMessage] != null){
+          if (currentActiveConversation.whatsappConversationMessages[activeConversationMessage].whatsappGeneralMessageOwnerPhoneNumber != null) {
+            availableConversation = true;
+          }
         }
       }
-      this.availableConversation = temp;
+      
+      const databaseOrders = JSON.parse(localStorage.getItem('ordenesActuales'));
+      if (databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+        this.orden = databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber];        
+      }
 
-      axios.get(constants.routes.backendAPI+'/getContact?contactPhoneNumber='+this.currentActiveConversation.recipientPhoneNumber)
-      .then(response =>{
-        if (response.data['contactInformation'] != null){
-          
-          this.name = response.data['contactInformation'].contactName;
-          this.phone = response.data['contactInformation'].contactPhoneNumber;
-          this.cedula = response.data['contactInformation'].contactID;
-          this.email = response.data['contactInformation'].contactEmail;
-          this.locations = response.data['contactInformation'].contactLocation;
-          this.address = response.data['contactInformation'].contactLocationDetails;
-          this.nota = response.data['contactInformation'].contactNote;
-          if ((this.cedula != '') && (this.cedula != undefined)){
+      this.availableConversation = availableConversation;
+      axios.post(constants.routes.backendAPI+'/selectContact', 
+      {
+        contactPhoneNumber: currentActiveConversation.whatsappConversationRecipientPhoneNumber
+      }
+      ).then((response) =>{
+        if (response.data.success){
+          try {
+            const contactInformation = response.data.result[0];
+            this.cedula = contactInformation.contactID;
+            this.name = contactInformation.contactName;
+            this.email = contactInformation.contactEmail;
+            this.address = contactInformation.contactLocationDetails;
+            this.nota = contactInformation.contactNote;
+            this.locations = JSON.parse(contactInformation.contactLocations);
             this.verifiedUser = true;
-          } else {
-            this.verifiedUser = false;
+          } catch {
+            this.showNotification('info', 'Cliente nuevo', 'Está atendiendo a un cliente no registrado en nuestra base de contactos.');
           }
         } else {
-          this.verifiedUser = false;
-          this.locations = {
-            'CASA': {
-              'latitude': 0,
-              'longitude': 0
-            },
-            'TRABAJO': {
-              'latitude': 0,
-              'longitude': 0
-            },
-            'OTRO': {
-              'latitude': 0,
-              'longitude': 0
-            }
-          }
+          this.showNotification('danger', 'Error al consultar la información del cliente', 'Ha ocurrido un error inesperado al consultar la información del cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
-        
       })
-      .catch(error =>{
-        console.log(error);
+      .catch((error) =>{
+        this.showNotification('danger', 'Error al consultar la información del cliente', 'Ha ocurrido un error inesperado al consultar la información del cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
+    },
+
+    closeWhatsappConversation(){
+      axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
+      {
+        whatsappConversationRecipientPhoneNumber: this.phone,
+        whatsappConversationCloseComment: this.closeConversationReason,
+        whatsappConversationAmount: 0,
+        whatsappTextMessageBody: localStorage.getItem('agentEndMessage')
+      })
+      .then((response) =>{ 
+        if (response.data.success){
+          const whatsappConversationID = response.data.result;
+          this.showNotification('success', 'Conversación cerrada', "Se ha cerrado la conversación asociada al número '" + this.phone + "'.");
+          delete this.activeConversationsAsJSON[whatsappConversationID];
+          this.currentActiveConversation = null;
+          this.repliedMessage = null;
+          const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
+          if (ordenesActualesLocalStorage[this.phone]){
+            delete ordenesActualesLocalStorage[this.phone];
+          }
+          localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
+        } else {
+          this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch((error) =>{
+        this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+    },
+
+    grabStoreConversation(storeMessage){
+      this.loaders.grabConversation = true;
+      axios.post(constants.routes.backendAPI+'/grabStoreConversation',{
+        storeMessageID: storeMessage.storeMessageID,
+        storeMessageStoreMessageID: storeMessage.storeMessageStoreMessageID,
+        storeMessageStoreName: storeMessage.storeMessageStoreName,
+        storeMessageAssignedAgentID: parseInt(localStorage.getItem('agentID')),
+        storeMessageRecipientPhoneNumber: storeMessage.storeMessageRecipientPhoneNumber,
+        storeMessageRecipientProfileName: storeMessage.storeMessageRecipientProfileName,
+        messageToClientContent: localStorage.getItem('agentStartMessage')
+      })
+      .then((response) =>{
+        if (response.data.success){
+          if (storeMessage.storeMessageStoreName == 'Escazu'){
+            this.escazuConversations = this.escazuConversations.filter(escazuConversation => escazuConversation.storeMessageID != storeMessage.storeMessageID);
+          } else if (storeMessage.storeMessageStoreName == 'Zapote'){
+            this.zapoteConversations = this.zapoteConversations.filter(zapoteConversation => zapoteConversation.storeMessageID != storeMessage.storeMessageID);
+          } else if (storeMessage.storeMessageStoreName == 'Cartago'){
+            this.cartagoConversations = this.cartagoConversations.filter(cartagoConversation => cartagoConversation.storeMessageID != storeMessage.storeMessageID);
+          }
+          this.hints[storeMessage.storeMessageRecipientPhoneNumber] = storeMessage.storeMessageRecipientOrder;
+          this.loaders.grabConversation = false;
+          const whatsappConversationID = response.data.result;
+          this.playSound('grabConversation');
+          this.showNotification('success', 'Conversación asignada', 'Ha tomado la conversación proveniente de la tienda exitosamente. Recuerde esperar a la respuesta del cliente.');
+          this.selectAgentConversation(whatsappConversationID);
+        } else {
+          this.showNotification('danger', 'Error al tomar la conversación', 'Ha ocurrido un error inesperado al tomar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch((error) =>{
+        this.showNotification('danger', 'Error al tomar la conversación', 'Ha ocurrido un error inesperado al tomar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+    },
+
+    grabPendingConversation(pendingConversation){
+      this.loader2 = true;
+      axios.post(constants.routes.backendAPI+'/grabWhatsappPendingConversation',
+      {
+        whatsappConversationID: pendingConversation.whatsappConversationID,
+        whatsappConversationAssignedAgentID: parseInt(localStorage.getItem('agentID')),
+        whatsappConversationRecipientPhoneNumber: pendingConversation.whatsappConversationRecipientPhoneNumber,
+        whatsappTextMessageBody: localStorage.getItem('agentStartMessage')
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.pendingConversations = this.pendingConversations.filter(deletedPendingConversation => deletedPendingConversation.whatsappConversationID != pendingConversation.whatsappConversationID);
+          this.loader2 = false;
+          const whatsappConversationID = pendingConversation.whatsappConversationID;
+          this.playSound('grabConversation');
+          this.showNotification('success', 'Conversación asignada', 'Ha tomado la conversación pendiente exitosamente.');
+          this.selectAgentConversation(whatsappConversationID);
+        } else {
+          this.showNotification('danger', 'Error al tomar la conversación', 'Ha ocurrido un error inesperado al tomar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch((error) =>{
+        this.showNotification('danger', 'Error al tomar la conversación', 'Ha ocurrido un error inesperado al tomar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+    },
     
-      this.$nextTick(() => {
-        if (this.$refs.scrollRef) {
-            const psContainer = this.$refs.scrollRef.$el;
-            psContainer.scrollTop = psContainer.scrollHeight;
-          }
-        });
-      
-    },
-    ...mapActions(["changeSelectedUser"]),
-    
-
-    getAllAgents(){
-      axios.get(constants.routes.backendAPI+'/getAllAgents')
-      .then(response =>{
-        this.agents = [];
-        for (var agentID in response.data){
-          if ((response.data[agentID].agentStatus == 'online') && (agentID != localStorage.getItem('agentID'))){
-            const newAgent = {'agentID': agentID, 'agentName': response.data[agentID].agentName};
-            this.agents.push(newAgent);
-          }
-
-
+    selectAllPendingConversation(){
+      axios.get(constants.routes.backendAPI+'/selectAllWhatsappPendingConversation')
+      .then((response) =>{
+        if (response.data.success){
+          this.pendingConversations = response.data.result;
+        } else {
+          this.showNotification('danger', 'Error al consultar las conversaciones pendientes', 'Ha ocurrido un error inesperado al consultar los mensajes pendientes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
-      .catch(error =>{
-        console.log(error);
+      .catch((error) =>{
+        this.showNotification('danger', 'Error al consultar las conversaciones pendientes', 'Ha ocurrido un error inesperado al consultar los mensajes pendientes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
-    getPendingConversations(){
-      axios.get(constants.routes.backendAPI+'/getAllPendingConversations')
-      .then(response =>{
-        this.pendingConversations = [];
-        for (var pendingConversationID in response.data){
-          this.pendingConversations.push(
-            {
-              pendingConversationID: pendingConversationID,
-              recipientPhoneNumber: response.data[pendingConversationID].recipientPhoneNumber,
-              startDate: response.data[pendingConversationID].startDate,
-              startHour: response.data[pendingConversationID].startHour
-            }
-          )
+    selectAgentConversations(){
+      this.loaders.activeConversations = true;
+      axios.post(constants.routes.backendAPI+'/selectAgentConversations',
+      {
+        whatsappConversationAssignedAgentID: parseInt(localStorage.getItem('agentID')),
+        whatsappConversationIsActive: true
+      })
+      .then((response) =>{
+        if (response.data.success){
+          const respondedActiveConversations = response.data.result;
+          const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
+          if (ordenesActualesLocalStorage){
+            for (var activeConversationID in respondedActiveConversations){
+              var activeConversation = respondedActiveConversations[activeConversationID];
+              var activeConversationRecipientPhoneNumber = activeConversation.whatsappConversationRecipientPhoneNumber;
+              if (ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber]){
+                activeConversation['products'] = ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber];
+              }
+            }    
+          }
+          this.activeConversationsAsJSON = {};
+          this.activeConversationsAsJSON = respondedActiveConversations;
+          this.loaders.activeConversations = false;
+        } else {
+          this.showNotification('danger', 'Error al consultar las conversaciones activas', 'Ha ocurrido un error inesperado al consultar las conversaciones pendientes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
-      .catch(error =>{
-        console.log(error);
+      .catch((error) =>{
+        this.showNotification('danger', 'Error al consultar las conversaciones activas', 'Ha ocurrido un error inesperado al consultar las conversaciones pendientes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
 
-    getStoreConversations(){
-      axios.get(constants.routes.backendAPI+'/getAllStoreConversations')
-      .then(response =>{
+    selectAgentConversation(whatsappConversationID){
+      this.loaders.activeConversations = true;
+      axios.post(constants.routes.backendAPI+'/selectAgentConversation',
+      {
+        whatsappConversationID: whatsappConversationID,
+      })
+      .then((response) =>{
+        if (response.data.success){
+          const respondedActiveConversations = response.data.result;
+          const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
+          if (ordenesActualesLocalStorage){
+            for (var activeConversationID in respondedActiveConversations){
+              var activeConversation = respondedActiveConversations[activeConversationID];
+              var activeConversationRecipientPhoneNumber = activeConversation.whatsappConversationRecipientPhoneNumber;
+              if (ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber]){
+                activeConversation['products'] = ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber];
+              }
+            }    
+          }
+          const selectAgentConversationResult = response.data.result[whatsappConversationID]; 
+          this.$set(this.activeConversationsAsJSON, whatsappConversationID, selectAgentConversationResult);
+          this.loaders.activeConversations = false;
+        } else {
+          this.showNotification('danger', 'Error al consultar la nueva conversación', 'Ha ocurrido un error inesperado al consultar la nueva conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) =>{
+        this.showNotification('danger', 'Error al consultar la nueva conversación', 'Ha ocurrido un error inesperado al consultar la nueva conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+    selectAllStoreMessage(){
+      axios.get(constants.routes.backendAPI+'/selectAllStoreMessage')
+      .then((response) =>{
         this.zapoteConversations = [];
         this.escazuConversations = [];
         this.cartagoConversations = [];
-
-        for (var storeConversationRecipientPhoneNumber in response.data){
-          if (response.data[storeConversationRecipientPhoneNumber].storeName == 'Zapote'){
-            this.zapoteConversations.push(
+        if (response.data.success){
+          const selectAllStoreMessageResult = response.data.result;
+          for (var storeMessageIndex in selectAllStoreMessageResult){
+            var newStoreMessageInformation =
             {
-              recipientPhoneNumber: response.data[storeConversationRecipientPhoneNumber].recipientPhoneNumber,
-              recipientProfileName: response.data[storeConversationRecipientPhoneNumber].recipientProfileName,
-              storeName: 'Zapote',
-              startDate: response.data[storeConversationRecipientPhoneNumber].startDate,
-              startHour: response.data[storeConversationRecipientPhoneNumber].startHour,
-              messageID: response.data[storeConversationRecipientPhoneNumber].messageID
-            })
-          } else if (response.data[storeConversationRecipientPhoneNumber].storeName == 'Escazu'){
-            this.escazuConversations.push(
-            {
-              recipientPhoneNumber: response.data[storeConversationRecipientPhoneNumber].recipientPhoneNumber,
-              recipientProfileName: response.data[storeConversationRecipientPhoneNumber].recipientProfileName,
-              storeName: 'Escazu',
-              startDate: response.data[storeConversationRecipientPhoneNumber].startDate,
-              startHour: response.data[storeConversationRecipientPhoneNumber].startHour,
-              messageID: response.data[storeConversationRecipientPhoneNumber].messageID
-            })
-          } else {
-            this.cartagoConversations.push(
-            {
-              recipientPhoneNumber: response.data[storeConversationRecipientPhoneNumber].recipientPhoneNumber,
-              recipientProfileName: response.data[storeConversationRecipientPhoneNumber].recipientProfileName,
-              storeName: 'Cartago',
-              startDate: response.data[storeConversationRecipientPhoneNumber].startDate,
-              startHour: response.data[storeConversationRecipientPhoneNumber].startHour,
-              messageID: response.data[storeConversationRecipientPhoneNumber].messageID
-            })
+              storeMessageID: selectAllStoreMessageResult[storeMessageIndex].storeMessageID,
+              storeMessageStoreName: selectAllStoreMessageResult[storeMessageIndex].storeMessageStoreName,
+              storeMessageRecipientPhoneNumber: selectAllStoreMessageResult[storeMessageIndex].storeMessageRecipientPhoneNumber,
+              storeMessageRecipientProfileName: selectAllStoreMessageResult[storeMessageIndex].storeMessageRecipientProfileName,
+              storeMessageStartDateTime: selectAllStoreMessageResult[storeMessageIndex].storeMessageStartDateTime,
+              storeMessageStoreMessageID: selectAllStoreMessageResult[storeMessageIndex].storeMessageStoreMessageID,
+              storeMessageRecipientID: selectAllStoreMessageResult[storeMessageIndex].storeMessageRecipientID,
+              storeMessageRecipientOrder: selectAllStoreMessageResult[storeMessageIndex].storeMessageRecipientOrder
+            }
+            if (selectAllStoreMessageResult[storeMessageIndex].storeMessageStoreName == 'Zapote'){
+              this.zapoteConversations.push(newStoreMessageInformation);
+            } else if (selectAllStoreMessageResult[storeMessageIndex].storeMessageStoreName == 'Escazu'){
+              this.escazuConversations.push(newStoreMessageInformation);
+            } else if (selectAllStoreMessageResult[storeMessageIndex].storeMessageStoreName == 'Cartago'){
+              this.cartagoConversations.push(newStoreMessageInformation);
+            }
           }
+        } else {
+          this.showNotification('danger', 'Error al consultar los mensajes de las sucursales', 'Ha ocurrido un error inesperado al consultar los mensajes de las sucursales. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
-      .catch(error =>{
-        console.log(error);
+      .catch((error) =>{
+        this.showNotification('danger', 'Error al consultar los mensajes de las sucursales', 'Ha ocurrido un error inesperado al consultar los mensajes de las sucursales. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
 
-
-
-
-
-
-
-    //INDEXED DB
-    insertMessage(message) {
-      var transaction = this.db.transaction(["messages"], "readwrite");
-      var objectStore = transaction.objectStore("messages");
-
-      var request = objectStore.add(message);
-
-      request.onsuccess = function (event) {
-        console.log("Message added to the database successfully");
-      };
-
-      request.onerror = function (event) {
-        console.error("Error adding message to the database: " + event.target.errorCode);
-      };
-
-      // Close the database connection once the transaction is done
-      transaction.oncomplete = function () {
-        console.log('exito')
-      };
+    selectAllAgentStatus(){
+      axios.get(constants.routes.backendAPI+'/selectAllAgentStatus')
+      .then((response) =>{
+        if (response.data.success){
+          const agentStatusInformation = response.data.result;
+          this.agents = [];
+          for (var agentIndex in agentStatusInformation){
+            if ((agentStatusInformation[agentIndex].agentStatus == 'online') && (agentStatusInformation[agentIndex].agentID != localStorage.getItem('agentID'))){
+              const newAgent = {'agentID': agentStatusInformation[agentIndex].agentID, 'agentName': agentStatusInformation[agentIndex].agentName};
+              this.agents.push(newAgent);
+            }
+          }
+        } else {
+          this.showNotification('danger', 'Error al consultar el estado de los agentes', 'Ha ocurrido un error inesperado al consultar el estado de los agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) =>{
+        console.log(error);
+        this.showNotification('danger', 'Error al consultar el estado de los agentes', 'Ha ocurrido un error inesperado al consultar el estado de los agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
     },
 
+    receiveWhatsappStoreMessage(websocketMessageContent){
+      const newWhatsappStoreMessageInformation = 
+      {
+        storeMessageStoreName: websocketMessageContent.storeMessageStoreName,
+        storeMessageRecipientPhoneNumber: websocketMessageContent.storeMessageRecipientPhoneNumber,
+        storeMessageRecipientProfileName: websocketMessageContent.storeMessageRecipientProfileName,
+        storeMessageStartDateTime: websocketMessageContent.storeMessageStartDateTime,
+        storeMessageStoreMessageID: websocketMessageContent.storeMessageStoreMessageID,
+        storeMessageID: websocketMessageContent.storeMessageID,
+        storeMessageRecipientID: websocketMessageContent.storeMessageRecipientID,
+        storeMessageRecipientOrder: websocketMessageContent.storeMessageRecipientOrder
+      };
+      if (websocketMessageContent.storeMessageStoreName == 'Zapote'){
+        var newZapoteConversations = this.zapoteConversations;
+        this.zapoteConversations = [];
+        newZapoteConversations.push(newWhatsappStoreMessageInformation);
+        this.zapoteConversations = newZapoteConversations;
+      } else if (websocketMessageContent.storeMessageStoreName == 'Escazu'){
+        var newEscazuConversations = this.escazuConversations;
+        this.escazuConversations = [];
+        newEscazuConversations.push(newWhatsappStoreMessageInformation);
+        this.escazuConversations = newEscazuConversations;
+      } else if (websocketMessageContent.storeMessageStoreName == 'Cartago'){
+        var newCartagoConversations = this.cartagoConversations;
+        this.cartagoConversations = [];
+        newCartagoConversations.push(newWhatsappStoreMessageInformation);
+        this.cartagoConversations = newCartagoConversations;
+      }
+      this.playSound('receiveWhatsappStoreMessage');
+    },
 
-    async initDatabase(){
-      return new Promise((resolve, reject) => {
-        var request = window.indexedDB.open('souq', 1);
+    receiveWhatsappMessage(websocketMessageContent){
+      const whatsappConversationID = websocketMessageContent.whatsappConversationID;
+      if (whatsappConversationID in this.activeConversationsAsJSON){
+        this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(websocketMessageContent);
+        this.availableConversation = true;
+        this.scrollDown();
+        this.playSound('receiveWhatsappMessage');
+      }
+    },
 
-        request.onerror = (event) => {
-          console.error('Database error: ' + event.target.errorCode);
-          reject(event.target.error);
-        };
+    receiveWhatsappConversation(websocketMessageContent){
+      const whatsappConversationAssignedAgentID = websocketMessageContent.whatsappConversationAssignedAgentID;
+      if (whatsappConversationAssignedAgentID == localStorage.getItem('agentID')){
+        const whatsappConversationID = websocketMessageContent.whatsappConversationID;
+        this.$set(this.activeConversationsAsJSON, whatsappConversationID, websocketMessageContent);
+        this.playSound('receiveWhatsappMessage');
+        this.availableConversation = true;
+      }
+    },
 
-        request.onupgradeneeded = (event) => {
-          var db = event.target.result;
-          var objectStore = db.createObjectStore('messages', { keyPath: 'messageID' });
-          objectStore.createIndex('content', 'content', { unique: false });
-          console.log('Database setup complete');
-        };
+    receiveWhatsappPendingConversation(websocketMessageContent){
+      this.pendingConversations.push(websocketMessageContent);
+      this.playSound('receiveWhatsappStoreMessage');
+    },
 
-        request.onsuccess = (event) => {
-          this.db = event.target.result;
-          console.log('Database initialized successfully');
-          resolve();
-        };
+    receiveAgentStatusUpdate(websocketMessageContent){
+      if (websocketMessageContent.agentID != localStorage.getItem('agentID')){
+        if (websocketMessageContent.agentStatus == 'offline'){
+          this.agents = this.agents.filter(remainingAgent => remainingAgent.agentID != websocketMessageContent.agentID);
+        } else {
+          this.agents.push({'agentID': websocketMessageContent.agentID, 'agentName': websocketMessageContent.agentName});
+        }
+      }
+    },
+    
+    receiveGrabPendingConversation(websocketMessageContent){
+      this.pendingConversations = this.pendingConversations.filter(pendingConversation => pendingConversation.whatsappConversationID != websocketMessageContent);
+    },
+
+    receiveGrabStoreConversation(websocketMessageContent){
+      const storeMessageID = websocketMessageContent.storeMessageID;
+      const storeMessageStoreName = websocketMessageContent.storeMessageStoreName;
+      if (storeMessageStoreName == 'Escazu'){
+        this.escazuConversations = this.escazuConversations.filter(escazuConversation => escazuConversation.storeMessageID != storeMessageID);
+      } else if (storeMessageStoreName == 'Zapote'){
+        this.zapoteConversations = this.zapoteConversations.filter(zapoteConversation => zapoteConversation.storeMessageID != storeMessageID);
+      } else if (storeMessageStoreName == 'Cartago'){
+        this.cartagoConversations = this.cartagoConversations.filter(cartagoConversation => cartagoConversation.storeMessageID != storeMessageID);
+      }
+    },
+
+    receiveRequestTransferWhatsappConversation(websocketMessageContent){
+      if (websocketMessageContent.newAgentID == parseInt(localStorage.getItem('agentID'))){
+        this.transferRequestName = websocketMessageContent.currentAgentName;
+        this.transferFromAgentID = websocketMessageContent['previousAgentID'];
+        this.transferConversationID = websocketMessageContent.whatsappConversationID;
+        this.transferConversationProducts = websocketMessageContent.whatsappConversationProducts;
+        this.$refs.buttonTransfer.click();
+      }
+    },
+
+    receiveAcceptTransferWhatsappConversation(websocketMessageContent){
+      if (websocketMessageContent.whatsappConversationID in this.activeConversationsAsJSON){
+        delete this.activeConversationsAsJSON[websocketMessageContent.whatsappConversationID];
+        this.currentActiveConversation = null;
+      }
+    },
+
+    showNotification(notificationType, notificationTitle, notificationContent){
+      this.$bvToast.toast(notificationContent, {
+        title: notificationTitle,
+        variant: notificationType,
+        solid: true
       });
-    }
+    },
 
+    playSound(soundType){
+      if (soundType == 'receiveWhatsappStoreMessage'){
+        var soundToPlay = new Audio(require('../../../assets/pageAssets/pending.wav'));
+      } else if (soundType == 'receiveWhatsappMessage'){
+        var soundToPlay = new Audio(require('../../../assets/pageAssets/inbox.mp3'));
+      } else if (soundType == 'grabConversation'){
+        var soundToPlay = new Audio(require('../../../assets/pageAssets/grab.wav'));
+      }
+      soundToPlay.play();
+    },
 
+    scrollDown(){
+      this.$nextTick(() => {
+        if (this.$refs.scrollRef) {
+          const psContainer = this.$refs.scrollRef.$el;
+          psContainer.scrollTop = psContainer.scrollHeight;
+        }
+      });
+    },
+    
   },
-
-  
-  
 
   computed: {
     ...mapGetters([
@@ -3205,197 +2670,47 @@ export default {
 
   },
 
-  async mounted(){
-    
-    await this.initDatabase();
-    
-
+  mounted(){
     if (localStorage.getItem('agentID') == null){
       router.push("/app/sessions/signIn");
     }
     if (localStorage.getItem('ordenesActuales') == null){
       localStorage.setItem('ordenesActuales', JSON.stringify({}))
     }
-
     this.agentName = localStorage.getItem('agentName');
-
-    this.getAgentActiveConversations();
-    this.getPendingConversations();
-    this.getAllAgents();
-    this.getStoreConversations();
+    this.selectAllAgentStatus();
+    this.selectAllStoreMessage();
+    this.selectAgentConversations();
+    this.selectAllPendingConversation();
 
     try {
       webSocket.onmessage = (websocketMessage) => {
         const websocketMessageJSON = JSON.parse(websocketMessage.data);
+        const websocketMessageID = websocketMessageJSON.websocketMessageID;
+        const websocketMessageContent = websocketMessageJSON.websocketMessageContent.result;
 
-        if (websocketMessageJSON['websocketMessageID'] == 'updateAgentStatus'){
-          this.getAllAgents();
+        console.log(websocketMessageJSON);
 
-        } else if (websocketMessageJSON['websocketMessageID'] == 'receiveWhatsappMessage'){
-
-          if (localStorage.getItem('agentID') == websocketMessageJSON['agentID']) {
-
-            if (this.activeConversationsAsJSON[websocketMessageJSON['conversationID']]){
-              
-              this.$set(this.activeConversationsAsJSON[websocketMessageJSON['conversationID']].messages, websocketMessageJSON['messageID'], websocketMessageJSON['messageInformation']);
-              
-              
-              this.$nextTick(() => {
-              if (this.$refs.scrollRef) {
-                const psContainer = this.$refs.scrollRef.$el;
-                psContainer.scrollTop = psContainer.scrollHeight;
-                }
-              });
-              var inboxAudio = new Audio(require('../../../assets/pageAssets/inbox.mp3'));
-              inboxAudio.play();
-
-              this.availableConversation = true;
-            }
-          }
-
-        } else if (websocketMessageJSON['websocketMessageID'] == 'startNewConversation'){
-          if (localStorage.getItem('agentID') == websocketMessageJSON['agentID']) {
-            this.$set(this.activeConversationsAsJSON, websocketMessageJSON['conversationID'], websocketMessageJSON['conversationInformation']);
-            var activeConversation = websocketMessageJSON['conversationInformation'];
-            activeConversation['activeConversationID'] = websocketMessageJSON['conversationID'];
-            this.activeConversations.push(activeConversation);
-            var inboxAudio = new Audio(require('../../../assets/pageAssets/inbox.mp3'));
-            inboxAudio.play();
-          }
-
-        } else if (websocketMessageJSON['websocketMessageID'] == 'receivePendingConversation'){
-          var aux = this.pendingConversations;
-          this.pendingConversations = [];
-          aux.push(
-            {
-              pendingConversationID: websocketMessageJSON['pendingConversationID'],
-              recipientPhoneNumber: websocketMessageJSON['recipientPhoneNumber'],
-              startDate: websocketMessageJSON['startDate'],
-              startHour: websocketMessageJSON['startHour']
-            }
-          );
-          this.pendingConversations = aux;
-          var inboxAudio = new Audio(require('../../../assets/pageAssets/pending.wav'));
-          inboxAudio.play();
-
-        } else if (websocketMessageJSON['websocketMessageID'] == 'transferConversation') {
-          if (localStorage.getItem('agentID') == websocketMessageJSON['agentID']) {
-            this.$bvToast.toast("Se le ha transferido una nueva conversación asociada al número '" + websocketMessageJSON['conversationInformation']['recipientPhoneNumber'] + "'.", {
-              title: 'Conversación transferida',
-              variant: 'success',
-              solid: true
-            });
-            this.$set(this.activeConversationsAsJSON, websocketMessageJSON['conversationID'], websocketMessageJSON['conversationInformation']);
-            var activeConversation = websocketMessageJSON['conversationInformation'];
-            activeConversation['activeConversationID'] = websocketMessageJSON['conversationID'];
-            this.activeConversations.push(activeConversation);
-            var inboxAudio = new Audio(require('../../../assets/pageAssets/transfer.wav'));
-            inboxAudio.play();
-          }
-
-        } else if (websocketMessageJSON['websocketMessageID'] == 'grabPendingConversation') {
-          if (localStorage.getItem('agentID') == websocketMessageJSON['agentID']) {
-            this.loader2 = false;
-            this.$bvToast.toast("Ha tomado la conversación pendiente asociada al número '" + websocketMessageJSON['conversationInformation']['recipientPhoneNumber'] + "'.", {
-              title: 'Conversación pendiente tomada',
-              variant: 'success',
-              solid: true
-            });
-            this.$set(this.activeConversationsAsJSON, websocketMessageJSON['conversationID'], websocketMessageJSON['conversationInformation']);
-            var activeConversation = websocketMessageJSON['conversationInformation'];
-            activeConversation['activeConversationID'] = websocketMessageJSON['conversationID'];
-            this.activeConversations.push(activeConversation);
-            var inboxAudio = new Audio(require('../../../assets/pageAssets/transfer.wav'));
-            inboxAudio.play();
-          } 
-          this.getPendingConversations();
-        
-        } else if (websocketMessageJSON['websocketMessageID'] == 'grabStoreConversation') {
-          if (localStorage.getItem('agentID') == websocketMessageJSON['agentID']) {
-            this.loaderGrabPendingConversation = false;
-            this.$bvToast.toast("Ha tomado la conversación pendiente asociada al número '" + websocketMessageJSON['conversationInformation']['recipientPhoneNumber'] + "'.", {
-              title: 'Conversación pendiente tomada',
-              variant: 'success',
-              solid: true
-            });
-            this.$set(this.activeConversationsAsJSON, websocketMessageJSON['conversationID'], websocketMessageJSON['conversationInformation']);
-            var activeConversation = websocketMessageJSON['conversationInformation'];
-            activeConversation['activeConversationID'] = websocketMessageJSON['conversationID'];
-            this.activeConversations.push(activeConversation);
-            var inboxAudio = new Audio(require('../../../assets/pageAssets/transfer.wav'));
-            inboxAudio.play();
-            this.activeConversation = true;
-          }
-          this.getStoreConversations();
-        } else if (websocketMessageJSON['websocketMessageID'] == 'receiveStoreMessage'){
-          if (websocketMessageJSON['storeName'] == 'Zapote'){
-            var aux = this.zapoteConversations;
-            this.zapoteConversations = [];
-            aux.push(
-              {
-                storeName: websocketMessageJSON['storeName'],
-                recipientPhoneNumber: websocketMessageJSON['recipientPhoneNumber'],
-                recipientProfileName: websocketMessageJSON['recipientProfileName'],
-                startDate: websocketMessageJSON['startDate'],
-                startHour: websocketMessageJSON['startHour'],
-                messageID: websocketMessageJSON['messageID'],
-                clientID: websocketMessageJSON['clientID'],
-                clientOrder: websocketMessageJSON['clientOrder']
-              }
-            );
-            this.zapoteConversations = aux;
-          } else if (websocketMessageJSON['storeName'] == 'Escazu'){
-            var aux = this.escazuConversations;
-            this.escazuConversations = [];
-            aux.push(
-              {
-                storeName: websocketMessageJSON['storeName'],
-                recipientPhoneNumber: websocketMessageJSON['recipientPhoneNumber'],
-                recipientProfileName: websocketMessageJSON['recipientProfileName'],
-                startDate: websocketMessageJSON['startDate'],
-                startHour: websocketMessageJSON['startHour'],
-                messageID: websocketMessageJSON['messageID'],
-                clientID: websocketMessageJSON['clientID'],
-                clientOrder: websocketMessageJSON['clientOrder']
-              }
-            );
-            this.escazuConversations = aux;
-          } else {
-            var aux = this.cartagoConversations;
-            this.cartagoConversations = [];
-            aux.push(
-              {
-                storeName: websocketMessageJSON['storeName'],
-                recipientPhoneNumber: websocketMessageJSON['recipientPhoneNumber'],
-                recipientProfileName: websocketMessageJSON['recipientProfileName'],
-                startDate: websocketMessageJSON['startDate'],
-                startHour: websocketMessageJSON['startHour'],
-                messageID: websocketMessageJSON['messageID'],
-                clientID: websocketMessageJSON['clientID'],
-                clientOrder: websocketMessageJSON['clientOrder']
-              }
-            );
-            this.cartagoConversations = aux;
-          }
-          var inboxAudio = new Audio(require('../../../assets/pageAssets/pending.wav'));
-          inboxAudio.play();
-        } else if (websocketMessageJSON['websocketMessageID'] == 'requestTransfer') {
-          if (localStorage.getItem('agentID') == websocketMessageJSON['newAgentID']) {
-            this.transferRequestName = websocketMessageJSON['previousAgentName'];
-            this.transferFromAgentID = websocketMessageJSON['previousAgentID'];
-            this.transferConversationID = websocketMessageJSON['activeConversationID'];
-            this.transferConversationProducts = websocketMessageJSON['products'];
-            this.$refs.buttonTransfer.click();
-          }
-        } else if (websocketMessageJSON['websocketMessageID'] == 'acceptTransfer') {
-          if (localStorage.getItem('agentID') == websocketMessageJSON['agentToNotify']) {
-            this.temp = '';
-            this.getAgentActiveConversations();
-          }
+        if (websocketMessageID == '/receiveWhatsappStoreMessage'){
+          this.receiveWhatsappStoreMessage(websocketMessageContent);
+        } else if (websocketMessageID == '/receiveWhatsappMessage'){
+          this.receiveWhatsappMessage(websocketMessageContent);
+        } else if (websocketMessageID == '/receiveWhatsappConversation'){
+          this.receiveWhatsappConversation(websocketMessageJSON.websocketMessageContent);
+        } else if (websocketMessageID == '/receiveWhatsappPendingConversation'){
+          this.receiveWhatsappPendingConversation(websocketMessageJSON.websocketMessageContent);
+        } else if (websocketMessageID == '/updateAgentStatus'){
+          this.receiveAgentStatusUpdate(websocketMessageContent);
+        } else if (websocketMessageID == '/grabPendingConversation') {
+          this.receiveGrabPendingConversation(websocketMessageContent);
+        } else if (websocketMessageID == '/grabStoreConversation') {
+          this.receiveGrabStoreConversation(websocketMessageContent);
+        } else if (websocketMessageID == '/requestTransferWhatsappConversation'){
+          this.receiveRequestTransferWhatsappConversation(websocketMessageContent);
+        } else if (websocketMessageID == '/acceptTransferWhatsappConversation'){
+          this.receiveAcceptTransferWhatsappConversation(websocketMessageContent);
         }
-
-
-      } 
+      }
     } catch (error) {
       console.log(error);
     }

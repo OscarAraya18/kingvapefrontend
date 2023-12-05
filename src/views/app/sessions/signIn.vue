@@ -153,42 +153,50 @@ export default {
         agentUsername: this.username,
         agentPassword: this.password,
       })
-      .then(response =>{ 
+      .then((response) =>{ 
         if (response.data.success == true){
-          localStorage.setItem('agentID', response.data.agentID);
-          localStorage.setItem('agentName', response.data.agentName);
-          localStorage.setItem('agentUsername', response.data.agentUsername);
-          localStorage.setItem('agentPassword', response.data.agentPassword);
 
-          localStorage.setItem('agentProfilePicture', response.data.agentProfilePicture)
-          localStorage.setItem('agentType', response.data.agentType);
-          localStorage.setItem('agentWelcomeMessage', response.data.agentWelcomeMessage);
-          localStorage.setItem('agentEndMessage', response.data.agentEndMessage);
+          localStorage.setItem('agentID', response.data.result.agentID);
+          localStorage.setItem('agentName', response.data.result.agentName);
+          localStorage.setItem('agentUsername', response.data.result.agentUsername);
+          localStorage.setItem('agentPassword', response.data.result.agentPassword);
+          localStorage.setItem('agentType', response.data.result.agentType);
+          localStorage.setItem('agentStartMessage', response.data.result.agentStartMessage);
+          localStorage.setItem('agentEndMessage', response.data.result.agentEndMessage);
+          localStorage.setItem('agentProfileImage', response.data.result.agentProfileImage);
 
-          localStorage.setItem('agentFavoriteMessages', JSON.stringify(response.data.agentFavoriteMessages));
-
-
-          router.push('/app/apps/chat');
+          axios.post(constants.routes.backendAPI+'/selectAgentFavoriteMessages',{
+            agentID: parseInt(localStorage.getItem('agentID'))
+          })
+          .then(response =>{ 
+            if (response.data.success == true){
+              localStorage.setItem('agentFavoriteMessages', JSON.stringify(response.data.result));
+              router.push('/app/apps/chat');
+            } else {
+              this.$bvToast.toast("Ha ocurrido un error al consultar la información del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+                title: "Error al consultar la información del agente",
+                variant: "danger",
+                solid: true
+              });
+            }
+          })
+          .catch(error =>{
+            this.$bvToast.toast("Ha ocurrido un error al consultar la información del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+              title: "Error al consultar la información del agente",
+              variant: "danger",
+              solid: true
+            });
+          })
         } else {
-          if (response.data.applicationStatus == 'on'){
-            this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-              title: "Error al iniciar sesión",
-              variant: "danger",
-              solid: true
-            });
-          } else {
-            this.$bvToast.toast("En este momento, la aplicación se encuentra fuera de línea para su uso. Contacte con su administrador de sistema o con soporte técnico si considera que esto se trata de un error.", {
-              title: "Aplicación fuera de línea",
-              variant: "danger",
-              solid: true
-            });
-          }
+          this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+            title: "Error al iniciar sesión",
+            variant: "danger",
+            solid: true
+          });
         }
       })
-      
       .catch(error =>{
-        console.log(error);
-        this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+        this.$bvToast.toast("Ha ocurrido un error al iniciar sesión. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
           title: "Error al iniciar sesión",
           variant: "danger",
           solid: true

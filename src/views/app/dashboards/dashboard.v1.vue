@@ -40,17 +40,30 @@
         <div style="width: 50%; padding-right: 100px; padding-left: 50px;">
           <h4><strong>Filtro por fecha inicial:</strong></h4>
           <b-form-datepicker v-model="initialDateFiltered"></b-form-datepicker>
-          <br><br>
+          <br>
           <h4><strong>Filtro por fecha final:</strong></h4>
           <b-form-datepicker v-model="endDateFiltered"></b-form-datepicker>
-          <br><br>
+          <br>
+          <h4><strong>Filtro por número:</strong></h4>
+          <b-form-input v-model="numberFiltered" class="mb-3" placeholder="Coloque un número"></b-form-input>
           <h4><strong>Filtro por agente:</strong></h4>
           <b-form-select v-model="agentFiltered" class="mb-3" :options="agentOptions"></b-form-select>
-          <br><br>
-          <h4><strong>Filtro por conversación:</strong></h4>
-          <b-form-select v-model="conversationFiltered" class="mb-3" :options="conversationOptions"></b-form-select>
+          <br>
+          <h4><strong>Filtro por sucursal de envío:</strong></h4>
+          <b-form-select v-model="storeFiltered" class="mb-3" :options="storeOptions"></b-form-select>
+          <br>
+          <h4><strong>Filtro por método de envío:</strong></h4>
+          <b-form-select v-model="sendFiltered" class="mb-3" :options="sendOptions"></b-form-select>
+          <br>
+          <h4><strong>Filtro por método de pago:</strong></h4>
+          <b-form-select v-model="paymentFiltered" class="mb-3" :options="paymentOptions"></b-form-select>
+          <br>
+          <h4><strong>Filtro por conversión:</strong></h4>
+          <b-form-select v-model="conversionFiltered" class="mb-3" :options="conversionOptions"></b-form-select>
           <br><br>
           <button class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="filter()"><i class="i-Search-People"></i>Aplicar filtro</button>
+          <button class="btn btn-icon" style="background-color: rgb(255, 184, 32); font-size: 15px; margin-left: 30px;" @click="cleanFilter()"><i class="i-Folder-Trash"></i>Limpiar filtros</button>
+
         </div>
 
         <div style="width: 50%; padding-right: 100px; padding-left: 50px;">
@@ -65,7 +78,7 @@
             ></b-form-radio-group>
           </b-form-group>
           <br>
-          <button class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="order()"><i class="i-Search-People"></i>Aplicar ordenamiento</button>
+          <button class="btn btn-icon" style="background-color: rgb(17, 172, 0); font-size: 15px" @click="order()"><i class="i-Search-People"></i>Aplicar ordenamiento</button>
         </div>
 
       </div>
@@ -271,14 +284,24 @@ export default {
 
       initialDateFiltered: '',
       endDateFiltered: '',
+      numberFiltered: '',
 
-      agentOptions: [{value:null,text:'Seleccione un agente para filtrar'}],
+      agentOptions: [{value:null,text:''}],
       agentFiltered: '',
 
-      conversationOptions: [{value:null,text:'Seleccione un tipo de conversación para filtrar'}, {value:'Vendido', text:'Vendido'}, {value:'No vendido', text:'No vendido'}],
-      conversationFiltered: '',
+      storeOptions: [{value:null, text:''}, {value:'Escazú', text:'Escazú'}, {value:'Zapote', text:'Zapote'}, {value:'Cartago', text:'Cartago'}, {value:'Heredia', text:'Heredia'}],
+      storeFiltered: '',
 
+      sendOptions: [{value:null, text:''}, {value:'Retiro en sucursal', text:'Retiro en sucursal'}, {value:'Envío por motorizado', text:'Envío por motorizado'}, {value:'Correo o encomienda', text:'Correo o encomienda'}],
+      sendFiltered: '',
 
+      paymentOptions: [{value:null, text:''}, {value:'Efectivo', text:'Efectivo'}, {value:'Tarjeta', text:'Tarjeta'}, {value:'SINPE', text:'SINPE'}, {value:'Transferencia', text:'Transferencia'}],
+      paymentFiltered: '',
+
+      conversionOptions: [{value:null, text:''}, {value:'Vendido', text:'Vendido'}, {value:'No vendido', text:'No vendido'}],
+      conversionFIltered: '',
+
+      
 
 
       closedConversationsAmount: 0,
@@ -576,56 +599,23 @@ export default {
         endDate = this.endDateFiltered.substring(5, this.endDateFiltered.length) + '-' + this.endDateFiltered.substring(0, 4);
       }
       alert(this.agentFiltered);
-
-      /*
-      axios.get(constants.routes.backendAPI+'/getAllClosedConversations?').then((response) =>{ 
-      this.closedConversations = response.data;
-      this.closedConversationsRows = [];
-      var span = '';
-      var amount = 0;
-      for (var activeConversationID in this.closedConversations){
-        if (this.closedConversations[activeConversationID].status == 'converted'){
-          span = '<span class="badge badge-pill badge-outline-success p-2">Converted</span>'
-          amount = '₡'+this.closedConversations[activeConversationID].amount;
-        } else {
-          span = '<span class="badge badge-pill badge-outline-danger p-2">Not converted</span>';
-          amount = 'Not converted';
-        } 
-        alert('2');
-        this.closedConversationsRows.push
-        (
-          {
-            activeConversationID: activeConversationID,
-            recipientPhoneNumber: this.closedConversations[activeConversationID].recipientPhoneNumber,
-            assignedAgentID: this.closedConversations[activeConversationID].assignedAgentID,
-            payment: span,
-            amount: amount,
-            startDateObject: this.closedConversations[activeConversationID].startDateObject,
-            startDate: this.closedConversations[activeConversationID].startDate,
-            startHour: this.closedConversations[activeConversationID].startHour,
-            endDate: this.closedConversations[activeConversationID].endDate,
-            endHour: this.closedConversations[activeConversationID].endHour,
-            openTransferHistory: '',
-            openConversation: ''
-          }
-        )
-      }
-      var temp = [];
-      for (var closedConversationRow in this.closedConversationsRows){
-        if (this.closedConversationsRows[closedConversationRow].startDate == date){
-          temp.push(this.closedConversationsRows[closedConversationRow]);
-        }
-      }
-      this.closedConversationsRows = temp;
-
-      })
-      .catch(error =>{
-        console.log(error);
-      })
-
-      */
-      
+ 
     },
+
+    
+    cleanFilter(){
+      this.initialDateFiltered = '';
+      this.endDateFiltered = '';
+      this.endDateFiltered = '';
+      this.agentFiltered = '';
+      this.storeFiltered = '';
+      this.sendFiltered = '';
+      this.paymentFiltered = '';
+      this.conversionFiltered = '';
+    },
+
+
+
     getClosedConversations(){
       this.view='closedConversations';
       axios.get(constants.routes.backendAPI+'/getAllClosedConversations?').then((response) =>{ 

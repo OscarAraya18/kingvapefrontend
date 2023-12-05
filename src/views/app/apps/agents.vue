@@ -1,6 +1,11 @@
 <template>
   <div class="main-content">
-    <b-card>
+    <div v-if="loaderList==true" style="text-align: center;">
+      <br>
+      <span class="spinner-glow spinner-glow-primary"></span>
+    </div>
+
+    <b-card v-else>
       <vue-good-table
         :columns="columns"
         :line-numbers="false"
@@ -75,7 +80,7 @@
             </div>
           </b-modal>
 
-          <b-modal id="modalEditar" title="Edit agent" hide-footer ref="modalEditar">
+          <b-modal id="modalEditar" title="Editar agente" hide-footer ref="modalEditar" centered>
             <div class="p-3">
               <b-form @submit.prevent="submit">
                 
@@ -119,47 +124,6 @@
             </div>
           </b-modal>
 
-          <b-modal id="modal-1" title="BootstrapVue">
-            <b-form>
-              <b-form-group
-                id="input-group-1"
-                label="Email address:"
-                label-for="input-1"
-                description="We'll never share your email with anyone else."
-              >
-                <b-form-input
-                  id="input-1"
-                  type="email"
-                  required
-                  placeholder="Enter email"
-                ></b-form-input>
-              </b-form-group>
-
-              <b-form-group
-                id="input-group-2"
-                label="Your Name:"
-                label-for="input-2"
-              >
-                <b-form-input
-                  id="input-2"
-                  required
-                  placeholder="Enter name"
-                ></b-form-input>
-              </b-form-group>
-
-              
-
-              <b-form-group id="input-group-4">
-                <b-form-checkbox-group id="checkboxes-4">
-                  <b-form-checkbox value="me">Check me out</b-form-checkbox>
-                  <b-form-checkbox value="that">Check that out</b-form-checkbox>
-                </b-form-checkbox-group>
-              </b-form-group>
-            </b-form>
-          </b-modal>
-
-
-          
         </div>
 
         <template slot="table-row" slot-scope="props">
@@ -168,16 +132,15 @@
               <i class="i-Close-Window text-25 text-danger" @click="deleteAgent(props.row.button)" style="cursor: pointer;"></i>
           </span>
           <span v-else-if="props.column.field == 'status'">
-            <span @click="changeAgentStatus(props.row.button, props.row.status)" style="cursor:pointer;" v-if="props.row.status == 'ONLINE'" class="badge badge-success">ONLINE</span>
-            <span @click="changeAgentStatus(props.row.button, props.row.status)" style="cursor:pointer;" v-else class="badge badge-danger">OFFLINE</span>
-
+            <span @click="updateAgentStatus(props.row.button, props.row.status)" style="cursor:pointer;" v-if="props.row.status == 'ONLINE'" class="badge badge-success">ONLINE</span>
+            <span @click="updateAgentStatus(props.row.button, props.row.status)" style="cursor:pointer;" v-else class="badge badge-danger">OFFLINE</span>
           </span>
           <span v-else-if="props.column.field == 'name'">
             <div class="ul-widget-app__profile-pic">
               <img
                 class="profile-picture avatar-sm mb-2 rounded-circle img-fluid"
                 v-if="props.row.avatar != ''"
-                :src="props.row.avatar"
+                :src="`data:image/png;base64,${props.row.avatar}`"
                 alt=""
                 style="margin-right: 20px;"
               />
@@ -204,12 +167,10 @@ const webSocket = new WebSocket('wss:telasmasbackend.onrender.com');
 
 
 export default {
-  metaInfo: {
-    // if no subcomponents specify a metaInfo.title, this title will be used
-    title: "Task Manager",
-  },
   data() {
     return {
+      loaderList: false,
+
       dropdownOptions: [{value:"agent", text:"Agente"}, {value:"admin", text:"Administrador"}],
       creatingID: '',
       creatingName: '',
@@ -262,23 +223,22 @@ export default {
     try {
       webSocket.onmessage = (websocketMessage) => {
         const websocketMessageJSON = JSON.parse(websocketMessage.data);
+        const websocketMessageID = websocketMessageJSON.websocketMessageID;
+        const websocketMessageContent = websocketMessageJSON.websocketMessageContent.result;
 
-        if (websocketMessageJSON['websocketMessageID'] == 'updateAgentStatus'){
-          const agentID = websocketMessageJSON['agentID'];
-          var agentStatus = websocketMessageJSON['agentStatus'];
-          if (agentStatus == 'online'){
-            agentStatus = 'ONLINE';
-          } else {
-            agentStatus = 'OFFLINE';
-          }
+        if (websocketMessageID == '/updateAgentStatus'){
           for (var agentIndex in this.agents){
-            if (this.agents[agentIndex]['id'] == agentID){
-              this.agents[agentIndex]['status'] = agentStatus; 
+            if (this.agents[agentIndex].id == websocketMessageContent.agentID){
+              var status = '';
+              if (websocketMessageContent.agentStatus == 'online'){
+                status = 'ONLINE';
+              } else {
+                status = 'OFFLINE';
+              }
+              this.agents[agentIndex].status = status;
             }
           }
-          this.allAgentsInformation[agentID]['agentStatus'] = agentStatus;
         }
-
       }
     } catch {
   
@@ -293,7 +253,7 @@ export default {
       this.creatingType = '';
     },
 
-    changeAgentStatus(agentID, agentCurrentStatus){
+    updateAgentStatus(agentID, agentCurrentStatus){
       var temp = '';
       var aux = '';
       if (agentCurrentStatus == 'ONLINE'){
@@ -303,21 +263,31 @@ export default {
         temp = 'online';
         aux = 'ONLINE';
       }
-      axios.post(constants.routes.backendAPI+'/updateAgentStatus',{
+      axios.post(constants.routes.backendAPI+'/updateAgentStatus',
+      {
         agentID: agentID,
+        agentName: this.allAgentsInformation[agentID].agentName,
         agentStatus: temp 
       })
-      .then(() =>{ 
-        for (var agentIndex in this.agents){
-          if (this.agents[agentIndex].id == agentID){
-            this.agents[agentIndex].status = aux;
+      .then((response) =>{
+        if (response.data.success){
+          for (var agentIndex in this.agents){
+            if (this.agents[agentIndex].id == agentID){
+              this.agents[agentIndex].status = aux;
+            }
           }
+          this.$bvToast.toast("Se ha modificado el estado del agente con la cédula '" + agentID + "'.", {
+            title: "Estado del agente modificado",
+            variant: "success",
+            solid: true
+          });
+        } else {
+          this.$bvToast.toast("Ha ocurrido un error inesperado al modificar el estado del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+            title: "Error al modificar el estado del agente",
+            variant: "danger",
+            solid: true
+          });
         }
-        this.$bvToast.toast("Se ha modificado el estado del agente con la cédula '" + agentID + "'.", {
-          title: "Estado del agente modificado",
-          variant: "success",
-          solid: true
-        });
       })
       .catch(error =>{
         this.$bvToast.toast("Ha ocurrido un error inesperado al modificar el estado del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
@@ -330,45 +300,90 @@ export default {
     },
 
     createAgent(){
-      axios.post(constants.routes.backendAPI+'/createAgent', {'agentID': this.creatingID, 'agentName': this.creatingName, 'agentUsername': this.creatingUsername, 'agentPassword': this.creatingPassword, 'agentType': this.creatingType})
-      .then(() =>{ 
-        this.agents = [];
-        this.getAllAgents();
-        this.$refs['modalCrear'].hide();
-        this.$bvToast.toast("Se ha creado exitosamente el agente con la cédula '" + this.creatingID + "'.", {
-          title: "Agente creado",
-          variant: "success",
+      const regularExpressionChecker = /\S/;
+      if (regularExpressionChecker.test(this.creatingID) && regularExpressionChecker.test(this.creatingName) && regularExpressionChecker.test(this.creatingUsername) && regularExpressionChecker.test(this.creatingPassword) && regularExpressionChecker.test(this.creatingType)){
+        axios.post(constants.routes.backendAPI+'/insertAgent', 
+        {
+          'agentID': this.creatingID,
+          'agentName': this.creatingName,
+          'agentUsername': this.creatingUsername,
+          'agentPassword': this.creatingPassword, 
+          'agentType': this.creatingType
+        })
+        .then((response) =>{ 
+          if (response.data.success){
+            this.getAllAgents();
+            this.$refs['modalCrear'].hide();
+            this.$bvToast.toast("Se ha creado exitosamente el agente con la cédula '" + this.creatingID + "'.", {
+              title: "Agente creado",
+              variant: "success",
+              solid: true
+            });
+          } else {
+            this.$bvToast.toast("Ha ocurrido un error inesperado al crear el agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+              title: "Error al crear el agente",
+              variant: "danger",
+              solid: true
+            });
+          }
+        })
+        .catch((error) =>{
+          this.$bvToast.toast("Ha ocurrido un error inesperado al crear el agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+            title: "Error al crear el agente",
+            variant: "danger",
+            solid: true
+          });
+        });
+      } else {
+        this.$bvToast.toast('El contenido de la información del agente no puede estar vacío. Por favor complete los espacios requeridos e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+          title: 'Error al crear el agente',
+          variant: 'danger',
           solid: true
         });
-      })
-      .catch(error =>{
-        this.$bvToast.toast("Ha ocurrido un error inesperado al crear el agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-          title: "Error al crear el agente",
-          variant: "danger",
-          solid: true
-        });
-      });
+      }
     },
 
     submit(){
-      axios.post(constants.routes.backendAPI+'/updateAgentFromAdminPortal', {'agentID': this.editingID, 'agentName': this.editingName, 'agentUsername': this.editingUsername, 'agentPassword': this.editingPassword})
-      .then(() =>{ 
-        this.agents = [];
-        this.getAllAgents();
-        this.$refs['modalEditar'].hide();
-        this.$bvToast.toast("Se ha editado exitosamente el agente con la cédula '" + this.editingID + "'.", {
-          title: "Agente editado",
-          variant: "success",
+      const regularExpressionChecker = /\S/;
+      if (regularExpressionChecker.test(this.editingID) && regularExpressionChecker.test(this.editingName) && regularExpressionChecker.test(this.editingUsername) && regularExpressionChecker.test(this.editingPassword)){
+        axios.post(constants.routes.backendAPI+'/updateAgentFromAdminPortal', 
+        {
+          'agentID': this.editingID, 
+          'agentName': this.editingName, 
+          'agentUsername': this.editingUsername, 
+          'agentPassword': this.editingPassword}
+        ).then((response) =>{ 
+          console.log(response)
+          if (response.data.success){
+            this.getAllAgents();
+            this.$refs['modalEditar'].hide();
+            this.$bvToast.toast("Se ha editado exitosamente el agente con la cédula '" + this.editingID + "'.", {
+              title: "Agente editado",
+              variant: "success",
+              solid: true
+            });
+          } else {
+            this.$bvToast.toast("Ha ocurrido un error inesperado al editar el agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+              title: "Error al editar el agente",
+              variant: "danger",
+              solid: true
+            });
+          }
+        })
+        .catch((error) =>{
+          this.$bvToast.toast("Ha ocurrido un error inesperado al editar el agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+            title: "Error al editar el agente",
+            variant: "danger",
+            solid: true
+          });
+        });
+      } else {
+        this.$bvToast.toast('El contenido de la información del agente no puede estar vacío. Por favor complete los espacios requeridos e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+          title: 'Error al editar el agente',
+          variant: 'danger',
           solid: true
         });
-      })
-      .catch(error =>{
-        this.$bvToast.toast("Ha ocurrido un error inesperado al editar el agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-          title: "Error al editar el agente",
-          variant: "danger",
-          solid: true
-        });
-      });
+      }
     },
 
     openEditAgent(agentID){
@@ -376,22 +391,28 @@ export default {
       this.editingName = this.allAgentsInformation[agentID].agentName;
       this.editingUsername = this.allAgentsInformation[agentID].agentUsername;
       this.editingPassword = this.allAgentsInformation[agentID].agentPassword;
-
     },
 
     deleteAgent(agentID){
       if (agentID != localStorage.getItem('agentID')){
         axios.post(constants.routes.backendAPI+'/deleteAgent', {'agentID': agentID})
-        .then(() =>{ 
-          this.agents = [];
-          this.getAllAgents();
-          this.$bvToast.toast("Se ha eliminado exitosamente el agente con la cédula '" + agentID + "'.", {
-            title: "Agente eliminado",
-            variant: "success",
-            solid: true
-          });
+        .then((response) =>{ 
+          if (response.data.success){
+            this.getAllAgents();
+            this.$bvToast.toast("Se ha eliminado exitosamente el agente con la cédula '" + agentID + "'.", {
+              title: "Agente eliminado",
+              variant: "success",
+              solid: true
+            });
+          } else {
+            this.$bvToast.toast("Ha ocurrido un error inesperado al eliminar el agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+              title: "Error al eliminar el agente",
+              variant: "danger",
+              solid: true
+            });
+          }
         })
-        .catch(() =>{
+        .catch((error) =>{
           this.$bvToast.toast("Ha ocurrido un error inesperado al eliminar el agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
             title: "Error al eliminar el agente",
             variant: "danger",
@@ -409,28 +430,33 @@ export default {
 
     getAllAgents(){
       this.allAgentsInformation = {};
-      axios.get(constants.routes.backendAPI+'/getAllAgents').then(response =>{ 
-        for (var agentID in response.data){
+      this.agents = [];
+      this.loaderList = true;
+      axios.get(constants.routes.backendAPI+'/selectAllAgents')
+      .then((response) => {
+        const agentsInformation = response.data.result;
+
+        for (var agentIndex in agentsInformation){
           var status = '';
-          if (response.data[agentID].agentStatus == 'online'){
+          if (agentsInformation[agentIndex].agentStatus == 'online'){
             status = 'ONLINE';
           } else {
             status = 'OFFLINE';
           }
           this.agents.push(
-            { 
-              avatar: response.data[agentID].agentProfilePicture,
-              name: response.data[agentID].agentName,
-              id: agentID,
-              username: response.data[agentID].agentUsername,
-              status: status,
-              button: agentID
-            }
-          );
-          this.allAgentsInformation[agentID] = {agentName: response.data[agentID].agentName, agentUsername: response.data[agentID].agentUsername, agentPassword: response.data[agentID].agentPassword};
+          { 
+            avatar: agentsInformation[agentIndex].agentProfileImage,
+            name: agentsInformation[agentIndex].agentName,
+            id: agentsInformation[agentIndex].agentID,
+            username: agentsInformation[agentIndex].agentUsername,
+            status: status,
+            button: agentsInformation[agentIndex].agentID,
+          });
+          this.allAgentsInformation[agentsInformation[agentIndex].agentID] = {agentName: agentsInformation[agentIndex].agentName, agentUsername: agentsInformation[agentIndex].agentUsername, agentPassword: agentsInformation[agentIndex].agentPassword};
         }
+        this.loaderList = false;
       })
-      .catch(() =>{
+      .catch((error) =>{
         this.$bvToast.toast("Ha ocurrido un error inesperado al consultar la lista de agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
           title: "Error al consultar la lista de agentes",
           variant: "danger",
@@ -438,6 +464,7 @@ export default {
         });
       });
     }
+
   },
 };
 </script>

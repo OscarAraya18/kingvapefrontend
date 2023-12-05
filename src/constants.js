@@ -9,7 +9,7 @@ module.exports = {
     {
         phoneNumberID: '135985856257321',
         apiVersion: 'v17.0',
-        apiKey:'EAAD2uKxXdvcBO21D2YBpnjhRZCS6YAZAdBgtKvnj6uBgBhZC0YsQuA3wrIwrSQY39lo0RsRx3y8VlnhkNuGh6dEABZBlXk3HjkKlnHieWWT340aizdZCaEU2FTMJ7AnqOazUpzMGqSwuitnoIJ2jP6acFeujKUgHZBZArJUK1gvK1GZC2OE9xG5MXjoqJb6fZCEWWvOXOLRh67gpaaUYy0DIZD',
+        apiKey:'EAAD2uKxXdvcBO0bbBp2yHXbWqOqMstMf2CSW43uV9NmGWP95QHUCJyOhxCjT93MvnxOwy8ZAcdRyLJtCsgllqjkq4ooZAFmCZCkkQ53CJ54bNkYDOTLgYnb1bVciFMXDQ1kRA8YJyB8yxJkZAbyjoP91z8qXfLoNVOnYxil5iRZBvRv4BnNIHDEM6MS0f315htVz44t6mb9vE8PD2WvgZD',
     },
 
     emojis: ['😀','😂','😊','👍','👋','🙌','🤔','😍','🥺','🤣','😎','😭','🥰','😇','🤩','🥳','🙏','🤗','👏','👌','❤️','🤷‍♂️','💕','😌','😢','😒','😘','😜','👀','💔','😳','🤭','😬','🤦‍♀️','😴','😑','😪','😞','😕','🙄','🤢','😤','🤮','👎','👊','😷','💩','🤯','😰','😨','🤫','😻','🙈','🍀','🌈','🌺','🌟','🎈','🎉','🎁','🎂','🍕','🍔','🍦','🍩','🍓','🍇','🍌','🍒','🍍','🍅','🐶','🐱','🐼','🦁','🐯','🐰','🐨','🐻','🐷','🐮','🐔','🐣','🐧','🦄','🐴','🦔','🦉','🐍','🐢','🐙','🐚','🐞','🦀','🦐','🦋','🐌','🐛','🐜','🐝','🦟','🦠','🦄'],
