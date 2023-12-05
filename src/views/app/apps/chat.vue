@@ -2223,7 +2223,23 @@ export default {
       this.longitud = '';
       this.address = '';
       this.nota = ''; 
-      this.locations = [];
+      this.locations = 
+      [
+      {
+        'CASA': {
+          'latitude': 0,
+          'longitude': 0
+        },
+        'TRABAJO': {
+          'latitude': 0,
+          'longitude': 0
+        },
+        'OTRO': {
+          'latitude': 0,
+          'longitude': 0
+        }
+      },
+      ];
       var availableConversation = false;
       for (var activeConversationMessage in currentActiveConversation.whatsappConversationMessages){
         if (currentActiveConversation.whatsappConversationMessages[activeConversationMessage] != null){
