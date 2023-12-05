@@ -2224,7 +2224,7 @@ export default {
       this.address = '';
       this.nota = ''; 
       this.locations = 
-      [
+
       {
         'CASA': {
           'latitude': 0,
@@ -2238,8 +2238,7 @@ export default {
           'latitude': 0,
           'longitude': 0
         }
-      },
-      ];
+      };
       var availableConversation = false;
       for (var activeConversationMessage in currentActiveConversation.whatsappConversationMessages){
         if (currentActiveConversation.whatsappConversationMessages[activeConversationMessage] != null){
