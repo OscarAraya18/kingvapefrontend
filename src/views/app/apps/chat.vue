@@ -17,6 +17,7 @@
                 <div v-if="loaders.activeConversations == true" style="text-align: center;">
                   <br><br><br><span class="spinner-glow spinner-glow-primary"></span>
                 </div>
+                
                 <div v-else v-for="activeConversation in activeConversationsAsJSON" @click="changeCurrentActiveConversation(activeConversation)" style="cursor: pointer;" class="p-3 d-flex border-bottom align-items-center" id="hint">
                   <h6 style="padding-top: 10px;">
                     {{ activeConversation.whatsappConversationRecipientProfileName }} ({{activeConversation.whatsappConversationRecipientPhoneNumber}})
@@ -29,8 +30,12 @@
                   <div v-else style="height: 15px; width: 15px; background-color: green; border-radius: 100px;"></div>
                   <b-tooltip target="hint" v-if="hints[activeConversation.whatsappConversationRecipientProfileName]">{{hints[activeConversation.whatsappConversationRecipientProfileName]}}</b-tooltip>
                 </div>
+
+
               </vue-perfect-scrollbar>
             </div>
+
+            
             <div style="position: absolute; width: 100%; bottom: 0; background-color: #F9E530; height: 50px; text-align: center; cursor:pointer;">
               <b-dropdown ref="dropDownSucursales" dropup :text="textoSucursalesCalcular" variant="primary" style="margin: 0 auto; font-size: medium; top: 5px" size="lg">
                 <b-dropdown-item href="#" v-b-modal.escazuConversationsModal>Escazú ({{escazuConversations.length}})</b-dropdown-item>
@@ -44,7 +49,6 @@
             <b-list-group v-if="loaders.grabConversation == false">
               <b-list-group-item v-if="escazuConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
               <b-list-group-item v-for="escazuConversation in escazuConversations" @click="grabStoreConversation(escazuConversation)" button style="cursor: pointer;">
-                {{escazuConversation}}
                 <strong>Nombre:</strong> {{escazuConversation.storeMessageRecipientProfileName}}<br>
                 <strong>Número:</strong> {{escazuConversation.storeMessageRecipientPhoneNumber}}<br>
                 <strong>Pedido:</strong> {{escazuConversation.storeMessageRecipientOrder}}<br>
@@ -105,11 +109,18 @@
               <b-list-group-item v-if="historyConversations.length == 0">
                 No hay conversaciones en el historial
               </b-list-group-item>
-              <b-list-group-item v-b-modal.historyOpenModal style="cursor: pointer" v-for="historyConversation in historyConversations" button @click="openHistoryConversation(historyConversation)">
-                <strong>Atendido por:</strong> {{historyConversation.agentName}}<br>
-                <strong>Resultado:</strong> {{historyConversation.whatsappConversationCloseComment}}<br>
-                <strong>Inicio:</strong> {{parseHour(historyConversation.whatsappConversationStartDateTime)}}<br>
-                <strong>Fin:</strong> {{parseHour(historyConversation.whatsappConversationEndDateTime)}}<br>
+              <b-list-group-item v-b-modal.historyOpenModal style="cursor: pointer" v-for="historyConversation in historyConversations" @click="openHistoryConversation(historyConversation)" button>
+                <div style="display: flex;">
+                  <div>
+                    <strong>Atendido por:</strong> {{historyConversation.agentName}}<br>
+                    <strong>Resultado:</strong> {{historyConversation.whatsappConversationCloseComment}}<br>
+                    <strong>Inicio:</strong> {{parseHour(historyConversation.whatsappConversationStartDateTime)}}<br>
+                    <strong>Fin:</strong> {{parseHour(historyConversation.whatsappConversationEndDateTime)}}<br>
+                  </div>
+                  <div class="flex-grow-1"></div>
+                  <button @click="rememberCart(historyConversation.whatsappConversationProducts)" class="btn btn-icon btn-primary mr-2"><i class="i-Shopping-Cart"></i>Recordar carrito</button>
+
+                </div>
               </b-list-group-item>
             </b-list-group>
             <div v-else style="text-align: center;">
@@ -170,6 +181,7 @@
                                 
                                 <div v-if="answeredMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
                                   <img v-b-modal.bigImageModal @click="openBigImage(answeredMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="answeredMessage.whatsappFavoriteImageMessageDriveURL">
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappFavoriteImageMessageCaption != null">{{answeredMessage.whatsappFavoriteImageMessageCaption}}</p>
                                 </div>
 
                               </div>
@@ -212,6 +224,8 @@
                         
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
                           <img v-b-modal.bigImageModal @click="openBigImage(currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL">
+                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappFavoriteImageMessageCaption != null">{{currentActiveConversationMessage.whatsappFavoriteImageMessageCaption}}</p>
+
                         </div>
                       
                       </div>
@@ -259,6 +273,7 @@
                               
                                 <div v-if="answeredMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
                                   <img v-b-modal.bigImageModal @click="openBigImage(answeredMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="answeredMessage.whatsappFavoriteImageMessageDriveURL">
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappFavoriteImageMessageCaption != null">{{answeredMessage.whatsappFavoriteImageMessageCaption}}</p>
                                 </div>
                               
                               </div>
@@ -287,6 +302,7 @@
                         
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
                           <img v-b-modal.bigImageModal @click="openBigImage(currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL">
+                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappFavoriteImageMessageCaption != null">{{currentActiveConversationMessage.whatsappFavoriteImageMessageCaption}}</p>
                         </div>
                       
                       </div>
@@ -360,6 +376,7 @@
                                 
                                 <div v-if="answeredMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
                                   <img v-b-modal.bigImageModal @click="openBigImage(answeredMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="answeredMessage.whatsappFavoriteImageMessageDriveURL">
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappFavoriteImageMessageCaption != null">{{answeredMessage.whatsappFavoriteImageMessageCaption}}</p>
                                 </div>
 
                               </div>
@@ -402,6 +419,8 @@
                         
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
                           <img v-b-modal.bigImageModal @click="openBigImage(currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL">
+                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappFavoriteImageMessageCaption != null">{{currentActiveConversationMessage.whatsappFavoriteImageMessageCaption}}</p>
+
                         </div>
                       
                       </div>
@@ -449,6 +468,7 @@
                               
                                 <div v-if="answeredMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
                                   <img v-b-modal.bigImageModal @click="openBigImage(answeredMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="answeredMessage.whatsappFavoriteImageMessageDriveURL">
+                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappFavoriteImageMessageCaption != null">{{answeredMessage.whatsappFavoriteImageMessageCaption}}</p>
                                 </div>
                               
                               </div>
@@ -477,6 +497,7 @@
                         
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
                           <img v-b-modal.bigImageModal @click="openBigImage(currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL">
+                          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappFavoriteImageMessageCaption != null">{{currentActiveConversationMessage.whatsappFavoriteImageMessageCaption}}</p>
                         </div>
                       
                       </div>
@@ -533,6 +554,7 @@
                   
                     <div v-if="repliedMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
                       <img v-b-modal.bigImageModal @click="openBigImage(repliedMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="repliedMessage.whatsappFavoriteImageMessageDriveURL">
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="repliedMessage.whatsappFavoriteImageMessageCaption != null">{{repliedMessage.whatsappFavoriteImageMessageCaption}}</p>
                     </div>
                   
                   </div><br>
@@ -573,7 +595,7 @@
                   <button class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="uploadImage()" id="sendFiles"><i class="i-Folder-With-Document"></i></button>
                   <input type="file" accept="image/png, image/jpeg" @change="sendWhatsappImageMessage()" ref="imageFile" style="display: none;" id="imageUploader">
                   <b-tooltip target="sendFiles">Enviar imágenes de la computadora</b-tooltip>
-                  <button id="sendFavoriteImages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal @click="openImageModal()"><i class="i-Folder"></i></button>
+                  <button id="sendFavoriteImages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal @click="deselectImages()"><i class="i-Folder"></i></button>
                   <b-tooltip target="sendFavoriteImages">Enviar imágenes del catálogo</b-tooltip>
                   <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
                     <img style="width: 1000px;" :src="bigImageSource">
@@ -600,10 +622,23 @@
                   <b-tooltip target="sendFavoriteMessages">Enviar mensajes favoritos</b-tooltip>
                   <b-modal scrollable title="Mensajes favoritos" size="m" centered hide-footer id="favoriteModal">
                     <b-list-group>
+                      
                       <b-list-group-item style="cursor: pointer;" v-for="agentFavoriteMessage in agentFavoriteMessages" button @click="sendWhatsappFavoriteTextMessage(agentFavoriteMessage.agentFavoriteMessageTextMessageBody)">
                         <h6><strong>{{agentFavoriteMessage.agentFavoriteMessageName}}</strong></h6>
                         {{agentFavoriteMessage.agentFavoriteMessageTextMessageBody}}
                       </b-list-group-item>
+
+                      <b-list-group-item style="cursor: pointer;" v-for="agentFavoriteImage in agentFavoriteImages2" button @click="sendSelectedWhatsappFavoriteImageMessage(agentFavoriteImage)">
+                        <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
+                        <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 150px; height: auto;"/>
+                        <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias'"><br>
+                          Te envío por acá nuestras cuentas bancarias en caso de que canceles por transferencia
+                        </div>
+                        <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Mensaje de bienvenida'"><br>
+                          {{ agentStartMessage }}
+                        </div>
+                      </b-list-group-item>
+
                     </b-list-group>
                   </b-modal>
                   <button id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>
@@ -987,6 +1022,9 @@ export default {
   },
   data() {
     return { 
+
+      agentStartMessage: '',
+
       loaders: 
       {
         activeConversations: false,
@@ -1166,6 +1204,7 @@ export default {
 
       agentFavoriteMessages: [],
       agentFavoriteImages: [],
+      agentFavoriteImages2: [],
 
       recordAudioDialog: false,
       isRecording: false,
@@ -1175,12 +1214,23 @@ export default {
       chunks: [],
       bigImageSource: '',
 
-
+      sortedConversationsID: []
     };
   },
 
   methods: {
-    
+
+    sortConversations(){
+      
+    },
+
+
+
+    rememberCart(cart){
+      this.orden = JSON.parse(cart);
+      this.showNotification('success', 'Carrito recordado', 'Ha recordado el carrito de la compra previa del cliente.')
+
+    },
 
 
     openBigImage(bigImageSource){
@@ -1219,9 +1269,11 @@ export default {
       .catch((error) => {
         this.showNotification('danger', 'Error al abrir la conversación del historial', 'Ha ocurrido un error inesperado al abrir la conversación del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
+      
     },
 
     getHistoryConversations(){
+      this.xx = false;
       this.historyLoader = true;
       this.historyConversations = [];
       axios.post(constants.routes.backendAPI+'/selectWhatsappClosedConversationFromWhatsappConversationRecipientPhoneNumber', 
@@ -1249,15 +1301,19 @@ export default {
       this.repliedMessage = null;
     },
     openImageModal(){
-      this.loaderImages = true;
       axios.post(constants.routes.backendAPI+'/selectFavoriteImages')
         .then((response) =>{
           if (response.data.success){
-            this.agentFavoriteImages = response.data.result;
+            for (var agentFavoriteImageIndex in response.data.result){
+              if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == true){
+                this.agentFavoriteImages.push(response.data.result[agentFavoriteImageIndex]);
+              } else {
+                this.agentFavoriteImages2.push(response.data.result[agentFavoriteImageIndex]);
+              }
+            }
             for (var agentFavoriteImageIndex in this.agentFavoriteImages){
               this.agentFavoriteImages[agentFavoriteImageIndex]['selected'] = false;
             }
-            this.loaderImages = false;
           } else {
             this.showNotification('danger', 'Error al consultar las imágenes del catálogo', 'Ha ocurrido un error inesperado al consultar las imágenes del catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
           }
@@ -1266,6 +1322,12 @@ export default {
           console.log(error);
           this.showNotification('danger', 'Error al consultar las imágenes del catálogo', 'Ha ocurrido un error inesperado al consultar las imágenes del catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         })
+    },
+
+    deselectImages(){
+      for (var agentFavoriteImageIndex in this.agentFavoriteImages){
+        this.agentFavoriteImages[agentFavoriteImageIndex]['selected'] = false;
+      }
     },
 
     openAgentFavoriteMessagesModal(){
@@ -1682,7 +1744,8 @@ export default {
                 whatsappConversationRecipientPhoneNumber: me.phone,
                 whatsappConversationCloseComment: 'Venta',
                 whatsappConversationAmount: total,
-                whatsappTextMessageBody: localStorage.getItem('agentEndMessage')
+                whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
+                whatsappConversationProducts: me.activeConversationsAsJSON[whatsappConversationID].products
               })
               .then((response) =>{ 
                 if (response.data.success){
@@ -2112,7 +2175,8 @@ export default {
           await axios.post(constants.routes.backendAPI+'/sendWhatsappFavoriteImageMessage', 
           {
             whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
-            whatsappFavoriteImageMessageContent: this.agentFavoriteImages[image]
+            whatsappFavoriteImageMessageContent: this.agentFavoriteImages[image],
+            whatsappFavoriteImageMessageCaption: null
           })
           .then((response) => {
             if (response.data.success){
@@ -2132,10 +2196,41 @@ export default {
       }
     },
 
+    sendSelectedWhatsappFavoriteImageMessage(selectedWhatsappFavoriteImage){
+      var text = '';
+      if (selectedWhatsappFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias'){
+        text = 'Te envío por acá nuestras cuentas bancarias en caso de que canceles por transferencia';
+      } else {
+        text = localStorage.getItem('agentStartMessage');
+      }
+      axios.post(constants.routes.backendAPI+'/sendWhatsappFavoriteImageMessage', 
+      {
+        whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+        whatsappFavoriteImageMessageContent: selectedWhatsappFavoriteImage,
+        whatsappFavoriteImageMessageCaption: text
+      })
+      .then((response) => {
+        if (response.data.success){
+          this.scrollDown();
+          this.repliedMessage = null;
+          const whatsappConversationID = response.data.result.whatsappConversationID;
+          this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
+          this.$root.$emit('bv::hide::modal','favoriteModal');
+
+        } else {
+          this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) =>{
+        console.log(error);
+        this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
     async sendWhatsappProductMessage(product){
       this.repliedMessageID = null;
       this.enviandoProductoLoader = true;
-      const whatsappProductImageMessageCaption = `*Nombre:* ` + product.descripcion + `. *Precio:* ₡` + product.precioVenta;
+      const whatsappProductImageMessageCaption = `*Nombre:* ` + product.descripcion + `. *Precio:* ₡` + product.precioVenta + `. *Descripción:* ` + product.datosAdicionales;
       axios.post(constants.routes.backendAPI+'/sendWhatsappProductImageMessage', 
       {
         'whatsappConversationRecipientPhoneNumber': this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
@@ -2287,7 +2382,8 @@ export default {
         whatsappConversationRecipientPhoneNumber: this.phone,
         whatsappConversationCloseComment: this.closeConversationReason,
         whatsappConversationAmount: 0,
-        whatsappTextMessageBody: localStorage.getItem('agentEndMessage')
+        whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
+        whatsappConversationProducts: []
       })
       .then((response) =>{ 
         if (response.data.success){
@@ -2408,6 +2504,7 @@ export default {
           this.activeConversationsAsJSON = {};
           this.activeConversationsAsJSON = respondedActiveConversations;
           this.loaders.activeConversations = false;
+          this.sortConversations();
         } else {
           this.showNotification('danger', 'Error al consultar las conversaciones activas', 'Ha ocurrido un error inesperado al consultar las conversaciones pendientes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
@@ -2439,6 +2536,7 @@ export default {
           const selectAgentConversationResult = response.data.result[whatsappConversationID]; 
           this.$set(this.activeConversationsAsJSON, whatsappConversationID, selectAgentConversationResult);
           this.loaders.activeConversations = false;
+          this.sortConversations();
         } else {
           this.showNotification('danger', 'Error al consultar la nueva conversación', 'Ha ocurrido un error inesperado al consultar la nueva conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
@@ -2545,6 +2643,14 @@ export default {
         this.availableConversation = true;
         this.scrollDown();
         this.playSound('receiveWhatsappMessage');
+        this.sortConversations();
+      }
+    },
+
+    receiveSendWhatsappMessage(websocketMessageContent){
+      const whatsappConversationID = websocketMessageContent.whatsappConversationID;
+      if (whatsappConversationID in this.activeConversationsAsJSON){
+        this.sortConversations();
       }
     },
 
@@ -2686,6 +2792,8 @@ export default {
   },
 
   mounted(){
+    this.agentStartMessage = localStorage.getItem('agentStartMessage');
+
     if (localStorage.getItem('agentID') == null){
       router.push("/app/sessions/signIn");
     }
@@ -2697,14 +2805,13 @@ export default {
     this.selectAllStoreMessage();
     this.selectAgentConversations();
     this.selectAllPendingConversation();
+    this.openImageModal();
 
     try {
       webSocket.onmessage = (websocketMessage) => {
         const websocketMessageJSON = JSON.parse(websocketMessage.data);
         const websocketMessageID = websocketMessageJSON.websocketMessageID;
         const websocketMessageContent = websocketMessageJSON.websocketMessageContent.result;
-
-        console.log(websocketMessageJSON);
 
         if (websocketMessageID == '/receiveWhatsappStoreMessage'){
           this.receiveWhatsappStoreMessage(websocketMessageContent);
@@ -2724,6 +2831,8 @@ export default {
           this.receiveRequestTransferWhatsappConversation(websocketMessageContent);
         } else if (websocketMessageID == '/acceptTransferWhatsappConversation'){
           this.receiveAcceptTransferWhatsappConversation(websocketMessageContent);
+        } else if (websocketMessageID == '/sendWhatsappMessage'){
+          this.receiveSendWhatsappMessage(websocketMessageContent);
         }
       }
     } catch (error) {
