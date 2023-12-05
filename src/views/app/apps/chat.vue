@@ -132,7 +132,7 @@
                         
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
                           <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
-                            <div v-for="answeredMessage in currentActiveConversation.whatsappConversationMessages">
+                            <div v-for="answeredMessage in currentHistoryConversation.whatsappConversationMessages">
                               <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
                                 
                                 <p v-if="answeredMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
