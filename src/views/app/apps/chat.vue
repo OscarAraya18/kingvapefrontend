@@ -18,17 +18,17 @@
                   <br><br><br><span class="spinner-glow spinner-glow-primary"></span>
                 </div>
                 
-                <div v-else v-for="activeConversation in activeConversationsAsJSON" @click="changeCurrentActiveConversation(activeConversation)" style="cursor: pointer;" class="p-3 d-flex border-bottom align-items-center" id="hint">
+                <div v-else v-for="activeConversationID in sortedConversationsID" @click="changeCurrentActiveConversation(activeConversationsAsJSON[activeConversationID])" style="cursor: pointer;" class="p-3 d-flex border-bottom align-items-center" id="hint">
                   <h6 style="padding-top: 10px;">
-                    {{ activeConversation.whatsappConversationRecipientProfileName }} ({{activeConversation.whatsappConversationRecipientPhoneNumber}})
+                    {{ activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientProfileName }} ({{activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber}})
                     <br><br>
-                    {{ parseHour(activeConversation.whatsappConversationMessages[activeConversation.whatsappConversationMessages.length-1].whatsappGeneralMessageCreationDateTime) }}
+                    {{ parseHour(activeConversationsAsJSON[activeConversationID].whatsappConversationMessages[activeConversationsAsJSON[activeConversationID].whatsappConversationMessages.length-1].whatsappGeneralMessageCreationDateTime) }}
                   </h6>
                   <div class="flex-grow-1"></div>
-                  <div style="top: -12px; position: relative;"><b-form-checkbox v-model="activeConversation.selected"></b-form-checkbox></div>
-                  <div v-if="activeConversation.whatsappConversationMessages[activeConversation.whatsappConversationMessages.length-1].whatsappGeneralMessageOwnerPhoneNumber != null" style="height: 15px; width: 15px; background-color: red; border-radius: 100px;"></div>
+                  <div style="top: -12px; position: relative;"><b-form-checkbox v-model="activeConversationsAsJSON[activeConversationID].selected"></b-form-checkbox></div>
+                  <div v-if="activeConversationsAsJSON[activeConversationID].whatsappConversationMessages[activeConversationsAsJSON[activeConversationID].whatsappConversationMessages.length-1].whatsappGeneralMessageOwnerPhoneNumber != null" style="height: 15px; width: 15px; background-color: red; border-radius: 100px;"></div>
                   <div v-else style="height: 15px; width: 15px; background-color: green; border-radius: 100px;"></div>
-                  <b-tooltip target="hint" v-if="hints[activeConversation.whatsappConversationRecipientProfileName]">{{hints[activeConversation.whatsappConversationRecipientProfileName]}}</b-tooltip>
+                  <b-tooltip target="hint" v-if="hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientProfileName]">{{hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientProfileName]}}</b-tooltip>
                 </div>
 
 
@@ -1221,9 +1221,19 @@ export default {
   methods: {
 
     sortConversations(){
-      
-    },
+      var conversationsToSort = [];
+      for (var activeConversationID in this.activeConversationsAsJSON){
+        const whatsappConversationMessages = this.activeConversationsAsJSON[activeConversationID].whatsappConversationMessages;
+        const whatsappConversationMessagesAmount = whatsappConversationMessages.length;
+        const lastWhatsappConversationMessage = whatsappConversationMessages[whatsappConversationMessagesAmount-1];
+        const lastWhatsappConversationMessageDate = new Date(lastWhatsappConversationMessage.whatsappGeneralMessageCreationDateTime);
+        conversationsToSort.push({activeConversationID: activeConversationID, lastWhatsappConversationMessageDate: lastWhatsappConversationMessageDate});
+      }
 
+      conversationsToSort = conversationsToSort.sort((a, b) => b.lastWhatsappConversationMessageDate - a.lastWhatsappConversationMessageDate);
+      const sortedConversationsID = conversationsToSort.map(conversation => conversation.activeConversationID);
+      this.sortedConversationsID = sortedConversationsID
+    },
 
 
     rememberCart(cart){
@@ -1751,7 +1761,8 @@ export default {
                 if (response.data.success){
                   me.showNotification('success', 'Conversación finalizada', 'Ha finalizado la conversación exitosamente.')
 
-                  delete me.activeConversationsAsJSON[whatsappConversationID];
+                  delete me.activeConversationsAsJSON[response.data.result];
+                  me.sortConversations();
                   me.currentActiveConversation = null;
                 } else {
                   this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
@@ -1947,6 +1958,7 @@ export default {
             const whatsappConversationID = response.data.result.whatsappConversationID;
             this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);          
             this.scrollDown();
+            this.sortConversations();
           } else {
             this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
           }
@@ -1978,8 +1990,8 @@ export default {
           const whatsappConversationID = response.data.result.whatsappConversationID;
           this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);      
           this.scrollDown();
+          this.sortConversations();
           this.$root.$emit('bv::hide::modal','favoriteModal');
-
         } else {
           this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
@@ -2019,6 +2031,7 @@ export default {
             const whatsappConversationID = response.data.result.whatsappConversationID;
             this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);      
             this.scrollDown();
+            this.sortConversations();
           } else {
             this.showNotification('danger', 'Error al enviar el carrito al cliente', 'Ha ocurrido un error inesperado al enviar el carrito. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
           }
@@ -2055,6 +2068,7 @@ export default {
             const whatsappConversationID = response.data.result.whatsappConversationID;
             this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result); 
             this.scrollDown();
+            this.sortConversations();
           } else {
             this.showNotification('danger', 'Error al enviar la imagen al cliente', 'Ha ocurrido un error inesperado al enviar la imagen. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
           }
@@ -2085,9 +2099,9 @@ export default {
           this.repliedMessage = null;
           const whatsappConversationID = response.data.result.whatsappConversationID;
           this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
-          console.log(response.data.result);
           this.$root.$emit('bv::hide::modal','recordAudioModal');
           this.scrollDown();
+          this.sortConversations();
         } else {
           this.showNotification('danger', 'Error al enviar el audio', 'Ha ocurrido un error inesperado al enviar el audio. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
@@ -2116,6 +2130,7 @@ export default {
             const whatsappConversationID = response.data.result.whatsappConversationID;
             this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);          
             this.scrollDown();
+            this.sortConversations();
           } else {
             this.showNotification('danger', 'Error al enviar la ubicación', 'Ha ocurrido un error inesperado al enviar la ubicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
           }
@@ -2160,6 +2175,7 @@ export default {
           const whatsappConversationID = response.data.result.whatsappConversationID;
           this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);          
           this.scrollDown();
+          this.sortConversations();
         } else {
           this.showNotification('danger', 'Error al enviar la ubicación', 'Ha ocurrido un error inesperado al enviar la ubicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
@@ -2169,9 +2185,9 @@ export default {
       })
     },
 
+
     async sendWhatsappFavoriteImageMessage(){
       const currentConversation = this.currentActiveConversation;
-
       for (var image in this.agentFavoriteImages){
         if (this.agentFavoriteImages[image].selected){       
           await axios.post(constants.routes.backendAPI+'/sendWhatsappFavoriteImageMessage', 
@@ -2182,11 +2198,11 @@ export default {
           })
           .then((response) => {
             if (response.data.success){
-              this.scrollDown();
               this.agentFavoriteImages[image].selected = false;
               this.repliedMessage = null;
               const whatsappConversationID = response.data.result.whatsappConversationID;
-               this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
+              this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
+              this.scrollDown();
             } else {
               this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
             }
@@ -2196,6 +2212,8 @@ export default {
           })
         }
       }
+      
+      this.sortConversations();
     },
 
     sendSelectedWhatsappFavoriteImageMessage(selectedWhatsappFavoriteImage){
@@ -2214,11 +2232,11 @@ export default {
       .then((response) => {
         if (response.data.success){
           this.scrollDown();
+          this.sortConversations();
           this.repliedMessage = null;
           const whatsappConversationID = response.data.result.whatsappConversationID;
           this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
           this.$root.$emit('bv::hide::modal','favoriteModal');
-
         } else {
           this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
@@ -2244,6 +2262,8 @@ export default {
           const whatsappConversationID = response.data.result.whatsappConversationID;
           this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
           this.enviandoProductoLoader = false;
+          this.scrollDown();
+          this.sortConversations();
         } else {
           this.showNotification('danger', 'Error al enviar el producto al cliente', 'Ha ocurrido un error inesperado al enviar el producto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
@@ -2308,6 +2328,7 @@ export default {
     },
 
     changeCurrentActiveConversation(currentActiveConversation){
+      this.scrollDown();
       this.currentActiveConversation = currentActiveConversation;
       this.orden = currentActiveConversation.whatsappConversationProducts;
       this.phone = currentActiveConversation.whatsappConversationRecipientPhoneNumber;
@@ -2392,6 +2413,7 @@ export default {
           const whatsappConversationID = response.data.result;
           this.showNotification('success', 'Conversación cerrada', "Se ha cerrado la conversación asociada al número '" + this.phone + "'.");
           delete this.activeConversationsAsJSON[whatsappConversationID];
+          
           this.currentActiveConversation = null;
           this.repliedMessage = null;
           const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
@@ -2649,12 +2671,6 @@ export default {
       }
     },
 
-    receiveSendWhatsappMessage(websocketMessageContent){
-      const whatsappConversationID = websocketMessageContent.whatsappConversationID;
-      if (whatsappConversationID in this.activeConversationsAsJSON){
-        this.sortConversations();
-      }
-    },
 
     receiveWhatsappConversation(websocketMessageContent){
       const whatsappConversationAssignedAgentID = websocketMessageContent.whatsappConversationAssignedAgentID;
@@ -2663,6 +2679,7 @@ export default {
         this.$set(this.activeConversationsAsJSON, whatsappConversationID, websocketMessageContent);
         this.playSound('receiveWhatsappMessage');
         this.availableConversation = true;
+        this.sortConversations();
       }
     },
 
@@ -2710,6 +2727,7 @@ export default {
     receiveAcceptTransferWhatsappConversation(websocketMessageContent){
       if (websocketMessageContent.whatsappConversationID in this.activeConversationsAsJSON){
         delete this.activeConversationsAsJSON[websocketMessageContent.whatsappConversationID];
+        this.sortConversations();
         this.currentActiveConversation = null;
       }
     },
@@ -2833,8 +2851,6 @@ export default {
           this.receiveRequestTransferWhatsappConversation(websocketMessageContent);
         } else if (websocketMessageID == '/acceptTransferWhatsappConversation'){
           this.receiveAcceptTransferWhatsappConversation(websocketMessageContent);
-        } else if (websocketMessageID == '/sendWhatsappMessage'){
-          this.receiveSendWhatsappMessage(websocketMessageContent);
         }
       }
     } catch (error) {
