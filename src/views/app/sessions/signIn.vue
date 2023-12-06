@@ -39,6 +39,7 @@
 
                 <br>
                 <b-button
+                  v-if="loaderPerfil == false"
                   type="submit"
                   tag="button"
                   class="btn btn-block mt-2"
@@ -48,6 +49,11 @@
                 >
                   INICIAR SESIÓN
                 </b-button>
+                
+
+                <div v-else style="text-align: center;">
+                  <span class="spinner-glow spinner-glow-primary"></span>
+                </div>
 
                 <b-button
                   class="btn btn-block mt-3"
@@ -84,6 +90,7 @@ export default {
   },
   data() {
     return {
+      loaderPerfil: false,
       username: "",
       password: "",
 
@@ -148,12 +155,14 @@ export default {
 
     ...mapActions(["login"]),
     formSubmit() {
-
+      this.loaderPerfil = true;
       axios.post(constants.routes.backendAPI+'/agentLogin',{
         agentUsername: this.username,
         agentPassword: this.password,
       })
       .then((response) =>{ 
+        this.loaderPerfil = false;
+
         if (response.data.success == true){
 
           localStorage.setItem('agentID', response.data.result.agentID);
