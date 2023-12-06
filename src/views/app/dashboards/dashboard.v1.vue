@@ -456,6 +456,7 @@ export default {
   },
 
   mounted(){
+    /*
     axios.get(constants.routes.backendAPI+'/getAllActiveConversations').then((response) =>{ 
       this.activeConversations = response.data;
       this.activeConversationsRows = [];
@@ -568,10 +569,14 @@ export default {
 
     }
     } catch {}
+
+    */
   },
 
   methods: {
+    
     openTodayReport(){
+      /*
       axios.get(constants.routes.backendAPI+'/getTodayReport').then((response) =>{ 
         this.todayReport = response.data;
         
@@ -579,6 +584,7 @@ export default {
       .catch(error =>{
         console.log(error);
       })
+      */
     },
 
 
@@ -617,7 +623,10 @@ export default {
 
 
     getClosedConversations(){
+      
+    
       this.view='closedConversations';
+      /*
       axios.get(constants.routes.backendAPI+'/getAllClosedConversations?').then((response) =>{ 
       this.closedConversations = response.data;
       this.closedConversationsRows = [];
@@ -655,6 +664,8 @@ export default {
     .catch(error =>{
       console.log(error);
     })
+
+    */
 
     },
     getConversationState(conversation){

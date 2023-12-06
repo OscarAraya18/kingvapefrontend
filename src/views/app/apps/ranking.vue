@@ -85,8 +85,15 @@ export default {
 
   methods: {
     getAllAgents(){
-      axios.get(constants.routes.backendAPI+'/getAllAgents')
+      axios.post(constants.routes.backendAPI+'/selectAgentRankingInformation').then(response =>{
+        console.log(response.data);
+
+      })
+
+      /*
+      axios.get(constants.routes.backendAPI+'/getAgentRankingInformation')
       .then(response =>{
+        
         this.agents = [];
         this.agents2 = [];
         this.agents3 = [];
@@ -115,6 +122,9 @@ export default {
       .catch(error =>{
         console.log(error);
       })
+
+
+      */
     },
 
     calcularClase(index){
@@ -140,7 +150,7 @@ export default {
 
     try {
       webSocket.onmessage = (websocketMessage) => {
-        this.getAllAgents();
+        alert(websocketMessage);
       }
     } catch {
 
