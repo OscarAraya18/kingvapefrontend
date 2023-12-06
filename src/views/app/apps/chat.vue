@@ -2170,11 +2170,13 @@ export default {
     },
 
     async sendWhatsappFavoriteImageMessage(){
+      const currentConversation = this.currentActiveConversation;
+
       for (var image in this.agentFavoriteImages){
         if (this.agentFavoriteImages[image].selected){       
           await axios.post(constants.routes.backendAPI+'/sendWhatsappFavoriteImageMessage', 
           {
-            whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+            whatsappConversationRecipientPhoneNumber: currentConversation.whatsappConversationRecipientPhoneNumber,
             whatsappFavoriteImageMessageContent: this.agentFavoriteImages[image],
             whatsappFavoriteImageMessageCaption: null
           })
