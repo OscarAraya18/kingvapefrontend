@@ -593,7 +593,7 @@
                     <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappLocationMessage('OTRO')">OTRO</b-dropdown-item>
                   </b-dropdown>
                   <button class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="uploadImage()" id="sendFiles"><i class="i-Folder-With-Document"></i></button>
-                  <input type="file" accept="image/png, image/jpeg" @change="sendWhatsappImageMessage()" ref="imageFile" style="display: none;" id="imageUploader">
+                  <input type="file" accept="image/png, image/jpeg, application/pdf" @change="sendWhatsappImageMessage()" ref="imageFile" style="display: none;" id="imageUploader">
                   <b-tooltip target="sendFiles">Enviar imágenes de la computadora</b-tooltip>
                   <button id="sendFavoriteImages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal @click="deselectImages()"><i class="i-Folder"></i></button>
                   <b-tooltip target="sendFavoriteImages">Enviar imágenes del catálogo</b-tooltip>

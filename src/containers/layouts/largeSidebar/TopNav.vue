@@ -67,9 +67,11 @@
           <div>
             <p style="font-size: medium;"><strong>Mensaje de bienvenida:</strong></p>
             <b-form-textarea v-model="agentStartMessage" placeholder="Mensaje de bienvenida" rows="3"></b-form-textarea>
+            Estaré encantada de atenderte el día de hoy ☺️
             <br>
             <p style="font-size: medium;"><strong>Mensaje de despedida:</strong></p>
             <b-form-textarea v-model="agentEndMessage" placeholder="Mensaje de despedida" rows="3"></b-form-textarea>
+            Lo más importante para nosotros es la atención del cliente. Puede calificarnos accediendo al siguiente enlace: https://kingvapecr.com/pages/feedback
             <br>
             <div style="text-align: center;">
               <button @click="updateAgentAutomaticMessages()" class="btn btn-icon" style="background-color: #F9E530; font-size: 15px"><i class="i-Data-Save"></i>Guardar cambios</button>
