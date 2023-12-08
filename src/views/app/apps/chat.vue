@@ -1950,7 +1950,7 @@ export default {
       {
         whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
         whatsappGeneralMessageRepliedMessageID: repliedMessageID,
-        whatsappTextMessageBody: this.newTextMessageContent
+        whatsappTextMessageBody: this.currentActiveConversation['textoEnviar']
       }) 
       .then((response) =>{ 
         if (response.data.success){
