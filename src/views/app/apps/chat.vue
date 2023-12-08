@@ -1946,34 +1946,30 @@ export default {
       if (this.repliedMessage != null){
         repliedMessageID = this.repliedMessage.whatsappGeneralMessageID
       }
-      if (this.currentActiveConversation['textoEnviar'] != ''){
-        axios.post(constants.routes.backendAPI+'/sendWhatsappTextMessage',
-        {
-          whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
-          whatsappGeneralMessageRepliedMessageID: repliedMessageID,
-          whatsappTextMessageBody: this.newTextMessageContent
-        }) 
-        .then((response) =>{ 
-          if (response.data.success){
-            this.$refs.textoEnviar.focus();
+      axios.post(constants.routes.backendAPI+'/sendWhatsappTextMessage',
+      {
+        whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+        whatsappGeneralMessageRepliedMessageID: repliedMessageID,
+        whatsappTextMessageBody: this.newTextMessageContent
+      }) 
+      .then((response) =>{ 
+        if (response.data.success){
+          this.$refs.textoEnviar.focus();
 
-            this.sendingMessageDisable = false;
-            this.repliedMessage = null;
-            this.newTextMessageContent = '';
-            const whatsappConversationID = response.data.result.whatsappConversationID;
-            this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);          
-            this.scrollDown();
-            this.sortConversations();
-          } else {
-            this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-          }
-        })
-        .catch((error) =>{
+          this.sendingMessageDisable = false;
+          this.repliedMessage = null;
+          this.newTextMessageContent = '';
+          const whatsappConversationID = response.data.result.whatsappConversationID;
+          this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);          
+          this.scrollDown();
+          this.sortConversations();
+        } else {
           this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        })
-      } else {
-        this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Debe colocar texto en el mensaje a enviar al cliente. Intentelo nuevamente.')
-      }
+        }
+      })
+      .catch((error) =>{
+        this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
     },
 
     sendWhatsappFavoriteTextMessage(whatsappTextMessageContent){
