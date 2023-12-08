@@ -1955,7 +1955,7 @@ export default {
       .then((response) =>{ 
         if (response.data.success){
           this.$refs.textoEnviar.focus();
-
+          this.currentActiveConversation['textoEnviar'] = '';
           this.sendingMessageDisable = false;
           this.repliedMessage = null;
           this.newTextMessageContent = '';
