@@ -1678,42 +1678,13 @@ export default {
         let configuracion= {headers : header};
         
 
-        console.log({
-          'fecha': this.today.toString(),
-          'cajero': this.agentName,
-          'total': this.calcularTotal,
-          'Nombre': this.name,
-          'telefono': this.phone,
-          'Direccion': this.address,
-          'tipoPago1': this.MetodoPago,
-          'Hora': time,
-          'descuento': this.calcularDescuento,
-          'localidad': this.Sucursal,
-          'estado': 0,
-          'nota':" Estado Pago: " +this.estadoPago+" "+this.pagaCon+" "+this.nota,
-          'tipoCompra': metodoEnvioCorregido,
-          'detalles': this.orden,
-          'correo': this.email,
-          'latitud': this.latitud,
-          'longitud': this.longitud,
-          'Mesa':"50",
-          'TipoCedula':'FISICA',
-          'Cedula':this.cedula,
-          'Direccion2':this.DireccionCliente2,
-          'Direccion3':this.DireccionCliente3,
-          'Personas':this.dividendo,
-          'Mensajero':'',
-          'MedioOrden':'Whatsapp',
-          'Facturacion': false
-        });
-
 
         axios.post('https://noah.cr/BackendKingVape/api/ordenexpress/CrearMesaTotal',
         {
           'fecha': this.today.toString(),
           'cajero': this.agentName,
           'total': this.calcularTotal,
-          'Nombre': this.nombre,
+          'Nombre': this.name,
           'telefono': this.phone,
           'Direccion': this.address,
           'tipoPago1': this.MetodoPago,
