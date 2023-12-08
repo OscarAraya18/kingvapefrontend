@@ -2397,11 +2397,11 @@ export default {
         if (response.data.success){
           try {
             const contactInformation = response.data.result[0];
-            this.cedula = contactInformation.contactID;
-            this.name = contactInformation.contactName;
-            this.email = contactInformation.contactEmail;
-            this.address = contactInformation.contactLocationDetails;
-            this.nota = contactInformation.contactNote;
+            this.currentActiveConversation.cedula = contactInformation.contactID;
+            this.currentActiveConversation.name = contactInformation.contactName;
+            this.currentActiveConversation.email = contactInformation.contactEmail;
+            this.currentActiveConversation.address = contactInformation.contactLocationDetails;
+            this.currentActiveConversation.nota = contactInformation.contactNote;
             this.locations = JSON.parse(contactInformation.contactLocations);
             this.verifiedUser = true;
           } catch {
