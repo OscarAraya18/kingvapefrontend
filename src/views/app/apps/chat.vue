@@ -1654,7 +1654,6 @@ export default {
           metodoEnvioCorregido = 'Correos de CR';
         }
 
-        this.orden = this.currentActiveConversation.whatsappConversationProducts;
         this.phone = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
         this.name = this.currentActiveConversation.whatsappConversationRecipientProfileName;
         this.productos = [];
@@ -1683,7 +1682,7 @@ export default {
           'fecha': this.today.toString(),
           'cajero': this.agentName,
           'total': this.calcularTotal,
-          'Nombre': this.nombre,
+          'Nombre': this.name,
           'telefono': this.phone,
           'Direccion': this.address,
           'tipoPago1': this.MetodoPago,
