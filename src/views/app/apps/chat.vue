@@ -1653,6 +1653,20 @@ export default {
         } else {
           metodoEnvioCorregido = 'Correos de CR';
         }
+
+        this.orden = this.currentActiveConversation.whatsappConversationProducts;
+        this.phone = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
+        this.name = this.currentActiveConversation.whatsappConversationRecipientProfileName;
+        this.productos = [];
+        this.repliedMessage = null;
+        this.producto = '';
+        this.cedula = this.currentActiveConversation.cedula;
+        this.email = this.currentActiveConversation.email;
+        this.latitud = '';
+        this.longitud = '';
+        this.address = this.currentActiveConversation.address;
+        this.nota = this.currentActiveConversation.nota; 
+
         this.loaderOrdenEnviada = true;
         var me = this;
         this.loading = true;
@@ -1668,7 +1682,7 @@ export default {
           'fecha': this.today.toString(),
           'cajero': this.agentName,
           'total': this.calcularTotal,
-          'Nombre': this.name,
+          'Nombre': this.nombre,
           'telefono': this.phone,
           'Direccion': this.address,
           'tipoPago1': this.MetodoPago,
@@ -1678,7 +1692,7 @@ export default {
           'estado': 0,
           'nota':" Estado Pago: " +this.estadoPago+" "+this.pagaCon+" "+this.nota,
           'tipoCompra': metodoEnvioCorregido,
-          'detalles': this.orden,
+          'detalles': this.currentActiveConversation.orden,
           'correo': this.email,
           'latitud': this.latitud,
           'longitud': this.longitud,
