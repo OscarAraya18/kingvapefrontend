@@ -1578,7 +1578,7 @@ export default {
         });
         Valido = 0;
 
-        } else if(this.cedula == ""){
+        } else if(this.currentActiveConversation.cedula == ""){
         this.$bvToast.toast('Por favor, agregue la cédula del cliente para generar la orden, e intentelo nuevamente.', {
           title: 'Error al generar la orden',
           variant: 'danger',
