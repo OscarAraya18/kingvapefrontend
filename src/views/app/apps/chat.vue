@@ -1720,7 +1720,7 @@ export default {
           'estado': 0,
           'nota':" Estado Pago: " +this.estadoPago+" "+this.pagaCon+" "+this.nota,
           'tipoCompra': metodoEnvioCorregido,
-          'detalles': this.currentActiveConversation.orden,
+          'detalles': this.orden,
           'correo': this.email,
           'latitud': this.latitud,
           'longitud': this.longitud,
