@@ -28,7 +28,7 @@
                   <div style="top: -12px; position: relative;"><b-form-checkbox v-model="activeConversationsAsJSON[activeConversationID].selected"></b-form-checkbox></div>
                   <div v-if="activeConversationsAsJSON[activeConversationID].whatsappConversationMessages[activeConversationsAsJSON[activeConversationID].whatsappConversationMessages.length-1].whatsappGeneralMessageOwnerPhoneNumber != null" style="height: 15px; width: 15px; background-color: red; border-radius: 100px;"></div>
                   <div v-else style="height: 15px; width: 15px; background-color: green; border-radius: 100px;"></div>
-                  <b-tooltip target="hint" v-if="hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientProfileName]">{{hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientProfileName]}}</b-tooltip>
+                  <b-tooltip target="hint" v-if="hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]">{{hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]}}</b-tooltip>
                 </div>
 
 
@@ -560,7 +560,7 @@
                   </div><br>
                 </div>
                 <div class="form-group">
-                  <b-form-textarea :disabled='sendingMessageDisable' class="form-control" placeholder="Escribe un mensaje" @keyup.enter="sendWhatsappTextMessage()" v-model="newTextMessageContent" style="margin-bottom: 20px;" no-resize rows="3"/>
+                  <b-form-textarea ref="textoEnviar" :disabled='sendingMessageDisable' class="form-control" placeholder="Escribe un mensaje" @keyup.enter="sendWhatsappTextMessage()" v-model="newTextMessageContent" style="margin-bottom: 20px;" no-resize rows="3"/>
                 </div>              
                 <div class="d-flex">
                   <button class="btn btn-primary mr-2" type="button" v-b-modal.endConversationModal>Finalizar</button>
@@ -774,7 +774,7 @@
                               label-for="input-1"
                             >
                               <b-form-input 
-                                v-model="name"
+                                v-model="currentActiveConversation.whatsappConversationRecipientProfileName"
                                 type="text"
                                 required
                                 placeholder="Nombre del cliente"
@@ -783,21 +783,21 @@
 
                               <b-form-input
                                 type="text"
-                                v-model="phone"
+                                v-model="currentActiveConversation.whatsappConversationRecipientPhoneNumber"
                                 placeholder="Número de teléfono del cliente"
                                 style="margin-bottom: 10px;"
                               ></b-form-input>
 
                               <b-form-input
                                 type="text"
-                                v-model="cedula"
+                                v-model="currentActiveConversation.cedula"
                                 placeholder="Cédula del cliente"
                                 style="margin-bottom: 10px;"
                               ></b-form-input>
 
                               <b-form-input
                                 type="text"
-                                v-model="email"
+                                v-model="currentActiveConversation.email"
                                 placeholder="Correo electrónico del cliente"
                               ></b-form-input>
                               
@@ -866,7 +866,7 @@
                               <b-form-textarea
                                 rows="3"
                                 type="text"
-                                v-model="address"
+                                v-model="currentActiveConversation.address"
                                 style="margin-bottom: 10px;"
                                 placeholder="Nota de la dirección"
                               ></b-form-textarea>
@@ -876,7 +876,7 @@
                                 type="text"
                                 style="margin-bottom: 10px;"
                                 placeholder="Nota del envío"
-                                v-model="nota"
+                                v-model="currentActiveConversation.nota"
                               ></b-form-textarea>
                             </b-form-group>
 
@@ -1946,7 +1946,7 @@ export default {
       if (this.repliedMessage != null){
         repliedMessageID = this.repliedMessage.whatsappGeneralMessageID
       }
-      if (this.newTextMessageContent.trim().length != 0){
+      if (this.newTextMessageContent == ''){
         axios.post(constants.routes.backendAPI+'/sendWhatsappTextMessage',
         {
           whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
@@ -1954,8 +1954,9 @@ export default {
           whatsappTextMessageBody: this.newTextMessageContent
         }) 
         .then((response) =>{ 
-          console.log(response.data);
           if (response.data.success){
+            this.$refs.textoEnviar.focus();
+
             this.sendingMessageDisable = false;
             this.repliedMessage = null;
             this.newTextMessageContent = '';
@@ -2337,14 +2338,15 @@ export default {
       this.orden = currentActiveConversation.whatsappConversationProducts;
       this.phone = currentActiveConversation.whatsappConversationRecipientPhoneNumber;
       this.name = currentActiveConversation.whatsappConversationRecipientProfileName;
+      this.productos = [];
       this.repliedMessage = null;
       this.producto = '';
-      this.cedula = '';
-      this.email = '';
+      this.cedula = currentActiveConversation.cedula;
+      this.email = currentActiveConversation.email;
       this.latitud = '';
       this.longitud = '';
-      this.address = '';
-      this.nota = ''; 
+      this.address = currentActiveConversation.address;
+      this.nota = currentActiveConversation.nota; 
       this.verifiedUser = '';
       this.locations = 
       {
@@ -2528,6 +2530,10 @@ export default {
               if (ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber]){
                 activeConversation['products'] = ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber];
               }
+              respondedActiveConversations['cedula'] = '';
+              respondedActiveConversations['email'] = '';
+              respondedActiveConversations['address'] = '';
+              respondedActiveConversations['nota'] = '';
             }    
           }
           this.activeConversationsAsJSON = {};
@@ -2560,6 +2566,10 @@ export default {
               if (ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber]){
                 activeConversation['products'] = ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber];
               }
+              activeConversation['cedula'] = '';
+              activeConversation['email'] = '';
+              activeConversation['address'] = '';
+              activeConversation['nota'] = '';
             }    
           }
           const selectAgentConversationResult = response.data.result[whatsappConversationID]; 
