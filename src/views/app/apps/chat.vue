@@ -2417,7 +2417,8 @@ export default {
           const whatsappConversationID = response.data.result;
           this.showNotification('success', 'Conversación cerrada', "Se ha cerrado la conversación asociada al número '" + this.phone + "'.");
           delete this.activeConversationsAsJSON[whatsappConversationID];
-          
+          this.sortConversations();
+
           this.currentActiveConversation = null;
           this.repliedMessage = null;
           const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
