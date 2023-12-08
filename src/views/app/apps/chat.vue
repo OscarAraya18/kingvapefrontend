@@ -560,7 +560,7 @@
                   </div><br>
                 </div>
                 <div class="form-group">
-                  <b-form-textarea ref="textoEnviar" :disabled='sendingMessageDisable' class="form-control" placeholder="Escribe un mensaje" @keyup.enter="sendWhatsappTextMessage()" v-model="newTextMessageContent" style="margin-bottom: 20px;" no-resize rows="3"/>
+                  <b-form-textarea ref="textoEnviar" :disabled='sendingMessageDisable' class="form-control" placeholder="Escribe un mensaje" @keyup.enter="sendWhatsappTextMessage()" v-model="currentActiveConversation.textoEnviar" style="margin-bottom: 20px;" no-resize rows="3"/>
                 </div>              
                 <div class="d-flex">
                   <button class="btn btn-primary mr-2" type="button" v-b-modal.endConversationModal>Finalizar</button>
@@ -1946,7 +1946,7 @@ export default {
       if (this.repliedMessage != null){
         repliedMessageID = this.repliedMessage.whatsappGeneralMessageID
       }
-      if (this.newTextMessageContent == ''){
+      if (this.currentActiveConversation['textoEnviar'] != ''){
         axios.post(constants.routes.backendAPI+'/sendWhatsappTextMessage',
         {
           whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
@@ -2534,6 +2534,7 @@ export default {
               respondedActiveConversations[activeConversationID]['email'] = '';
               respondedActiveConversations[activeConversationID]['address'] = '';
               respondedActiveConversations[activeConversationID]['nota'] = '';
+              respondedActiveConversations[activeConversationID]['textoEnviar'] = '';
             }    
           }
           this.activeConversationsAsJSON = {};
@@ -2570,6 +2571,8 @@ export default {
               activeConversation['email'] = '';
               activeConversation['address'] = '';
               activeConversation['nota'] = '';
+              activeConversation['textoEnviar'] = '';
+
             }    
           }
           const selectAgentConversationResult = response.data.result[whatsappConversationID]; 
