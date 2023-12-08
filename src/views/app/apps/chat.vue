@@ -2530,10 +2530,10 @@ export default {
               if (ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber]){
                 activeConversation['products'] = ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber];
               }
-              respondedActiveConversations['cedula'] = '';
-              respondedActiveConversations['email'] = '';
-              respondedActiveConversations['address'] = '';
-              respondedActiveConversations['nota'] = '';
+              respondedActiveConversations[activeConversationID]['cedula'] = '';
+              respondedActiveConversations[activeConversationID]['email'] = '';
+              respondedActiveConversations[activeConversationID]['address'] = '';
+              respondedActiveConversations[activeConversationID]['nota'] = '';
             }    
           }
           this.activeConversationsAsJSON = {};
