@@ -1677,6 +1677,8 @@ export default {
         var time = hora + ":" + minuto + ":" + segundo;
         let header={"Authorization" : "Bearer "};
         let configuracion= {headers : header};
+        
+
         console.log({
           'fecha': this.today.toString(),
           'cajero': this.agentName,
@@ -1691,7 +1693,7 @@ export default {
           'estado': 0,
           'nota':" Estado Pago: " +this.estadoPago+" "+this.pagaCon+" "+this.nota,
           'tipoCompra': metodoEnvioCorregido,
-          'detalles': this.currentActiveConversation.orden,
+          'detalles': this.orden,
           'correo': this.email,
           'latitud': this.latitud,
           'longitud': this.longitud,
@@ -1705,6 +1707,8 @@ export default {
           'MedioOrden':'Whatsapp',
           'Facturacion': false
         });
+
+
         axios.post('https://noah.cr/BackendKingVape/api/ordenexpress/CrearMesaTotal',
         {
           'fecha': this.today.toString(),
@@ -1792,7 +1796,6 @@ export default {
                 total = total + (me.activeConversationsAsJSON[whatsappConversationID].products[productIndex].cantidad * me.activeConversationsAsJSON[whatsappConversationID].products[productIndex].precio)
               }
 
-              console.log(me.activeConversationsAsJSON[whatsappConversationID]);
 
               axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
               {
