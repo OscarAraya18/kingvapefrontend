@@ -1620,7 +1620,7 @@ export default {
         Valido = 0;
       
       
-      } else if(this.address == ""){
+      } else if(this.currentActiveConversation.address == ""){
         this.$bvToast.toast('Por favor, agregue una nota de la dirección para generar la orden, e intentelo nuevamente.', {
           title: 'Error al generar la orden',
           variant: 'danger',
@@ -1629,7 +1629,7 @@ export default {
         Valido = 0;
         
       
-      } else if(this.nota == ""){
+      } else if(this.currentActiveConversation.nota == ""){
         this.$bvToast.toast('Por favor, agregue una nota del envío para generar la orden, e intentelo nuevamente.', {
           title: 'Error al generar la orden',
           variant: 'danger',
