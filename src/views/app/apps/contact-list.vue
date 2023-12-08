@@ -52,7 +52,7 @@
           </span>
 
           <span v-else-if="props.column.field == 'id'">
-            <p v-if="props.row.id != '0'">✅</p>
+            <p v-if="props.row.id == '0'">✅</p>
             <p v-else>❌</p>
           </span>
 

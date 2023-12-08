@@ -118,7 +118,7 @@
                     <strong>Fin:</strong> {{parseHour(historyConversation.whatsappConversationEndDateTime)}}<br>
                   </div>
                   <div class="flex-grow-1"></div>
-                  <button @click="rememberCart(historyConversation.whatsappConversationProducts)" class="btn btn-icon btn-primary mr-2"><i class="i-Shopping-Cart"></i>Recordar carrito</button>
+                  <button @click="rememberCart(historyConversation)" class="btn btn-icon btn-primary mr-2"><i class="i-Shopping-Cart"></i>Recordar carrito</button>
 
                 </div>
               </b-list-group-item>
@@ -1236,8 +1236,8 @@ export default {
     },
 
 
-    rememberCart(cart){
-      this.orden = JSON.parse(cart);
+    rememberCart(conversation){
+      this.orden = JSON.parse(conversation.whatsappConversationProducts);
       this.showNotification('success', 'Carrito recordado', 'Ha recordado el carrito de la compra previa del cliente.')
 
     },
@@ -1740,7 +1740,7 @@ export default {
 
               var whatsappConversationID = null;
               for (var conversationID in me.activeConversationsAsJSON) {
-                if (me.activeConversationsAsJSON.hasOwnProperty(conversationID) && me.activeConversationsAsJSON[conversationID] === me.currentActiveConversation) {
+                if (me.activeConversationsAsJSON[conversationID].whatsappConversationRecipientPhoneNumber == me.phone) {
                   whatsappConversationID = conversationID;
                 }
               }
@@ -1749,13 +1749,16 @@ export default {
               for (var productIndex in me.activeConversationsAsJSON[whatsappConversationID].products){
                 total = total + (me.activeConversationsAsJSON[whatsappConversationID].products[productIndex].cantidad * me.activeConversationsAsJSON[whatsappConversationID].products[productIndex].precio)
               }
+
+              console.log(me.activeConversationsAsJSON[whatsappConversationID]);
+
               axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
               {
                 whatsappConversationRecipientPhoneNumber: me.phone,
                 whatsappConversationCloseComment: 'Venta',
                 whatsappConversationAmount: total,
                 whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
-                whatsappConversationProducts: me.activeConversationsAsJSON[whatsappConversationID].products
+                whatsappConversationProducts: me.activeConversationsAsJSON[whatsappConversationID].whatsappConversationProducts
               })
               .then((response) =>{ 
                 if (response.data.success){
@@ -1951,6 +1954,7 @@ export default {
           whatsappTextMessageBody: this.newTextMessageContent
         }) 
         .then((response) =>{ 
+          console.log(response.data);
           if (response.data.success){
             this.sendingMessageDisable = false;
             this.repliedMessage = null;
@@ -2341,8 +2345,8 @@ export default {
       this.longitud = '';
       this.address = '';
       this.nota = ''; 
+      this.verifiedUser = '';
       this.locations = 
-
       {
         'CASA': {
           'latitude': 0,
