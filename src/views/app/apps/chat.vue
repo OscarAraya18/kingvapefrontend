@@ -2362,15 +2362,14 @@ export default {
         if (response.data.success){
           const whatsappConversationID = response.data.result;
           this.showNotification('success', 'Conversación cerrada', "Se ha cerrado la conversación asociada al número '" + this.currentActiveConversation.whatsappConversationRecipientPhoneNumber + "'.");
-          delete this.activeConversationsAsJSON[whatsappConversationID];
-
-          this.currentActiveConversation = null;
-          this.repliedMessage = null;
           const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
           if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
             delete ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
           }
           localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
+          delete this.activeConversationsAsJSON[whatsappConversationID];
+          this.currentActiveConversation = null;
+          this.repliedMessage = null;
           this.sortConversations();
 
         } else {
