@@ -318,7 +318,7 @@ export default {
   },
 
   mounted(){
-    this.sendingMessage = localStorage.getItem('agentWelcomeMessage');
+    this.sendingMessage = localStorage.getItem('agentStartMessage');
     this.agentType = localStorage.getItem('agentType');
   },
 

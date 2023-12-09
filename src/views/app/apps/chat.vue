@@ -2330,6 +2330,9 @@ export default {
       this.repliedMessage = null;
       this.producto = '';
       this.verifiedUser = '';
+      this.ubicacion = "Ubicación de envío";
+      this.latitud = 0;
+      this.longitud = 0;
       var availableConversation = false;
       for (var activeConversationMessage in currentActiveConversation.whatsappConversationMessages){
         if (currentActiveConversation.whatsappConversationMessages[activeConversationMessage] != null){
