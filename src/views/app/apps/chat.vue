@@ -2632,12 +2632,13 @@ export default {
 
 
     receiveWhatsappConversation(websocketMessageContent){
-      console.log(websocketMessageContent); 
       const whatsappConversationAssignedAgentID = websocketMessageContent.whatsappConversationAssignedAgentID;
       if (whatsappConversationAssignedAgentID == localStorage.getItem('agentID')){
         const whatsappConversationID = websocketMessageContent.whatsappConversationID;
         this.$set(this.activeConversationsAsJSON, whatsappConversationID, websocketMessageContent);
         this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationProducts = [];
+        this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationRecipientLocations = JSON.parse(this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationRecipientLocations);
+
         this.playSound('receiveWhatsappMessage');
         this.availableConversation = true;
         this.sortConversations();
