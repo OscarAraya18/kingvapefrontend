@@ -906,7 +906,7 @@
                               <vue-good-table
                                   :columns="columns"
                                   styleClass="tableOne vgt-table description-content"
-                                  :rows="orden"
+                                  :rows="currentActiveConversation.whatsappConversationProducts"
                                   mode="remote"
                                   :key="id"
                                   compactMode
