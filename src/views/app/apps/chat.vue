@@ -2378,6 +2378,7 @@ export default {
         }
       })
       .catch((error) =>{
+        console.log(error);
         this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
