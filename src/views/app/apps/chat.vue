@@ -790,14 +790,14 @@
 
                               <b-form-input
                                 type="text"
-                                v-model="currentActiveConversation.cedula"
+                                v-model="currentActiveConversation.whatsappConversationRecipientID"
                                 placeholder="Cédula del cliente"
                                 style="margin-bottom: 10px;"
                               ></b-form-input>
 
                               <b-form-input
                                 type="text"
-                                v-model="currentActiveConversation.email"
+                                v-model="currentActiveConversation.whatsappConversationRecipientEmail"
                                 placeholder="Correo electrónico del cliente"
                               ></b-form-input>
                               
@@ -866,7 +866,7 @@
                               <b-form-textarea
                                 rows="3"
                                 type="text"
-                                v-model="currentActiveConversation.address"
+                                v-model="currentActiveConversation.whatsappConversationRecipientLocationDetails"
                                 style="margin-bottom: 10px;"
                                 placeholder="Nota de la dirección"
                               ></b-form-textarea>
@@ -876,7 +876,7 @@
                                 type="text"
                                 style="margin-bottom: 10px;"
                                 placeholder="Nota del envío"
-                                v-model="currentActiveConversation.nota"
+                                v-model="currentActiveConversation.whatsappConversationRecipientNote"
                               ></b-form-textarea>
                             </b-form-group>
 
@@ -994,8 +994,8 @@ export default {
   watch: {
     ubicacion(newLocation, old){
       if (newLocation != 'Ubicación de envío'){
-        this.latitud = this.locations[newLocation].latitude;
-        this.longitud = this.locations[newLocation].longitude;
+        this.latitud = this.currentActiveConversation.whatsappConversationRecipientLocations[newLocation].latitude;
+        this.longitud = this.currentActiveConversation.whatsappConversationRecipientLocations[newLocation].longitude;
       } else {
         this.latitud = '';
         this.longitud = '';
@@ -1237,7 +1237,7 @@ export default {
 
 
     rememberCart(conversation){
-      this.orden = JSON.parse(conversation.whatsappConversationProducts);
+      this.currentActiveConversation.whatsappConversationProducts = JSON.parse(conversation.whatsappConversationProducts);
       this.showNotification('success', 'Carrito recordado', 'Ha recordado el carrito de la compra previa del cliente.')
 
     },
@@ -1519,14 +1519,14 @@ export default {
     },
 
     updateFieldCant(field, value, row) {
-      this.orden[row.originalIndex].cantidad = value;
+      this.currentActiveConversation.whatsappConversationProducts[row.originalIndex].cantidad = value;
 
       const codigoProducto = row.CodigoP;
       const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
-      if (ordenesActualesLocalStorage[this.phone]){
-        for (var productoIndex in ordenesActualesLocalStorage[this.phone]){
-          if (ordenesActualesLocalStorage[this.phone][productoIndex]['CodigoP'] == codigoProducto){
-            ordenesActualesLocalStorage[this.phone][productoIndex]['cantidad'] = value;
+      if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+        for (var productoIndex in ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+          if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber][productoIndex]['CodigoP'] == codigoProducto){
+            ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber][productoIndex]['cantidad'] = value;
           }
         }
       }
@@ -1535,14 +1535,14 @@ export default {
 
 
     updateFieldDesc(field, value, row) {
-      this.orden[row.originalIndex].descuento = value;
+      this.currentActiveConversation.whatsappConversationProducts[row.originalIndex].descuento = value;
 
       const codigoProducto = row.CodigoP;
       const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
-      if (ordenesActualesLocalStorage[this.phone]){
-        for (var productoIndex in ordenesActualesLocalStorage[this.phone]){
-          if (ordenesActualesLocalStorage[this.phone][productoIndex]['CodigoP'] == codigoProducto){
-            ordenesActualesLocalStorage[this.phone][productoIndex]['descuento'] = value;
+      if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+        for (var productoIndex in ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+          if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber][productoIndex]['CodigoP'] == codigoProducto){
+            ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber][productoIndex]['descuento'] = value;
 
           }
         }
@@ -1578,7 +1578,7 @@ export default {
         });
         Valido = 0;
 
-        } else if(this.currentActiveConversation.cedula == ""){
+        } else if(this.cedula == ""){
         this.$bvToast.toast('Por favor, agregue la cédula del cliente para generar la orden, e intentelo nuevamente.', {
           title: 'Error al generar la orden',
           variant: 'danger',
@@ -1644,6 +1644,16 @@ export default {
     },
 
     OrdenExpress(){
+      this.phone = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
+      this.name = this.currentActiveConversation.whatsappConversationRecipientProfileName;
+      this.repliedMessage = null;
+      this.cedula = this.currentActiveConversation.whatsappConversationRecipientID;
+      this.email = this.currentActiveConversation.whatsappConversationRecipientEmail;
+      this.address = this.currentActiveConversation.whatsappConversationRecipientLocationDetails;
+      this.nota = this.currentActiveConversation.whatsappConversationRecipientNote; 
+      this.orden = this.currentActiveConversation.whatsappConversationProducts;
+      this.producto = '';
+
       if(this.ValidarData() == 1){
         var metodoEnvioCorregido = '';
         if (this.MetodoEnvio == 'Retiro en sucursal'){
@@ -1653,18 +1663,6 @@ export default {
         } else {
           metodoEnvioCorregido = 'Correos de CR';
         }
-
-        this.phone = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
-        this.name = this.currentActiveConversation.whatsappConversationRecipientProfileName;
-        this.productos = [];
-        this.repliedMessage = null;
-        this.producto = '';
-        this.cedula = this.currentActiveConversation.cedula;
-        this.email = this.currentActiveConversation.email;
-        this.latitud = '';
-        this.longitud = '';
-        this.address = this.currentActiveConversation.address;
-        this.nota = this.currentActiveConversation.nota; 
 
         this.loaderOrdenEnviada = true;
         var me = this;
@@ -1676,8 +1674,6 @@ export default {
         var time = hora + ":" + minuto + ":" + segundo;
         let header={"Authorization" : "Bearer "};
         let configuracion= {headers : header};
-        
-
 
         axios.post('https://noah.cr/BackendKingVape/api/ordenexpress/CrearMesaTotal',
         {
@@ -1804,15 +1800,15 @@ export default {
     },
 
       EliminarLinea(id){
-        this.orden = this.orden.filter(e => e.id != id)
+        this.currentActiveConversation.whatsappConversationProducts = this.currentActiveConversation.whatsappConversationProducts.filter(e => e.id != id)
         const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
-        if (ordenesActualesLocalStorage[this.phone]){
-          ordenesActualesLocalStorage[this.phone] = ordenesActualesLocalStorage[this.phone].filter(e => e.id != id);
+        if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+          ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber].filter(e => e.id != id);
         }
         localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
       },
       AgregarItem(item,variant = null){
-        this.orden.push({
+        this.currentActiveConversation.whatsappConversationProducts.push({
           CodigoP:item.codigoProducto,
           descripcion: item.descripcion,
           cantidad: 1,
@@ -1827,8 +1823,8 @@ export default {
         });
 
         const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
-        if (ordenesActualesLocalStorage[this.phone]){
-          ordenesActualesLocalStorage[this.phone].push({
+        if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+          ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber].push({
             CodigoP: item.codigoProducto,
             descripcion: item.descripcion,
             cantidad: 1,
@@ -1837,7 +1833,7 @@ export default {
             descuento: 0
           });
         } else {
-          ordenesActualesLocalStorage[this.phone] = [{
+          ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = [{
             CodigoP: item.codigoProducto,
             descripcion: item.descripcion,
             cantidad: 1,
@@ -1850,7 +1846,7 @@ export default {
       },
 
       AgregarItemVariacion(item, codigoVariacion, descripcionVariacion, variant = null){
-        this.orden.push({
+        this.currentActiveConversation.whatsappConversationProducts.push({
           CodigoP: codigoVariacion,
           descripcion: item.descripcion + '. Variación: ' + descripcionVariacion,
           cantidad: 1,
@@ -1865,8 +1861,8 @@ export default {
         });
 
         const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
-        if (ordenesActualesLocalStorage[this.phone]){
-          ordenesActualesLocalStorage[this.phone].push({
+        if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+          ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber].push({
             CodigoP: codigoVariacion,
             descripcion: item.descripcion + ' ' + descripcionVariacion,
             cantidad: 1,
@@ -1875,7 +1871,7 @@ export default {
             descuento: 0
           });
         } else {
-          ordenesActualesLocalStorage[this.phone] = [{
+          ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = [{
             CodigoP: codigoVariacion,
             descripcion: item.descripcion + ' ' + descripcionVariacion,
             cantidad: 1,
@@ -1887,7 +1883,6 @@ export default {
 
         localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
       },
-
 
       selectProductos(){
         this.repliedMessage = null;
@@ -2018,13 +2013,13 @@ export default {
     },
 
     sendWhatsappOrderTextMessage(){
-      if (this.orden.length != 0){
+      if (this.currentActiveConversation.whatsappConversationProducts.length != 0){
         var whatsappTextMessageContent = '';
-        for (var productIndex in this.orden){
+        for (var productIndex in this.currentActiveConversation.whatsappConversationProducts){
           if (whatsappTextMessageContent != ''){
-            whatsappTextMessageContent = whatsappTextMessageContent + `%0a%0a*Nombre*: ` + this.orden[productIndex]['descripcion'] + `%0a*Precio*: ₡` + this.orden[productIndex]['precio'] + `%0a*Cantidad*: ` + this.orden[productIndex]['cantidad'] + `%0a*Subtotal*: ₡` + this.orden[productIndex]['cantidad']*this.orden[productIndex]['precio'];
+            whatsappTextMessageContent = whatsappTextMessageContent + `%0a%0a*Nombre*: ` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['descripcion'] + `%0a*Precio*: ₡` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['precio'] + `%0a*Cantidad*: ` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['cantidad'] + `%0a*Subtotal*: ₡` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['cantidad']*this.currentActiveConversation.whatsappConversationProducts[productIndex]['precio'];
           } else {
-            whatsappTextMessageContent = `*Nombre*: ` + this.orden[productIndex]['descripcion'] + `%0a*Precio*: ₡` + this.orden[productIndex]['precio'] + `%0a*Cantidad*: ` + this.orden[productIndex]['cantidad'] + `%0a*Subtotal*: ₡` + this.orden[productIndex]['cantidad']*this.orden[productIndex]['precio'];
+            whatsappTextMessageContent = `*Nombre*: ` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['descripcion'] + `%0a*Precio*: ₡` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['precio'] + `%0a*Cantidad*: ` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['cantidad'] + `%0a*Subtotal*: ₡` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['cantidad']*this.currentActiveConversation.whatsappConversationProducts[productIndex]['precio'];
           }
         }
         whatsappTextMessageContent = whatsappTextMessageContent + `%0a%0a*SUBTOTAL*: ₡` + this.calcularSubTotal;
@@ -2303,7 +2298,7 @@ export default {
           currentAgentName: localStorage.getItem('agentName'),
           newAgentID: transferedAgent.agentID,
           whatsappConversationID: whatsappConversationID,
-          whatsappConversationProducts: this.orden
+          whatsappConversationProducts: this.currentActiveConversation.whatsappConversationProducts
         })
         .then((response) =>{ 
           if (response.data.success){
@@ -2344,36 +2339,11 @@ export default {
     },
 
     changeCurrentActiveConversation(currentActiveConversation){
-      this.scrollDown();
       this.currentActiveConversation = currentActiveConversation;
-      this.orden = currentActiveConversation.whatsappConversationProducts;
-      this.phone = currentActiveConversation.whatsappConversationRecipientPhoneNumber;
-      this.name = currentActiveConversation.whatsappConversationRecipientProfileName;
       this.productos = [];
       this.repliedMessage = null;
       this.producto = '';
-      this.cedula = currentActiveConversation.cedula;
-      this.email = currentActiveConversation.email;
-      this.latitud = '';
-      this.longitud = '';
-      this.address = currentActiveConversation.address;
-      this.nota = currentActiveConversation.nota; 
       this.verifiedUser = '';
-      this.locations = 
-      {
-        'CASA': {
-          'latitude': 0,
-          'longitude': 0
-        },
-        'TRABAJO': {
-          'latitude': 0,
-          'longitude': 0
-        },
-        'OTRO': {
-          'latitude': 0,
-          'longitude': 0
-        }
-      };
       var availableConversation = false;
       for (var activeConversationMessage in currentActiveConversation.whatsappConversationMessages){
         if (currentActiveConversation.whatsappConversationMessages[activeConversationMessage] != null){
@@ -2382,44 +2352,18 @@ export default {
           }
         }
       }
-      
+      this.availableConversation = availableConversation;
       const databaseOrders = JSON.parse(localStorage.getItem('ordenesActuales'));
       if (databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-        this.orden = databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber];        
+        this.currentActiveConversation.whatsappConversationProducts = databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber];        
       }
-
-      this.availableConversation = availableConversation;
-      axios.post(constants.routes.backendAPI+'/selectContact', 
-      {
-        contactPhoneNumber: currentActiveConversation.whatsappConversationRecipientPhoneNumber
-      }
-      ).then((response) =>{
-        if (response.data.success){
-          try {
-            const contactInformation = response.data.result[0];
-            this.currentActiveConversation.cedula = contactInformation.contactID;
-            this.currentActiveConversation.name = contactInformation.contactName;
-            this.currentActiveConversation.email = contactInformation.contactEmail;
-            this.currentActiveConversation.address = contactInformation.contactLocationDetails;
-            this.currentActiveConversation.nota = contactInformation.contactNote;
-            this.locations = JSON.parse(contactInformation.contactLocations);
-            this.verifiedUser = true;
-          } catch {
-            this.showNotification('info', 'Cliente nuevo', 'Está atendiendo a un cliente no registrado en nuestra base de contactos.');
-          }
-        } else {
-          this.showNotification('danger', 'Error al consultar la información del cliente', 'Ha ocurrido un error inesperado al consultar la información del cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-        }
-      })
-      .catch((error) =>{
-        this.showNotification('danger', 'Error al consultar la información del cliente', 'Ha ocurrido un error inesperado al consultar la información del cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-      })
+      this.scrollDown();
     },
 
     closeWhatsappConversation(){
       axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
       {
-        whatsappConversationRecipientPhoneNumber: this.phone,
+        whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
         whatsappConversationCloseComment: this.closeConversationReason,
         whatsappConversationAmount: 0,
         whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
@@ -2428,17 +2372,18 @@ export default {
       .then((response) =>{ 
         if (response.data.success){
           const whatsappConversationID = response.data.result;
-          this.showNotification('success', 'Conversación cerrada', "Se ha cerrado la conversación asociada al número '" + this.phone + "'.");
+          this.showNotification('success', 'Conversación cerrada', "Se ha cerrado la conversación asociada al número '" + this.currentActiveConversation.whatsappConversationRecipientPhoneNumber + "'.");
           delete this.activeConversationsAsJSON[whatsappConversationID];
-          this.sortConversations();
 
           this.currentActiveConversation = null;
           this.repliedMessage = null;
           const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
-          if (ordenesActualesLocalStorage[this.phone]){
-            delete ordenesActualesLocalStorage[this.phone];
+          if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+            delete ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
           }
           localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
+          this.sortConversations();
+
         } else {
           this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
@@ -2539,13 +2484,12 @@ export default {
               var activeConversation = respondedActiveConversations[activeConversationID];
               var activeConversationRecipientPhoneNumber = activeConversation.whatsappConversationRecipientPhoneNumber;
               if (ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber]){
-                activeConversation['products'] = ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber];
+                activeConversation['whatsappConversationProducts'] = ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber];
               }
-              respondedActiveConversations[activeConversationID]['cedula'] = '';
-              respondedActiveConversations[activeConversationID]['email'] = '';
-              respondedActiveConversations[activeConversationID]['address'] = '';
-              respondedActiveConversations[activeConversationID]['nota'] = '';
               respondedActiveConversations[activeConversationID]['textoEnviar'] = '';
+              respondedActiveConversations[activeConversationID]['latitude'] = 0;
+              respondedActiveConversations[activeConversationID]['longitude'] = 0;
+
             }    
           }
           this.activeConversationsAsJSON = {};
@@ -2576,14 +2520,11 @@ export default {
               var activeConversation = respondedActiveConversations[activeConversationID];
               var activeConversationRecipientPhoneNumber = activeConversation.whatsappConversationRecipientPhoneNumber;
               if (ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber]){
-                activeConversation['products'] = ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber];
+                activeConversation['whatsappConversationProducts'] = ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber];
               }
-              activeConversation['cedula'] = '';
-              activeConversation['email'] = '';
-              activeConversation['address'] = '';
-              activeConversation['nota'] = '';
               activeConversation['textoEnviar'] = '';
-
+              activeConversation['latitude'] = 0;
+              activeConversation['longitude'] = 0;
             }    
           }
           const selectAgentConversationResult = response.data.result[whatsappConversationID]; 
@@ -2808,9 +2749,9 @@ export default {
 
     calcularDescuento:function(){
 			var resultado=0.0; 
-				for(var j=0;j<this.orden.length;j++)
+				for(var j=0;j<this.currentActiveConversation.whatsappConversationProducts.length;j++)
 				  { 
-						resultado = resultado + ((this.orden[j].descuento/100)*((this.orden[j].precio) * this.orden[j].cantidad));
+						resultado = resultado + ((this.currentActiveConversation.whatsappConversationProducts[j].descuento/100)*((this.currentActiveConversation.whatsappConversationProducts[j].precio) * this.currentActiveConversation.whatsappConversationProducts[j].cantidad));
           }
 			
 			return resultado.toFixed(2);
@@ -2818,9 +2759,9 @@ export default {
 
     calcularSubTotal:function(){
 			var resultado=0.0; 
-				for(var j=0;j<this.orden.length;j++)
+				for(var j=0;j<this.currentActiveConversation.whatsappConversationProducts.length;j++)
 				  { 
-						resultado = resultado + this.orden[j].cantidad * this.orden[j].precio ;
+						resultado = resultado + this.currentActiveConversation.whatsappConversationProducts[j].cantidad * this.currentActiveConversation.whatsappConversationProducts[j].precio ;
           }
 			
 			return resultado.toFixed(2);
