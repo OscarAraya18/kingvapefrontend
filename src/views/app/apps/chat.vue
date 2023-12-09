@@ -2636,7 +2636,7 @@ export default {
       if (whatsappConversationAssignedAgentID == localStorage.getItem('agentID')){
         const whatsappConversationID = websocketMessageContent.whatsappConversationID;
         this.$set(this.activeConversationsAsJSON, whatsappConversationID, websocketMessageContent);
-        this.this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationProducts = [];
+        this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationProducts = [];
         this.playSound('receiveWhatsappMessage');
         this.availableConversation = true;
         this.sortConversations();
