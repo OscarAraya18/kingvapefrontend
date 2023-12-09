@@ -2632,7 +2632,7 @@ export default {
 
 
     receiveWhatsappConversation(websocketMessageContent){
-      console.log(websocketMessageContent);
+      console.log(websocketMessageContent); 
       const whatsappConversationAssignedAgentID = websocketMessageContent.whatsappConversationAssignedAgentID;
       if (whatsappConversationAssignedAgentID == localStorage.getItem('agentID')){
         const whatsappConversationID = websocketMessageContent.whatsappConversationID;
