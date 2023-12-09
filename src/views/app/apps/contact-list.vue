@@ -540,6 +540,7 @@ export default {
         this.loaderContact = false;
       })
       .catch((error) =>{
+        console.log(error);
         this.$bvToast.toast("Ha ocurrido un error inesperado al consultar la lista de clientes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
           title: "Error al consultar la lista de clientes",
           variant: "danger",
