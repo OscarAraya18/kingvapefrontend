@@ -1456,7 +1456,7 @@ export default {
     },
   
     saveLocation(locationName, whatsappGeneralMessage){
-      this.locations[locationName] = {latitude: whatsappGeneralMessage.whatsappLocationMessageLatitude, longitude: whatsappGeneralMessage.whatsappLocationMessageLongitude};
+      this.currentActiveConversation.whatsappConversationRecipientLocations[locationName] = {latitude: whatsappGeneralMessage.whatsappLocationMessageLatitude, longitude: whatsappGeneralMessage.whatsappLocationMessageLongitude};
       this.showNotification('success', 'Ubicación registrada', "Ha registrado la ubicación '"+locationName+"' al cliente exitosamente.");
     },
 
@@ -1723,21 +1723,7 @@ export default {
               'contactPhoneNumber': me.phone,
               'contactID': me.cedula,
               'contactEmail': me.email,
-              'contactLocations':
-              {
-                'CASA': {
-                  'latitude': me.locations['CASA'].latitude,
-                  'longitude': me.locations['CASA'].longitude
-                },
-                'TRABAJO': {
-                  'latitude': me.locations['TRABAJO'].latitude,
-                  'longitude': me.locations['TRABAJO'].longitude
-                },
-                'OTRO': {
-                  'latitude': me.locations['OTRO'].latitude,
-                  'longitude': me.locations['OTRO'].longitude
-                }
-              },
+              'contactLocations': me.currentActiveConversation.whatsappConversationRecipientLocations,
               'contactLocationDetails': me.address,
               'contactNote': me.nota
             }).then(function (){
@@ -1758,8 +1744,8 @@ export default {
               }
 
               var total = 0;
-              for (var productIndex in me.activeConversationsAsJSON[whatsappConversationID].products){
-                total = total + (me.activeConversationsAsJSON[whatsappConversationID].products[productIndex].cantidad * me.activeConversationsAsJSON[whatsappConversationID].products[productIndex].precio)
+              for (var productIndex in me.activeConversationsAsJSON[whatsappConversationID].whatsappConversationProducts){
+                total = total + (me.activeConversationsAsJSON[whatsappConversationID].whatsappConversationProducts[productIndex].cantidad * me.activeConversationsAsJSON[whatsappConversationID].whatsappConversationProducts[productIndex].precio)
               }
 
 
@@ -2128,12 +2114,12 @@ export default {
       if (this.repliedMessage != null){
         repliedMessageID = this.repliedMessage.messageID
       }
-      if (this.locations[locationName]){
+      if (this.currentActiveConversation.whatsappConversationRecipientLocations[locationName]){
         axios.post(constants.routes.backendAPI+'/sendWhatsappLocationMessage',{
           whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
           whatsappGeneralMessageRepliedMessageID: repliedMessageID,
-          whatsappLocationMessageLatitude: this.locations[locationName].latitude,
-          whatsappLocationMessageLongitude: this.locations[locationName].longitude,
+          whatsappLocationMessageLatitude: this.currentActiveConversation.whatsappConversationRecipientLocations[locationName].latitude,
+          whatsappLocationMessageLongitude: this.currentActiveConversation.whatsappConversationRecipientLocations[locationName].longitude,
         })
         .then((response) =>{
           if (response.data.success){
