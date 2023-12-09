@@ -320,7 +320,7 @@
             <div class="d-flex pl-3 pr-3 pt-3 pb-3 o-hidden box-shadow-1 chat-topbar">
               <a class="link-icon d-md-none" @click="isMobile = !isMobile"><i class="icon-regular i-Right ml-0 mr-3"></i></a>
               <div class="d-flex align-items-center" style="width: 100%;">
-                <input type="checkbox" v-if="verifiedUser" :checked="true" style="accent-color: #FFD733; margin-right: 10px;" onclick="return false;">
+                <input type="checkbox" v-if="currentActiveConversation.whatsappConversationRecipientID != 0" :checked="true" style="accent-color: #FFD733; margin-right: 10px;" onclick="return false;">
                 <p class="m-0 text-title text-16">{{ currentActiveConversation.whatsappConversationRecipientProfileName }} ({{currentActiveConversation.whatsappConversationRecipientPhoneNumber}})</p>
                 <div class="flex-grow-1"></div>
                 <button @click="getHistoryConversations()" class="btn btn-icon btn-primary mr-2" v-if="availableConversation == true" v-b-modal.historyConversationsModal><i class="i-Clock"></i>Historial</button>
@@ -2329,7 +2329,6 @@ export default {
       this.productos = [];
       this.repliedMessage = null;
       this.producto = '';
-      this.verifiedUser = '';
       this.ubicacion = "Ubicación de envío";
       this.latitud = 0;
       this.longitud = 0;
