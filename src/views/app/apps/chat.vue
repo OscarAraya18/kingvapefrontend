@@ -562,7 +562,7 @@
                 <div class="form-group">
                   <b-form-textarea ref="textoEnviar" :disabled='sendingMessageDisable' class="form-control" placeholder="Escribe un mensaje" @keyup.enter="sendWhatsappTextMessage()" v-model="currentActiveConversation.textoEnviar" style="margin-bottom: 20px;" no-resize rows="3"/>
                 </div>              
-                <div class="d-flex">
+                <div class="d-flex"> 
                   <button class="btn btn-primary mr-2" type="button" v-b-modal.endConversationModal>Finalizar</button>
                   <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación" @ok="closeWhatsappConversation()">
                     <b-dropdown variant="primary" text="Motivos frecuentes" style="width: 100%">
