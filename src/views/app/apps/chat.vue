@@ -1960,10 +1960,12 @@ export default {
           this.scrollDown();
           this.sortConversations();
         } else {
+          console.log(response)
           this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
       .catch((error) =>{
+        console.log(error)
         this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
@@ -1990,10 +1992,12 @@ export default {
           this.sortConversations();
           this.$root.$emit('bv::hide::modal','favoriteModal');
         } else {
+          console.log(response)
           this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
       .catch((error) =>{
+        console.log(error)
         this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       }); 
     },
@@ -2314,6 +2318,7 @@ export default {
           this.playSound('grabConversation');
           this.showNotification('success', 'Conversación transferida', 'Ha aceptado la transferencia exitosamente.');
           await this.selectAgentConversation(this.transferConversationID);
+          this.activeConversations
         } else {
           this.showNotification('danger', 'Error al aceptar la transferencia', 'Ha ocurrido un error inesperado al aceptar la transferencia. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
