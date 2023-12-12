@@ -19,6 +19,7 @@
                 </div>
                 
                 <div v-else v-for="activeConversationID in sortedConversationsID" @click="changeCurrentActiveConversation(activeConversationsAsJSON[activeConversationID])" style="cursor: pointer;" class="p-3 d-flex border-bottom align-items-center" id="hint">
+                  
                   <h6 style="padding-top: 10px;">
                     {{ activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientProfileName }} ({{activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber}})
                     <br><br>
@@ -29,6 +30,7 @@
                   <div v-if="activeConversationsAsJSON[activeConversationID].whatsappConversationMessages[activeConversationsAsJSON[activeConversationID].whatsappConversationMessages.length-1].whatsappGeneralMessageOwnerPhoneNumber != null" style="height: 15px; width: 15px; background-color: red; border-radius: 100px;"></div>
                   <div v-else style="height: 15px; width: 15px; background-color: green; border-radius: 100px;"></div>
                   <b-tooltip target="hint" v-if="hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]">{{hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]}}</b-tooltip>
+                  
                 </div>
 
 
@@ -53,7 +55,7 @@
                 <strong>Número:</strong> {{escazuConversation.storeMessageRecipientPhoneNumber}}<br>
                 <strong>Pedido:</strong> {{escazuConversation.storeMessageRecipientOrder}}<br>
                 <strong>Cédula:</strong> {{escazuConversation.storeMessageRecipientID}}<br>
-                <strong>Fecha:</strong> {{escazuConversation.storeMessageStartDateTime}}
+                <strong>Fecha:</strong> {{parseHour(escazuConversation.storeMessageStartDateTime)}}
               </b-list-group-item>
             </b-list-group>
             <div v-else style="text-align: center;">
@@ -68,7 +70,7 @@
                 <strong>Número:</strong> {{zapoteConversation.storeMessageRecipientPhoneNumber}}<br>
                 <strong>Pedido:</strong> {{zapoteConversation.storeMessageRecipientOrder}}<br>
                 <strong>Cédula:</strong> {{zapoteConversation.storeMessageRecipientID}}<br>
-                <strong>Fecha:</strong> {{zapoteConversation.storeMessageStartDateTime}}
+                <strong>Fecha:</strong> {{parseHour(zapoteConversation.storeMessageStartDateTime)}}
               </b-list-group-item>
             </b-list-group>
             <div v-else style="text-align: center;">
@@ -1960,11 +1962,13 @@ export default {
           this.scrollDown();
           this.sortConversations();
         } else {
+          this.sendingMessageDisable = false;
           console.log(response)
           this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
       .catch((error) =>{
+        this.sendingMessageDisable = false;
         console.log(error)
         this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
