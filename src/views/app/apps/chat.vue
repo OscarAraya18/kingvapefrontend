@@ -575,6 +575,9 @@
                       <b-dropdown-item @click="addCloseConversationReason('Cliente no deseado')">Cliente no deseado</b-dropdown-item>
                     </b-dropdown><br><br>
                     <b-form-textarea no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
+                    <br>
+                    <b-form-checkbox id="checkbox-1" v-model="sendEndMessage">Enviar mensaje de despedida</b-form-checkbox>
+
                   </b-modal>
                   <b-dropdown dropup variant="primary" text="Transferir" style="margin-right: 10px;">
                     <template v-for="agent in agents">
@@ -1025,6 +1028,8 @@ export default {
   data() {
     return { 
 
+      sendEndMessage: false,
+
       agentStartMessage: '',
 
       loaders: 
@@ -1075,7 +1080,6 @@ export default {
       
 
       status: 'accepted',
-      verifiedUser: false,
 			zoom: 15,
 
       agentName: '',
@@ -1757,7 +1761,8 @@ export default {
                 whatsappConversationCloseComment: 'Venta',
                 whatsappConversationAmount: total,
                 whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
-                whatsappConversationProducts: me.activeConversationsAsJSON[whatsappConversationID].whatsappConversationProducts
+                whatsappConversationProducts: me.activeConversationsAsJSON[whatsappConversationID].whatsappConversationProducts,
+                sendAgentEndMessage: me.sendEndMessage
               })
               .then((response) =>{ 
                 if (response.data.success){
@@ -2337,6 +2342,7 @@ export default {
       this.currentActiveConversation = currentActiveConversation;
       this.productos = [];
       this.repliedMessage = null;
+      this.sendEndMessage = false;
       this.producto = '';
       this.ubicacion = "Ubicación de envío";
       this.latitud = 0;
@@ -2364,7 +2370,8 @@ export default {
         whatsappConversationCloseComment: this.closeConversationReason,
         whatsappConversationAmount: 0,
         whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
-        whatsappConversationProducts: []
+        whatsappConversationProducts: [],
+        sendAgentEndMessage: this.sendEndMessage
       })
       .then((response) =>{ 
         if (response.data.success){
