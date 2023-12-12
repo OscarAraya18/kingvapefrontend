@@ -399,7 +399,7 @@ export default {
             this.$refs['modalCrear'].hide();
             this.getContacts();
           } else {
-            this.$bvToast.toast("Ya existe un cliente asociado al número '" + this.creatingPhoneNumber + "', por favor modifique la información e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+            this.$bvToast.toast("Ya existe un contacto asociado al número '" + this.creatingPhoneNumber + "', por favor modifique la información e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
               title: "Número de contacto duplicado",
               variant: "danger",
               solid: true
@@ -414,8 +414,8 @@ export default {
           });
         })
       } else {
-        this.$bvToast.toast('El contenido de la información del cliente no puede estar vacío. Por favor complete los espacios requeridos e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
-          title: 'Error al crear el cliente',
+        this.$bvToast.toast('El contenido de la información del contacto no puede estar vacío. Por favor complete los espacios requeridos e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+          title: 'Error al crear el contacto',
           variant: 'danger',
           solid: true
         });

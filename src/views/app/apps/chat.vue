@@ -120,7 +120,7 @@
                     <strong>Fin:</strong> {{parseHour(historyConversation.whatsappConversationEndDateTime)}}<br>
                   </div>
                   <div class="flex-grow-1"></div>
-                  <button @click="rememberCart(historyConversation)" class="btn btn-icon btn-primary mr-2"><i class="i-Shopping-Cart"></i>Recordar carrito</button>
+                  <button v-if="availableConversation == true" @click="rememberCart(historyConversation)" class="btn btn-icon btn-primary mr-2"><i class="i-Shopping-Cart"></i>Recordar carrito</button>
 
                 </div>
               </b-list-group-item>
@@ -325,7 +325,7 @@
                 <input type="checkbox" v-if="currentActiveConversation.whatsappConversationRecipientID != 0" :checked="true" style="accent-color: #FFD733; margin-right: 10px;" onclick="return false;">
                 <p class="m-0 text-title text-16">{{ currentActiveConversation.whatsappConversationRecipientProfileName }} ({{currentActiveConversation.whatsappConversationRecipientPhoneNumber}})</p>
                 <div class="flex-grow-1"></div>
-                <button @click="getHistoryConversations()" class="btn btn-icon btn-primary mr-2" v-if="availableConversation == true" v-b-modal.historyConversationsModal><i class="i-Clock"></i>Historial</button>
+                <button @click="getHistoryConversations()" class="btn btn-icon btn-primary mr-2" v-b-modal.historyConversationsModal><i class="i-Clock"></i>Historial</button>
                 <button @click="vistaItems = 'Productos'" class="btn btn-icon btn-primary mr-2" v-if="availableConversation == true"><i class="i-Shopping-Cart"></i>Buscar productos</button>
                 <button @click="vistaItems = 'Orden'" class="btn btn-icon btn-primary" v-if="availableConversation == true"><i class="i-Check"></i>Resumen de la orden</button>
               </div>
@@ -508,7 +508,7 @@
                 </div>
               </div>
             </vue-perfect-scrollbar>
-           <div v-if="availableConversation == true" class="pl-3 pr-3 pt-4 pb-3 box-shadow-1 chat-input-area" style="position: absolute; bottom: 0; width: 100%; z-index: 1000; background-color:white">
+           <div class="pl-3 pr-3 pt-4 pb-3 box-shadow-1 chat-input-area" style="position: absolute; bottom: 0; width: 100%; z-index: 1000; background-color:white">
               <div v-if="loaders.fileShare == true" style="text-align: center;">
                 <br><br><span class="spinner-glow spinner-glow-primary"></span>
               </div>
@@ -561,7 +561,7 @@
                   
                   </div><br>
                 </div>
-                <div class="form-group">
+                <div class="form-group" v-if="availableConversation == true">
                   <b-form-textarea ref="textoEnviar" :disabled='sendingMessageDisable' class="form-control" placeholder="Escribe un mensaje" @keyup.enter="sendWhatsappTextMessage()" v-model="currentActiveConversation.textoEnviar" style="margin-bottom: 20px;" no-resize rows="3"/>
                 </div>              
                 <div class="d-flex"> 
@@ -586,21 +586,21 @@
                     <b-dropdown-item style="z-index: 1000;" v-if="agents.length == 0">No hay agentes disponibles</b-dropdown-item>
                   </b-dropdown>
                   <div class="flex-grow-1"></div>
-                  <b-dropdown dropup variant="primary" text="Tiendas" style="margin-right: 10px;">
+                  <b-dropdown dropup variant="primary" text="Tiendas" style="margin-right: 10px;" v-if="availableConversation == true">
                     <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappStoreLocationMessage('Zapote')">Zapote</b-dropdown-item>
                     <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappStoreLocationMessage('Escazu')">Escazu</b-dropdown-item>
                     <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappStoreLocationMessage('Cartago')">Cartago</b-dropdown-item>
                     <b-dropdown-item style="z-index: 1000;">Heredia</b-dropdown-item>
                   </b-dropdown>
-                  <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-right: 10px;">
+                  <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-right: 10px;" v-if="availableConversation == true">
                     <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappLocationMessage('CASA')">CASA</b-dropdown-item>
                     <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappLocationMessage('TRABAJO')">TRABAJO</b-dropdown-item>
                     <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappLocationMessage('OTRO')">OTRO</b-dropdown-item>
                   </b-dropdown>
-                  <button class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="uploadImage()" id="sendFiles"><i class="i-Folder-With-Document"></i></button>
-                  <input type="file" accept="image/png, image/jpeg, application/pdf" @change="sendWhatsappImageMessage()" ref="imageFile" style="display: none;" id="imageUploader">
+                  <button v-if="availableConversation == true" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="uploadImage()" id="sendFiles"><i class="i-Folder-With-Document"></i></button>
+                  <input v-if="availableConversation == true" type="file" accept="image/png, image/jpeg, application/pdf" @change="sendWhatsappImageMessage()" ref="imageFile" style="display: none;" id="imageUploader">
                   <b-tooltip target="sendFiles">Enviar imágenes de la computadora</b-tooltip>
-                  <button id="sendFavoriteImages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal @click="deselectImages()"><i class="i-Folder"></i></button>
+                  <button v-if="availableConversation == true" id="sendFavoriteImages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal @click="deselectImages()"><i class="i-Folder"></i></button>
                   <b-tooltip target="sendFavoriteImages">Enviar imágenes del catálogo</b-tooltip>
                   <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
                     <img style="width: 1000px;" :src="bigImageSource">
@@ -623,7 +623,7 @@
                       </b-list-group>
                     </div>
                   </b-modal>
-                  <button id="sendFavoriteMessages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.favoriteModal @click="openAgentFavoriteMessagesModal()"><i class="i-Love"></i></button>
+                  <button v-if="availableConversation == true" id="sendFavoriteMessages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.favoriteModal @click="openAgentFavoriteMessagesModal()"><i class="i-Love"></i></button>
                   <b-tooltip target="sendFavoriteMessages">Enviar mensajes favoritos</b-tooltip>
                   <b-modal scrollable title="Mensajes favoritos" size="m" centered hide-footer id="favoriteModal">
                     <b-list-group>
@@ -646,7 +646,7 @@
 
                     </b-list-group>
                   </b-modal>
-                  <button id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>
+                  <button v-if="availableConversation == true" id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>
                   <b-tooltip target="sendAudio">Enviar audio</b-tooltip>
                   <b-modal id="recordAudioModal" hide-footer hide-header size="sm" centered>
                     <div v-if="(!isRecording) && (loaderAudio == false)"><audio controls :src="recordedAudioFile" style="width:270px;"></audio><br></div>
@@ -891,9 +891,9 @@
                                 >Enviar orden a la central</b-button
                               >
                               <br><br>
-                              <b-button @click="sendWhatsappOrderTextMessage()" variant="warning"
-                                >Compartir orden con el cliente</b-button
-                              >
+                              <b-button @click="sendWhatsappOrderTextMessage()" variant="warning">Compartir orden con el cliente</b-button>
+                              <br><br>
+                              <b-button @click="saveContact()" variant="info">Guardar contacto</b-button>
                               <br><br>
                             </div>
 
@@ -1225,6 +1225,34 @@ export default {
   },
 
   methods: {
+    saveContact(){
+      const me = this;
+      const regularExpressionChecker = /\S/;
+      if (regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientProfileName) && regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientPhoneNumber) && regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientID) && regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientLocationDetails) && regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientNote)) {
+        axios.post(constants.routes.backendAPI+'/insertOrUpdateContact',
+        {
+          'contactName': this.currentActiveConversation.whatsappConversationRecipientProfileName,
+          'contactPhoneNumber': this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+          'contactID': this.currentActiveConversation.whatsappConversationRecipientID,
+          'contactEmail': this.currentActiveConversation.whatsappConversationRecipientEmail,
+          'contactLocations': this.currentActiveConversation.whatsappConversationRecipientLocations,
+          'contactLocationDetails': this.currentActiveConversation.whatsappConversationRecipientLocationDetails,
+          'contactNote': this.currentActiveConversation.whatsappConversationRecipientNote
+        }).then(function (response){
+          me.$bvToast.toast("Se ha creado exitosamente el contacto con el número '" + me.currentActiveConversation.whatsappConversationRecipientPhoneNumber + "'.", {
+            title: "Contacto creado",
+            variant: "success",
+            solid: true
+          });
+        })
+      } else {
+        this.$bvToast.toast('El contenido de la información del contacto no puede estar vacío. Por favor complete los espacios requeridos e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+          title: 'Error al crear el contacto',
+          variant: 'danger',
+          solid: true
+        });
+      }
+    },
 
     sortConversations(){
       var conversationsToSort = [];
@@ -1759,7 +1787,7 @@ export default {
               {
                 whatsappConversationRecipientPhoneNumber: me.phone,
                 whatsappConversationCloseComment: 'Venta',
-                whatsappConversationAmount: total,
+                whatsappConversationAmount: me.calcularTotal,
                 whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
                 whatsappConversationProducts: me.activeConversationsAsJSON[whatsappConversationID].whatsappConversationProducts,
                 sendAgentEndMessage: me.sendEndMessage
