@@ -326,6 +326,7 @@
                 <p class="m-0 text-title text-16">{{ currentActiveConversation.whatsappConversationRecipientProfileName }} ({{currentActiveConversation.whatsappConversationRecipientPhoneNumber}})</p>
                 <div class="flex-grow-1"></div>
                 <button @click="getHistoryConversations()" class="btn btn-icon btn-primary mr-2" v-b-modal.historyConversationsModal><i class="i-Clock"></i>Historial</button>
+                <button @click="vistaItems = 'Location'" class="btn btn-icon btn-primary mr-2" v-if="availableConversation == true"><i class="i-Internet"></i>Buscar ubicación</button>
                 <button @click="vistaItems = 'Productos'" class="btn btn-icon btn-primary mr-2" v-if="availableConversation == true"><i class="i-Shopping-Cart"></i>Buscar productos</button>
                 <button @click="vistaItems = 'Orden'" class="btn btn-icon btn-primary" v-if="availableConversation == true"><i class="i-Check"></i>Resumen de la orden</button>
               </div>
@@ -760,7 +761,7 @@
                     </b-modal>
 
           </b-card>
-          <b-card v-else title="Resumen de la orden">
+          <b-card v-else-if="vistaItems == 'Orden'" title="Resumen de la orden">
             <b-tabs  
                     active-nav-item-class="nav nav-tabs"
                     content-class="width:100%"
@@ -974,6 +975,32 @@
                     </b-tabs> 
             
           </b-card>
+
+
+
+          <b-card v-else>
+            <div class="d-flex" style="align-items: center;">
+              <h3 class="ul-widget__head-title">
+                Buscar ubicación
+              </h3>
+              <div class="flex-grow-1"></div>
+            </div>
+            <br>
+
+            <vue-google-autocomplete id="map" classname="form-control" placeholder="Coloque el nombre de la ubicación" v-on:placechanged="getAddressData">
+            </vue-google-autocomplete>
+
+            <br><br>
+            <GmapMap
+              :center="mapCenter"
+              :zoom="mapZoom"
+              style="width: 100%; height: 400px;"
+            >
+            <GmapMarker :position="mapCenter" :draggable="false"/>
+            </GmapMap>
+
+           
+          </b-card>
       </div>
     </div>
 
@@ -991,7 +1018,7 @@ const webSocket = new WebSocket('wss:telasmasbackend.onrender.com');
 
 import router from "../../../router";
 import {gmapApi} from 'vue2-google-maps';
-
+import {VueGoogleAutocomplete} from 'vue-google-autocomplete';
 import { BDropdown } from 'bootstrap-vue';
 
 
@@ -1027,6 +1054,7 @@ export default {
   },
   data() {
     return { 
+      
 
       sendEndMessage: false,
 
@@ -1220,11 +1248,25 @@ export default {
       chunks: [],
       bigImageSource: '',
 
-      sortedConversationsID: []
+      sortedConversationsID: [],
+
+
+      mapCenter: {lat: 0, lng: 0},
+      mapZoom: 12,
+
     };
   },
 
   methods: {
+    getAddressData: function (addressData, placeResultData, id) {
+      this.mapZoom = 12;
+      this.mapCenter = 
+      {
+        lat: addressData.latitude,
+        lng: addressData.longitude
+      }
+    },
+
     saveContact(){
       const me = this;
       const regularExpressionChecker = /\S/;

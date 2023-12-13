@@ -20,6 +20,9 @@ import 'vue2-daterange-picker/dist/vue2-daterange-picker.css'
 import "font-awesome/css/font-awesome.min.css";
 
 
+import VueGoogleAutocomplete from 'vue-google-autocomplete';
+
+
 import VueNativeNotification from 'vue-native-notification'
 Vue.use(VueNativeNotification, {
   // Automatic permission request before
@@ -39,10 +42,13 @@ import * as VueGoogleMaps from 'vue2-google-maps'
 
 Vue.use(VueGoogleMaps, {
 load: {
-	key: 'AIzaSyCCyc4hRxzm0b2XQiImEU9eKvC95kV4Poo',
+	key: 'AIzaSyCwemqbrgm2YsM3yFatnmlw9P3txd5DPTo',
 	libraries: 'places', 
-},
-  })
+}
+})
+
+Vue.component('vue-google-autocomplete', VueGoogleAutocomplete);
+
 
 Vue.use(InstantSearch);
 Vue.use(GullKit);
