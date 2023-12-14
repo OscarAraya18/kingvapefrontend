@@ -22,15 +22,6 @@ import "font-awesome/css/font-awesome.min.css";
 
 import VueGoogleAutocomplete from 'vue-google-autocomplete';
 
-
-import VueNativeNotification from 'vue-native-notification'
-Vue.use(VueNativeNotification, {
-  // Automatic permission request before
-  // showing notification (default: true)
-  requestOnNotify: true
-})
-
-
 //defined as global component
 Vue.component('VueFontawesome', require('vue-fontawesome-icon/VueFontawesome.vue').default);
 
@@ -46,9 +37,6 @@ load: {
 	libraries: 'places', 
 }
 })
-
-Vue.component('vue-google-autocomplete', VueGoogleAutocomplete);
-
 
 Vue.use(InstantSearch);
 Vue.use(GullKit);

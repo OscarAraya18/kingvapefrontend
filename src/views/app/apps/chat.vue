@@ -18,19 +18,23 @@
                   <br><br><br><span class="spinner-glow spinner-glow-primary"></span>
                 </div>
                 
-                <div v-else v-for="activeConversationID in sortedConversationsID" @click="changeCurrentActiveConversation(activeConversationsAsJSON[activeConversationID])" style="cursor: pointer;" class="p-3 d-flex border-bottom align-items-center" id="hint">
-                  
+                <div v-else v-for="activeConversationID in sortedConversationsID" @click="changeCurrentActiveConversation(activeConversationsAsJSON[activeConversationID], activeConversationID)" :style="getConversationStyle(activeConversationID)" class="p-3 d-flex border-bottom align-items-center hoverTest" id="hint">
                   <h6 style="padding-top: 10px;">
-                    {{ activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientProfileName }} ({{activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber}})
+                    <strong>{{activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientProfileName}}</strong> 
+                    <br>
+                    {{parsePhone(activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber)}}
                     <br><br>
                     {{ parseHour(activeConversationsAsJSON[activeConversationID].whatsappConversationMessages[activeConversationsAsJSON[activeConversationID].whatsappConversationMessages.length-1].whatsappGeneralMessageCreationDateTime) }}
                   </h6>
                   <div class="flex-grow-1"></div>
                   <div style="top: -12px; position: relative;"><b-form-checkbox v-model="activeConversationsAsJSON[activeConversationID].selected"></b-form-checkbox></div>
-                  <div v-if="activeConversationsAsJSON[activeConversationID].whatsappConversationMessages[activeConversationsAsJSON[activeConversationID].whatsappConversationMessages.length-1].whatsappGeneralMessageOwnerPhoneNumber != null" style="height: 15px; width: 15px; background-color: red; border-radius: 100px;"></div>
-                  <div v-else style="height: 15px; width: 15px; background-color: green; border-radius: 100px;"></div>
+                  <div v-if="activeConversationsAsJSON[activeConversationID].whatsappConversationMessages[activeConversationsAsJSON[activeConversationID].whatsappConversationMessages.length-1].whatsappGeneralMessageOwnerPhoneNumber != null" style="min-height: 25px; min-width: 25px; background-color: rgb(255, 111, 111); border-radius: 100px; display: flex; align-items: center; justify-content: center;">
+                    <h6 style="margin: 0;">
+                      <strong>{{getIncomingMessagesAmount(activeConversationsAsJSON[activeConversationID].whatsappConversationMessages)}}</strong>
+                    </h6>
+                  </div>
+                  <div v-else style="height: 15px; width: 15px; background-color: rgb(0, 177, 0); border-radius: 100px;"></div>
                   <b-tooltip target="hint" v-if="hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]">{{hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]}}</b-tooltip>
-                  
                 </div>
 
 
@@ -130,6 +134,54 @@
             </div>
           </b-modal>
 
+          <b-modal scrollable size="m" centered hide-footer id="historyMessageModal" hide-header>
+            <b-list-group v-if="loaders.historyMessage == false && historyMessage != null">
+              
+              <p v-if="historyMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{historyMessage.whatsappTextMessageBody}}</p>
+              
+              <div v-if="historyMessage.whatsappGeneralMessageType == 'contact'"> 
+                <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{historyMessage.whatsappContactMessageName}}</p>
+                <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{historyMessage.whatsappContactMessagePhoneNumber}}</p>
+              </div>
+              
+              <div v-if="historyMessage.whatsappGeneralMessageType == 'image'"> 
+                <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${historyMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${historyMessage.whatsappImageMessageFile}`">
+                <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="historyMessage.whatsappImageMessageCaption != null">{{historyMessage.whatsappImageMessageCaption}}</p>
+              </div>
+              
+              <div v-if="historyMessage.whatsappGeneralMessageType=='video'"> 
+                <video controls width="400" :src="`data:video/mp4;base64,${historyMessage.whatsappVideoMessageFile}`"></video>
+                <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="historyMessage.whatsappImageMessageCaption != null">{{historyMessage.whatsappVideoMessageCaption}}</p>
+              </div>
+              
+              <div v-if="historyMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                <GmapMap :center="getLocation(historyMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(historyMessage)" :draggable="false"/></GmapMap><br>
+                <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{historyMessage.whatsappLocationMessageLatitude}}</p>
+                <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{historyMessage.whatsappLocationMessageLongitude}}</p><br>
+                <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
+                  <b-dropdown-item @click="saveLocation('CASA', historyMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
+                  <b-dropdown-item @click="saveLocation('TRABAJO', historyMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
+                  <b-dropdown-item @click="saveLocation('OTRO', historyMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
+                </b-dropdown>
+              </div>
+              
+              <div v-if="historyMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                <a style="color: black;" :href="`data:${historyMessage.whatsappDocumentMessageMimeType};base64,${historyMessage.whatsappDocumentMessageFile}`" :download="historyMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{historyMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+              </div>
+              
+              <audio controls v-if="historyMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${historyMessage.whatsappAudioMessageFile}`"></audio>
+              
+              <div v-if="historyMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                <img v-b-modal.bigImageModal @click="openBigImage(historyMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="historyMessage.whatsappFavoriteImageMessageDriveURL">
+                <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="historyMessage.whatsappFavoriteImageMessageCaption != null">{{historyMessage.whatsappFavoriteImageMessageCaption}}</p>
+              </div>
+
+            </b-list-group>
+            <div v-else style="text-align: center;">
+              <br><span class="spinner-glow spinner-glow-primary"></span>
+            </div>
+          </b-modal>
+
 
           <b-modal scrollable size="lg" centered hide-footer id="historyOpenModal" hide-header>
             <div v-if="openHistoryLoader == true" style="text-align: center;">
@@ -145,6 +197,11 @@
                         
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
                           <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                            
+                            <div v-if="currentActiveConversation.whatsappConversationMessages.map(whatsappGeneralMessage => whatsappGeneralMessage.whatsappGeneralMessageID).includes(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID) == false">
+                              <button @click="getHistoryMessage(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID)" class="btn btn-icon btn-primary mr-2" v-b-modal.historyMessageModal><i class="i-Clock"></i>Abrir mensaje del historial</button>
+                            </div>
+                            
                             <div v-for="answeredMessage in currentHistoryConversation.whatsappConversationMessages">
                               <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
                                 
@@ -236,7 +293,13 @@
                       <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null">
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
                           <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                            
+                            <div v-if="currentActiveConversation.whatsappConversationMessages.map(whatsappGeneralMessage => whatsappGeneralMessage.whatsappGeneralMessageID).includes(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID) == false">
+                              <button @click="getHistoryMessage(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID)" class="btn btn-icon btn-primary mr-2" v-b-modal.historyMessageModal><i class="i-Clock"></i>Abrir mensaje del historial</button>
+                            </div>
+                            
                             <div v-for="answeredMessage in currentHistoryConversation.whatsappConversationMessages">
+
                               <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
                                 
                                 <p v-if="answeredMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
@@ -317,16 +380,20 @@
           </b-modal>
 
 
+          <div class="chat-content-wrap sidebar-content" v-if="currentActiveConversation==null">
+            <div style="position: absolute; bottom:0; right:0; padding: 20px;">
+              <img src="@/assets/images/logo.webp" alt style="width: 150px; height: auto;"/>
+            </div>
+          </div>
 
           <div class="chat-content-wrap sidebar-content" v-if="currentActiveConversation!=null">
             <div class="d-flex pl-3 pr-3 pt-3 pb-3 o-hidden box-shadow-1 chat-topbar">
               <a class="link-icon d-md-none" @click="isMobile = !isMobile"><i class="icon-regular i-Right ml-0 mr-3"></i></a>
               <div class="d-flex align-items-center" style="width: 100%;">
                 <input type="checkbox" v-if="currentActiveConversation.whatsappConversationRecipientID != 0" :checked="true" style="accent-color: #FFD733; margin-right: 10px;" onclick="return false;">
-                <p class="m-0 text-title text-16">{{ currentActiveConversation.whatsappConversationRecipientProfileName }} ({{currentActiveConversation.whatsappConversationRecipientPhoneNumber}})</p>
+                <p class="m-0 text-title text-16"><strong>{{currentActiveConversation.whatsappConversationRecipientProfileName}}</strong> {{parsePhone(currentActiveConversation.whatsappConversationRecipientPhoneNumber)}}</p>
                 <div class="flex-grow-1"></div>
                 <button @click="getHistoryConversations()" class="btn btn-icon btn-primary mr-2" v-b-modal.historyConversationsModal><i class="i-Clock"></i>Historial</button>
-                <button @click="vistaItems = 'Location'" class="btn btn-icon btn-primary mr-2" v-if="availableConversation == true"><i class="i-Internet"></i>Buscar ubicación</button>
                 <button @click="vistaItems = 'Productos'" class="btn btn-icon btn-primary mr-2" v-if="availableConversation == true"><i class="i-Shopping-Cart"></i>Buscar productos</button>
                 <button @click="vistaItems = 'Orden'" class="btn btn-icon btn-primary" v-if="availableConversation == true"><i class="i-Check"></i>Resumen de la orden</button>
               </div>
@@ -341,7 +408,12 @@
                         
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
                           <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
-                            <div v-for="answeredMessage in currentActiveConversation.whatsappConversationMessages">
+                            
+                            <div v-if="currentActiveConversation.whatsappConversationMessages.map(whatsappGeneralMessage => whatsappGeneralMessage.whatsappGeneralMessageID).includes(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID) == false">
+                              <button @click="getHistoryMessage(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID)" class="btn btn-icon btn-primary mr-2" v-b-modal.historyMessageModal><i class="i-Clock"></i>Abrir mensaje del historial</button>
+                            </div>
+                            
+                            <div v-else v-for="answeredMessage in currentActiveConversation.whatsappConversationMessages">
                               <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
                                 
                                 <p v-if="answeredMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
@@ -429,10 +501,16 @@
                       </div>
                       <span v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null" style="margin-left: 0; margin-right:auto;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
                       <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
+                      
                       <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null">
+                        
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
                           <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
-                            <div v-for="answeredMessage in currentActiveConversation.whatsappConversationMessages">
+                            <div v-if="currentActiveConversation.whatsappConversationMessages.map(whatsappGeneralMessage => whatsappGeneralMessage.whatsappGeneralMessageID).includes(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID) == false">
+                              <button @click="getHistoryMessage(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID)" class="btn btn-icon btn-primary mr-2" v-b-modal.historyMessageModal><i class="i-Clock"></i>Abrir mensaje del historial</button>
+                            </div>
+                            
+                            <div v-else v-for="answeredMessage in currentActiveConversation.whatsappConversationMessages">
                               <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
                                 
                                 <p v-if="answeredMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
@@ -515,7 +593,7 @@
               </div>
               <div v-else>
                 <div v-if="repliedMessage != null">
-                  <div style="background-color: rgb(255, 216, 251); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                  <div style="background-color: rgb(255, 238, 252); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
                     <div>
                       <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Respondiendo a:</strong></p>
                       <i class="i-Close-Window text-25 text-danger" style="float: right; position: relative; top:-25px; cursor: pointer;" @click="cancelReply()"></i>
@@ -607,10 +685,15 @@
                     <img style="width: 1000px;" :src="bigImageSource">
                   </b-modal>
                   <b-modal @ok="sendWhatsappFavoriteImageMessage()" scrollable title="Catálogo de desechables" size="m" centered id="imageModal">
-                    <div v-if="loaderImages == true" style="text-align: center;">
-                      <br><span class="spinner-glow spinner-glow-primary"></span>
-                    </div>
-                    <div v-else>
+                    
+                    <b-nav tabs justified>
+                      <b-nav-item :active="getActiveNavItem('Nicotina')" @click="changeActiveNavItem('Nicotina')">Nicotina</b-nav-item>
+                      <b-nav-item :active="getActiveNavItem('Zero')" @click="changeActiveNavItem('Zero')">Zero</b-nav-item>
+                    </b-nav>
+
+                    <br>
+
+                    <div v-if="currentNavItem == 'Nicotina'">
                       <b-list-group>
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
                         <b-list-group-item :style="getImageStyle(agentFavoriteImage)" v-for="(agentFavoriteImage, index) in agentFavoriteImages" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
@@ -623,18 +706,36 @@
                         </b-list-group-item>
                       </b-list-group>
                     </div>
+
+                    <div v-else>
+                      <b-list-group>
+                        <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
+                        <b-list-group-item :style="getImageStyle(agentFavoriteImage)" v-for="(agentFavoriteImage, index) in agentFavoriteImages2" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
+                          <div style="display:flex; ">
+                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
+                            <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
+                              <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
+                            </div>
+                          </div>
+                        </b-list-group-item>
+                      </b-list-group>
+                    </div>
+
                   </b-modal>
                   <button v-if="availableConversation == true" id="sendFavoriteMessages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.favoriteModal @click="openAgentFavoriteMessagesModal()"><i class="i-Love"></i></button>
                   <b-tooltip target="sendFavoriteMessages">Enviar mensajes favoritos</b-tooltip>
+                  
                   <b-modal scrollable title="Mensajes favoritos" size="m" centered hide-footer id="favoriteModal">
+                    
+                    
                     <b-list-group>
-                      
+
                       <b-list-group-item style="cursor: pointer;" v-for="agentFavoriteMessage in agentFavoriteMessages" button @click="sendWhatsappFavoriteTextMessage(agentFavoriteMessage.agentFavoriteMessageTextMessageBody)">
                         <h6><strong>{{agentFavoriteMessage.agentFavoriteMessageName}}</strong></h6>
                         {{agentFavoriteMessage.agentFavoriteMessageTextMessageBody}}
                       </b-list-group-item>
 
-                      <b-list-group-item style="cursor: pointer;" v-for="agentFavoriteImage in agentFavoriteImages2" button @click="sendSelectedWhatsappFavoriteImageMessage(agentFavoriteImage)">
+                      <b-list-group-item style="cursor: pointer;" v-for="agentFavoriteImage in agentFavoriteImages3" button @click="sendSelectedWhatsappFavoriteImageMessage(agentFavoriteImage)">
                         <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
                         <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 150px; height: auto;"/>
                         <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias'"><br>
@@ -647,6 +748,7 @@
 
                     </b-list-group>
                   </b-modal>
+
                   <button v-if="availableConversation == true" id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>
                   <b-tooltip target="sendAudio">Enviar audio</b-tooltip>
                   <b-modal id="recordAudioModal" hide-footer hide-header size="sm" centered>
@@ -974,33 +1076,7 @@
                         </b-tab>
                     </b-tabs> 
             
-          </b-card>
-
-
-
-          <b-card v-else>
-            <div class="d-flex" style="align-items: center;">
-              <h3 class="ul-widget__head-title">
-                Buscar ubicación
-              </h3>
-              <div class="flex-grow-1"></div>
-            </div>
-            <br>
-
-            <vue-google-autocomplete id="map" classname="form-control" placeholder="Coloque el nombre de la ubicación" v-on:placechanged="getAddressData">
-            </vue-google-autocomplete>
-
-            <br><br>
-            <GmapMap
-              :center="mapCenter"
-              :zoom="mapZoom"
-              style="width: 100%; height: 400px;"
-            >
-            <GmapMarker :position="mapCenter" :draggable="false"/>
-            </GmapMap>
-
-           
-          </b-card>
+          </b-card> 
       </div>
     </div>
 
@@ -1018,7 +1094,6 @@ const webSocket = new WebSocket('wss:telasmasbackend.onrender.com');
 
 import router from "../../../router";
 import {gmapApi} from 'vue2-google-maps';
-import {VueGoogleAutocomplete} from 'vue-google-autocomplete';
 import { BDropdown } from 'bootstrap-vue';
 
 
@@ -1062,6 +1137,7 @@ export default {
 
       loaders: 
       {
+        historyMessage: false,
         activeConversations: false,
         grabConversation: false,
         fileShare: false,
@@ -1239,6 +1315,7 @@ export default {
       agentFavoriteMessages: [],
       agentFavoriteImages: [],
       agentFavoriteImages2: [],
+      agentFavoriteImages3: [],
 
       recordAudioDialog: false,
       isRecording: false,
@@ -1250,21 +1327,74 @@ export default {
 
       sortedConversationsID: [],
 
+      historyMessage: null,
 
-      mapCenter: {lat: 0, lng: 0},
-      mapZoom: 12,
+      currentActiveConversationID: null,
+
+      currentNavItem: 'Nicotina'
 
     };
   },
 
   methods: {
-    getAddressData: function (addressData, placeResultData, id) {
-      this.mapZoom = 12;
-      this.mapCenter = 
-      {
-        lat: addressData.latitude,
-        lng: addressData.longitude
+    getActiveNavItem(navItem){
+      if (this.currentNavItem == navItem){
+        return true;
       }
+      return false;
+    },
+
+    changeActiveNavItem(navItem){
+      this.currentNavItem = navItem;
+      this.deselectImages();
+    },
+
+    getIncomingMessagesAmount(messages){
+      var messageAmount = 0;
+      for (let i = messages.length - 1; i >= 0; i--) {
+        if (messages[i].whatsappGeneralMessageOwnerPhoneNumber != null) {
+          messageAmount = messageAmount + 1;
+        } else {
+          break;
+        }
+      } 
+      return messageAmount;
+    },
+
+    parsePhone(phoneNumber){
+      const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+      const match = cleaned.match(/^(\d{3})(\d{2})(\d{2})(\d{2})(\d{2})$/);
+      if (match) {
+        return `(${match[1]}) ${match[2]}${match[3]}${match[4]}${match[5]}`;
+      }
+      return phoneNumber;
+    },
+
+    getConversationStyle(whatsappConversationID){
+      if (whatsappConversationID == this.currentActiveConversationID){
+        return 'cursor: pointer; background-color: #f7f3a6;';
+      }
+      return 'cursor: pointer;';
+    },
+
+    getHistoryMessage(whatsappGeneralMessageID){
+      this.loaders.historyMessage = true;
+      axios.post(constants.routes.backendAPI+'/selectWhatsappGeneralMessage', 
+      {
+        whatsappGeneralMessageID: whatsappGeneralMessageID
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.historyMessage = response.data.result;
+          this.loaders.historyMessage = false;
+        } else {
+          this.showNotification('danger', 'Error al abrir el mensaje del historial', 'Ha ocurrido un error inesperado al abrir el mensaje del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        this.showNotification('danger', 'Error al abrir el mensaje del historial', 'Ha ocurrido un error inesperado al abrir el mensaje del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
     },
 
     saveContact(){
@@ -1355,7 +1485,6 @@ export default {
       .catch((error) => {
         this.showNotification('danger', 'Error al abrir la conversación del historial', 'Ha ocurrido un error inesperado al abrir la conversación del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
-      
     },
 
     getHistoryConversations(){
@@ -1391,14 +1520,19 @@ export default {
         .then((response) =>{
           if (response.data.success){
             for (var agentFavoriteImageIndex in response.data.result){
-              if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == true){
+              if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'nicotine'){
                 this.agentFavoriteImages.push(response.data.result[agentFavoriteImageIndex]);
-              } else {
+              } else if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'zero'){
                 this.agentFavoriteImages2.push(response.data.result[agentFavoriteImageIndex]);
+              } else if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'message'){
+                this.agentFavoriteImages3.push(response.data.result[agentFavoriteImageIndex]);
               }
             }
             for (var agentFavoriteImageIndex in this.agentFavoriteImages){
               this.agentFavoriteImages[agentFavoriteImageIndex]['selected'] = false;
+            }
+            for (var agentFavoriteImageIndex in this.agentFavoriteImages2){
+              this.agentFavoriteImages2[agentFavoriteImageIndex]['selected'] = false;
             }
           } else {
             this.showNotification('danger', 'Error al consultar las imágenes del catálogo', 'Ha ocurrido un error inesperado al consultar las imágenes del catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
@@ -1413,6 +1547,9 @@ export default {
     deselectImages(){
       for (var agentFavoriteImageIndex in this.agentFavoriteImages){
         this.agentFavoriteImages[agentFavoriteImageIndex]['selected'] = false;
+      }
+      for (var agentFavoriteImageIndex in this.agentFavoriteImages2){
+        this.agentFavoriteImages2[agentFavoriteImageIndex]['selected'] = false;
       }
     },
 
@@ -1555,26 +1692,51 @@ export default {
 
     getAllFavoriteVariant(){
       var variant = 'success';
-      for(var imageIndex in this.agentFavoriteImages){
-        if (this.agentFavoriteImages[imageIndex].selected == false){
-          variant = 'default';
-        };
-      } 
-      return variant;
+      if (this.currentNavItem == 'Nicotina'){
+        for(var imageIndex in this.agentFavoriteImages){
+          if (this.agentFavoriteImages[imageIndex].selected == false){
+            return 'default';
+          };
+        } 
+        return variant;
+      } else {
+        for(var imageIndex in this.agentFavoriteImages2){
+          if (this.agentFavoriteImages2[imageIndex].selected == false){
+            return 'default';
+          };
+        }
+        return variant;
+      }
     },
 
     selectFavoriteImage(image){
-      this.$set(this.agentFavoriteImages, image, { ...this.agentFavoriteImages[image], selected: !this.agentFavoriteImages[image].selected });
+      if (this.currentNavItem == 'Nicotina'){
+        this.$set(this.agentFavoriteImages, image, { ...this.agentFavoriteImages[image], selected: !this.agentFavoriteImages[image].selected });
+      } else {
+        this.$set(this.agentFavoriteImages2, image, { ...this.agentFavoriteImages2[image], selected: !this.agentFavoriteImages2[image].selected });
+      }
     },
 
     selectAllFavoriteImage(){
-      if (this.allImageSelected == false){
-        for (var imageIndex in this.agentFavoriteImages) {
-          this.$set(this.agentFavoriteImages, imageIndex, { ...this.agentFavoriteImages[imageIndex], selected: true });
+      if (this.currentNavItem == 'Nicotina'){
+        if (this.allImageSelected == false){
+          for (var imageIndex in this.agentFavoriteImages) {
+            this.$set(this.agentFavoriteImages, imageIndex, { ...this.agentFavoriteImages[imageIndex], selected: true });
+          }
+        } else {
+          for (var imageIndex in this.agentFavoriteImages) {
+            this.$set(this.agentFavoriteImages, imageIndex, { ...this.agentFavoriteImages[imageIndex], selected: false });
+          }
         }
       } else {
-        for (var imageIndex in this.agentFavoriteImages) {
-          this.$set(this.agentFavoriteImages, imageIndex, { ...this.agentFavoriteImages[imageIndex], selected: false });
+        if (this.allImageSelected == false){
+          for (var imageIndex in this.agentFavoriteImages2) {
+            this.$set(this.agentFavoriteImages2, imageIndex, { ...this.agentFavoriteImages2[imageIndex], selected: true });
+          }
+        } else {
+          for (var imageIndex in this.agentFavoriteImages2) {
+            this.$set(this.agentFavoriteImages2, imageIndex, { ...this.agentFavoriteImages2[imageIndex], selected: false });
+          }
         }
       }
       this.allImageSelected = !this.allImageSelected;
@@ -2154,6 +2316,7 @@ export default {
           }
         })
         .catch((error) =>{
+          console.log(error);
           this.showNotification('danger', 'Error al enviar la imagen al cliente', 'Ha ocurrido un error inesperado al enviar la imagen. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         })
       };
@@ -2268,28 +2431,56 @@ export default {
 
     async sendWhatsappFavoriteImageMessage(){
       const currentConversation = this.currentActiveConversation;
-      for (var image in this.agentFavoriteImages){
-        if (this.agentFavoriteImages[image].selected){       
-          await axios.post(constants.routes.backendAPI+'/sendWhatsappFavoriteImageMessage', 
-          {
-            whatsappConversationRecipientPhoneNumber: currentConversation.whatsappConversationRecipientPhoneNumber,
-            whatsappFavoriteImageMessageContent: this.agentFavoriteImages[image],
-            whatsappFavoriteImageMessageCaption: null
-          })
-          .then((response) => {
-            if (response.data.success){
-              this.agentFavoriteImages[image].selected = false;
-              this.repliedMessage = null;
-              const whatsappConversationID = response.data.result.whatsappConversationID;
-              this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
-              this.scrollDown();
-            } else {
+      
+      if (this.currentNavItem == 'Nicotina'){
+        for (var image in this.agentFavoriteImages){
+          if (this.agentFavoriteImages[image].selected){       
+            await axios.post(constants.routes.backendAPI+'/sendWhatsappFavoriteImageMessage', 
+            {
+              whatsappConversationRecipientPhoneNumber: currentConversation.whatsappConversationRecipientPhoneNumber,
+              whatsappFavoriteImageMessageContent: this.agentFavoriteImages[image],
+              whatsappFavoriteImageMessageCaption: null
+            })
+            .then((response) => {
+              if (response.data.success){
+                this.agentFavoriteImages[image].selected = false;
+                this.repliedMessage = null;
+                const whatsappConversationID = response.data.result.whatsappConversationID;
+                this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
+                this.scrollDown();
+              } else {
+                this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+              }
+            })
+            .catch((error) =>{
               this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-            }
-          })
-          .catch((error) =>{
-            this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-          })
+            })
+          }
+        }
+      } else {
+        for (var image in this.agentFavoriteImages2){
+          if (this.agentFavoriteImages2[image].selected){       
+            await axios.post(constants.routes.backendAPI+'/sendWhatsappFavoriteImageMessage', 
+            {
+              whatsappConversationRecipientPhoneNumber: currentConversation.whatsappConversationRecipientPhoneNumber,
+              whatsappFavoriteImageMessageContent: this.agentFavoriteImages2[image],
+              whatsappFavoriteImageMessageCaption: null
+            })
+            .then((response) => {
+              if (response.data.success){
+                this.agentFavoriteImages2[image].selected = false;
+                this.repliedMessage = null;
+                const whatsappConversationID = response.data.result.whatsappConversationID;
+                this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
+                this.scrollDown();
+              } else {
+                this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+              }
+            })
+            .catch((error) =>{
+              this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+            })
+          }
         }
       }
       
@@ -2408,7 +2599,8 @@ export default {
       })
     },
 
-    changeCurrentActiveConversation(currentActiveConversation){
+    changeCurrentActiveConversation(currentActiveConversation, activeConversationID){
+      this.currentActiveConversationID = activeConversationID;
       this.currentActiveConversation = currentActiveConversation;
       this.productos = [];
       this.repliedMessage = null;
@@ -2568,6 +2760,7 @@ export default {
           }
           this.activeConversationsAsJSON = {};
           this.activeConversationsAsJSON = respondedActiveConversations;
+          console.log(this.activeConversationsAsJSON);
           this.loaders.activeConversations = false;
           this.sortConversations();
         } else {
@@ -2575,6 +2768,7 @@ export default {
         }
       })
       .catch((error) =>{
+        console.log(error);
         this.showNotification('danger', 'Error al consultar las conversaciones activas', 'Ha ocurrido un error inesperado al consultar las conversaciones pendientes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
@@ -2858,7 +3052,17 @@ export default {
 
   },
 
+  created(){
+    window.addEventListener('keydown', (keyPressed) => {
+      if (keyPressed.key == 'Escape') {
+        this.currentActiveConversation = null;
+        this.currentActiveConversationID = null;
+      }
+    });
+  },
+
   mounted(){
+
     this.agentStartMessage = localStorage.getItem('agentStartMessage');
 
     if (localStorage.getItem('agentID') == null){
@@ -2909,6 +3113,14 @@ export default {
 </script>
 
 <style>
+  .hoverTest {
+    transition: background-color 0.5s ease-in-out;
+  }
+
+  .hoverTest:hover {
+    background-color: #ebebeb;
+  }
+
   .lang-dropdown .dropdown-menu { 
     width: 300px !important;
     min-width: 600px !important;
