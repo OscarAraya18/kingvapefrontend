@@ -20,8 +20,6 @@ import 'vue2-daterange-picker/dist/vue2-daterange-picker.css'
 import "font-awesome/css/font-awesome.min.css";
 
 
-import VueGoogleAutocomplete from 'vue-google-autocomplete';
-
 //defined as global component
 Vue.component('VueFontawesome', require('vue-fontawesome-icon/VueFontawesome.vue').default);
 
