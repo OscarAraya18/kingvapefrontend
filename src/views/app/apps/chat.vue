@@ -1090,8 +1090,6 @@ import axios from 'axios';
 const constants = require('@../../../src/constants.js'); 
 
 const webSocket = new WebSocket('wss:telasmasbackend.onrender.com');
-axios.defaults.withCredentials = true;
-
 
 import router from "../../../router";
 import {gmapApi} from 'vue2-google-maps';
