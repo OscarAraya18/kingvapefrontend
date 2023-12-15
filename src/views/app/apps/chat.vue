@@ -1882,6 +1882,8 @@ export default {
 
     OrdenExpress(){
       this.phone = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
+      this.phone = (parseInt(this.phone.replace(/\D/g, ''), 10)).toString();
+
       this.name = this.currentActiveConversation.whatsappConversationRecipientProfileName;
       this.repliedMessage = null;
       this.cedula = this.currentActiveConversation.whatsappConversationRecipientID;
@@ -2072,7 +2074,7 @@ export default {
       AgregarItemVariacion(item, codigoVariacion, descripcionVariacion, variant = null){
         this.currentActiveConversation.whatsappConversationProducts.push({
           CodigoP: codigoVariacion,
-          descripcion: item.descripcion + '. Variación: ' + descripcionVariacion,
+          descripcion: descripcionVariacion,
           cantidad: 1,
           precio: item.precioVenta,
           id: item.id,
@@ -2127,7 +2129,7 @@ export default {
               axios.get('https://bakend2king.kingvape.cr/api/Productos/BuscadorEnter5/King Vape/'+myInput).then( response => {
                 me.productos = [];
                 Objeto = response.data
-
+                console.log(response.data);
                   // Cargar Productos 
                   Objeto.map(function(x){
                     me.productos.push({descripcion:x.descripcion,
