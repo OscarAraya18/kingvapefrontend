@@ -1,8 +1,8 @@
 module.exports = {
     
     routes: {
-        backendAPI: 'https://5cd0-186-5-163-74.ngrok-free.app',
-        websocketAPI: 'https://5cd0-186-5-163-74.ngrok-free.app:10000'
+        backendAPI: 'https://telasmasbackend.onrender.com',
+        websocketAPI: 'telasmasbackend.onrender.com:10000'
     },
 
     credentials: 
