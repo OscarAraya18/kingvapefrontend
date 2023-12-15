@@ -2199,12 +2199,14 @@ export default {
           this.sortConversations();
         } else {
           this.sendingMessageDisable = false;
-          console.log(response)
+          console.log('ERROR');
+          console.log(response);
           this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
       .catch((error) =>{
         this.sendingMessageDisable = false;
+        console.log('ERROR');
         console.log(error)
         this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
@@ -2685,7 +2687,11 @@ export default {
           this.showNotification('success', 'Conversación asignada', 'Ha tomado la conversación proveniente de la tienda exitosamente. Recuerde esperar a la respuesta del cliente.');
           this.selectAgentConversation(whatsappConversationID);
         } else {
-          this.showNotification('danger', 'Error al tomar la conversación', 'Ha ocurrido un error inesperado al tomar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          if (response.data.result == 'Duplicate'){
+            this.showNotification('info', 'Conversación duplicada', 'No ha podido tomar esta conversación porque ya se encuentra asignada a otro agente.');
+          } else {
+            this.showNotification('danger', 'Error al tomar la conversación', 'Ha ocurrido un error inesperado al tomar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }
         }
       })
       .catch((error) =>{
