@@ -173,7 +173,7 @@ export default {
           localStorage.setItem('agentStartMessage', response.data.result.agentStartMessage);
           localStorage.setItem('agentEndMessage', response.data.result.agentEndMessage);
           localStorage.setItem('agentProfileImage', response.data.result.agentProfileImage);
-          localStorage.setItem('ordenesActuales', JSON.stringify({}));
+          localStorage.setItem('datosActuales', JSON.stringify({}));
 
           axios.post(constants.routes.backendAPI+'/selectAgentFavoriteMessages',{
             agentID: parseInt(localStorage.getItem('agentID'))
