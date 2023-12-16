@@ -3078,6 +3078,9 @@ export default {
     if (localStorage.getItem('ordenesActuales') == null){
       localStorage.setItem('ordenesActuales', JSON.stringify({}))
     }
+    if (localStorage.getItem('datosActuales') == null){
+      localStorage.setItem('datosActuales', JSON.stringify({}))
+    }
     this.agentName = localStorage.getItem('agentName');
     this.selectAllAgentStatus();
     this.selectAllStoreMessage();
