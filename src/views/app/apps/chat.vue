@@ -942,6 +942,7 @@
                                 v-model="pagaCon"
                                 placeholder="El cliente paga con..."
                                 style="margin-bottom: 10px;"
+                                @keyup="modificarPagaCon()"
                               ></b-form-input>
                               <b-form-select
                                 type="text"
@@ -1336,6 +1337,18 @@ export default {
   },
 
   methods: {
+    modificarPagaCon(){
+      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['pagaCon'] = this.pagaCon;
+      } else {
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
+        {
+          'pagaCon': this.pagaCon
+        }
+      }
+    },
+
     getActiveNavItem(navItem){
       if (this.currentNavItem == navItem){
         return true;
@@ -1427,6 +1440,7 @@ export default {
 
     sortConversations(){
       var conversationsToSort = [];
+      console.log(this.activeConversationsAsJSON);
       for (var activeConversationID in this.activeConversationsAsJSON){
         const whatsappConversationMessages = this.activeConversationsAsJSON[activeConversationID].whatsappConversationMessages;
         const whatsappConversationMessagesAmount = whatsappConversationMessages.length;
@@ -1989,7 +2003,6 @@ export default {
               .then((response) =>{ 
                 if (response.data.success){
                   me.showNotification('success', 'Conversación finalizada', 'Ha finalizado la conversación exitosamente.')
-
                   delete me.activeConversationsAsJSON[response.data.result];
                   me.sortConversations();
                   me.currentActiveConversation = null;
@@ -2755,7 +2768,6 @@ export default {
           }
           this.activeConversationsAsJSON = {};
           this.activeConversationsAsJSON = respondedActiveConversations;
-          console.log(this.activeConversationsAsJSON);
           this.loaders.activeConversations = false;
           this.sortConversations();
         } else {
