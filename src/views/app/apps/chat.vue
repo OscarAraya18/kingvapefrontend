@@ -1968,6 +1968,7 @@ export default {
             }).then(function (){
               
             })
+
             if (result.value) {
               const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
               if (ordenesActualesLocalStorage[me.phone]){
@@ -1987,6 +1988,8 @@ export default {
                 total = total + (me.activeConversationsAsJSON[whatsappConversationID].whatsappConversationProducts[productIndex].cantidad * me.activeConversationsAsJSON[whatsappConversationID].whatsappConversationProducts[productIndex].precio)
               }
 
+              console.log('PASO POR AQUI')
+
 
               axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
               {
@@ -2005,11 +2008,11 @@ export default {
                   me.sortConversations();
                   me.currentActiveConversation = null;
                 } else {
-                  this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+                  me.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
                 }
               })
               .catch((error) =>{
-                this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+                me.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
               })
 
             }
