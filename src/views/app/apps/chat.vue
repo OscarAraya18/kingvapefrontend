@@ -1976,20 +1976,6 @@ export default {
               }
               localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
 
-              var whatsappConversationID = null;
-              for (var conversationID in me.activeConversationsAsJSON) {
-                if (me.activeConversationsAsJSON[conversationID].whatsappConversationRecipientPhoneNumber == me.phone) {
-                  whatsappConversationID = conversationID;
-                }
-              }
-
-              var total = 0;
-              for (var productIndex in me.activeConversationsAsJSON[whatsappConversationID].whatsappConversationProducts){
-                total = total + (me.activeConversationsAsJSON[whatsappConversationID].whatsappConversationProducts[productIndex].cantidad * me.activeConversationsAsJSON[whatsappConversationID].whatsappConversationProducts[productIndex].precio)
-              }
-
-              console.log('PASO POR AQUI')
-
 
               axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
               {
@@ -1997,7 +1983,7 @@ export default {
                 whatsappConversationCloseComment: 'Venta',
                 whatsappConversationAmount: me.calcularTotal,
                 whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
-                whatsappConversationProducts: me.activeConversationsAsJSON[whatsappConversationID].whatsappConversationProducts,
+                whatsappConversationProducts: me.currentActiveConversation.whatsappConversationProducts,
                 sendAgentEndMessage: me.sendEndMessage
               })
               .then((response) =>{ 
@@ -2204,7 +2190,6 @@ export default {
           this.sortConversations();
         } else {
           this.sendingMessageDisable = false;
-          console.log('ERROR');
           console.log(response);
           this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
