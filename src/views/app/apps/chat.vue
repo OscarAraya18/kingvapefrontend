@@ -1347,7 +1347,7 @@ export default {
           'pagaCon': this.pagaCon
         }
       }
-      localStorage.setItem(JSON.stringify(datosActuales));
+      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
     },
 
     getActiveNavItem(navItem){
