@@ -978,6 +978,7 @@
                                 v-model="currentActiveConversation.whatsappConversationRecipientLocationDetails"
                                 style="margin-bottom: 10px;"
                                 placeholder="Nota de la dirección"
+                                @keyup="modificarNotaDireccion()"
                               ></b-form-textarea>
 
                               <b-form-textarea
@@ -986,6 +987,7 @@
                                 style="margin-bottom: 10px;"
                                 placeholder="Nota del envío"
                                 v-model="currentActiveConversation.whatsappConversationRecipientNote"
+                                @keyup="modificarNotaEnvio()"
                               ></b-form-textarea>
                             </b-form-group>
 
@@ -1337,6 +1339,32 @@ export default {
   },
 
   methods: {
+    modificarNotaEnvio(){
+      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaEnvio'] = this.currentActiveConversation.whatsappConversationRecipientNote;
+      } else {
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
+        {
+          'notaEnvio': this.currentActiveConversation.whatsappConversationRecipientNote
+        }
+      }
+      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
+    },
+
+    modificarNotaDireccion(){
+      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaDireccion'] = this.currentActiveConversation.whatsappConversationRecipientLocationDetails;
+      } else {
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
+        {
+          'notaDireccion': this.currentActiveConversation.whatsappConversationRecipientLocationDetails
+        }
+      }
+      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
+    },
+
     modificarPagaCon(){
       const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
       if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
