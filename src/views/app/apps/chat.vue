@@ -922,12 +922,14 @@
                                 :options="Sucursales"
                                 id="inline-form-custom-select-pref1"
                                 style="margin-bottom: 10px;"
+                                @change="modificarSucursal()"
                               />
                               <b-form-select
                                 v-model="MetodoEnvio"
                                 :options="MetodosEnvio"
                                 id="inline-form-custom-select-pref1"
                                 style="margin-bottom: 10px;"
+                                @change="modificarMetodoEnvio()"
                               >
                               </b-form-select>
                               <b-form-select
@@ -935,6 +937,7 @@
                                 :options="MetodosPagos"
                                 id="inline-form-custom-select-pref1"
                                 style="margin-bottom: 10px;"
+                                @change="modificarMetodoPago()"
                               >
                               </b-form-select>
                               <b-form-input
@@ -949,14 +952,16 @@
                                 v-model="estadoPago"
                                 :options="estadosPagos"
                                 style="margin-bottom: 10px;"
+                                @change="modificarEstadoPago()"
                               ></b-form-select>
 
                               <b-form-select
                                 type="text"
                                 v-model="ubicacion" 
                                 style="margin-bottom: 10px;"
-                                :options="ubicaciones">
-                              </b-form-select>
+                                :options="ubicaciones"
+                                @change="modificarUbicacion()"
+                              ></b-form-select>
 
                               <b-form-input
                                 type="text"
@@ -1339,6 +1344,71 @@ export default {
   },
 
   methods: {
+    modificarSucursal(){
+      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['sucursalEnvio'] = this.Sucursal;
+      } else {
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
+        {
+          'sucursalEnvio': this.Sucursal
+        }
+      }
+      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
+    },
+
+    modificarMetodoEnvio(){
+      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoEnvio'] = this.MetodoEnvio;
+      } else {
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
+        {
+          'metodoEnvio': this.MetodoEnvio
+        }
+      }
+      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
+    },
+
+    modificarEstadoPago(){
+      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['estadoPago'] = this.estadoPago;
+      } else {
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
+        {
+          'estadoPago': this.estadoPago
+        }
+      }
+      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
+    },
+
+    modificarUbicacion(){
+      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['ubicacion'] = this.ubicacion;
+      } else {
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
+        {
+          'ubicacion': this.ubicacion
+        }
+      }
+      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
+    },
+
+    modificarMetodoPago(){
+      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoPago'] = this.MetodoPago;
+      } else {
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
+        {
+          'metodoPago': this.MetodoPago
+        }
+      }
+      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
+    },
+
     modificarNotaEnvio(){
       const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
       if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
@@ -2019,6 +2089,12 @@ export default {
               }
               localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
 
+              const datosActualesLocalStorage = JSON.parse(localStorage.getItem('datosActuales'));
+              if (datosActualesLocalStorage[me.phone]){
+                delete datosActualesLocalStorage[me.phone];
+              }
+              localStorage.setItem('ordenesActuales', JSON.stringify(datosActualesLocalStorage));
+
 
               axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
               {
@@ -2238,8 +2314,6 @@ export default {
       })
       .catch((error) =>{
         this.sendingMessageDisable = false;
-        console.log('ERROR');
-        console.log(error)
         this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
@@ -2655,6 +2729,48 @@ export default {
       if (databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
         this.currentActiveConversation.whatsappConversationProducts = databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber];        
       }
+
+      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+      if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+
+        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['sucursalEnvio']){
+          this.Sucursal = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['sucursalEnvio'];
+        } else {
+          this.Sucursal = 'Sucursal de envío';
+        }
+        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoEnvio']){
+          this.MetodoEnvio = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoEnvio'];
+        } else {
+          this.MetodoEnvio = 'Método de envío';
+        }
+        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoPago']){
+          this.MetodoPago = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoPago'];
+        } else {
+          this.MetodoPago = 'Método de pago';
+        }
+        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['pagaCon']){
+          this.pagaCon = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['pagaCon'];
+        } else {
+          this.pagaCon = '';
+        }
+        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['estadoPago']){
+          this.estadoPago = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['estadoPago'];
+        } else {
+          this.estadoPago = 'Estado de pago';
+        }
+        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaEnvio']){
+          currentActiveConversation.whatsappConversationRecipientNote = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaEnvio'];
+        }
+        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaDireccion']){
+          currentActiveConversation.whatsappConversationRecipientLocationDetails = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaDireccion'];
+        }
+      } else {
+        this.Sucursal = 'Sucursal de envío';
+        this.MetodoEnvio = 'Método de envío';
+        this.MetodoPago = 'Método de pago';
+        this.pagaCon = '';
+        this.estadoPago = 'Estado de pago';
+      }
       this.scrollDown();
     },
 
@@ -2672,12 +2788,20 @@ export default {
         if (response.data.success){
           const whatsappConversationID = response.data.result;
           this.showNotification('success', 'Conversación cerrada', "Se ha cerrado la conversación asociada al número '" + this.currentActiveConversation.whatsappConversationRecipientPhoneNumber + "'.");
+          
           const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
           if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
             delete ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
           }
           localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
-          delete this.activeConversationsAsJSON[whatsappConversationID];
+
+          const datosActualesLocalStorage = JSON.parse(localStorage.getItem('datosActuales'));
+          if (datosActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+            delete datosActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
+          }
+          localStorage.setItem('datosActuales', JSON.stringify(datosActualesLocalStorage));
+
+          delete this.activeConversationsAsJSON[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
           this.currentActiveConversation = null;
           this.repliedMessage = null;
           this.sortConversations();
@@ -3004,6 +3128,7 @@ export default {
     receiveAcceptTransferWhatsappConversation(websocketMessageContent){
       if (websocketMessageContent.whatsappConversationID in this.activeConversationsAsJSON){
         delete this.activeConversationsAsJSON[websocketMessageContent.whatsappConversationID];
+        
         this.sortConversations();
         this.currentActiveConversation = null;
       }
