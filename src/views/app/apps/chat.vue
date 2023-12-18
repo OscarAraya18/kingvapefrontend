@@ -2801,7 +2801,7 @@ export default {
           }
           localStorage.setItem('datosActuales', JSON.stringify(datosActualesLocalStorage));
 
-          delete this.activeConversationsAsJSON[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
+          delete this.activeConversationsAsJSON[whatsappConversationID];
           this.currentActiveConversation = null;
           this.repliedMessage = null;
           this.sortConversations();
