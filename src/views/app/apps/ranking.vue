@@ -39,10 +39,16 @@
       </b-card>
     </div>
 
-    <br><br>
+    <br><br><br><br>
     <div style="display: flex; justify-content: center; align-items: center;">
-      <div id="chart">
-        <apexchart type="pie" width="700" :options="opcionesGraficoCircular" :series="facturadoPorAgente"></apexchart>
+      
+      <div id="chart1" style="margin-left: 100px;">
+        <apexchart type="pie" width="800" :options="opcionesGraficoCircular" :series="facturadoPorAgente"></apexchart>
+      </div>
+      <div class="flex-grow-1"></div>
+
+      <div id="chart2" style="margin-right: 100px;">
+        <apexchart type="bar" width="800" :options="opcionesGraficoBarra" :series="conversacionesPorAgente"></apexchart>
       </div>
     </div>
 
@@ -67,24 +73,30 @@ export default {
 
       facturadoPorAgente: [],
       
-      opcionesGraficoCircular: {
-        chart: {
-          width: 700,
-          type: 'pie',
-        },
-        labels: [],
-        responsive: [{
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 200
-            },
-            legend: {
-              position: 'bottom'
-            }
-          }
-        }]
+      opcionesGraficoCircular: {},
+
+      conversacionesPorAgente: 
+      [
+        {
+          name: 'VENDIDAS',
+          data: [44, 55, 41, 67, 22, 43],
+          color: '#008a07'
+        }, 
+        {
+          name: 'NO VENDIDAS',
+          data: [13, 23, 20, 8, 13, 27],
+          color: '#d10015'
+        }
+      ],
+
+      opcionesGraficoBarra: {
+        chart: {type: 'bar', height: 350, stacked: true},
+        plotOptions: {bar: { horizontal: false, borderRadius: 10}},
+        xaxis: {type: 'string', categories: ['01/01/2011 GMT', '01/02/2011 GMT', '01/03/2011 GMT', '01/04/2011 GMT','01/05/2011 GMT', '01/06/2011 GMT']},
+        fill: {colors: ['#008a07', '#d10015'], opacity: 1}
       },
+          
+          
 
     };
   },
@@ -92,12 +104,27 @@ export default {
   methods: {
     getPieChartInformation(){
       axios.get(constants.routes.backendAPI+'/selectPieChartInformation').then((response) =>{
-        this.$set(this.opcionesGraficoCircular, 'labels', Object.keys(response.data));
         this.facturadoPorAgente = Object.values(response.data);
-        console.log(this.opcionesGraficoCircular);
+        this.opcionesGraficoCircular = {
+          chart: {
+            width: 700,
+            type: 'pie',
+          },
+          labels: Object.keys(response.data),
+          responsive: [{
+            breakpoint: 480,
+            options: {
+              chart: {
+                width: 200
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          }]
+        }
       })
     },
-
     
   },
 
