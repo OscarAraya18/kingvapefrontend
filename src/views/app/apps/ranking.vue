@@ -86,7 +86,10 @@ export default {
     getInformation(){
       axios.get(constants.routes.backendAPI+'/selectPieChartInformation').then((response) =>{
         this.facturadoPorAgente = Object.values(response.data);
-        this.opcionesGraficoCircular = {chart: {width: 700, type: 'pie'},tooltip: {enabled: false},labels: Object.keys(response.data)}
+        this.opcionesGraficoCircular = {chart: {width: 700, type: 'pie', fontSize: 30}, tooltip: {enabled: false}, labels: Object.keys(response.data),
+        legend: {
+          fontSize: '24px',
+        }};
       });
 
       axios.get(constants.routes.backendAPI+'/selectBarChartInformation').then((response) =>{
@@ -94,8 +97,15 @@ export default {
         {
           chart: {type: 'bar', height: 350, stacked: true},
           plotOptions: {bar: { horizontal: false, borderRadius: 10}},
-          xaxis: {type: 'string', categories: response.data.result.map(agent => agent.agentName)},
-          fill: {colors: ['#008a07', '#d10015'], opacity: 1}
+          xaxis: {type: 'string', categories: response.data.result.map(agent => agent.agentName),
+          labels: {
+            style: {
+              fontSize: '15px', // Set the desired font size for the categories
+            },
+          },},
+          fill: {colors: ['#008a07', '#d10015'], opacity: 1},
+          legend: {fontSize: '24px'},
+          
         };
         this.conversacionesPorAgente = 
         [
