@@ -222,7 +222,7 @@
                                 </div>
                                 
                                 <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                                  <GmapMap :center="getLocation(answeredMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(answeredMessage)" :draggable="false"/></GmapMap><br>
+                                  <GmapMap :center="getLocation(answeredMessage)" :zoom="zoom" style="width: 600px; height: 250px"><GmapMarker :position="getLocation(answeredMessage)" :draggable="false"/></GmapMap><br>
                                   <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
                                   <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
                                   <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
@@ -265,7 +265,7 @@
                         </div>
                         
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                          <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/></GmapMap><br>
+                          <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 600px; height: 250px"><GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/></GmapMap><br>
                           <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
                           <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
                           <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
@@ -320,7 +320,7 @@
                                 </div>
                                 
                                 <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                                  <GmapMap :center="getLocation(answeredMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(answeredMessage)" :draggable="false"/></GmapMap><br>
+                                  <GmapMap :center="getLocation(answeredMessage)" :zoom="zoom" style="width: 600px; height: 250px"><GmapMarker :position="getLocation(answeredMessage)" :draggable="false"/></GmapMap><br>
                                   <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
                                   <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
                                   <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
@@ -652,6 +652,10 @@
                       <b-dropdown-item @click="addCloseConversationReason('Consulta sobre sucursales')">Consulta sobre sucursales</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Número equivocado')">Número equivocado</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Cliente no deseado')">Cliente no deseado</b-dropdown-item>
+                      <b-dropdown-item @click="addCloseConversationReason('Vuelve a escribir')">Vuelve a escribir</b-dropdown-item>
+                      <b-dropdown-item @click="addCloseConversationReason('Reclamo/cambio')">Reclamo/cambio</b-dropdown-item>
+                      <b-dropdown-item @click="addCloseConversationReason('Error')">Error</b-dropdown-item>
+
                     </b-dropdown><br><br>
                     <b-form-textarea no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
                     <br>
@@ -1494,11 +1498,13 @@ export default {
       {
         whatsappGeneralMessageID: whatsappGeneralMessageID
       })
-      .then((response) =>{
+      .then((response) => {
+        console.log(response.data);
         if (response.data.success){
           this.historyMessage = response.data.result;
           this.loaders.historyMessage = false;
         } else {
+          this.loaders.historyMessage = false;
           this.showNotification('danger', 'Error al abrir el mensaje del historial', 'Ha ocurrido un error inesperado al abrir el mensaje del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
