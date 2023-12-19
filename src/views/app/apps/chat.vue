@@ -19,6 +19,11 @@
                 </div>
                 
                 <div v-else v-for="activeConversationID in sortedConversationsID" @click="changeCurrentActiveConversation(activeConversationsAsJSON[activeConversationID], activeConversationID)" :style="getConversationStyle(activeConversationID)" class="p-3 d-flex border-bottom align-items-center hoverTest" id="hint">
+                  <h3 style="margin-right: 15px;">
+                    <strong>
+                      {{getReferenciaSucursal(activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber)}}
+                    </strong>
+                  </h3>
                   <h6 style="padding-top: 10px;">
                     <strong>{{activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientProfileName}}</strong> 
                     <br>
@@ -1348,6 +1353,11 @@ export default {
   },
 
   methods: {
+    getReferenciaSucursal(recipientPhoneNumber){
+      const referenciaSucursales = JSON.parse(localStorage.getItem('referenciaSucursales'));
+      return referenciaSucursales[recipientPhoneNumber];
+    },
+
     modificarSucursal(){
       const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
       if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
@@ -2835,13 +2845,20 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
+          const referenciaSucursales = JSON.parse(localStorage.getItem('referenciaSucursales'));
+
           if (storeMessage.storeMessageStoreName == 'Escazu'){
             this.escazuConversations = this.escazuConversations.filter(escazuConversation => escazuConversation.storeMessageID != storeMessage.storeMessageID);
+            referenciaSucursales[storeMessage.storeMessageRecipientPhoneNumber] = 'E';
           } else if (storeMessage.storeMessageStoreName == 'Zapote'){
             this.zapoteConversations = this.zapoteConversations.filter(zapoteConversation => zapoteConversation.storeMessageID != storeMessage.storeMessageID);
+            referenciaSucursales[storeMessage.storeMessageRecipientPhoneNumber] = 'Z';
           } else if (storeMessage.storeMessageStoreName == 'Cartago'){
+            referenciaSucursales[storeMessage.storeMessageRecipientPhoneNumber] = 'C';
             this.cartagoConversations = this.cartagoConversations.filter(cartagoConversation => cartagoConversation.storeMessageID != storeMessage.storeMessageID);
           }
+          localStorage.setItem('referenciaSucursales', JSON.stringify(referenciaSucursales));
+
           this.hints[storeMessage.storeMessageRecipientPhoneNumber] = storeMessage.storeMessageRecipientOrder;
           this.loaders.grabConversation = false;
           const whatsappConversationID = response.data.result;
@@ -3242,6 +3259,9 @@ export default {
     }
     if (localStorage.getItem('datosActuales') == null){
       localStorage.setItem('datosActuales', JSON.stringify({}))
+    }
+    if (localStorage.getItem('referenciaSucursales') == null){
+      localStorage.setItem('referenciaSucursales', JSON.stringify({}))
     }
     this.agentName = localStorage.getItem('agentName');
     this.selectAllAgentStatus();
