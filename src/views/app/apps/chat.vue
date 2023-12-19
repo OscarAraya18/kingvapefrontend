@@ -2099,7 +2099,7 @@ export default {
               if (datosActualesLocalStorage[me.phone]){
                 delete datosActualesLocalStorage[me.phone];
               }
-              localStorage.setItem('ordenesActuales', JSON.stringify(datosActualesLocalStorage));
+              localStorage.setItem('datosActuales', JSON.stringify(datosActualesLocalStorage));
 
 
               axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
