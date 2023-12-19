@@ -3062,7 +3062,9 @@ export default {
       const whatsappConversationID = websocketMessageContent.whatsappConversationID;
       if (whatsappConversationID in this.activeConversationsAsJSON){
         this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(websocketMessageContent);
-        this.availableConversation = true;
+        if (this.currentActiveConversation.whatsappConversationRecipientPhoneNumber == websocketMessageContent.whatsappGeneralMessageOwnerPhoneNumber) {
+          this.availableConversation = true;
+        } 
         this.scrollDown();
         this.playSound('receiveWhatsappMessage');
         this.sortConversations();
