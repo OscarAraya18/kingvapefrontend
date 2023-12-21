@@ -42,13 +42,23 @@
     <br><br><br><br>
     <div style="display: flex; justify-content: center; align-items: center;">
       
-      <div id="chart1" style="margin-left: 100px; margin-right: 100px;">
+      <div id="chart1" style="margin-left: 70px; margin-right: 35px;">
         <apexchart type="pie" width="800" :options="opcionesGraficoCircular" :series="facturadoPorAgente"></apexchart>
       </div>
       <div class="flex-grow-1"></div>
 
-      <div id="chart2" style="margin-left: 100px; margin-right: 100px;">
+      <div id="chart2" style="margin-left: 35px; margin-right: 70px;">
         <apexchart type="bar" width="800" :options="opcionesGraficoBarra" :series="conversacionesPorAgente"></apexchart>
+        
+        <br><br><br><br>
+        <div style="display: flex; justify-content: center;">
+          <b-card-text style="font-size: xx-large; color: #00578a">
+            Venta del día:
+          </b-card-text>
+          <b-card-text style="font-size: xx-large; margin-left: 10px;">
+            {{vendedoraDelDia}}
+          </b-card-text>
+        </div>
       </div>
     </div>
 
@@ -75,8 +85,9 @@ export default {
       opcionesGraficoCircular: {},
 
       conversacionesPorAgente: [],
-      opcionesGraficoBarra: {}
-          
+      opcionesGraficoBarra: {},
+
+      vendedoraDelDia: 'Sharon Espinoza'
           
 
     };
@@ -84,12 +95,11 @@ export default {
 
   methods: {
     getInformation(){
+      
       axios.get(constants.routes.backendAPI+'/selectPieChartInformation').then((response) =>{
         this.facturadoPorAgente = Object.values(response.data);
-        this.opcionesGraficoCircular = {chart: {width: 700, type: 'pie', fontSize: 30}, tooltip: {enabled: false}, labels: Object.keys(response.data),
-        legend: {
-          fontSize: '24px',
-        }};
+        this.opcionesGraficoCircular = {chart: {width: 850, type: 'pie', fontSize: 40}, tooltip: {enabled: false}, labels: Object.keys(response.data),
+        legend: {fontSize: '30px'}};
       });
 
       axios.get(constants.routes.backendAPI+'/selectBarChartInformation').then((response) =>{
@@ -98,14 +108,9 @@ export default {
           chart: {type: 'bar', height: 350, stacked: true},
           plotOptions: {bar: { horizontal: false, borderRadius: 10}},
           xaxis: {type: 'string', categories: response.data.result.map(agent => agent.agentName),
-          labels: {
-            style: {
-              fontSize: '15px', // Set the desired font size for the categories
-            },
-          },},
+          labels: {style: {fontSize: '20px'}}},
           fill: {colors: ['#008a07', '#d10015'], opacity: 1},
-          legend: {fontSize: '24px'},
-          
+          legend: {show: false},
         };
         this.conversacionesPorAgente = 
         [
@@ -126,6 +131,10 @@ export default {
         this.conversacionesTotales = response.data.result[0].whatsappTotalConversations;
         this.conversacionesVendidas = response.data.result[0].whatsappSelledConversations;
         this.conversacionesNoVendidas = response.data.result[0].whatsappNotSelledConversations;
+      });
+
+      axios.get(constants.routes.backendAPI+'/selectTodayTopSell').then((response) =>{
+        this.vendedoraDelDia = response.data.result;
       });
 
 
