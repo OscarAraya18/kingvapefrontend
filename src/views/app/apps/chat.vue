@@ -1658,7 +1658,6 @@ export default {
     },
 
     getHistoryConversations(){
-      this.xx = false;
       this.historyLoader = true;
       this.historyConversations = [];
       axios.post(constants.routes.backendAPI+'/selectWhatsappClosedConversationFromWhatsappConversationRecipientPhoneNumber', 

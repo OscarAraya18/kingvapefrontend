@@ -36,6 +36,8 @@
 
         <template slot="table-row" slot-scope="props">
           <span v-if="props.column.field == 'button'">
+              <i class="i-Clock text-25 text-info" @click="getHistoryConversations(props.row.phone)" v-b-modal.modalHistorial style="cursor: pointer; margin-right: 10px;"></i>
+
               <i class="i-Notepad text-25 text-warning" @click="openContact(props.row.button)" v-b-modal.modalContactar style="cursor: pointer; margin-right: 7px;"></i>
               
               <i class="i-Eraser-2 text-25 text-success mr-2" @click="openEdit(props.row.button)" v-b-modal.modalEditar style="cursor: pointer"></i>
@@ -58,6 +60,36 @@
 
         </template>
       </vue-good-table>
+
+      <b-modal scrollable size="m" centered hide-footer id="modalHistorial" title="Historial de conversaciones">
+        <b-list-group v-if="historyLoader == false">
+          <b-list-group-item v-if="historyConversations.length == 0">
+            No hay conversaciones en el historial
+          </b-list-group-item>
+          <b-list-group-item v-b-modal.historyOpenModal style="cursor: pointer" v-for="historyConversation in historyConversations" @click="openHistoryConversation(historyConversation)" button>
+            <div style="display: flex;">
+              <div>
+                <strong>Atendido por:</strong> {{historyConversation.agentName}}<br>
+                <strong>Resultado:</strong> {{historyConversation.whatsappConversationCloseComment}}<br>
+                <strong>Inicio:</strong> {{parseHour(historyConversation.whatsappConversationStartDateTime)}}<br>
+                <strong>Fin:</strong> {{parseHour(historyConversation.whatsappConversationEndDateTime)}}<br>
+              </div>
+              <div class="flex-grow-1"></div>
+              <button v-if="availableConversation == true" @click="rememberCart(historyConversation)" class="btn btn-icon btn-primary mr-2"><i class="i-Shopping-Cart"></i>Recordar carrito</button>
+            </div>
+          </b-list-group-item>
+        </b-list-group>
+        <div v-else style="text-align: center;">
+          <br><span class="spinner-glow spinner-glow-primary"></span>
+        </div>
+      </b-modal>
+
+      <b-modal id="modalOpenContact" size="lg" hide-footer hide-header centered>
+        <div class="p-2" style="text-align: center;">
+          <GmapMap :center="selectedContactLocation" :zoom="15" style="width: 740px; height: 500px; margin: 0 auto;">
+          <GmapMarker :position="selectedContactLocation" :draggable="false"/></GmapMap>
+        </div>
+      </b-modal>
       
       <b-modal id="modalOpenContact" size="lg" hide-footer hide-header centered>
         <div class="p-2" style="text-align: center;">
@@ -68,7 +100,6 @@
 
       <b-modal id="modalContactar" title="Enviar mensaje al contacto" @ok="sendWhatsappTextMessage()" ref="modalContactar" centered>
         <div class="p-3">
-
           <b-form-group label="Mensaje a enviar:" style="font-size: medium;">
             <b-form-textarea
               class="form-control"
@@ -245,6 +276,9 @@ export default {
   },
   data() {
     return {
+      historyLoader: false,
+      historyConversations: [],
+
       contactLetter: null,
       contactLettersOptions: [{value:null,text:'Seleccione una letra para buscar los contactos'},{value:'A',text:'A'},{value:'B',text:'B'},{value:'C',text:'C'},{value:'D',text:'D'},{value:'E',text:'E'},{value:'F',text:'F'},{value:'G',text:'G'},{value:'H',text:'H'},{value:'I',text:'I'},{value:'J',text:'J'},{value:'K',text:'K'},{value:'L',text:'L'},{value:'M',text:'M'},{value:'N',text:'N'},{value:'O',text:'O'},{value:'P',text:'P'},{value:'Q',text:'Q'},{value:'R',text:'R'},{value:'S',text:'S'},{value:'T',text:'T'},{value:'U',text:'U'},{value:'V',text:'V'},{value:'W',text:'W'},{value:'X',text:'X'},{value:'Y',text:'Y'},{value:'Z',text:'Z'},{value:'Todo',text:'Todo'}],
 
@@ -323,6 +357,40 @@ export default {
   },
 
   methods: {
+    parseHour(originalHour){
+      const parsingDate = new Date(originalHour);
+      const options = {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      };
+      const formattedDate = parsingDate.toLocaleString('en-US', options);
+      return formattedDate;
+    },
+
+    getHistoryConversations(phone){
+      this.historyLoader = true;
+      this.historyConversations = [];
+      axios.post(constants.routes.backendAPI+'/selectWhatsappClosedConversationFromWhatsappConversationRecipientPhoneNumber', 
+      {
+        whatsappConversationRecipientPhoneNumber: phone
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.historyConversations = response.data.result;
+          this.historyLoader = false;
+        } else {
+          this.showNotification('danger', 'Error al consultar las conversaciones del historial', 'Ha ocurrido un error inesperado al consultar las conversaciones del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        this.showNotification('danger', 'Error al consultar las conversaciones del historial', 'Ha ocurrido un error inesperado al consultar las conversaciones del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
     openContactLocation(location){
       this.selectedContactLocation = location;
     },

@@ -87,7 +87,7 @@ export default {
       conversacionesPorAgente: [],
       opcionesGraficoBarra: {},
 
-      vendedoraDelDia: 'Sharon Espinoza'
+      vendedoraDelDia: ''
           
 
     };
@@ -134,6 +134,7 @@ export default {
       });
 
       axios.get(constants.routes.backendAPI+'/selectTodayTopSell').then((response) =>{
+        console.log(response.data);
         this.vendedoraDelDia = response.data.result;
       });
 
