@@ -660,30 +660,28 @@
                       <b-dropdown-item @click="addCloseConversationReason('Vuelve a escribir')">Vuelve a escribir</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Reclamo/cambio')">Reclamo/cambio</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Error')">Error</b-dropdown-item>
-
                     </b-dropdown><br><br>
                     <b-form-textarea no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
                     <br>
                     <b-form-checkbox id="checkbox-1" v-model="sendEndMessage">Enviar mensaje de despedida</b-form-checkbox>
-
                   </b-modal>
-                  <b-dropdown dropup variant="primary" text="Transferir" style="margin-right: 10px;">
+                  <b-dropdown dropup variant="primary" text="Transferir">
                     <template v-for="agent in agents">
-                      <b-dropdown-item style="z-index: 1000;" @click="requestTransferWhatsappConversation(agent)">{{agent.agentName}}</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 2000; overflow-y: auto;" @click="requestTransferWhatsappConversation(agent)">{{agent.agentName}}</b-dropdown-item>
                     </template>
-                    <b-dropdown-item style="z-index: 1000;" v-if="agents.length == 0">No hay agentes disponibles</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 2000; overflow-y: auto;" v-if="agents.length == 0">No hay agentes disponibles</b-dropdown-item>
                   </b-dropdown>
                   <div class="flex-grow-1"></div>
                   <b-dropdown dropup variant="primary" text="Tiendas" style="margin-right: 10px;" v-if="availableConversation == true">
-                    <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappStoreLocationMessage('Zapote')">Zapote</b-dropdown-item>
-                    <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappStoreLocationMessage('Escazu')">Escazu</b-dropdown-item>
-                    <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappStoreLocationMessage('Cartago')">Cartago</b-dropdown-item>
-                    <b-dropdown-item style="z-index: 1000;">Heredia</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Zapote')">Zapote</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Escazu')">Escazu</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Cartago')">Cartago</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 2000;">Heredia</b-dropdown-item>
                   </b-dropdown>
                   <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-right: 10px;" v-if="availableConversation == true">
-                    <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappLocationMessage('CASA')">CASA</b-dropdown-item>
-                    <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappLocationMessage('TRABAJO')">TRABAJO</b-dropdown-item>
-                    <b-dropdown-item style="z-index: 1000;" @click="sendWhatsappLocationMessage('OTRO')">OTRO</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('CASA')">CASA</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('TRABAJO')">TRABAJO</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('OTRO')">OTRO</b-dropdown-item>
                   </b-dropdown>
                   <button v-if="availableConversation == true" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="uploadImage()" id="sendFiles"><i class="i-Folder-With-Document"></i></button>
                   <input v-if="availableConversation == true" type="file" accept="image/png, image/jpeg, application/pdf" @change="sendWhatsappImageMessage()" ref="imageFile" style="display: none;" id="imageUploader">
@@ -2908,6 +2906,10 @@ export default {
           localStorage.setItem('referenciaSucursales', JSON.stringify(referenciaSucursales));
 
           this.hints[storeMessage.storeMessageRecipientPhoneNumber] = storeMessage.storeMessageRecipientOrder;
+          var hintsStorage = JSON.parse(localStorage.getItem('hints'));
+          hintsStorage[storeMessage.storeMessageRecipientPhoneNumber] = storeMessage.storeMessageRecipientOrder;
+          localStorage.setItem('hints', JSON.stringify(hintsStorage));
+
           this.loaders.grabConversation = false;
           const whatsappConversationID = response.data.result;
           this.playSound('grabConversation');
@@ -3295,7 +3297,7 @@ export default {
   },
 
   mounted(){
-
+    
     this.agentStartMessage = localStorage.getItem('agentStartMessage');
 
     if (localStorage.getItem('agentID') == null){
@@ -3310,6 +3312,13 @@ export default {
     if (localStorage.getItem('referenciaSucursales') == null){
       localStorage.setItem('referenciaSucursales', JSON.stringify({}))
     }
+    if (localStorage.getItem('hints') == null){
+      localStorage.setItem('hints', JSON.stringify({}))
+    } else {
+      var hintsStorage = JSON.parse(localStorage.getItem('hints'));
+      this.hints = hintsStorage;
+    }
+
     this.agentName = localStorage.getItem('agentName');
     this.selectAllAgentStatus();
     this.selectAllStoreMessage();
