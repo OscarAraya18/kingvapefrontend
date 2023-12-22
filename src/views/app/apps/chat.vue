@@ -896,6 +896,7 @@
                                 required
                                 placeholder="Nombre del cliente"
                                 style="margin-bottom: 10px;"
+                                @change="modificarNombre()"
                               ></b-form-input>
 
                               <b-form-input
@@ -910,12 +911,14 @@
                                 v-model="currentActiveConversation.whatsappConversationRecipientID"
                                 placeholder="Cédula del cliente"
                                 style="margin-bottom: 10px;"
+                                @change="modificarCedula()"
                               ></b-form-input>
 
                               <b-form-input
                                 type="text"
                                 v-model="currentActiveConversation.whatsappConversationRecipientEmail"
                                 placeholder="Correo electrónico del cliente"
+                                @change="modificarCorreo()"
                               ></b-form-input>
                               
                             </b-form-group>
@@ -1358,6 +1361,46 @@ export default {
       return referenciaSucursales[recipientPhoneNumber];
     },
 
+    modificarNombre(){
+      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['nombre'] = this.currentActiveConversation.whatsappConversationRecipientProfileName;
+      } else {
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
+        {
+          'nombre': this.currentActiveConversation.whatsappConversationRecipientProfileName
+        }
+      }
+      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
+    },
+
+    modificarCedula(){
+      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['cedula'] = this.currentActiveConversation.whatsappConversationRecipientID;
+      } else {
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
+        {
+          'cedula': this.currentActiveConversation.whatsappConversationRecipientID
+        }
+      }
+      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
+    },
+
+    modificarCorreo(){
+      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['correo'] = this.currentActiveConversation.whatsappConversationRecipientEmail;
+      } else {
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
+        {
+          'correo': this.currentActiveConversation.whatsappConversationRecipientEmail
+        }
+      }
+      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
+    },
+
+
     modificarSucursal(){
       const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
       if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
@@ -1555,7 +1598,6 @@ export default {
 
     sortConversations(){
       var conversationsToSort = [];
-      console.log(this.activeConversationsAsJSON);
       for (var activeConversationID in this.activeConversationsAsJSON){
         const whatsappConversationMessages = this.activeConversationsAsJSON[activeConversationID].whatsappConversationMessages;
         const whatsappConversationMessagesAmount = whatsappConversationMessages.length;
@@ -2711,7 +2753,6 @@ export default {
           this.playSound('grabConversation');
           this.showNotification('success', 'Conversación transferida', 'Ha aceptado la transferencia exitosamente.');
           await this.selectAgentConversation(this.transferConversationID);
-          this.activeConversations
         } else {
           this.showNotification('danger', 'Error al aceptar la transferencia', 'Ha ocurrido un error inesperado al aceptar la transferencia. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
@@ -2748,7 +2789,15 @@ export default {
 
       const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
       if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-
+        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['nombre']){
+          this.currentActiveConversation.whatsappConversationRecipientProfileName = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['nombre'];
+        }
+        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['cedula']){
+          this.currentActiveConversation.whatsappConversationRecipientID = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['cedula'];
+        }
+        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['correo']){
+          this.currentActiveConversation.whatsappConversationRecipientEmail = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['correo'];
+        }
         if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['sucursalEnvio']){
           this.Sucursal = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['sucursalEnvio'];
         } else {
