@@ -896,7 +896,7 @@
                                 required
                                 placeholder="Nombre del cliente"
                                 style="margin-bottom: 10px;"
-                                @change="modificarNombre()"
+                                @keyup="modificarNombre()"
                               ></b-form-input>
 
                               <b-form-input
@@ -911,14 +911,14 @@
                                 v-model="currentActiveConversation.whatsappConversationRecipientID"
                                 placeholder="Cédula del cliente"
                                 style="margin-bottom: 10px;"
-                                @change="modificarCedula()"
+                                @keyup="modificarCedula()"
                               ></b-form-input>
 
                               <b-form-input
                                 type="text"
                                 v-model="currentActiveConversation.whatsappConversationRecipientEmail"
                                 placeholder="Correo electrónico del cliente"
-                                @change="modificarCorreo()"
+                                @keyup="modificarCorreo()"
                               ></b-form-input>
                               
                             </b-form-group>
@@ -3137,7 +3137,6 @@ export default {
         if (this.currentActiveConversation.whatsappConversationRecipientPhoneNumber == websocketMessageContent.whatsappGeneralMessageOwnerPhoneNumber) {
           this.availableConversation = true;
         } 
-        this.scrollDown();
         this.playSound('receiveWhatsappMessage');
         this.sortConversations();
       }
