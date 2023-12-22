@@ -1442,10 +1442,14 @@ export default {
       const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
       if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
         datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['ubicacion'] = this.ubicacion;
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['latitud'] = this.currentActiveConversation.whatsappConversationRecipientLocations[this.ubicacion].latitude;
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['longitud'] = this.currentActiveConversation.whatsappConversationRecipientLocations[this.ubicacion].longitude;
       } else {
         datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
         {
-          'ubicacion': this.ubicacion
+          'ubicacion': this.ubicacion,
+          'latitud': this.currentActiveConversation.whatsappConversationRecipientLocations[this.ubicacion].latitude,
+          'longitud': this.currentActiveConversation.whatsappConversationRecipientLocations[this.ubicacion].longitude
         }
       }
       localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
@@ -2767,9 +2771,6 @@ export default {
       this.repliedMessage = null;
       this.sendEndMessage = false;
       this.producto = '';
-      this.ubicacion = "Ubicación de envío";
-      this.latitud = 0;
-      this.longitud = 0;
       var availableConversation = false;
       for (var activeConversationMessage in currentActiveConversation.whatsappConversationMessages){
         if (currentActiveConversation.whatsappConversationMessages[activeConversationMessage] != null){
@@ -2820,6 +2821,25 @@ export default {
         } else {
           this.estadoPago = 'Estado de pago';
         }
+
+        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['ubicacion']){
+          this.ubicacion = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['ubicacion'];
+        } else {
+          this.ubicacion = 'Ubicación de envío';
+        }
+
+        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['latitud']){
+          this.latitud = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['latitud'];
+        } else {
+          this.latitud = 0;
+        }
+
+        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['longitud']){
+          this.longitud = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['longitud'];
+        } else {
+          this.longitud = 0;
+        }
+
         if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaEnvio']){
           currentActiveConversation.whatsappConversationRecipientNote = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaEnvio'];
         }
@@ -2832,6 +2852,9 @@ export default {
         this.MetodoPago = 'Método de pago';
         this.pagaCon = '';
         this.estadoPago = 'Estado de pago';
+        this.ubicacion = 'Ubicación de envío';
+        this.latitud = 0;
+        this.longitud = 0;
       }
       this.scrollDown();
     },
