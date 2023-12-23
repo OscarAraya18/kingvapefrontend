@@ -62,24 +62,58 @@
       </vue-good-table>
 
       <b-modal scrollable size="m" centered hide-footer id="modalHistorial" title="Historial de conversaciones">
-        <b-list-group v-if="historyLoader == false">
-          <b-list-group-item v-if="historyConversations.length == 0">
-            No hay conversaciones en el historial
-          </b-list-group-item>
-          <b-list-group-item v-b-modal.historyOpenModal style="cursor: pointer" v-for="historyConversation in historyConversations" @click="openHistoryConversation(historyConversation)" button>
-            <div style="display: flex;">
-              <div>
-                <strong>Atendido por:</strong> {{historyConversation.agentName}}<br>
-                <strong>Resultado:</strong> {{historyConversation.whatsappConversationCloseComment}}<br>
-                <strong>Inicio:</strong> {{parseHour(historyConversation.whatsappConversationStartDateTime)}}<br>
-                <strong>Fin:</strong> {{parseHour(historyConversation.whatsappConversationEndDateTime)}}<br>
-              </div>
-            </div>
-          </b-list-group-item>
-        </b-list-group>
+        <div v-if="historyLoader == false">
+          <div style="display: flex;">
+            
+            <b-list-group style="width: 80%">
+              <b-list-group-item v-if="historyConversations.length == 0">
+                No hay conversaciones en el historial
+              </b-list-group-item>
+              <b-list-group-item v-b-modal.historyOpenModal style="cursor: pointer" v-for="historyConversation in historyConversations" @click="openHistoryConversation(historyConversation)" button>
+                <div style="height: 100px; display: flex; align-items: center;">
+                  <div>
+                    <strong>Atendido por:</strong> {{historyConversation.agentName}}<br>
+                    <strong>Resultado:</strong> {{historyConversation.whatsappConversationCloseComment}}<br>
+                    <strong>Inicio:</strong> {{parseHour(historyConversation.whatsappConversationStartDateTime)}}<br>
+                    <strong>Fin:</strong> {{parseHour(historyConversation.whatsappConversationEndDateTime)}}<br>
+                  </div>
+                </div>
+              </b-list-group-item>
+            </b-list-group>
+
+            <b-list-group style="width: 20%">
+              <b-list-group-item v-if="historySells.length == 0">
+                NA
+              </b-list-group-item>
+              <b-list-group-item style="cursor: pointer;" v-for="historySell in historySells" button>
+                <div v-b-modal.openSell @click="openSell(historySell)" v-if="historySell.length != 0" style="height: 100px; display: flex; justify-content: center; align-items: center;">
+                  <p style="font-size: 30px;">🛒</p>
+                </div>
+                <div v-else style="height: 100px; display: flex; justify-content: center; align-items: center;">
+                  <p style="font-size: 30px;">❌</p>
+                </div>              
+              </b-list-group-item>
+            </b-list-group>
+
+          </div>
+        </div>
         <div v-else style="text-align: center;">
           <br><span class="spinner-glow spinner-glow-primary"></span>
         </div>
+      </b-modal>
+
+      <b-modal scrollable size="m" centered hide-footer id="openSell" hide-header>
+        <b-list-group>
+          <b-list-group-item v-for="product in currentSell">
+            <div>
+              <strong>Código:</strong> {{product.CodigoP}}<br>
+              <strong>Nombre:</strong> {{product.descripcion}}<br>
+              <strong>Cantidad:</strong> {{product.cantidad}}<br>
+              <strong>Precio:</strong> {{product.precio}}<br>
+              <strong>Descuento:</strong> {{product.descuento}}<br>
+            </div>
+          </b-list-group-item>
+        </b-list-group>
       </b-modal>
 
       <b-modal scrollable size="lg" centered hide-footer id="historyOpenModal" hide-header v-if="currentHistoryConversation != null">
@@ -269,13 +303,6 @@
           <GmapMarker :position="selectedContactLocation" :draggable="false"/></GmapMap>
         </div>
       </b-modal>
-      
-      <b-modal id="modalOpenContact" size="lg" hide-footer hide-header centered>
-        <div class="p-2" style="text-align: center;">
-          <GmapMap :center="selectedContactLocation" :zoom="15" style="width: 740px; height: 500px; margin: 0 auto;">
-          <GmapMarker :position="selectedContactLocation" :draggable="false"/></GmapMap>
-        </div>
-      </b-modal>
 
       <b-modal id="modalContactar" title="Enviar mensaje al contacto" @ok="sendWhatsappTextMessage()" ref="modalContactar" centered>
         <div class="p-3">
@@ -457,6 +484,7 @@ export default {
     return {
       historyLoader: false,
       historyConversations: [],
+      historySells: [],
 
       contactLetter: null,
       contactLettersOptions: [{value:null,text:'Seleccione una letra para buscar los contactos'},{value:'A',text:'A'},{value:'B',text:'B'},{value:'C',text:'C'},{value:'D',text:'D'},{value:'E',text:'E'},{value:'F',text:'F'},{value:'G',text:'G'},{value:'H',text:'H'},{value:'I',text:'I'},{value:'J',text:'J'},{value:'K',text:'K'},{value:'L',text:'L'},{value:'M',text:'M'},{value:'N',text:'N'},{value:'O',text:'O'},{value:'P',text:'P'},{value:'Q',text:'Q'},{value:'R',text:'R'},{value:'S',text:'S'},{value:'T',text:'T'},{value:'U',text:'U'},{value:'V',text:'V'},{value:'W',text:'W'},{value:'X',text:'X'},{value:'Y',text:'Y'},{value:'Z',text:'Z'},{value:'Todo',text:'Todo'}],
@@ -527,7 +555,8 @@ export default {
       agentType: '',
 
       currentHistoryConversation: null,
-      zoom: 15
+      zoom: 15,
+      currentSell: []
 
     };
 
@@ -540,6 +569,10 @@ export default {
   },
 
   methods: {
+    openSell(historySell){
+      this.currentSell = historySell;
+      this.$root.$emit('bv::hide::modal','historyConversationsModal');
+    },
 
     getLocation(whatsappGeneralMessage){
       return {lat: whatsappGeneralMessage.whatsappLocationMessageLatitude, lng: whatsappGeneralMessage.whatsappLocationMessageLongitude}
@@ -604,6 +637,7 @@ export default {
     getHistoryConversations(phone){
       this.historyLoader = true;
       this.historyConversations = [];
+      this.historySells = [];
       axios.post(constants.routes.backendAPI+'/selectWhatsappClosedConversationFromWhatsappConversationRecipientPhoneNumber', 
       {
         whatsappConversationRecipientPhoneNumber: phone
@@ -612,6 +646,10 @@ export default {
         if (response.data.success){
           this.historyConversations = response.data.result;
           this.historyLoader = false;
+          for (var historyConversation in this.historyConversations){
+            const historySell = JSON.parse(this.historyConversations[historyConversation].whatsappConversationProducts);
+            this.historySells.push(historySell);
+          }
         } else {
           this.showNotification('danger', 'Error al consultar las conversaciones del historial', 'Ha ocurrido un error inesperado al consultar las conversaciones del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
