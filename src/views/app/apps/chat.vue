@@ -2225,7 +2225,8 @@ export default {
             descuento: 0
           });
         } else {
-          ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = [{
+          ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
+          [{
             CodigoP: item.codigoProducto,
             descripcion: item.descripcion,
             cantidad: 1,
@@ -2246,7 +2247,8 @@ export default {
           id: item.id,
           descuento: 0
         });
-        this.$bvToast.toast(item.descripcion + " cargado al carrito.", {
+        console.log(this.currentActiveConversation.whatsappConversationProducts);
+        this.$bvToast.toast(descripcionVariacion + " cargado al carrito.", {
           title: `Producto cargado al carrito`,
           variant: variant,
           solid: true
@@ -2256,7 +2258,7 @@ export default {
         if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
           ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber].push({
             CodigoP: codigoVariacion,
-            descripcion: item.descripcion + ' ' + descripcionVariacion,
+            descripcion: descripcionVariacion,
             cantidad: 1,
             precio: item.precioVenta,
             id: item.id,
@@ -2265,7 +2267,7 @@ export default {
         } else {
           ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = [{
             CodigoP: codigoVariacion,
-            descripcion: item.descripcion + ' ' + descripcionVariacion,
+            descripcion: descripcionVariacion,
             cantidad: 1,
             precio: item.precioVenta,
             id: item.id,
@@ -3000,6 +3002,8 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
+          console.log(response.data.result);
+          
           const respondedActiveConversations = response.data.result;
           const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
           if (ordenesActualesLocalStorage){

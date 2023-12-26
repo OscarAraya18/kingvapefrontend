@@ -25,7 +25,6 @@
           <i class="i-Checkout"></i>
           <div class="content">
             <p class="text-muted mt-2 mb-0">Reportes</p>
-            <p class="text-primary text-24 line-height-1 mb-2">{{closedConversationsAmount}}</p>
           </div>
         </b-card>
       </b-col>
@@ -52,12 +51,6 @@
           <h4><strong>Filtro por sucursal de envío:</strong></h4>
           <b-form-select v-model="storeFiltered" class="mb-3" :options="storeOptions"></b-form-select>
           <br>
-          <h4><strong>Filtro por método de envío:</strong></h4>
-          <b-form-select v-model="sendFiltered" class="mb-3" :options="sendOptions"></b-form-select>
-          <br>
-          <h4><strong>Filtro por método de pago:</strong></h4>
-          <b-form-select v-model="paymentFiltered" class="mb-3" :options="paymentOptions"></b-form-select>
-          <br>
           <h4><strong>Filtro por conversión:</strong></h4>
           <b-form-select v-model="conversionFiltered" class="mb-3" :options="conversionOptions"></b-form-select>
           <br><br>
@@ -66,40 +59,25 @@
 
         </div>
 
-        <div style="width: 50%; padding-right: 100px; padding-left: 50px;">
-          <h4><strong>Ordenar por:</strong></h4>
-          <b-form-group>
-            <b-form-radio-group
-              id="radio-group-1"
-              v-model="selected"
-              :options="options"
-              name="radio-options"
-              stacked
-            ></b-form-radio-group>
-          </b-form-group>
-          <br>
-          <button class="btn btn-icon" style="background-color: rgb(17, 172, 0); font-size: 15px" @click="order()"><i class="i-Search-People"></i>Aplicar ordenamiento</button>
-        </div>
-
       </div>
       
-      <br><br><br><br><br><br>
+      <br><br><br><br><br>
     </div>
 
     <div class="col-md-12">
 
 
       <div v-if="view == 'activeConversations'">
-        <p style="font-size: medium;"><strong>Conversaciones recibidas:</strong> {{todayConversationsAmount}}</p>
-        <p style="font-size: medium;"><strong>Conversaciones vendidas:</strong> {{todayConvertedConversationsAmount}}</p>
-        <p style="font-size: medium;"><strong>Conversaciones no vendidas:</strong> {{todayNotConvertedConversationsAmount}}</p>
-        <p style="font-size: medium;"><strong>Mensajes recibidos:</strong> {{todayReceivedMessages}}</p>
-        <p style="font-size: medium;"><strong>Mensajes enviados:</strong> {{todaySendedMessages}}</p>
-        <p style="font-size: medium;"><strong>Total de ventas:</strong> ₡{{todaySells}}</p>
-
+        <p style="font-size: medium;"><strong>Conversaciones recibidas:</strong> {{whatsappTotalConversations}}</p>
+        <p style="font-size: medium;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
+        <p style="font-size: medium;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
+        <p style="font-size: medium;"><strong>Conversaciones pendientes:</strong> {{whatsappPendingConversations}}</p>
+        <p style="font-size: medium;"><strong>Mensajes recibidos:</strong> {{whatsappReceivedMessages}}</p>
+        <p style="font-size: medium;"><strong>Mensajes enviados:</strong> {{whatsappSendedMessages}}</p>
+        <p style="font-size: medium;"><strong>Total de ventas:</strong> ₡{{whatsappTotalSells}}</p>
       <br>
 
-      <button class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" v-b-modal.todayReport @click="openTodayReport()"><i class="i-Engineering"></i>Reporte rápido de ventas</button>
+      <button class="btn btn-icon" style="display:none; background-color: #F9E530; font-size: 15px" v-b-modal.todayReport @click="openTodayReport()"><i class="i-Engineering"></i>Reporte rápido de ventas</button>
 
 
       <b-modal scrollable hide-footer hide-header size="lg" centered hide-backdrop id="todayReport">
@@ -138,8 +116,7 @@
             v-if="view == 'activeConversations'"
           >
             <template slot="table-row" slot-scope="props">
-              <button v-b-modal.conversationModal  v-if="props.column.field == 'openConversation'" class="btn btn-outline-primary text-black btn-rounded" @click="openConversation(props.row.activeConversationID, 'active')">Abrir</button>
-              <button v-b-modal.transferHistoryModal v-else-if="props.column.field == 'openTransferHistory'" class="btn btn-outline-primary text-black btn-rounded" @click="openTransferHistory(props.row.activeConversationID, 'active')">Transferencias</button>
+              <button v-b-modal.conversationModal  v-if="props.column.field == 'whatsappConversationOpenAction'" class="btn btn-outline-primary text-black btn-rounded" @click="whatsappConversationOpenAction(props.row.whatsappConversationID)">Abrir</button>
             </template>
           </vue-good-table>
 
@@ -151,8 +128,7 @@
             v-if="view == 'closedConversations'"
           >
             <template slot="table-row" slot-scope="props">
-              <button v-b-modal.conversationModal  v-if="props.column.field == 'openConversation'" class="btn btn-outline-primary text-black btn-rounded" @click="openConversation(props.row.activeConversationID, 'closed')">Abrir</button>
-              <button v-b-modal.transferHistoryModal v-else-if="props.column.field == 'openTransferHistory'" class="btn btn-outline-primary text-black btn-rounded" @click="openTransferHistory(props.row.activeConversationID, 'closed')">Transferencias</button>
+              <button v-b-modal.conversationModal  v-if="props.column.field == 'whatsappConversationOpenAction'" class="btn btn-outline-primary text-black btn-rounded" @click="whatsappConversationOpenAction(props.row.whatsappConversationID)">Abrir</button>
             </template>
           </vue-good-table>
 
@@ -160,82 +136,187 @@
       </div>
     </div>
 
-    <b-modal scrollable hide-footer hide-header size="lg" centered hide-backdrop id="conversationModal">
-      <div class="chat-content-wrap sidebar-content">
-        <vue-perfect-scrollbar ref="scrollRef"
-        :settings="{ suppressScrollX: true, wheelPropagation: false }"
-        class="chat-content perfect-scrollbar rtl-ps-none ps scroll"
-        >
-        <div v-for="cuurentActiveConversationMessage in cuurrentActiveConversation.messages" :key="cuurentActiveConversationMessage">
-          <div class="d-flex mb-30" :class="GetOwner(cuurentActiveConversationMessage.owner)" >
-            <div :style="getColorChat(cuurentActiveConversationMessage.owner)" class="message flex-grow-1">
+    <b-modal scrollable hide-footer hide-header size="lg" centered hide-backdrop id="conversationModal" v-if="currentConversation != null">
+      <div v-if="openConversationLoader == true" style="text-align: center;">
+        <br><span class="spinner-glow spinner-glow-primary"></span>
+      </div>
+      <div v-else>
+        <div v-for="currentActiveConversationMessage in currentConversation.whatsappConversationMessages">
+          
+          <div class="d-flex mb-30" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
+            <div :style="getMessageOwnerColor(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)" class="message flex-grow-1">
               <div class="d-flex">
-                
-                <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="cuurentActiveConversationMessage.owner != 'agent'">
+                <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber != null">
                   
-                  <p class="m-0" style="white-space: pre-line;" v-if="cuurentActiveConversationMessage.messageType == 'text'">{{cuurentActiveConversationMessage.messageContent}}</p>
-                  
-                  <img
-                    v-if="cuurentActiveConversationMessage.messageType=='image'"
-                    style="width: 250px;"
-                    :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
-                  >
+                  <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
+                    <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                      
+                      <div v-if="currentConversation.whatsappConversationMessages.map(whatsappGeneralMessage => whatsappGeneralMessage.whatsappGeneralMessageID).includes(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID) == false">
+                        <button @click="getHistoryMessage(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID)" class="btn btn-icon btn-primary mr-2" v-b-modal.historyMessageModal><i class="i-Clock"></i>Abrir mensaje del historial</button>
+                      </div>
+                      
+                      <div v-for="answeredMessage in currentConversation.whatsappConversationMessages">
+                        <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
+                          
+                          <p v-if="answeredMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
+                          <div v-if="answeredMessage.whatsappGeneralMessageType == 'contact'"> 
+                            <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.whatsappContactMessageName}}</p>
+                            <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.whatsappContactMessagePhoneNumber}}</p>
+                          </div>
+                          
+                          <div v-if="answeredMessage.whatsappGeneralMessageType == 'image'"> 
+                            <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`">
+                            <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappImageMessageCaption}}</p>
+                          </div>
+                          
+                          <div v-if="answeredMessage.whatsappGeneralMessageType=='video'"> 
+                            <video controls width="400" :src="`data:video/mp4;base64,${answeredMessage.whatsappVideoMessageFile}`"></video>
+                            <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappVideoMessageCaption}}</p>
+                          </div>
+                          
+                          <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                            <GmapMap :center="getLocation(answeredMessage)" :zoom="zoom" style="width: 600px; height: 250px"><GmapMarker :position="getLocation(answeredMessage)" :draggable="false"/></GmapMap><br>
+                            <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
+                            <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
+                          </div>
+                          
+                          <div v-if="answeredMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                            <a style="color: black;" :href="`data:${answeredMessage.whatsappDocumentMessageMimeType};base64,${answeredMessage.whatsappDocumentMessageFile}`" :download="answeredMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{answeredMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                          </div>
+                          
+                          <audio controls v-if="answeredMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${answeredMessage.whatsappAudioMessageFile}`"></audio>
+                          
+                          <div v-if="answeredMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                            <img v-b-modal.bigImageModal @click="openBigImage(answeredMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="answeredMessage.whatsappFavoriteImageMessageDriveURL">
+                            <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappFavoriteImageMessageCaption != null">{{answeredMessage.whatsappFavoriteImageMessageCaption}}</p>
+                          </div>
 
-                  <div v-if="cuurentActiveConversationMessage.messageType=='document'" class="m-0">
-                    <a :href="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`" :download="cuurentActiveConversationMessage.messageContent.mediaName">
-                      <p style="size: 10%;">Archivo: <strong>{{cuurentActiveConversationMessage.messageContent.mediaName}}</strong></p>
-                    </a>
+                        </div>
+                      </div>
+                    </div>
                   </div>
+                  <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>
+                  
+                  <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'contact'"> 
+                    <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{currentActiveConversationMessage.whatsappContactMessageName}}</p>
+                    <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{currentActiveConversationMessage.whatsappContactMessagePhoneNumber}}</p>
+                  </div>
+                  
+                  <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
+                    <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                    <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
+                  </div>
+                  
+                  <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='video'"> 
+                    <video controls width="400" :src="`data:video/mp4;base64,${currentActiveConversationMessage.whatsappVideoMessageFile}`"></video>
+                    <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappVideoMessageCaption}}</p>
+                  </div>
+                  
+                  <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                    <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 600px; height: 250px"><GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/></GmapMap><br>
+                    <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
+                    <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
+                  </div>
+                  
+                  <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                    <a style="color: black;" :href="`data:${currentActiveConversationMessage.whatsappDocumentMessageMimeType};base64,${currentActiveConversationMessage.whatsappDocumentMessageFile}`" :download="currentActiveConversationMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{currentActiveConversationMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                  </div>
+                  
+                  <audio controls v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${currentActiveConversationMessage.whatsappAudioMessageFile}`"></audio>
+                  
+                  <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                    <img v-b-modal.bigImageModal @click="openBigImage(currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL">
+                    <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappFavoriteImageMessageCaption != null">{{currentActiveConversationMessage.whatsappFavoriteImageMessageCaption}}</p>
 
+                  </div>
+                
                 </div>
-                <span v-if="cuurentActiveConversationMessage.owner == 'agent'" style="margin-left: 0; margin-right:auto;" class="text-small text-muted">{{cuurentActiveConversationMessage.messageSentHour}}</span>
-                <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{cuurentActiveConversationMessage.messageReceivedHour}}</span>
-                
-                <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="cuurentActiveConversationMessage.owner == 'agent'">
+                <span v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null" style="margin-left: 0; margin-right:auto;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
+                <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
+                <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null">
+                  <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
+                    <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                      
+                      <div v-if="currentConversation.whatsappConversationMessages.map(whatsappGeneralMessage => whatsappGeneralMessage.whatsappGeneralMessageID).includes(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID) == false">
+                        <button @click="getHistoryMessage(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID)" class="btn btn-icon btn-primary mr-2" v-b-modal.historyMessageModal><i class="i-Clock"></i>Abrir mensaje del historial</button>
+                      </div>
+                      
+                      <div v-for="answeredMessage in currentConversation.whatsappConversationMessages">
+
+                        <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
+                          
+                          <p v-if="answeredMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
+                          
+                          <div v-if="answeredMessage.whatsappGeneralMessageType == 'contact'"> 
+                            <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.whatsappContactMessageName}}</p>
+                            <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.whatsappContactMessagePhoneNumber}}</p>
+                          </div>
+                          
+                          <div v-if="answeredMessage.whatsappGeneralMessageType == 'image'"> 
+                            <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`">
+                            <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappImageMessageCaption}}</p>
+                          </div>
+                          
+                          <div v-if="answeredMessage.whatsappGeneralMessageType=='video'"> 
+                            <video controls width="400" :src="`data:video/mp4;base64,${answeredMessage.whatsappVideoMessageFile}`"></video>
+                            <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappVideoMessageCaption}}</p>
+                          </div>
+                          
+                          <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                            <GmapMap :center="getLocation(answeredMessage)" :zoom="zoom" style="width: 600px; height: 250px"><GmapMarker :position="getLocation(answeredMessage)" :draggable="false"/></GmapMap><br>
+                            <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
+                            <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
+                          </div>
+                          
+                          <div v-if="answeredMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                            <a style="color: black;" :href="`data:${answeredMessage.whatsappDocumentMessageMimeType};base64,${answeredMessage.whatsappDocumentMessageFile}`" :download="answeredMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{answeredMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                          </div>
+                          
+                          <audio controls v-if="answeredMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${answeredMessage.whatsappAudioMessageFile}`"></audio>
+                        
+                          <div v-if="answeredMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                            <img v-b-modal.bigImageModal @click="openBigImage(answeredMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="answeredMessage.whatsappFavoriteImageMessageDriveURL">
+                            <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappFavoriteImageMessageCaption != null">{{answeredMessage.whatsappFavoriteImageMessageCaption}}</p>
+                          </div>
+                        
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>
                   
-                  <div v-if="cuurentActiveConversationMessage.messageType == 'text'">
-                    <p class="m-0" style="white-space: pre-line;" v-if="cuurentActiveConversationMessage.sendedProduct != '1'">{{cuurentActiveConversationMessage.messageContent}}</p>
-                    
-                    <p class="m-0" style="white-space: pre-line;" v-if="cuurentActiveConversationMessage.sendedProduct == '1'"><strong>Nombre: </strong>{{cuurentActiveConversationMessage.messageContent.productName}}</p>
-                    <p class="m-0" style="white-space: pre-line;" v-if="cuurentActiveConversationMessage.sendedProduct == '1'"><strong>Precio: </strong>{{cuurentActiveConversationMessage.messageContent.productPrice}}</p>
-
+                  <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'contact'"> 
+                    <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{currentActiveConversationMessage.whatsappContactMessageName}}</p>
+                    <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{currentActiveConversationMessage.whatsappContactMessagePhoneNumber}}</p>
                   </div>
-
-                  <div v-if="cuurentActiveConversationMessage.messageType=='image' || cuurentActiveConversationMessage.messageType=='sticker'">
-
-                    <img
-                      v-if="cuurentActiveConversationMessage.messageContent.isBase64=='1'"
-                      style="width: 250px;"
-                      :src="`data:${cuurentActiveConversationMessage.messageContent.mediaExtension};base64,${cuurentActiveConversationMessage.messageContent.mediaContent}`"
-                    >
-
-                    <img
-                      v-else
-                      style="width: 250px;"
-                      :src="cuurentActiveConversationMessage.messageContent.mediaContent"
-                    >
-
-                    
+                  
+                  <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
+                    <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                    <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
                   </div>
-
-                </div>
+                  
+                  <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                    <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/></GmapMap><br>
+                    <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
+                    <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
+                  </div>
+                  
+                  <audio controls v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${currentActiveConversationMessage.whatsappAudioMessageFile}`"></audio>
+                  
+                  <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                    <img v-b-modal.bigImageModal @click="openBigImage(currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL">
+                    <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappFavoriteImageMessageCaption != null">{{currentActiveConversationMessage.whatsappFavoriteImageMessageCaption}}</p>
+                  </div>
                 
+                </div>
               </div>
+
             </div>
           </div>
         </div>
-      </vue-perfect-scrollbar>
       </div>
     </b-modal>
 
-    <b-modal scrollable hide-footer hide-title size="m" centered hide-backdrop id="transferHistoryModal">
-      <vue-perfect-scrollbar ref="scrollRef" style="text-align: center;">
-        <h5 v-for="transfer in currentTranferHistory">
-          <strong>{{transfer.previousAgentName}}</strong> to <strong>{{transfer.newAgentName}}</strong> ({{transfer.transferDate}} at {{transfer.transferHour}})
-        </h5>
-        <h5 v-if="currentTranferHistory.length == 0">Sin transferencias</h5>
-      </vue-perfect-scrollbar>
-    </b-modal>
 
     
 
@@ -269,16 +350,16 @@ export default {
         {text: 'Monto vendido (mayor cantidad a menor cantidad)', value: 3},
         {text: 'Monto vendido (menor cantidad a mayor cantidad)', value: 4},
         {text: 'Cantidad de mensajes (mayor cantidad a menor cantidad)', value: 5},
-        {text: 'Cantidad de mensajes (menor cantidad a mayor cantidad)', value: 6},
-
+        {text: 'Cantidad de mensajes (menor cantidad a mayor cantidad)', value: 6}
       ],
 
-      todayConversationsAmount: 0,
-      todayConvertedConversationsAmount: 0,
-      todayNotConvertedConversationsAmount: 0,
-      todayReceivedMessages: 0,
-      todaySendedMessages: 0,
-      todaySells: 0,
+      whatsappTotalConversations: 0,
+      whatsappSelledConversations: 0,
+      whatsappNotSelledConversations: 0,
+      whatsappPendingConversations: 0,
+      whatsappReceivedMessages: 0,
+      whatsappSendedMessages: 0,
+      whatsappTotalSells: 0,
 
       todayReport: {},
 
@@ -292,87 +373,67 @@ export default {
       storeOptions: [{value:null, text:''}, {value:'Escazú', text:'Escazú'}, {value:'Zapote', text:'Zapote'}, {value:'Cartago', text:'Cartago'}, {value:'Heredia', text:'Heredia'}],
       storeFiltered: '',
 
-      sendOptions: [{value:null, text:''}, {value:'Retiro en sucursal', text:'Retiro en sucursal'}, {value:'Envío por motorizado', text:'Envío por motorizado'}, {value:'Correo o encomienda', text:'Correo o encomienda'}],
-      sendFiltered: '',
-
-      paymentOptions: [{value:null, text:''}, {value:'Efectivo', text:'Efectivo'}, {value:'Tarjeta', text:'Tarjeta'}, {value:'SINPE', text:'SINPE'}, {value:'Transferencia', text:'Transferencia'}],
-      paymentFiltered: '',
-
       conversionOptions: [{value:null, text:''}, {value:'Vendido', text:'Vendido'}, {value:'No vendido', text:'No vendido'}],
       conversionFIltered: '',
 
       
 
+      activeConversations: [],
 
-      closedConversationsAmount: 0,
-      allConversationsAmount: 0,
-      activeConversations: {},
-      closedConversations: {},
-      allConversations: {},
-      totalProfit: 0,
+      closedConversations: [],
 
-      cuurrentActiveConversation: {},
-      currentTranferHistory: [],
+      currentConversation: {},
+      openConversationLoader: false,
+      
       view: 'activeConversations',
 
-      dashboardOne,
-      dashboardTwo,
-      splineAreaWidgetTwo,
-      splineAreaWidgetThree,
       activeConversationsColumns: [
         {
           label: "ID de la conversación",
-          field: "activeConversationID",
+          field: "whatsappConversationID",
           thClass: "text-left pl-3",
           tdClass: "text-left pl-3",
         },
         {
           label: "Número del cliente",
-          field: "recipientPhoneNumber",
+          field: "whatsappConversationRecipientPhoneNumber",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Nombre del cliente",
+          field: "whatsappConversationRecipientProfileName",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
           label: "Nombre del agente",
-          field: "assignedAgentID",
+          field: "agentName",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
           label: "Estado",
-          field: "state",
+          field: "whatsappConversationState",
           html: true,
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
           label: "Fecha de inicio",
-          field: "startDate",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Hora de inicio",
-          field: "startHour",
+          field: "whatsappConversationStartDateTime",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
           label: "Tiempo transcurrido",
-          field: "time",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Transferencias",
-          field: "openTransferHistory",
-          html: true,
+          field: "whatsappConversationElapsedTime",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
           label: "Conversación",
-          field: "openConversation",
+          field: "whatsappConversationOpenAction",
           html: true,
           thClass: "text-left",
           tdClass: "text-left",
@@ -385,67 +446,43 @@ export default {
       closedConversationsColumns: [
         {
           label: "ID",
-          field: "activeConversationID",
+          field: "whatsappConversationID",
           thClass: "text-left pl-3",
           tdClass: "text-left pl-3",
         },
         {
           label: "Número del cliente",
-          field: "recipientPhoneNumber",
+          field: "whatsappConversationRecipientPhoneNumber",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Nombre del cliente",
+          field: "whatsappConversationRecipientProfileName",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
           label: "Nombre del agente",
-          field: "assignedAgentID",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Tipo de pago",
-          field: "payment",
-          html: true,
+          field: "agentName",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
           label: "Cantidad",
-          field: "amount",
+          field: "whatsappConversationAmount",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
           label: "Fecha de inicio",
-          field: "startDate",
+          field: "whatsappConversationStartDateTime",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
-          label: "Hora de inicio",
-          field: "startHour",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Fecha de finalización",
-          field: "endDate",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Hora de finalización",
-          field: "endHour",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          field: "openTransferHistory",
-          html: true,
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          field: "openConversation",
+          label: "Conversación",
+          field: "whatsappConversationOpenAction",
           html: true,
           thClass: "text-left",
           tdClass: "text-left",
@@ -456,127 +493,121 @@ export default {
   },
 
   mounted(){
-    /*
-    axios.get(constants.routes.backendAPI+'/getAllActiveConversations').then((response) =>{ 
-      this.activeConversations = response.data;
-      this.activeConversationsRows = [];
-      for (var activeConversationID in this.activeConversations){
-        this.activeConversationsRows.push
-        (
-          {
-            activeConversationID: activeConversationID,
-            recipientPhoneNumber: this.activeConversations[activeConversationID].recipientPhoneNumber,
-            assignedAgentID: this.activeConversations[activeConversationID].assignedAgentID,
-            state: this.getConversationState(this.activeConversations[activeConversationID]),
-            startDateObject: this.activeConversations[activeConversationID].startDateObject,
-            startDate: this.activeConversations[activeConversationID].startDate,
-            startHour: this.activeConversations[activeConversationID].startHour,
-            time: this.getElapsedTime(Math.round((new Date() - new Date(this.activeConversations[activeConversationID].startDateObject))/1000)),
-            openTransferHistory: '',
-            openConversation: ''
-          }
-        )
-      }
-
-      axios.get(constants.routes.backendAPI+'/getTodaysDashboardInformation').then((response) =>{ 
-        this.todayConversationsAmount = response.data.currentTodayConversation;
-        this.todayConvertedConversationsAmount = response.data.currentTodayConverted;
-        this.todayNotConvertedConversationsAmount = response.data.currentTodayNotConverted;
-        this.todayReceivedMessages = response.data.currentTodayReceived;
-        this.todaySendedMessages = response.data.currentTodaySent;
-        this.todaySells = response.data.currentTodayAmount;
-
-
-        axios.get(constants.routes.backendAPI+'/getAgentOptions').then((response) =>{ 
-          for (var agentID in response.data){
-            this.agentOptions.push(response.data[agentID]);
-          }
-        })
-        .catch(error =>{
-          console.log(error);
-        })
-
-
-      })
-      .catch(error =>{
-        console.log(error);
-      })
-
-      
-
-
-      setInterval(() => {
-        for (var activeConversationIndex in this.activeConversationsRows){
-          this.activeConversationsRows[activeConversationIndex].time = this.getElapsedTime(Math.round((new Date() - new Date(this.activeConversationsRows[activeConversationIndex].startDateObject))/1000))
-          this.activeConversationsRows[activeConversationIndex].state = this.getConversationState(this.activeConversations[this.activeConversationsRows[activeConversationIndex].activeConversationID]);
-        }
-      }, 1000);
-
-    })
-    .catch(error =>{
-      console.log(error);
-    })
+    this.selectTodayInformation();
+    this.selectAgentNames();
 
     try {
-    webSocket.onmessage = (websocketMessage) => {
+      webSocket.onmessage = (websocketMessage) => {
+        const websocketMessageJSON = JSON.parse(websocketMessage.data);
+        const websocketMessageID = websocketMessageJSON.websocketMessageID;
+        const websocketMessageContent = websocketMessageJSON.websocketMessageContent.result;
 
-      const websocketMessageJSON = JSON.parse(websocketMessage.data);
-      console.log(websocketMessageJSON)
-      if (websocketMessageJSON['sendingMessage'] == true){
-        this.$set(this.activeConversations[websocketMessageJSON['conversationID']].messages, (Object.keys(this.activeConversations[websocketMessageJSON['conversationID']].messages).length + 1).toString(), websocketMessageJSON['messageInformation']);
-      
-      } else {
-        if (websocketMessageJSON['transfer'] == true){
-          for (var activeConversationIndex in this.activeConversationsRows){
-            if (this.activeConversationsRows[activeConversationIndex].activeConversationID == websocketMessageJSON['conversationID']){
-                this.activeConversationsRows[activeConversationIndex].assignedAgentID = websocketMessageJSON['agentName'];
-            }
-          }
-        } else {
-          if (this.activeConversations[websocketMessageJSON['conversationID']]){
-            this.$set(this.activeConversations[websocketMessageJSON['conversationID']].messages, websocketMessageJSON['messageID'], websocketMessageJSON['messageInformation']);
-          } else {
-            this.$set(this.activeConversations, websocketMessageJSON['conversationID'], websocketMessageJSON['conversationInformation']);
-            this.activeConversationsRows.push
-            (
-              {
-                activeConversationID: websocketMessageJSON['conversationID'],
-                recipientPhoneNumber: this.activeConversations[websocketMessageJSON['conversationID']].recipientPhoneNumber,
-                assignedAgentID: this.activeConversations[websocketMessageJSON['conversationID']].assignedAgentID,
-                state: this.getConversationState(this.activeConversations[websocketMessageJSON['conversationID']]),
-                startDateObject: this.activeConversations[websocketMessageJSON['conversationID']].startDateObject,
-                startDate: this.activeConversations[websocketMessageJSON['conversationID']].startDate,
-                startHour: this.activeConversations[websocketMessageJSON['conversationID']].startHour,
-                time: this.getElapsedTime(Math.round((new Date() - new Date(this.activeConversations[websocketMessageJSON['conversationID']].startDateObject))/1000)),
-                openTransferHistory: '',
-                openConversation: ''
-              }
-            )
-          }
+        if (websocketMessageID == '/receiveWhatsappMessage'){
+          this.selectTodayInformation();
+        } else if (websocketMessageID == '/receiveWhatsappConversation'){
+          this.selectTodayInformation();
+        } else if (websocketMessageID == '/receiveWhatsappPendingConversation'){
+          this.selectTodayInformation();
+        } else if (websocketMessageID == '/grabPendingConversation') {
+          this.selectTodayInformation();
+        } else if (websocketMessageID == '/grabStoreConversation') {
+          this.selectTodayInformation();
+        } else if (websocketMessageID == '/acceptTransferWhatsappConversation'){
+          this.selectTodayInformation();
+        } else if (websocketMessageID == '/updateRanking'){
 
-          for (var activeConversationIndex in this.activeConversationsRows){
-            this.activeConversationsRows[activeConversationIndex].state = this.getConversationState(this.activeConversations[this.activeConversationsRows[activeConversationIndex].activeConversationID]);
-          }
         }
       }
-      
-      this.$nextTick(() => {
-      if (this.$refs.scrollRef) {
-          const psContainer = this.$refs.scrollRef.$el;
-          psContainer.scrollTop = psContainer.scrollHeight;
-        }
-      });
-
+    } catch (error) {
+      console.log(error);
     }
-    } catch {}
 
-    */
   },
 
   methods: {
+
+    selectAgentNames(){
+      this.agentOptions = [{value:null,text:''}];
+
+      axios.get(constants.routes.backendAPI+'/selectAgentNames').then((response) =>{
+        if (response.data.success){
+          for (var agentIndex in response.data.result){
+            this.agentOptions.push({value: response.data.result[agentIndex].agentName, text: response.data.result[agentIndex].agentName});
+          }
+        } else {
+          
+        }
+      })
+      .catch((error) =>{
+        console.log(error);
+      })
+    },
+
+    selectTodayInformation(){
+      axios.get(constants.routes.backendAPI+'/selectAllActiveConversationBasicInformation').then((response) =>{
+        if (response.data.success){
+          this.activeConversations = response.data.result;
+          this.activeConversationsRows = [];
+          for (var activeConversationIndex in this.activeConversations){
+            this.activeConversationsRows.push
+            ({
+              whatsappConversationID: this.activeConversations[activeConversationIndex].whatsappConversationID,
+              whatsappConversationRecipientPhoneNumber: this.activeConversations[activeConversationIndex].whatsappConversationRecipientPhoneNumber,
+              whatsappConversationRecipientProfileName: this.activeConversations[activeConversationIndex].whatsappConversationRecipientProfileName,
+              agentName: this.activeConversations[activeConversationIndex].agentName || 'Sin asignar',
+              whatsappGeneralMessageCreationDateTime: this.activeConversations[activeConversationIndex].whatsappGeneralMessageCreationDateTime,
+              whatsappGeneralMessageOwnerPhoneNumber: this.activeConversations[activeConversationIndex].whatsappGeneralMessageOwnerPhoneNumber,
+              whatsappConversationState: this.getWhatsappConversationState(this.activeConversations[activeConversationIndex]),
+              whatsappConversationStartDateTime: this.parseHour(this.activeConversations[activeConversationIndex].whatsappConversationStartDateTime),
+              whatsappConversationElapsedTime: this.getWhatsappConversationElapsedTime(Math.round((new Date() - new Date(this.activeConversations[activeConversationIndex].whatsappConversationStartDateTime))/1000)),
+              whatsappConversationOpenAction: ''
+            });
+          }
+
+          setInterval(() => {
+            for (var activeConversationIndex in this.activeConversationsRows){
+              this.activeConversationsRows[activeConversationIndex].whatsappConversationState = this.getWhatsappConversationState(this.activeConversationsRows[activeConversationIndex]);
+              this.activeConversationsRows[activeConversationIndex].whatsappConversationElapsedTime = this.getWhatsappConversationElapsedTime(Math.round((new Date() - new Date(this.activeConversationsRows[activeConversationIndex].whatsappConversationStartDateTime))/1000))
+            }
+          }, 1000);
+
+          axios.get(constants.routes.backendAPI+'/selectTodayDashboardInformation').then((response) =>{
+            this.whatsappTotalConversations = response.data.result.whatsappTotalConversations;
+            this.whatsappSelledConversations = response.data.result.whatsappSelledConversations;
+            this.whatsappNotSelledConversations = response.data.result.whatsappNotSelledConversations;
+            this.whatsappPendingConversations = response.data.result.whatsappPendingConversations;
+            this.whatsappTotalSells = response.data.result.whatsappTotalSells;
+            this.whatsappSendedMessages = response.data.result.whatsappSendedMessages;
+            this.whatsappReceivedMessages = response.data.result.whatsappReceivedMessages;
+          })
+          .catch((error) =>{
+            console.log(error);
+          })
+        } else {
+          
+        }
+      })
+      .catch((error) =>{
+        console.log(error);
+      })
+    },
+
+    parseHour(originalHour){
+      const parsingDate = new Date(originalHour);
+      const options = {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      };
+      const formattedDate = parsingDate.toLocaleString('en-US', options);
+      return formattedDate;
+    },
     
+    /*
     openTodayReport(){
-      /*
       axios.get(constants.routes.backendAPI+'/getTodayReport').then((response) =>{ 
         this.todayReport = response.data;
         
@@ -584,28 +615,44 @@ export default {
       .catch(error =>{
         console.log(error);
       })
-      */
+      
     },
-
+    */
 
     filter(){
-
-      var initialDate = null;
-      if (this.initialDateFiltered != ''){
-        initialDate = this.initialDateFiltered.substring(5, this.initialDateFiltered.length) + '-' + this.initialDateFiltered.substring(0, 4);
-      }
-
-      var endDate = null;
-      if (this.endDateFiltered != ''){
-        endDate = this.endDateFiltered.substring(5, this.endDateFiltered.length) + '-' + this.endDateFiltered.substring(0, 4);
-      }
-
-      var agent = null;
-      if (this.endDateFiltered != ''){
-        endDate = this.endDateFiltered.substring(5, this.endDateFiltered.length) + '-' + this.endDateFiltered.substring(0, 4);
-      }
-      alert(this.agentFiltered);
- 
+      axios.post(constants.routes.backendAPI+'/selectFilteredConversations', 
+      {
+        initialDateFiltered: this.initialDateFiltered,
+        endDateFiltered: this.endDateFiltered,
+        numberFiltered: this.numberFiltered,
+        agentFiltered: this.agentFiltered,
+        storeFiltered: this.storeFiltered,
+        conversionFiltered: this.conversionFiltered
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.closedConversations = response.data.result;
+          this.closedConversationsRows = [];
+          for (var closedConversationIndex in this.closedConversations){
+            this.closedConversationsRows.push
+            ({
+              whatsappConversationID: this.closedConversations[closedConversationIndex].whatsappConversationID,
+              whatsappConversationRecipientPhoneNumber: this.closedConversations[closedConversationIndex].whatsappConversationRecipientPhoneNumber,
+              whatsappConversationRecipientProfileName: this.closedConversations[closedConversationIndex].whatsappConversationRecipientProfileName,
+              whatsappConversationAmount: this.closedConversations[closedConversationIndex].whatsappConversationAmount,
+              agentName: this.closedConversations[closedConversationIndex].agentName || 'Sin asignar',
+              whatsappConversationStartDateTime: this.parseHour(this.closedConversations[closedConversationIndex].whatsappConversationStartDateTime),
+              whatsappConversationOpenAction: ''
+            });
+          }
+        } else {
+          this.showNotification('danger', 'Error al abrir la conversación del historial', 'Ha ocurrido un error inesperado al abrir la conversación del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        
+        this.showNotification('danger', 'Error al abrir la conversación del historial', 'Ha ocurrido un error inesperado al abrir la conversación del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
     },
 
     
@@ -614,106 +661,77 @@ export default {
       this.endDateFiltered = '';
       this.endDateFiltered = '';
       this.agentFiltered = '';
+      this.numberFiltered = '';
       this.storeFiltered = '';
-      this.sendFiltered = '';
-      this.paymentFiltered = '';
       this.conversionFiltered = '';
     },
 
 
 
     getClosedConversations(){
-      
-    
       this.view='closedConversations';
-      /*
-      axios.get(constants.routes.backendAPI+'/getAllClosedConversations?').then((response) =>{ 
-      this.closedConversations = response.data;
-      this.closedConversationsRows = [];
-      var span = '';
-      var amount = 0;
-      for (var activeConversationID in this.closedConversations){
-        if (this.closedConversations[activeConversationID].status == 'converted'){
-          span = '<span class="badge badge-pill badge-outline-success p-2">Converted</span>'
-          amount = '₡'+this.closedConversations[activeConversationID].amount;
-
-        } else {
-          span = '<span class="badge badge-pill badge-outline-danger p-2">Not converted</span>'
-          amount = 'Not converted';
-        }
-        this.closedConversationsRows.push
-        (
-          {
-            activeConversationID: activeConversationID,
-            recipientPhoneNumber: this.closedConversations[activeConversationID].recipientPhoneNumber,
-            assignedAgentID: this.closedConversations[activeConversationID].assignedAgentID,
-            payment: span,
-            amount: amount,
-            startDateObject: this.closedConversations[activeConversationID].startDateObject,
-            startDate: this.closedConversations[activeConversationID].startDate,
-            startHour: this.closedConversations[activeConversationID].startHour,
-            endDate: this.closedConversations[activeConversationID].endDate,
-            endHour: this.closedConversations[activeConversationID].endHour,
-            openTransferHistory: '',
-            openConversation: ''
-          }
-        )
-      }
-
-    })
-    .catch(error =>{
-      console.log(error);
-    })
-
-    */
-
     },
-    getConversationState(conversation){
-      
-      var lastMessageTime = conversation.messages[(Object.keys(conversation.messages)).length.toString()].dateObject;
-      var elapsedSeconds = this.getElapsedTime(Math.round((new Date() - new Date(lastMessageTime))/1000));
-      if (conversation.assignedAgentID == 'Sin asignar'){
-        return '<span class="badge badge-pill badge-warning p-2 " style="background-color="red"">Not assigned ('+elapsedSeconds+')</span>'
+
+    getWhatsappConversationState(whatsappConversation){
+      var whatsappLastGeneralMessageCreationDateTime = whatsappConversation.whatsappGeneralMessageCreationDateTime;
+      var whatsappLastGeneralMessageElapsedTime = this.getWhatsappConversationElapsedTime(Math.round((new Date() - new Date(whatsappLastGeneralMessageCreationDateTime))/1000));
+      if (whatsappConversation.agentName == 'Sin asignar'){
+        return '<span class="badge badge-pill badge-warning p-2 " style="background-color="red"">Pendiente ('+whatsappLastGeneralMessageElapsedTime+')</span>';
       }
-      else if (conversation.messages[(Object.keys(conversation.messages).length).toString()].owner == 'client'){
-        return '<span class="badge badge-pill badge-danger p-2 " style="background-color="red"">Esperando al agente ('+elapsedSeconds+')</span>'
+      else if (whatsappConversation.whatsappGeneralMessageOwnerPhoneNumber == null){
+        return '<span class="badge badge-pill badge-success p-2 ">Esperando al cliente ('+whatsappLastGeneralMessageElapsedTime+')</span>';
+      } else {
+        return '<span class="badge badge-pill badge-danger p-2 " style="background-color="red"">Esperando al agente ('+whatsappLastGeneralMessageElapsedTime+')</span>';
+      }
+    },
+
+
+    getLocation(whatsappGeneralMessage){
+      return {lat: whatsappGeneralMessage.whatsappLocationMessageLatitude, lng: whatsappGeneralMessage.whatsappLocationMessageLongitude}
+    },
+
+    getMessageOwnerStyle(messageOwner){
+      if(messageOwner != null){
+        return 'user';
       } 
-      return '<span class="badge badge-pill badge-success p-2 ">Esperando al cliente ('+elapsedSeconds+')</span>'
     },
 
+    getMessageOwnerColor(messageOwner){
+      if(messageOwner == null){
+        return "background-color:#ceefff";
+      } 
+      return "background-color:#dedede";
+    },
 
-    getColorChat(item){
-      if(item == 'agent'){
-        return "background-color:#d6ffb6";
-      } else
+    showNotification(notificationType, notificationTitle, notificationContent){
+      this.$bvToast.toast(notificationContent, {
+        title: notificationTitle,
+        variant: notificationType,
+        solid: true
+      });
+    },
+
+    whatsappConversationOpenAction(whatsappConversationID){
+      this.openConversationLoader = true;
+      this.currentConversation = {};
+      axios.post(constants.routes.backendAPI+'/selectAgentConversation', 
       {
-        return "background-color:#dedede";
-      }
-
-    },
-    GetOwner(item){
-      if(item != 'agent'){
-        return "user";
-      } 
-    },
-
-    openConversation(activeConversationID, conversationType){
-      if (conversationType == 'active'){
-        this.cuurrentActiveConversation = this.activeConversations[activeConversationID];
-      } else {
-        this.cuurrentActiveConversation = this.closedConversations[activeConversationID];
-      }
+        whatsappConversationID: whatsappConversationID
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.currentConversation = response.data.result[whatsappConversationID];
+          this.openConversationLoader = false;
+        } else {
+          this.showNotification('danger', 'Error al abrir la conversación del historial', 'Ha ocurrido un error inesperado al abrir la conversación del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        this.showNotification('danger', 'Error al abrir la conversación del historial', 'Ha ocurrido un error inesperado al abrir la conversación del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
     },
 
-    openTransferHistory(activeConversationID, conversationType){
-      if (conversationType == 'active'){
-        this.currentTranferHistory = this.activeConversations[activeConversationID].transferHistory;
-      } else {
-        this.currentTranferHistory = this.closedConversations[activeConversationID].transferHistory;
-      }
-    },
-
-    getElapsedTime(seconds){
+    getWhatsappConversationElapsedTime(seconds){
       const hours = Math.floor(seconds / 3600);
       const minutes = Math.floor((seconds % 3600) / 60);
       const remainingSeconds = seconds % 60;
