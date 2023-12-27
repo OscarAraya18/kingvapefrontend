@@ -68,39 +68,22 @@
 
 
       <div v-if="view == 'activeConversations'">
+        <br>
         <p style="font-size: medium;"><strong>Conversaciones recibidas:</strong> {{whatsappTotalConversations}}</p>
         <p style="font-size: medium;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
         <p style="font-size: medium;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
         <p style="font-size: medium;"><strong>Conversaciones pendientes:</strong> {{whatsappPendingConversations}}</p>
-        <p style="font-size: medium;"><strong>Mensajes recibidos:</strong> {{whatsappReceivedMessages}}</p>
-        <p style="font-size: medium;"><strong>Mensajes enviados:</strong> {{whatsappSendedMessages}}</p>
         <p style="font-size: medium;"><strong>Total de ventas:</strong> ₡{{whatsappTotalSells}}</p>
-      <br>
+        <br><br>
 
-      <button class="btn btn-icon" style="display:none; background-color: #F9E530; font-size: 15px" v-b-modal.todayReport @click="openTodayReport()"><i class="i-Engineering"></i>Reporte rápido de ventas</button>
+        <h4><strong>Filtro por agente:</strong></h4>
+          <b-form-select v-model="agentFiltered" class="mb-3" :options="agentOptions" @change="filterByAgent()"></b-form-select>
+        <br>
+
+        <button class="btn btn-icon" style="display:none; background-color: #F9E530; font-size: 15px" v-b-modal.todayReport @click="openTodayReport()"><i class="i-Engineering"></i>Reporte rápido de ventas</button>
 
 
-      <b-modal scrollable hide-footer hide-header size="lg" centered hide-backdrop id="todayReport">
-        <vue-perfect-scrollbar ref="scrollRef">
-          <b-list-group>
-            <b-list-group-item v-for="agent in todayReport">
-              <h4>
-                <strong>{{agent.agentName}}: </strong>
-              </h4>
-              <br>
-              <p style="font-size: medium;"><strong>Conversaciones recibidas:</strong> {{agent.todayConversations}}</p>
-              <p style="font-size: medium;"><strong>Conversaciones vendidas:</strong> {{agent.todayConvertedConversations}}</p>
-              <p style="font-size: medium;"><strong>Conversaciones no vendidas:</strong> {{agent.todayNotConvertedConversations}}</p>
-              <p style="font-size: medium;"><strong>Mensajes recibidos:</strong> {{agent.todayReceived}}</p>
-              <p style="font-size: medium;"><strong>Mensajes enviados:</strong> {{agent.todaySent}}</p>
-              <p style="font-size: medium;"><strong>Ventas generadas:</strong> ₡{{agent.todayAmount}}</p>
-            </b-list-group-item>
-          </b-list-group>
-          
-        </vue-perfect-scrollbar>
-      </b-modal>
-
-      <br><br><br>
+        <br><br><br>
       </div>
 
       <div class="card mb-30">
@@ -343,6 +326,8 @@ export default {
   },
   data() {
     return {
+      zoom: 15,
+
       selected: 0,
       options: [
         {text: 'Fecha (más reciente a más antiguo)', value: 1},
@@ -441,6 +426,7 @@ export default {
       ],
 
       activeConversationsRows: [],
+      originalActiveConversationsRows: [],
       closedConversationsRows: [],
 
       closedConversationsColumns: [
@@ -525,6 +511,13 @@ export default {
   },
 
   methods: {
+    filterByAgent(){
+      if (this.agentFiltered == null){
+        this.activeConversationsRows = this.originalActiveConversationsRows;
+      } else {
+        this.activeConversationsRows = this.originalActiveConversationsRows.filter(activeConversationRow => activeConversationRow.agentName == this.agentFiltered);
+      }
+    },
 
     selectAgentNames(){
       this.agentOptions = [{value:null,text:''}];
@@ -562,6 +555,7 @@ export default {
               whatsappConversationElapsedTime: this.getWhatsappConversationElapsedTime(Math.round((new Date() - new Date(this.activeConversations[activeConversationIndex].whatsappConversationStartDateTime))/1000)),
               whatsappConversationOpenAction: ''
             });
+            this.originalActiveConversationsRows = this.activeConversationsRows;
           }
 
           setInterval(() => {
@@ -576,7 +570,8 @@ export default {
             this.whatsappSelledConversations = response.data.result.whatsappSelledConversations;
             this.whatsappNotSelledConversations = response.data.result.whatsappNotSelledConversations;
             this.whatsappPendingConversations = response.data.result.whatsappPendingConversations;
-            this.whatsappTotalSells = response.data.result.whatsappTotalSells;
+            this.whatsappTotalSells = response.data.result.whatsappTotalSells.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+
             this.whatsappSendedMessages = response.data.result.whatsappSendedMessages;
             this.whatsappReceivedMessages = response.data.result.whatsappReceivedMessages;
           })

@@ -153,6 +153,10 @@ export default {
   mounted(){
     this.getInformation();
 
+    setInterval(() => {
+      this.getInformation();
+    }, 30000);
+
     try {
       webSocket.onmessage = (websocketMessage) => {
         const websocketMessageJSON = JSON.parse(websocketMessage.data);

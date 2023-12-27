@@ -671,6 +671,7 @@
                     </template>
                     <b-dropdown-item style="z-index: 2000; overflow-y: auto;" v-if="agents.length == 0">No hay agentes disponibles</b-dropdown-item>
                   </b-dropdown>
+
                   <div class="flex-grow-1"></div>
                   <b-dropdown dropup variant="primary" text="Tiendas" style="margin-right: 10px;" v-if="availableConversation == true">
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Zapote')">Zapote</b-dropdown-item>
