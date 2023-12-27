@@ -501,7 +501,9 @@ export default {
         } else if (websocketMessageID == '/acceptTransferWhatsappConversation'){
           this.selectTodayInformation();
         } else if (websocketMessageID == '/updateRanking'){
-
+          this.selectTodayInformation();
+        } else if (websocketMessageID == '/sendWhatsappMessage'){
+          this.selectTodayInformation();
         }
       }
     } catch (error) {
