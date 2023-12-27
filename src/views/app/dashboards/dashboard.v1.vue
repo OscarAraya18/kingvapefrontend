@@ -86,11 +86,11 @@
 
       <div v-if="view == 'activeConversations'">
         <br>
-        <p style="font-size: medium;"><strong>Conversaciones recibidas:</strong> {{whatsappTotalConversations}}</p>
-        <p style="font-size: medium;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
-        <p style="font-size: medium;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
-        <p style="font-size: medium;"><strong>Conversaciones pendientes:</strong> {{whatsappPendingConversations}}</p>
-        <p style="font-size: medium;"><strong>Total de ventas:</strong> ₡{{whatsappTotalSells}}</p>
+        <p style="font-size: 20px;"><strong>Conversaciones recibidas:</strong> {{whatsappTotalConversations}}</p>
+        <p style="font-size: 20px;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
+        <p style="font-size: 20px;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
+        <p style="font-size: 20px;"><strong>Conversaciones pendientes:</strong> {{whatsappPendingConversations}}</p>
+        <p style="font-size: 20px;"><strong>Total de ventas:</strong> ₡{{whatsappTotalSells}}</p>
         <br><br>
 
         <h4><strong>Filtro por agente:</strong></h4>
@@ -383,7 +383,7 @@ export default {
       numberFiltered: '',
 
       agentOptions: [{value:null,text:''}],
-      agentFiltered: '',
+      agentFiltered: null,
 
       storeOptions: [{value:null, text:''}, {value:'Escazú', text:'Escazú'}, {value:'Zapote', text:'Zapote'}, {value:'Cartago', text:'Cartago'}, {value:'Heredia', text:'Heredia'}],
       storeFiltered: '',
@@ -636,6 +636,7 @@ export default {
               whatsappConversationOpenAction: ''
             });
             this.originalActiveConversationsRows = this.activeConversationsRows;
+            this.filterByAgent();
           }
 
           setInterval(() => {
