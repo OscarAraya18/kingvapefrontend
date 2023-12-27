@@ -324,6 +324,10 @@ const routes = [
             component: () => import("./views/app/apps/agents"),
           },
           {
+            path: "rankingAdmin",
+            component: () => import("./views/app/apps/rankingadmin"),
+          },
+          {
             path: "payment-checkout",
             component: () => import("./views/app/apps/paymentCheckout"),
           },

@@ -16,19 +16,6 @@
         <ul class="navigation-left">
           
           <li
-            @mouseenter="toggleSubMenu"
-            :class="{ active: selectedParentMenu == 'dashboards' }"
-            class="nav-item"
-            data-item="dashboards"
-            v-if="isAdmin == true"
-          >
-            <router-link tag="a" class="nav-item-hold" to="/app/dashboards/dashboard.v1#">
-              <i class="nav-icon i-Bar-Chart"></i>
-              <span class="nav-text"><strong>DASHBOARD</strong></span>
-            </router-link>
-            <div class="triangle"></div>
-          </li>
-          <li
             
             @mouseenter="toggleSubMenu"
             class="nav-item"
@@ -52,6 +39,35 @@
             <router-link tag="a" class="nav-item-hold" to="/app/apps/contact-list">
               <i class="nav-icon i-MaleFemale"></i>
               <span class="nav-text"><strong>CONTACTOS</strong></span>
+            </router-link>
+            <div class="triangle"></div>
+          </li>
+
+          <li
+            @mouseenter="toggleSubMenu"
+            :class="{ active: selectedParentMenu == 'ranking' }"
+            class="nav-item"
+            data-item="ranking"
+            v-if="isAdmin == true"
+          >
+            <router-link tag="a" class="nav-item-hold" to="/app/apps/rankingAdmin">
+              <i class="nav-icon i-Bar-Chart"></i>
+              <span class="nav-text"><strong>RANKING</strong></span>
+            </router-link>
+            <div class="triangle"></div>
+          </li>
+
+
+          <li
+            @mouseenter="toggleSubMenu"
+            :class="{ active: selectedParentMenu == 'dashboards' }"
+            class="nav-item"
+            data-item="dashboards"
+            v-if="isAdmin == true"
+          >
+            <router-link tag="a" class="nav-item-hold" to="/app/dashboards/dashboard.v1">
+              <i class="nav-icon i-Financial"></i>
+              <span class="nav-text"><strong>DASHBOARD</strong></span>
             </router-link>
             <div class="triangle"></div>
           </li>

@@ -3,20 +3,21 @@
     <br>
     <b-row>
 
-      <b-col lg="6" md="6" sm="12">
+      <b-col lg="4" md="4" sm="12">
         <b-card
           class="card-icon-bg card-icon-bg-primary o-hidden mb-30 text-center"
           @click="view='activeConversations'"
           style="cursor: pointer;"
         >
-          <i class="i-Male"></i>
+          <i class="i-Tag-3"></i>
           <div class="content">
             <p class="text-muted mt-2 mb-0">Hoy</p>
             <p class="text-primary text-24 line-height-1 mb-2">{{activeConversationsRows.length}}</p>
           </div>
         </b-card>
       </b-col>
-      <b-col lg="6" md="6" sm="12">
+      
+      <b-col lg="4" md="4" sm="12">
         <b-card
           class="card-icon-bg card-icon-bg-primary o-hidden mb-30 text-center"
           @click="getClosedConversations()"
@@ -28,12 +29,24 @@
           </div>
         </b-card>
       </b-col>
+
+      <b-col lg="4" md="4" sm="12">
+        <b-card
+          class="card-icon-bg card-icon-bg-primary o-hidden mb-30 text-center"
+          @click="getEstadisticas()"
+          style="cursor: pointer;"
+        >
+          <i class="i-Male"></i>
+          <div class="content">
+            <p class="text-muted mt-2 mb-0">Estadísticas</p>
+          </div>
+        </b-card>
+      </b-col>
       
       
     </b-row>
     
     <div v-if="view == 'closedConversations'">
-
       <br><br>
       <div style="display:flex;">
         <div style="width: 50%; padding-right: 100px; padding-left: 50px;">
@@ -62,6 +75,10 @@
       </div>
       
       <br><br><br><br><br>
+    </div>
+
+    <div v-if="view == 'estadisticas'">
+      hola
     </div>
 
     <div class="col-md-12">
@@ -315,6 +332,8 @@ import {
 } from "@/data/dashboard1";
 
 import axios from 'axios';
+import ApexCharts from 'apexcharts'
+
 const constants = require('@../../../src/constants.js'); 
 
 const webSocket = new WebSocket('wss:telasmasbackend.onrender.com');
@@ -326,6 +345,17 @@ export default {
   },
   data() {
     return {
+      conversacionesTotales: 0,
+      conversacionesVendidas: 0,
+      conversacionesNoVendidas: 0,
+
+      facturadoPorAgente: [],
+      opcionesGraficoCircular: {},
+
+      conversacionesPorAgente: [],
+      opcionesGraficoBarra: {},
+      vendedoraDelDia: '',
+
       zoom: 15,
 
       selected: 0,
@@ -481,7 +511,12 @@ export default {
   mounted(){
     this.selectTodayInformation();
     this.selectAgentNames();
+    this.getInformation();
 
+    setInterval(() => {
+      this.getInformation();
+    }, 30000);
+    
     try {
       webSocket.onmessage = (websocketMessage) => {
         const websocketMessageJSON = JSON.parse(websocketMessage.data);
@@ -500,8 +535,6 @@ export default {
           this.selectTodayInformation();
         } else if (websocketMessageID == '/acceptTransferWhatsappConversation'){
           this.selectTodayInformation();
-        } else if (websocketMessageID == '/updateRanking'){
-          this.selectTodayInformation();
         } else if (websocketMessageID == '/sendWhatsappMessage'){
           this.selectTodayInformation();
         }
@@ -513,6 +546,51 @@ export default {
   },
 
   methods: {
+
+    getInformation(){
+      axios.get(constants.routes.backendAPI+'/selectPieChartInformation').then((response) =>{
+        this.facturadoPorAgente = Object.values(response.data);
+        this.opcionesGraficoCircular = {chart: {width: 850, type: 'pie', fontSize: 40}, tooltip: {enabled: false}, labels: Object.keys(response.data),
+        legend: {fontSize: '30px'}};
+      });
+
+      axios.get(constants.routes.backendAPI+'/selectBarChartInformation').then((response) =>{
+        this.opcionesGraficoBarra = 
+        {
+          chart: {type: 'bar', height: 350, stacked: true},
+          plotOptions: {bar: { horizontal: false, borderRadius: 10}},
+          xaxis: {type: 'string', categories: response.data.result.map(agent => agent.agentName),
+          labels: {style: {fontSize: '20px'}}},
+          fill: {colors: ['#008a07', '#d10015'], opacity: 1},
+          legend: {show: false},
+        };
+        this.conversacionesPorAgente = 
+        [
+          {
+            name: 'VENDIDAS',
+            data: response.data.result.map(agent => agent.whatsappSelledConversations),
+            color: '#008a07'
+          }, 
+          {
+            name: 'NO VENDIDAS',
+            data: response.data.result.map(agent => agent.whatsappNotSelledConversations),
+            color: '#d10015'
+          }
+        ];
+      });
+
+      axios.get(constants.routes.backendAPI+'/selectTodayInformation').then((response) =>{
+        this.conversacionesTotales = response.data.result[0].whatsappTotalConversations;
+        this.conversacionesVendidas = response.data.result[0].whatsappSelledConversations;
+        this.conversacionesNoVendidas = response.data.result[0].whatsappNotSelledConversations;
+      });
+
+      axios.get(constants.routes.backendAPI+'/selectTodayTopSell').then((response) =>{
+        console.log(response.data);
+        this.vendedoraDelDia = response.data.result;
+      });
+    },
+
     filterByAgent(){
       if (this.agentFiltered == null){
         this.activeConversationsRows = this.originalActiveConversationsRows;
@@ -603,19 +681,6 @@ export default {
       return formattedDate;
     },
     
-    /*
-    openTodayReport(){
-      axios.get(constants.routes.backendAPI+'/getTodayReport').then((response) =>{ 
-        this.todayReport = response.data;
-        
-      })
-      .catch(error =>{
-        console.log(error);
-      })
-      
-    },
-    */
-
     filter(){
       axios.post(constants.routes.backendAPI+'/selectFilteredConversations', 
       {
@@ -666,8 +731,13 @@ export default {
 
 
     getClosedConversations(){
-      this.view='closedConversations';
+      this.view = 'closedConversations';
     },
+
+    getEstadisticas(){
+      this.view = 'estadisticas';
+    },
+
 
     getWhatsappConversationState(whatsappConversation){
       var whatsappLastGeneralMessageCreationDateTime = whatsappConversation.whatsappGeneralMessageCreationDateTime;

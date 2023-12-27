@@ -3246,11 +3246,11 @@ export default {
 
     playSound(soundType){
       if (soundType == 'receiveWhatsappStoreMessage'){
-        var soundToPlay = new Audio(require('../../../assets/pageAssets/pending.wav'));
+        var soundToPlay = new Audio(require('../../../assets/pageAssets/pending.mp3'));
       } else if (soundType == 'receiveWhatsappMessage'){
         var soundToPlay = new Audio(require('../../../assets/pageAssets/inbox.mp3'));
       } else if (soundType == 'grabConversation'){
-        var soundToPlay = new Audio(require('../../../assets/pageAssets/grab.wav'));
+        var soundToPlay = new Audio(require('../../../assets/pageAssets/grab.mp3'));
       }
       soundToPlay.play();
     },
