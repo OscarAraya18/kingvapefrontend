@@ -569,6 +569,16 @@ export default {
   },
 
   methods: {
+
+    parseNumber(phoneNumber){
+      const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+      const match = cleaned.match(/^(\d{3})(\d{2})(\d{2})(\d{2})(\d{2})$/);
+      if (match) {
+        return `(${match[1]}) ${match[2]}${match[3]}${match[4]}${match[5]}`;
+      }
+      return phoneNumber;
+    },
+
     openSell(historySell){
       this.currentSell = historySell;
       this.$root.$emit('bv::hide::modal','historyConversationsModal');
@@ -866,7 +876,7 @@ export default {
             name: response.data.result[contact].contactName,
             location: center,
             email: response.data.result[contact].contactEmail,
-            phone: response.data.result[contact].contactPhoneNumber,
+            phone: this.parseNumber(response.data.result[contact].contactPhoneNumber),
             id: response.data.result[contact].contactID,
             locationDetails: response.data.result[contact].contactLocationDetails,
             note: response.data.result[contact].contactNote,

@@ -647,8 +647,9 @@
                 </div>
                 <div class="form-group" v-if="availableConversation == true">
                   <b-form-textarea ref="textoEnviar" :disabled='sendingMessageDisable' class="form-control" placeholder="Escribe un mensaje" @keyup.enter="sendWhatsappTextMessage()" v-model="currentActiveConversation.textoEnviar" style="margin-bottom: 20px;" no-resize rows="3"/>
-                </div>              
-                <div class="d-flex"> 
+                </div>    
+
+                <div class="d-flex" v-if="agentType == 'agent'"> 
                   <button class="btn btn-primary mr-2" type="button" v-b-modal.endConversationModal>Finalizar</button>
                   <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación" @ok="closeWhatsappConversation()">
                     <b-dropdown variant="primary" text="Motivos frecuentes" style="width: 100%">
@@ -672,7 +673,8 @@
                     <b-dropdown-item style="z-index: 2000; overflow-y: auto;" v-if="agents.length == 0">No hay agentes disponibles</b-dropdown-item>
                   </b-dropdown>
 
-                  <div class="flex-grow-1"></div>
+                  <div class="flex-grow-1" ></div>
+
                   <b-dropdown dropup variant="primary" text="Tiendas" style="margin-right: 10px;" v-if="availableConversation == true">
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Zapote')">Zapote</b-dropdown-item>
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Escazu')">Escazu</b-dropdown-item>
@@ -773,6 +775,138 @@
                     </div>
                   </b-modal>
                 </div>
+
+                <div v-if="agentType == 'admin'"> 
+                  
+                  <button v-if="availableConversation == true" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="uploadImage()" id="sendFiles"><i class="i-Folder-With-Document"></i></button>
+                  <input v-if="availableConversation == true" type="file" accept="image/png, image/jpeg, application/pdf" @change="sendWhatsappImageMessage()" ref="imageFile" style="display: none;" id="imageUploader">
+                  <b-tooltip target="sendFiles">Enviar imágenes de la computadora</b-tooltip>
+                  <button v-if="availableConversation == true" id="sendFavoriteImages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal @click="deselectImages()"><i class="i-Folder"></i></button>
+                  <b-tooltip target="sendFavoriteImages">Enviar imágenes del catálogo</b-tooltip>
+                  <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
+                    <img style="width: 1000px;" :src="bigImageSource">
+                  </b-modal>
+                  <b-modal @ok="sendWhatsappFavoriteImageMessage()" scrollable title="Catálogo de desechables" size="m" centered id="imageModal">
+                    
+                    <b-nav tabs justified>
+                      <b-nav-item :active="getActiveNavItem('Nicotina')" @click="changeActiveNavItem('Nicotina')">Nicotina</b-nav-item>
+                      <b-nav-item :active="getActiveNavItem('Zero')" @click="changeActiveNavItem('Zero')">Zero</b-nav-item>
+                    </b-nav>
+
+                    <br>
+
+                    <div v-if="currentNavItem == 'Nicotina'">
+                      <b-list-group>
+                        <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
+                        <b-list-group-item :style="getImageStyle(agentFavoriteImage)" v-for="(agentFavoriteImage, index) in agentFavoriteImages" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
+                          <div style="display:flex; ">
+                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
+                            <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
+                              <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
+                            </div>
+                          </div>
+                        </b-list-group-item>
+                      </b-list-group>
+                    </div>
+
+                    <div v-else>
+                      <b-list-group>
+                        <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
+                        <b-list-group-item :style="getImageStyle(agentFavoriteImage)" v-for="(agentFavoriteImage, index) in agentFavoriteImages2" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
+                          <div style="display:flex; ">
+                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
+                            <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
+                              <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
+                            </div>
+                          </div>
+                        </b-list-group-item>
+                      </b-list-group>
+                    </div>
+
+                  </b-modal>
+                  <button v-if="availableConversation == true" id="sendFavoriteMessages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.favoriteModal @click="openAgentFavoriteMessagesModal()"><i class="i-Love"></i></button>
+                  <b-tooltip target="sendFavoriteMessages">Enviar mensajes favoritos</b-tooltip>
+                  
+                  <b-modal scrollable title="Mensajes favoritos" size="m" centered hide-footer id="favoriteModal">
+                    
+                    
+                    <b-list-group>
+
+                      <b-list-group-item style="cursor: pointer;" v-for="agentFavoriteMessage in agentFavoriteMessages" button @click="sendWhatsappFavoriteTextMessage(agentFavoriteMessage.agentFavoriteMessageTextMessageBody)">
+                        <h6><strong>{{agentFavoriteMessage.agentFavoriteMessageName}}</strong></h6>
+                        {{agentFavoriteMessage.agentFavoriteMessageTextMessageBody}}
+                      </b-list-group-item>
+
+                      <b-list-group-item style="cursor: pointer;" v-for="agentFavoriteImage in agentFavoriteImages3" button @click="sendSelectedWhatsappFavoriteImageMessage(agentFavoriteImage)">
+                        <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
+                        <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 150px; height: auto;"/>
+                        <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias'"><br>
+                          Te envío por acá nuestras cuentas bancarias en caso de que canceles por transferencia
+                        </div>
+                        <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Mensaje de bienvenida'"><br>
+                          {{ agentStartMessage }}
+                        </div>
+                      </b-list-group-item>
+
+                    </b-list-group>
+                  </b-modal>
+
+                  <button v-if="availableConversation == true" id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>
+                  <b-tooltip target="sendAudio">Enviar audio</b-tooltip>
+                  <b-modal id="recordAudioModal" hide-footer hide-header size="sm" centered>
+                    <div v-if="(!isRecording) && (loaderAudio == false)"><audio controls :src="recordedAudioFile" style="width:270px;"></audio><br></div>
+                    <div v-if="isRecording" style="text-align: center;"><h2>{{recordedTime}}</h2></div>
+                    <div style="text-align: center;">
+                      <div v-if="loaderAudio == false">
+                        <button v-if="isRecording" class="btn btn-icon btn-primary" type="button" @click="pauseAudioRecording()"><i class="i-Pause"></i></button>
+                        <button class="btn btn-icon btn-primary" type="button" @click="sendWhatsappAudioMessage()" v-if="!isRecording"><i class="i-Paper-Plane"></i></button>
+                      </div>
+                      <div v-if="loaderAudio == true" style="text-align: center;">
+                        <br><span class="spinner-glow spinner-glow-primary"></span><br>
+                      </div>
+                    </div>
+                  </b-modal>
+
+                  <div style="margin-top: 10px;">
+                    <button class="btn btn-primary mr-2" type="button" v-b-modal.endConversationModal>Finalizar</button>
+                    <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación" @ok="closeWhatsappConversation()">
+                      <b-dropdown variant="primary" text="Motivos frecuentes" style="width: 100%">
+                        <b-dropdown-item @click="addCloseConversationReason('Consulta sobre producto sin venta')">Consulta sobre producto sin venta</b-dropdown-item>
+                        <b-dropdown-item @click="addCloseConversationReason('Consulta sobre horarios')">Consulta sobre horarios</b-dropdown-item>
+                        <b-dropdown-item @click="addCloseConversationReason('Consulta sobre sucursales')">Consulta sobre sucursales</b-dropdown-item>
+                        <b-dropdown-item @click="addCloseConversationReason('Número equivocado')">Número equivocado</b-dropdown-item>
+                        <b-dropdown-item @click="addCloseConversationReason('Cliente no deseado')">Cliente no deseado</b-dropdown-item>
+                        <b-dropdown-item @click="addCloseConversationReason('Vuelve a escribir')">Vuelve a escribir</b-dropdown-item>
+                        <b-dropdown-item @click="addCloseConversationReason('Reclamo/cambio')">Reclamo/cambio</b-dropdown-item>
+                        <b-dropdown-item @click="addCloseConversationReason('Error')">Error</b-dropdown-item>
+                      </b-dropdown><br><br>
+                      <b-form-textarea no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
+                      <br>
+                      <b-form-checkbox id="checkbox-1" v-model="sendEndMessage">Enviar mensaje de despedida</b-form-checkbox>
+                    </b-modal>
+                    <b-dropdown dropup variant="primary" text="Transferir">
+                      <template v-for="agent in agents">
+                        <b-dropdown-item style="z-index: 2000; overflow-y: auto;" @click="requestTransferWhatsappConversation(agent)">{{agent.agentName}}</b-dropdown-item>
+                      </template>
+                      <b-dropdown-item style="z-index: 2000; overflow-y: auto;" v-if="agents.length == 0">No hay agentes disponibles</b-dropdown-item>
+                    </b-dropdown>
+
+                    <b-dropdown dropup variant="primary" text="Tiendas" style="margin-left: 10px;" v-if="availableConversation == true">
+                      <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Zapote')">Zapote</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Escazu')">Escazu</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Cartago')">Cartago</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 2000;">Heredia</b-dropdown-item>
+                    </b-dropdown>
+                    <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-left: 10px;" v-if="availableConversation == true">
+                      <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('CASA')">CASA</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('TRABAJO')">TRABAJO</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('OTRO')">OTRO</b-dropdown-item>
+                    </b-dropdown>
+                  </div>
+
+                </div>
+
+
               </div>
             </div>
           </div>
@@ -1147,7 +1281,7 @@ export default {
   },
   data() {
     return { 
-      
+      agentType: '',
 
       sendEndMessage: false,
 
@@ -3325,6 +3459,7 @@ export default {
   },
 
   mounted(){
+    this.agentType = localStorage.getItem('agentType');
     
     this.agentStartMessage = localStorage.getItem('agentStartMessage');
 

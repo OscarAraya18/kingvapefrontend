@@ -461,6 +461,12 @@ export default {
 
       closedConversationsColumns: [
         {
+          label: "Estado",
+          field: "whatsappConversationIsActive",
+          thClass: "text-left pl-3",
+          tdClass: "text-left pl-3",
+        },
+        {
           label: "ID",
           field: "whatsappConversationID",
           thClass: "text-left pl-3",
@@ -493,6 +499,12 @@ export default {
         {
           label: "Fecha de inicio",
           field: "whatsappConversationStartDateTime",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Motivo",
+          field: "whatsappConversationCloseComment",
           thClass: "text-left",
           tdClass: "text-left",
         },
@@ -625,7 +637,7 @@ export default {
             this.activeConversationsRows.push
             ({
               whatsappConversationID: this.activeConversations[activeConversationIndex].whatsappConversationID,
-              whatsappConversationRecipientPhoneNumber: this.activeConversations[activeConversationIndex].whatsappConversationRecipientPhoneNumber,
+              whatsappConversationRecipientPhoneNumber: this.parseNumber(this.activeConversations[activeConversationIndex].whatsappConversationRecipientPhoneNumber),
               whatsappConversationRecipientProfileName: this.activeConversations[activeConversationIndex].whatsappConversationRecipientProfileName,
               agentName: this.activeConversations[activeConversationIndex].agentName || 'Sin asignar',
               whatsappGeneralMessageCreationDateTime: this.activeConversations[activeConversationIndex].whatsappGeneralMessageCreationDateTime,
@@ -668,6 +680,15 @@ export default {
       })
     },
 
+    parseNumber(phoneNumber){
+      const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+      const match = cleaned.match(/^(\d{3})(\d{2})(\d{2})(\d{2})(\d{2})$/);
+      if (match) {
+        return `(${match[1]}) ${match[2]}${match[3]}${match[4]}${match[5]}`;
+      }
+      return phoneNumber;
+    },
+
     parseHour(originalHour){
       const parsingDate = new Date(originalHour);
       const options = {
@@ -697,14 +718,22 @@ export default {
           this.closedConversations = response.data.result;
           this.closedConversationsRows = [];
           for (var closedConversationIndex in this.closedConversations){
+            var temp = '' 
+            if (this.closedConversations[closedConversationIndex].whatsappConversationIsActive){
+              temp = '🟢'
+            } else {
+              temp = '🔴'
+            }
             this.closedConversationsRows.push
             ({
               whatsappConversationID: this.closedConversations[closedConversationIndex].whatsappConversationID,
-              whatsappConversationRecipientPhoneNumber: this.closedConversations[closedConversationIndex].whatsappConversationRecipientPhoneNumber,
+              whatsappConversationRecipientPhoneNumber: this.parseNumber(this.closedConversations[closedConversationIndex].whatsappConversationRecipientPhoneNumber),
               whatsappConversationRecipientProfileName: this.closedConversations[closedConversationIndex].whatsappConversationRecipientProfileName,
-              whatsappConversationAmount: this.closedConversations[closedConversationIndex].whatsappConversationAmount,
+              whatsappConversationAmount: this.closedConversations[closedConversationIndex].whatsappConversationAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}),
               agentName: this.closedConversations[closedConversationIndex].agentName || 'Sin asignar',
               whatsappConversationStartDateTime: this.parseHour(this.closedConversations[closedConversationIndex].whatsappConversationStartDateTime),
+              whatsappConversationCloseComment: this.closedConversations[closedConversationIndex].whatsappConversationCloseComment,
+              whatsappConversationIsActive: temp,
               whatsappConversationOpenAction: ''
             });
           }

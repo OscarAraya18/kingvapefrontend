@@ -1,5 +1,5 @@
 <template>
-  <div class="main-content">
+  <div class="main-content" style="">
     <div style="display: flex">
       <div style="width: 45%">
         <h4><strong>Filtro por fecha inicial:</strong></h4>
@@ -15,11 +15,11 @@
       <div style="display: flex; justify-content: center; align-items: center;">
         <b-card style="width: 30%; margin-right: 30px;">
           <div style="display: flex;">
-            <b-card-text style="font-size: xx-large;">
+            <b-card-text style="font-size: x-large;">
               Conversaciones totales:
             </b-card-text>
             <div class="flex-grow-1"></div>
-            <b-card-text style="font-size: xx-large; color: rgb(52, 52, 142);">
+            <b-card-text style="font-size: x-large; color: rgb(52, 52, 142);">
               {{conversacionesTotales}}
             </b-card-text>
           </div>
@@ -27,11 +27,11 @@
 
         <b-card style="width: 30%;">
           <div style="display: flex;">
-            <b-card-text style="font-size: xx-large;">
+            <b-card-text style="font-size: x-large;">
               Conversaciones vendidas:
             </b-card-text>
             <div class="flex-grow-1"></div>
-            <b-card-text style="font-size: xx-large; color: rgb(70, 142, 52);">
+            <b-card-text style="font-size: x-large; color: rgb(70, 142, 52);">
               {{conversacionesVendidas}}
             </b-card-text>
           </div>
@@ -39,11 +39,11 @@
 
         <b-card style="width: 30%; margin-left: 30px;">
           <div style="display: flex;">
-            <b-card-text style="font-size: xx-large;">
+            <b-card-text style="font-size: x-large;">
               Conversaciones no vendidas:
             </b-card-text>
             <div class="flex-grow-1"></div>
-            <b-card-text style="font-size: xx-large; color: rgb(184, 39, 29);">
+            <b-card-text style="font-size: x-large; color: rgb(184, 39, 29);">
               {{conversacionesNoVendidas}}
             </b-card-text>
           </div>
@@ -53,25 +53,26 @@
       <br><br><br><br>
       <div style="display: flex; justify-content: center; align-items: center;">
         
-        <div id="chart1" style="margin-left: 70px; margin-right: 35px;">
-          <apexchart type="pie" width="800" :options="opcionesGraficoCircular" :series="facturadoPorAgente"></apexchart>
+        <div id="chart1" style="margin-left: 10px; margin-right: 10px;">
+          <apexchart type="pie" width="100" :options="opcionesGraficoCircular" :series="facturadoPorAgente"></apexchart>
         </div>
         <div class="flex-grow-1"></div>
 
-        <div id="chart2" style="margin-left: 35px; margin-right: 70px;">
-          <apexchart type="bar" width="800" :options="opcionesGraficoBarra" :series="conversacionesPorAgente"></apexchart>
+        <div id="chart2" style="margin-left: 10px; margin-right: 10px;">
+          <apexchart type="bar" width="500" :options="opcionesGraficoBarra" :series="conversacionesPorAgente"></apexchart>
           
-          <br><br><br><br>
+          <br><br>
           <div style="display: flex; justify-content: center;">
-            <b-card-text style="font-size: xx-large; color: #00578a">
+            <b-card-text style="font-size: x-large; color: #00578a">
               Venta del día:
             </b-card-text>
-            <b-card-text style="font-size: xx-large; margin-left: 10px;">
+            <b-card-text style="font-size: x-large; margin-left: 10px;">
               {{vendedoraDelDia}}
             </b-card-text>
           </div>
         </div>
       </div>
+      <br><br>
     </div>
 
 
@@ -456,8 +457,8 @@ export default {
         endDate: this.rankingEndDate
       }).then((response) =>{
         this.facturadoPorAgente = Object.values(response.data);
-        this.opcionesGraficoCircular = {chart: {width: 850, type: 'pie', fontSize: 40}, tooltip: {enabled: true}, labels: Object.keys(response.data),
-        legend: {fontSize: '30px'}};
+        this.opcionesGraficoCircular = {chart: {width: 700, type: 'pie', fontSize: 20}, tooltip: {enabled: true}, labels: Object.keys(response.data),
+        legend: {fontSize: '20px'}};
       });
 
       axios.post(constants.routes.backendAPI+'/selectFilteredBarChartInformation',
@@ -521,8 +522,8 @@ export default {
     getTodayInformation(){
       axios.get(constants.routes.backendAPI+'/selectPieChartInformation').then((response) =>{
         this.facturadoPorAgente = Object.values(response.data);
-        this.opcionesGraficoCircular = {chart: {width: 850, type: 'pie', fontSize: 40}, tooltip: {enabled: true}, labels: Object.keys(response.data),
-        legend: {fontSize: '30px'}};
+        this.opcionesGraficoCircular = {chart: {width: 700, type: 'pie', fontSize: 20}, tooltip: {enabled: true}, labels: Object.keys(response.data),
+        legend: {fontSize: '20px'}};
       });
 
       axios.get(constants.routes.backendAPI+'/selectBarChartInformation').then((response) =>{
