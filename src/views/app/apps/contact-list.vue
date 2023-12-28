@@ -1,6 +1,9 @@
 <template>
   
   <div class="main-content">
+    <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
+      <img style="width: 1000px;" :src="bigImageSource">
+    </b-modal>
 
     <b-form-select v-model="contactLetter" class="mb-3" :options="contactLettersOptions" @change="getContacts">
     </b-form-select>
@@ -276,7 +279,7 @@
                     </div>
                     
                     <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                      <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/></GmapMap><br>
+                      <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 600px; height: 450px"><GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/></GmapMap><br>
                       <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
                       <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
                     </div>
@@ -507,7 +510,7 @@ export default {
         },
         {
           label: "Número",
-          field: "phone",
+          field: "displayedPhone",
         },
         {
           label: "Ubicación",
@@ -556,8 +559,9 @@ export default {
 
       currentHistoryConversation: null,
       zoom: 15,
-      currentSell: []
-
+      currentSell: [],
+      
+      bigImageSource: null
     };
 
     
@@ -569,6 +573,9 @@ export default {
   },
 
   methods: {
+    openBigImage(bigImageSource){
+      this.bigImageSource = bigImageSource;
+    },
 
     parseNumber(phoneNumber){
       const cleaned = ('' + phoneNumber).replace(/\D/g, '');
@@ -876,7 +883,8 @@ export default {
             name: response.data.result[contact].contactName,
             location: center,
             email: response.data.result[contact].contactEmail,
-            phone: this.parseNumber(response.data.result[contact].contactPhoneNumber),
+            phone: response.data.result[contact].contactPhoneNumber,
+            displayedPhone: this.parseNumber(response.data.result[contact].contactPhoneNumber),
             id: response.data.result[contact].contactID,
             locationDetails: response.data.result[contact].contactLocationDetails,
             note: response.data.result[contact].contactNote,

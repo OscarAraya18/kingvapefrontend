@@ -1,5 +1,9 @@
 <template>
   <div class="main-content" style="">
+    <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
+      <img style="width: 1000px;" :src="bigImageSource">
+    </b-modal>
+    
     <div style="display: flex">
       <div style="width: 45%">
         <h4><strong>Filtro por fecha inicial:</strong></h4>
@@ -87,7 +91,7 @@
               <div style="font-size: 15px;">
                 <strong>Nombre:</strong> {{selledConversation.whatsappConversationRecipientProfileName}}<br>
                 <strong>Número:</strong> {{formatNumber(selledConversation.whatsappConversationRecipientPhoneNumber)}}<br>
-                <strong>Cantidad:</strong> ₡{{selledConversation.whatsappConversationAmount}}<br>
+                <strong>Cantidad:</strong> ₡{{selledConversation.whatsappConversationAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}<br>
                 <strong>Fecha:</strong> {{formatDate(selledConversation.whatsappConversationStartDateTime)}}<br>
               </div>
             </b-list-group-item>
@@ -274,7 +278,7 @@
                     </div>
                     
                     <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                      <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/></GmapMap><br>
+                      <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 600px; height: 450px"><GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/></GmapMap><br>
                       <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
                       <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
                     </div>
@@ -333,7 +337,8 @@ export default {
       currentSelledConversations: [],
       currentNotSelledConversations: [],
 
-      zoom: 15
+      zoom: 15,
+      bigImageSource: null
     };
   },
 
@@ -353,6 +358,10 @@ export default {
 
 
   methods: {
+    openBigImage(bigImageSource){
+      this.bigImageSource = bigImageSource;
+    },
+
     getLocation(whatsappGeneralMessage){
       return {lat: whatsappGeneralMessage.whatsappLocationMessageLatitude, lng: whatsappGeneralMessage.whatsappLocationMessageLongitude}
     },
@@ -427,7 +436,7 @@ export default {
       this.loader1 = true;
       if (this.rankingInitialDate == ''){
         this.rankingInitialDate = new Date();
-        this.rankingInitialDate.setHours(6, 0, 0, 0);
+        this.rankingInitialDate.setHours(0, 0, 0, 0);
       }
       axios.post(constants.routes.backendAPI+'/selectRankingFilteredConversations',
       {

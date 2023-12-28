@@ -1,5 +1,8 @@
 <template>
   <div class="main-content">
+    <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
+      <img style="width: 1000px;" :src="bigImageSource">
+    </b-modal>
     <br>
     <b-row>
 
@@ -7,7 +10,7 @@
         <b-card
           class="card-icon-bg card-icon-bg-primary o-hidden mb-30 text-center"
           @click="view='activeConversations'"
-          style="cursor: pointer;"
+          :style="getTagStyle(1)"
         >
           <i class="i-Tag-3"></i>
           <div class="content">
@@ -21,7 +24,7 @@
         <b-card
           class="card-icon-bg card-icon-bg-primary o-hidden mb-30 text-center"
           @click="getClosedConversations()"
-          style="cursor: pointer;"
+          :style="getTagStyle(2)"
         >
           <i class="i-Checkout"></i>
           <div class="content">
@@ -34,7 +37,7 @@
         <b-card
           class="card-icon-bg card-icon-bg-primary o-hidden mb-30 text-center"
           @click="getEstadisticas()"
-          style="cursor: pointer;"
+          :style="getTagStyle(3)"
         >
           <i class="i-Male"></i>
           <div class="content">
@@ -47,38 +50,49 @@
     </b-row>
     
     <div v-if="view == 'closedConversations'">
+      <br>
+      <h4><strong>Filtro por fecha inicial:</strong></h4>
+      <b-form-datepicker v-model="initialDateFiltered"></b-form-datepicker>
+      <br>
+      <h4><strong>Filtro por fecha final:</strong></h4>
+      <b-form-datepicker v-model="endDateFiltered"></b-form-datepicker>
+      <br>
+      <h4><strong>Filtro por número:</strong></h4>
+      <b-form-input v-model="numberFiltered" class="mb-3" placeholder="Coloque un número"></b-form-input>
+      <h4><strong>Filtro por agente:</strong></h4>
+      <b-form-select v-model="agentFiltered" class="mb-3" :options="agentOptions"></b-form-select>
+      <br>
+      <h4><strong>Filtro por sucursal de envío:</strong></h4>
+      <b-form-select v-model="storeFiltered" class="mb-3" :options="storeOptions"></b-form-select>
+      <br>
+      <h4><strong>Filtro por conversión:</strong></h4>
+      <b-form-select v-model="conversionFiltered" class="mb-3" :options="conversionOptions"></b-form-select>
       <br><br>
-      <div style="display:flex;">
-        <div style="width: 50%; padding-right: 100px; padding-left: 50px;">
-          <h4><strong>Filtro por fecha inicial:</strong></h4>
-          <b-form-datepicker v-model="initialDateFiltered"></b-form-datepicker>
-          <br>
-          <h4><strong>Filtro por fecha final:</strong></h4>
-          <b-form-datepicker v-model="endDateFiltered"></b-form-datepicker>
-          <br>
-          <h4><strong>Filtro por número:</strong></h4>
-          <b-form-input v-model="numberFiltered" class="mb-3" placeholder="Coloque un número"></b-form-input>
-          <h4><strong>Filtro por agente:</strong></h4>
-          <b-form-select v-model="agentFiltered" class="mb-3" :options="agentOptions"></b-form-select>
-          <br>
-          <h4><strong>Filtro por sucursal de envío:</strong></h4>
-          <b-form-select v-model="storeFiltered" class="mb-3" :options="storeOptions"></b-form-select>
-          <br>
-          <h4><strong>Filtro por conversión:</strong></h4>
-          <b-form-select v-model="conversionFiltered" class="mb-3" :options="conversionOptions"></b-form-select>
-          <br><br>
-          <button class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="filter()"><i class="i-Search-People"></i>Aplicar filtro</button>
-          <button class="btn btn-icon" style="background-color: rgb(255, 184, 32); font-size: 15px; margin-left: 30px;" @click="cleanFilter()"><i class="i-Folder-Trash"></i>Limpiar filtros</button>
-
-        </div>
-
-      </div>
-      
+      <button class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="filter()"><i class="i-Search-People"></i>Aplicar filtro</button>
+      <button class="btn btn-icon" style="background-color: rgb(255, 184, 32); font-size: 15px; margin-left: 30px;" @click="cleanFilter()"><i class="i-Folder-Trash"></i>Limpiar filtros</button>
       <br><br><br><br><br>
     </div>
 
     <div v-if="view == 'estadisticas'">
-      hola
+      <br>
+      <h4><strong>Dato a graficar:</strong></h4>
+      <b-form-select v-model="plotTypeOption" class="mb-3" :options="plotTypeOptions"></b-form-select>
+      <br>
+      <h4><strong>Filtro por fecha inicial:</strong></h4>
+      <b-form-datepicker v-model="initialDateOption"></b-form-datepicker>
+      <br>
+      <h4><strong>Filtro por fecha final:</strong></h4>
+      <b-form-datepicker v-model="endDateOption"></b-form-datepicker>
+      <br>
+      <h4><strong>Filtro por agente:</strong></h4>
+      <b-form-select v-model="agentArrayOption" class="mb-3" style="height: 150px;" :options="agentOptionsMultiple" multiple></b-form-select>
+      <br>
+      <h4><strong>Filtro por sucursal de envío:</strong></h4>
+      <b-form-select v-model="storeArrayOption" class="mb-3" style="height: 80px;" :options="storeOptionsMultiple" multiple></b-form-select>
+      <br><br>
+      <button class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="plot()"><i class="i-Search-People"></i>Graficar</button>
+      <button class="btn btn-icon" style="background-color: rgb(255, 184, 32); font-size: 15px; margin-left: 30px;" @click="cleanPlotFilter()"><i class="i-Folder-Trash"></i>Limpiar filtros</button>
+      <br><br><br>
     </div>
 
     <div class="col-md-12">
@@ -345,6 +359,18 @@ export default {
   },
   data() {
     return {
+      plotTypeOptions: [{value:'Cantidad de dinero', text:'Cantidad de dinero'}, {value:'Cantidad de conversaciones vendidas', text:'Cantidad de conversaciones vendidas'}, {value:'Cantidad de conversaciones no vendidas', text:'Cantidad de conversaciones no vendidas'}],
+      plotTypeOption: 'Cantidad de dinero',
+
+      initialDateOption: '',
+      endDateOption: '',
+
+      agentOptionsMultiple: [],
+      agentArrayOption: [],
+
+      storeOptionsMultiple: [{value:'Escazú', text:'Escazú'}, {value:'Zapote', text:'Zapote'}, {value:'Cartago', text:'Cartago'}, {value:'Heredia', text:'Heredia'}],
+      storeArrayOption: [],
+
       conversacionesTotales: 0,
       conversacionesVendidas: 0,
       conversacionesNoVendidas: 0,
@@ -389,7 +415,7 @@ export default {
       storeFiltered: '',
 
       conversionOptions: [{value:null, text:''}, {value:'Vendido', text:'Vendido'}, {value:'No vendido', text:'No vendido'}],
-      conversionFIltered: '',
+      conversionFiltered: '',
 
       
 
@@ -517,6 +543,8 @@ export default {
         }
       ],
 
+      bigImageSource: null
+
     };
   },
 
@@ -558,6 +586,35 @@ export default {
   },
 
   methods: {
+    plot(){
+      if (this.initialDateOption == ''){
+        
+      } else if (this.endDateOption == ''){
+
+      }
+    },
+
+    getTagStyle(tagID){
+      var style = 'cursor: pointer;';
+      if (tagID == 1){
+        if (this.view == 'activeConversations'){
+          style = style + 'background-color: #e0e0e0;'
+        }
+      } else if (tagID == 2){
+        if (this.view == 'closedConversations'){
+          style = style + 'background-color: #e0e0e0;'
+        }
+      } else {
+        if (this.view == 'estadisticas'){
+          style = style + 'background-color: #e0e0e0;'
+        }
+      }
+      return style;
+    },
+
+    openBigImage(bigImageSource){
+      this.bigImageSource = bigImageSource;
+    },
 
     getInformation(){
       axios.get(constants.routes.backendAPI+'/selectPieChartInformation').then((response) =>{
@@ -613,11 +670,12 @@ export default {
 
     selectAgentNames(){
       this.agentOptions = [{value:null,text:''}];
-
+      this.agentOptionsMultiple = [];
       axios.get(constants.routes.backendAPI+'/selectAgentNames').then((response) =>{
         if (response.data.success){
           for (var agentIndex in response.data.result){
             this.agentOptions.push({value: response.data.result[agentIndex].agentName, text: response.data.result[agentIndex].agentName});
+            this.agentOptionsMultiple.push({value: response.data.result[agentIndex].agentName, text: response.data.result[agentIndex].agentName});
           }
         } else {
           
@@ -756,6 +814,13 @@ export default {
       this.numberFiltered = '';
       this.storeFiltered = '';
       this.conversionFiltered = '';
+    },
+
+    cleanPlotFilter(){
+      this.initialDateOption = '';
+      this.endDateOption = '';
+      this.agentArrayOption = [];
+      this.storeArrayOption = [];
     },
 
 
