@@ -4,7 +4,7 @@ module.exports = {
         backendAPI: 'https://kingvapefrontend.onrender.com',
         websocketAPI: 'kingvapefrontend.onrender.com:10000'
     },
-
+ 
     credentials: 
     {
         phoneNumberID: '135985856257321',
