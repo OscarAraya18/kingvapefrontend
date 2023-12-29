@@ -3,6 +3,7 @@
     <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
       <img style="width: 1000px;" :src="bigImageSource">
     </b-modal>
+
     <br>
     <b-row>
 
@@ -87,12 +88,20 @@
       <h4><strong>Filtro por agente:</strong></h4>
       <b-form-select v-model="agentArrayOption" class="mb-3" style="height: 150px;" :options="agentOptionsMultiple" multiple></b-form-select>
       <br>
-      <h4><strong>Filtro por sucursal de envío:</strong></h4>
-      <b-form-select v-model="storeArrayOption" class="mb-3" style="height: 80px;" :options="storeOptionsMultiple" multiple></b-form-select>
+      <div v-if="plotTypeOption != 4">
+        <h4><strong>Filtro por sucursal de envío:</strong></h4>
+        <b-form-select v-model="storeArrayOption" class="mb-3" style="height: 80px;" :options="storeOptionsMultiple" multiple></b-form-select>
+      </div>
       <br><br>
-      <button class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="plot()"><i class="i-Search-People"></i>Graficar</button>
+      <button v-b-modal.plotModal class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="plot()"><i class="i-Search-People"></i>Graficar</button>
       <button class="btn btn-icon" style="background-color: rgb(255, 184, 32); font-size: 15px; margin-left: 30px;" @click="cleanPlotFilter()"><i class="i-Folder-Trash"></i>Limpiar filtros</button>
       <br><br><br>
+      
+      <div v-if="displayPlot">
+        <apexchart type="line" width="100%" height="300" :options="opcionesGraficoLinea" :series="datosGraficoLinea"></apexchart>
+        <br><br>
+      </div>
+
     </div>
 
     <div class="col-md-12">
@@ -110,9 +119,6 @@
         <h4><strong>Filtro por agente:</strong></h4>
           <b-form-select v-model="agentFiltered" class="mb-3" :options="agentOptions" @change="filterByAgent()"></b-form-select>
         <br>
-
-        <button class="btn btn-icon" style="display:none; background-color: #F9E530; font-size: 15px" v-b-modal.todayReport @click="openTodayReport()"><i class="i-Engineering"></i>Reporte rápido de ventas</button>
-
 
         <br><br><br>
       </div>
@@ -359,8 +365,12 @@ export default {
   },
   data() {
     return {
-      plotTypeOptions: [{value:'Cantidad de dinero', text:'Cantidad de dinero'}, {value:'Cantidad de conversaciones vendidas', text:'Cantidad de conversaciones vendidas'}, {value:'Cantidad de conversaciones no vendidas', text:'Cantidad de conversaciones no vendidas'}],
-      plotTypeOption: 'Cantidad de dinero',
+      opcionesGraficoLinea: {},
+      datosGraficoLinea: [],
+      displayPlot: false,
+
+      plotTypeOptions: [{value:1, text:'Cantidad de dinero'}, {value:2, text:'Cantidad de conversaciones vendidas'}, {value:3, text:'Cantidad de conversaciones no vendidas'}, {value:4, text:'Conexión'}],
+      plotTypeOption: 1,
 
       initialDateOption: '',
       endDateOption: '',
@@ -368,7 +378,7 @@ export default {
       agentOptionsMultiple: [],
       agentArrayOption: [],
 
-      storeOptionsMultiple: [{value:'Escazú', text:'Escazú'}, {value:'Zapote', text:'Zapote'}, {value:'Cartago', text:'Cartago'}, {value:'Heredia', text:'Heredia'}],
+      storeOptionsMultiple: [{value:'Escazu', text:'Escazú'}, {value:'Zapote', text:'Zapote'}, {value:'Cartago', text:'Cartago'}, {value:'Heredia', text:'Heredia'}],
       storeArrayOption: [],
 
       conversacionesTotales: 0,
@@ -587,10 +597,80 @@ export default {
 
   methods: {
     plot(){
-      if (this.initialDateOption == ''){
-        
-      } else if (this.endDateOption == ''){
+      if ((this.agentArrayOption.length == 0) && (this.storeArrayOption.length == 0)){
+        this.showNotification('danger', 'Filtros incompletos', 'Debe colocar al menos un agente o una tienda para filtrar. Agregue al menos una opción para filtrar e intentelo nuevamente.');
+      } else {
+        axios.post(constants.routes.backendAPI+'/selectPlotInformation',
+        {
+          plotType: this.plotTypeOption,
+          initialDate: this.initialDateOption,
+          endDate: this.endDateOption,
+          agents: this.agentArrayOption,
+          stores: this.storeArrayOption
+        }).then((response) =>{
+          if (response.data.success){
+            this.displayPlot = true;
+            if (this.plotTypeOption == 4){
+              this.opcionesGraficoLinea = {
+                chart: {
+                  type: 'line',
+                  height: 350,
+                },
+                stroke: {
+                  curve: 'stepline',
+                },
+                xaxis: {
+                  type: 'datetime',
+                  labels: {
+                    datetimeUTC: true,
+                    format: 'yyyy-MM-dd HH:mm:ss',
+                  },
+                },
+                yaxis: {
+                  min: 0,
+                  max: 1
+                }
+              };
+              this.datosGraficoLinea = response.data.result;
 
+            } else {
+              this.opcionesGraficoLinea = {
+                chart: {
+                  height: 350,
+                  type: 'line',
+                  zoom: {
+                    enabled: false
+                  }
+                },
+                dataLabels: {
+                  enabled: false
+                },
+                stroke: {
+                  curve: 'straight'
+                },
+                title: {
+                  text: '',
+                  align: 'left'
+                },
+                grid: {
+                  row: {
+                    colors: ['#f3f3f3', 'transparent'],
+                    opacity: 0.5
+                  },
+                },
+                xaxis: {
+                  categories: response.data.result.dates,
+                }
+              }
+              this.datosGraficoLinea = response.data.result.agents;
+            }
+          } else {
+            this.showNotification('danger', 'Error al generar la gráfica', 'Ha ocurrido un error inesperado al generar la gráfica. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }
+        })
+        .catch(() =>{
+          this.showNotification('danger', 'Error al generar la gráfica', 'Ha ocurrido un error inesperado al generar la gráfica. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        })
       }
     },
 
@@ -655,7 +735,6 @@ export default {
       });
 
       axios.get(constants.routes.backendAPI+'/selectTodayTopSell').then((response) =>{
-        console.log(response.data);
         this.vendedoraDelDia = response.data.result;
       });
     },
@@ -674,8 +753,8 @@ export default {
       axios.get(constants.routes.backendAPI+'/selectAgentNames').then((response) =>{
         if (response.data.success){
           for (var agentIndex in response.data.result){
-            this.agentOptions.push({value: response.data.result[agentIndex].agentName, text: response.data.result[agentIndex].agentName});
-            this.agentOptionsMultiple.push({value: response.data.result[agentIndex].agentName, text: response.data.result[agentIndex].agentName});
+            this.agentOptions.push({value: response.data.result[agentIndex].agentID, text: response.data.result[agentIndex].agentName});
+            this.agentOptionsMultiple.push({value: response.data.result[agentIndex].agentID, text: response.data.result[agentIndex].agentName});
           }
         } else {
           
@@ -796,12 +875,12 @@ export default {
             });
           }
         } else {
-          this.showNotification('danger', 'Error al abrir la conversación del historial', 'Ha ocurrido un error inesperado al abrir la conversación del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          this.showNotification('danger', 'Error al abrir la conversación', 'Ha ocurrido un error inesperado al abrir la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
       .catch((error) => {
         
-        this.showNotification('danger', 'Error al abrir la conversación del historial', 'Ha ocurrido un error inesperado al abrir la conversación del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        this.showNotification('danger', 'Error al abrir la conversación', 'Ha ocurrido un error inesperado al abrir la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
 
@@ -817,6 +896,7 @@ export default {
     },
 
     cleanPlotFilter(){
+      this.displayPlot = false;
       this.initialDateOption = '';
       this.endDateOption = '';
       this.agentArrayOption = [];
@@ -885,11 +965,11 @@ export default {
           this.currentConversation = response.data.result[whatsappConversationID];
           this.openConversationLoader = false;
         } else {
-          this.showNotification('danger', 'Error al abrir la conversación del historial', 'Ha ocurrido un error inesperado al abrir la conversación del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          this.showNotification('danger', 'Error al abrir la conversación', 'Ha ocurrido un error inesperado al abrir la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
       .catch((error) => {
-        this.showNotification('danger', 'Error al abrir la conversación del historial', 'Ha ocurrido un error inesperado al abrir la conversación del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        this.showNotification('danger', 'Error al abrir la conversación', 'Ha ocurrido un error inesperado al abrir la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
 
