@@ -624,9 +624,14 @@ export default {
         year: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-        hour12: false
+        hour12: true
       };
-      const formattedDate = parsingDate.toLocaleString('en-US', options);
+      var formattedDate = parsingDate.toLocaleString('en-GB', options);
+      if (formattedDate.slice(-2) == 'am'){
+        formattedDate = formattedDate.slice(0,-2) + 'AM'
+      } else if (formattedDate.slice(-2) == 'pm') {
+        formattedDate = formattedDate.slice(0,-2) + 'PM'
+      }
       return formattedDate;
     },
 

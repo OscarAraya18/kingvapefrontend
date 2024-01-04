@@ -38,7 +38,7 @@
                       <strong>{{getIncomingMessagesAmount(activeConversationsAsJSON[activeConversationID].whatsappConversationMessages)}}</strong>
                     </h6>
                   </div>
-                  <div v-else style="height: 15px; width: 15px; background-color: rgb(0, 177, 0); border-radius: 100px;"></div>
+                  <div v-else style="min-height: 15px; min-width: 15px; background-color: rgb(0, 177, 0); border-radius: 100px;"></div>
                   <b-tooltip target="hint" v-if="hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]">{{hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]}}</b-tooltip>
                 </div>
 
@@ -508,9 +508,16 @@
                           </div>
                         
                         </div>
-                        <span v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null" style="margin-left: 0; margin-right:auto;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
+
+                        <span v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null" style="display:flex; margin-left: 0; margin-right:auto;" class="text-small text-muted">
+                          <img v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null" style="width: 25px; height: 25px; margin-right: 5px;" src="@/assets/read.png">
+                          <img v-else-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null" style="width: 25px; height: 25px; margin-right: 5px;" src="@/assets/delivered.png">
+                          <img v-else style="width: 25px; height: 25px; margin-right: 5px;" src="@/assets/send.png">
+                          {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}
+                        </span>
                         <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
                         
+
                         <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null">
                           
                           <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
@@ -1082,14 +1089,46 @@
                                 @change="modificarMetodoEnvio()"
                               >
                               </b-form-select>
-                              <b-form-select
-                                v-model="MetodoPago"
-                                :options="MetodosPagos"
-                                id="inline-form-custom-select-pref1"
-                                style="margin-bottom: 10px;"
-                                @change="modificarMetodoPago()"
-                              >
-                              </b-form-select>
+                              <div style="display: flex;">
+                                <b-form-select
+                                  v-model="MetodoPago"
+                                  :options="MetodosPagos"
+                                  id="inline-form-custom-select-pref1"
+                                  :style="getPaymentMethodStyle()"
+                                  @change="modificarMetodoPago()"
+                                >
+                                </b-form-select>
+                                <b-button v-if="getPaymentMethodType()" v-b-modal.paymentMethodValidatorModal style="margin-bottom: 15px; margin-left: 10px; width: 30%" @click="openPaymentMethodValidatorModal()" variant="info">Validar</b-button>
+
+                                <b-modal scrollable size="m" centered hide-header hide-footer id="paymentMethodValidatorModal">
+                                  <div>
+
+                                    <p class="m-0 text-title text-16"><strong>Número de teléfono</strong></p>
+                                    <b-form-input
+                                      type="text"
+                                      v-model="paymentMethodValidatorPhoneNumber"
+                                      placeholder="Número telefónico asociado"
+                                      style="margin-bottom: 20px;"
+                                    ></b-form-input>
+                                    <p class="m-0 text-title text-16"><strong>Monto</strong></p>
+                                    <b-form-input
+                                      type="text"
+                                      v-model="paymentMethodValidatorAmount"
+                                      placeholder="Monto a verificar"
+                                      style="margin-bottom: 10px;"
+                                    ></b-form-input>
+
+                                    <div style="text-align: center;" v-if="validatePaymentMethodLoader == false">
+                                      <b-button style="width: 80%; margin-bottom: 15px; margin-top: 15px;" @click="validatePaymentMethod()" variant="info">Validar</b-button>
+                                    </div>
+                                    <div v-else style="text-align: center;">
+                                      <br>
+                                      <span class="spinner-glow spinner-glow-primary"></span>
+                                    </div>
+                                  </div>
+                                </b-modal>
+
+                              </div>
                               <b-form-input
                                 type="text"
                                 v-model="pagaCon"
@@ -1252,6 +1291,8 @@ const webSocket = new WebSocket('wss:telasmasbackend.onrender.com');
 import router from "../../../router";
 import {gmapApi} from 'vue2-google-maps';
 import { BDropdown } from 'bootstrap-vue';
+
+import Vue from 'vue';
 
 
 export default {
@@ -1488,12 +1529,43 @@ export default {
 
       currentActiveConversationID: null,
 
-      currentNavItem: 'Nicotina'
+      currentNavItem: 'Nicotina',
 
+      paymentMethodValidatorPhoneNumber: '',
+      paymentMethodValidatorAmount: 0,
+      validatePaymentMethodLoader: false
     };
   },
 
   methods: {
+    getMessageStatus(){
+      return '@/assets/send.png';
+    },
+
+    validatePaymentMethod(){
+      this.validatePaymentMethodLoader = true;
+    },
+
+    openPaymentMethodValidatorModal(){
+      this.paymentMethodValidatorPhoneNumber = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
+      this.paymentMethodValidatorAmount = this.calcularTotal;
+    },
+
+    getPaymentMethodType(){
+      if (this.MetodoPago == 'SINPE' || this.MetodoPago == 'Transferencia'){
+        return true;
+      }
+      return false;
+
+    },
+
+    getPaymentMethodStyle(){
+      if (this.MetodoPago == 'SINPE' || this.MetodoPago == 'Transferencia'){
+        return 'margin-bottom: 10px; width: 70%';
+      }
+      return 'margin-bottom: 10px; width: 100%';
+    },
+
     getReferenciaSucursal(recipientPhoneNumber){
       const referenciaSucursales = JSON.parse(localStorage.getItem('referenciaSucursales'));
       return referenciaSucursales[recipientPhoneNumber];
@@ -1772,9 +1844,14 @@ export default {
         year: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-        hour12: false
+        hour12: true
       };
-      const formattedDate = parsingDate.toLocaleString('en-US', options);
+      var formattedDate = parsingDate.toLocaleString('en-GB', options);
+      if (formattedDate.slice(-2) == 'am'){
+        formattedDate = formattedDate.slice(0,-2) + 'AM'
+      } else if (formattedDate.slice(-2) == 'pm') {
+        formattedDate = formattedDate.slice(0,-2) + 'PM'
+      }
       return formattedDate;
     },
 
@@ -3302,9 +3379,11 @@ export default {
       const whatsappConversationID = websocketMessageContent.whatsappConversationID;
       if (whatsappConversationID in this.activeConversationsAsJSON){
         this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(websocketMessageContent);
-        if (this.currentActiveConversation.whatsappConversationRecipientPhoneNumber == websocketMessageContent.whatsappGeneralMessageOwnerPhoneNumber) {
-          this.availableConversation = true;
-        } 
+        if (this.currentActiveConversation != null){
+          if (this.currentActiveConversation.whatsappConversationRecipientPhoneNumber == websocketMessageContent.whatsappGeneralMessageOwnerPhoneNumber) {
+            this.availableConversation = true;
+          } 
+        }
         this.playSound('receiveWhatsappMessage');
         this.sortConversations();
       }
@@ -3402,6 +3481,29 @@ export default {
         }
       });
     },
+
+
+    receiveWhatsappMessageStatusUpdate(websocketMessageContent){
+      if (websocketMessageContent != undefined){
+        const whatsappConversationID = websocketMessageContent.whatsappConversationID;
+        const whatsappGeneralMessageID = websocketMessageContent.whatsappGeneralMessageID;
+        const whatsappGeneralMessageStatus = websocketMessageContent.whatsappGeneralMessageStatus;
+        const whatsappGeneralMessageStatusUpdateDateTime = websocketMessageContent.whatsappGeneralMessageStatusUpdateDateTime;
+        if (whatsappConversationID in this.activeConversationsAsJSON){
+          for (var whatsappConversationMessageIndex in this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages){
+            if (this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages[whatsappConversationMessageIndex]['whatsappGeneralMessageID'] == whatsappGeneralMessageID){
+              if (whatsappGeneralMessageStatus == 'sent'){
+                Vue.set(this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages[whatsappConversationMessageIndex], 'whatsappGeneralMessageSendingDateTime', whatsappGeneralMessageStatusUpdateDateTime); 
+              } else if (whatsappGeneralMessageStatus == 'delivered'){
+                Vue.set(this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages[whatsappConversationMessageIndex], 'whatsappGeneralMessageDeliveringDateTime', whatsappGeneralMessageStatusUpdateDateTime); 
+              } else if (whatsappGeneralMessageStatus == 'read'){
+                Vue.set(this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages[whatsappConversationMessageIndex], 'whatsappGeneralMessageReadingDateTime', whatsappGeneralMessageStatusUpdateDateTime); 
+              }
+            }
+          }
+        }
+      }
+    }
     
   },
 
@@ -3460,7 +3562,10 @@ export default {
         this.currentActiveConversation = null;
         this.currentActiveConversationID = null;
       }
+      else if (keyPressed.key == 'ArrowDown') {
+      }
     });
+
   },
 
   mounted(){
@@ -3499,7 +3604,6 @@ export default {
         const websocketMessageJSON = JSON.parse(websocketMessage.data);
         const websocketMessageID = websocketMessageJSON.websocketMessageID;
         const websocketMessageContent = websocketMessageJSON.websocketMessageContent.result;
-
         if (websocketMessageID == '/receiveWhatsappStoreMessage'){
           this.receiveWhatsappStoreMessage(websocketMessageContent);
         } else if (websocketMessageID == '/receiveWhatsappMessage'){
@@ -3518,6 +3622,8 @@ export default {
           this.receiveRequestTransferWhatsappConversation(websocketMessageContent);
         } else if (websocketMessageID == '/acceptTransferWhatsappConversation'){
           this.receiveAcceptTransferWhatsappConversation(websocketMessageContent);
+        } else if (websocketMessageID == '/receiveWhatsappMessageStatusUpdate'){
+          this.receiveWhatsappMessageStatusUpdate(websocketMessageJSON.websocketMessageContent);
         }
       }
     } catch (error) {
