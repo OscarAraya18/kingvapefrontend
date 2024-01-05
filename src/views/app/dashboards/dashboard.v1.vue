@@ -251,7 +251,12 @@
                   </div>
                 
                 </div>
-                <span v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null" style="margin-left: 0; margin-right:auto;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
+                <span v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null" style="display:flex; margin-left: 0; margin-right:auto;" class="text-small text-muted">
+                  <img v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null" style="width: 25px; height: 25px; margin-right: 5px;" src="@/assets/read.png">
+                  <img v-else-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null" style="width: 25px; height: 25px; margin-right: 5px;" src="@/assets/delivered.png">
+                  <img v-else style="width: 25px; height: 25px; margin-right: 5px;" src="@/assets/send.png">
+                  {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}
+                </span>
                 <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
                 <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null">
                   <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
@@ -316,7 +321,7 @@
                   </div>
                   
                   <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                    <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/></GmapMap><br>
+                    <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 600px; height: 250px"><GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/></GmapMap><br>
                     <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
                     <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
                   </div>
@@ -789,9 +794,10 @@ export default {
           }
 
           setInterval(() => {
+            
             for (var activeConversationIndex in this.activeConversationsRows){
               this.activeConversationsRows[activeConversationIndex].whatsappConversationState = this.getWhatsappConversationState(this.activeConversationsRows[activeConversationIndex]);
-              this.activeConversationsRows[activeConversationIndex].whatsappConversationElapsedTime = this.getWhatsappConversationElapsedTime(Math.round((new Date() - new Date(this.activeConversationsRows[activeConversationIndex].whatsappConversationStartDateTime))/1000))
+              this.activeConversationsRows[activeConversationIndex].whatsappConversationElapsedTime = this.getWhatsappConversationElapsedTime(Math.round((new Date() - new Date(this.activeConversations[activeConversationIndex].whatsappConversationStartDateTime))/1000))
             }
           }, 1000);
 
@@ -841,6 +847,9 @@ export default {
         formattedDate = formattedDate.slice(0,-2) + 'AM'
       } else if (formattedDate.slice(-2) == 'pm') {
         formattedDate = formattedDate.slice(0,-2) + 'PM'
+      }
+      if (formattedDate.includes('00') && formattedDate.includes('PM')){
+        formattedDate = formattedDate.replace('00', '12');
       }
       return formattedDate;
     },
@@ -979,6 +988,7 @@ export default {
     },
 
     getWhatsappConversationElapsedTime(seconds){
+      console.log(seconds);
       const hours = Math.floor(seconds / 3600);
       const minutes = Math.floor((seconds % 3600) / 60);
       const remainingSeconds = seconds % 60;

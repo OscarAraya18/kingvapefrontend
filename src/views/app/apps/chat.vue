@@ -295,8 +295,15 @@
                         </div>
                       
                       </div>
-                      <span v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null" style="margin-left: 0; margin-right:auto;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
+
+                      <span v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null" style="display:flex; margin-left: 0; margin-right:auto;" class="text-small text-muted">
+                        <img v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null" style="width: 25px; height: 25px; margin-right: 5px;" src="@/assets/read.png">
+                        <img v-else-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null" style="width: 25px; height: 25px; margin-right: 5px;" src="@/assets/delivered.png">
+                        <img v-else style="width: 25px; height: 25px; margin-right: 5px;" src="@/assets/send.png">
+                        {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}
+                      </span>
                       <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
+                      
                       <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null">
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
                           <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
@@ -1862,6 +1869,9 @@ export default {
         formattedDate = formattedDate.slice(0,-2) + 'AM'
       } else if (formattedDate.slice(-2) == 'pm') {
         formattedDate = formattedDate.slice(0,-2) + 'PM'
+      }
+      if (formattedDate.includes('00') && formattedDate.includes('PM')){
+        formattedDate = formattedDate.replace('00', '12');
       }
       return formattedDate;
     },
