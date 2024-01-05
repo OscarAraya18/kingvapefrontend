@@ -664,7 +664,7 @@
                   <button v-b-modal.emojiModal style="height: 40px; margin-bottom: 20px; margin-left: 10px;" class="btn btn-icon btn-rounded btn-primary i-Eyeglasses-Smiley" type="button"></button>
                   <b-modal scrollable centered id="emojiModal" hide-footer hide-header>
                     <div style="display: flex; justify-content: center;">
-                      <emoji-picker @emoji-click="handleEmojiClick"></emoji-picker>
+                      <emoji-picker class="light" @emoji-click="handleEmojiClick"></emoji-picker>
                     </div>
                   </b-modal>
                 </div>    
@@ -3663,6 +3663,10 @@ export default {
 </script>
 
 <style>
+emoji-picker {
+  width: 500px;
+}
+
   .hoverTest {
     transition: background-color 0.5s ease-in-out;
   }
