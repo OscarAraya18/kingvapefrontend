@@ -1,5 +1,7 @@
 <template>
   <div class="no-gutters">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+
     <div class="row no-gutters">
       <div class="col-md-9" style="padding-right: 25px;">
         <div class="card chat-sidebar-container sidebar-container" style="z-index: 1000;">
@@ -657,8 +659,14 @@
                   
                   </div><br>
                 </div>
-                <div class="form-group" v-if="availableConversation == true">
-                  <b-form-textarea ref="textoEnviar" :disabled='sendingMessageDisable' class="form-control" placeholder="Escribe un mensaje" @keyup.enter="sendWhatsappTextMessage()" v-model="currentActiveConversation.textoEnviar" style="margin-bottom: 20px;" no-resize rows="3"/>
+                <div class="form-group" style="display: flex; align-items: center;" v-if="availableConversation == true">
+                  <b-form-textarea ref="textoEnviar" :disabled='sendingMessageDisable' class="form-control" placeholder="Escribe un mensaje" @keyup.enter="sendWhatsappTextMessage()" v-model="currentActiveConversation.textoEnviar" style="margin-bottom: 20px; width: 100%" no-resize rows="3"/>
+                  <button v-b-modal.emojiModal style="height: 40px; margin-bottom: 20px; margin-left: 10px;" class="btn btn-icon btn-rounded btn-primary i-Eyeglasses-Smiley" type="button"></button>
+                  <b-modal scrollable centered id="emojiModal" hide-footer hide-header>
+                    <div style="display: flex; justify-content: center;">
+                      <emoji-picker @emoji-click="handleEmojiClick"></emoji-picker>
+                    </div>
+                  </b-modal>
                 </div>    
 
                 <div class="d-flex" v-if="agentType == 'agent'"> 
@@ -1288,12 +1296,11 @@ const constants = require('@../../../src/constants.js');
 
 const webSocket = new WebSocket('wss:telasmasbackend.onrender.com');
 
-import router from "../../../router";
+import router from "../../../router"; 
 import {gmapApi} from 'vue2-google-maps';
 import { BDropdown } from 'bootstrap-vue';
 
 import Vue from 'vue';
-
 
 export default {
   watch: {
@@ -1538,6 +1545,10 @@ export default {
   },
 
   methods: {
+    handleEmojiClick(event) {
+      this.currentActiveConversation.textoEnviar = this.currentActiveConversation.textoEnviar + event.detail.unicode;
+    },
+
     getMessageStatus(){
       return '@/assets/send.png';
     },
@@ -3482,6 +3493,15 @@ export default {
       });
     },
 
+    scrollUp(){
+      this.$nextTick(() => {
+        if (this.$refs.scrollRef) {
+          const psContainer = this.$refs.scrollRef.$el;
+          psContainer.scrollTop = 0;
+        }
+      });
+    },
+
 
     receiveWhatsappMessageStatusUpdate(websocketMessageContent){
       if (websocketMessageContent != undefined){
@@ -3563,6 +3583,14 @@ export default {
         this.currentActiveConversationID = null;
       }
       else if (keyPressed.key == 'ArrowDown') {
+        if (this.currentActiveConversation != null){
+          this.scrollDown();
+        }
+      }
+      else if (keyPressed.key == 'ArrowUp') {
+        if (this.currentActiveConversation != null){
+          this.scrollUp();
+        }
       }
     });
 
