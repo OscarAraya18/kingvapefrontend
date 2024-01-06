@@ -58,10 +58,15 @@
               </b-dropdown>
             </div>
           </div>
+
+          <b-modal @ok="deleteStoreConversation()" scrollable size="m" centered id="deleteStoreConversationModal" title="Eliminar mensaje de tienda">
+            <b-form-textarea class="form-control" placeholder="Motivo" v-model="deleteStoreMessageReason" style="width: 100%" no-resize rows="3"/>
+          </b-modal>
+
           <b-modal scrollable size="m" centered hide-footer id="escazuConversationsModal" title="Conversaciones pendientes de Escazú">
             <b-list-group v-if="loaders.grabConversation == false">
               <b-list-group-item v-if="escazuConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
-              <b-list-group-item v-for="escazuConversation in escazuConversations" @click="grabStoreConversation(escazuConversation)" button style="cursor: pointer;">
+              <b-list-group-item @contextmenu.prevent="openDeleteStoreMessageModal(escazuConversation)" v-for="escazuConversation in escazuConversations" @click="grabStoreConversation(escazuConversation)" button style="cursor: pointer;">
                 <strong>Nombre:</strong> {{escazuConversation.storeMessageRecipientProfileName}}<br>
                 <strong>Número:</strong> {{escazuConversation.storeMessageRecipientPhoneNumber}}<br>
                 <strong>Pedido:</strong> {{escazuConversation.storeMessageRecipientOrder}}<br>
@@ -76,7 +81,7 @@
           <b-modal scrollable size="m" centered hide-footer id="zapoteConversationsModal" title="Conversaciones pendientes de Zapote">
             <b-list-group v-if="loaders.grabConversation == false">
               <b-list-group-item v-if="zapoteConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
-              <b-list-group-item v-for="zapoteConversation in zapoteConversations" @click="grabStoreConversation(zapoteConversation)" button style="cursor: pointer;">
+              <b-list-group-item @contextmenu.prevent="openDeleteStoreMessageModal(zapoteConversation)" v-for="zapoteConversation in zapoteConversations" @click="grabStoreConversation(zapoteConversation)" button style="cursor: pointer;">
                 <strong>Nombre:</strong> {{zapoteConversation.storeMessageRecipientProfileName}}<br>
                 <strong>Número:</strong> {{zapoteConversation.storeMessageRecipientPhoneNumber}}<br>
                 <strong>Pedido:</strong> {{zapoteConversation.storeMessageRecipientOrder}}<br>
@@ -91,7 +96,7 @@
           <b-modal scrollable size="m" centered hide-footer id="cartagoConversationsModal" title="Conversaciones pendientes de Cartago">
             <b-list-group v-if="loaders.grabConversation == false">
               <b-list-group-item v-if="cartagoConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
-              <b-list-group-item v-for="cartagoConversation in cartagoConversations" @click="grabStoreConversation(cartagoConversation)" button style="cursor: pointer;">
+              <b-list-group-item @contextmenu.prevent="openDeleteStoreMessageModal(cartagoConversation)" v-for="cartagoConversation in cartagoConversations" @click="grabStoreConversation(cartagoConversation)" button style="cursor: pointer;">
                 <strong>Nombre:</strong> {{cartagoConversation.storeMessageRecipientProfileName}}<br>
                 <strong>Número:</strong> {{cartagoConversation.storeMessageRecipientPhoneNumber}}<br>
                 <strong>Pedido:</strong> {{cartagoConversation.storeMessageRecipientOrder}}<br>
@@ -132,7 +137,6 @@
                   </div>
                   <div class="flex-grow-1"></div>
                   <button v-if="availableConversation == true" @click="rememberCart(historyConversation)" class="btn btn-icon btn-primary mr-2"><i class="i-Shopping-Cart"></i>Recordar carrito</button>
-
                 </div>
               </b-list-group-item>
             </b-list-group>
@@ -1627,11 +1631,49 @@ export default {
       validatePaymentMethodLoader: false,
       
       currentMyStickers: [],
-      currentStickers: []
+      currentStickers: [],
+
+      deleteStoreMessageID: 0,
+      deleteStoreMessageName: '',
+      deleteStoreMessageReason: ''
     };
   },
 
   methods: {
+    deleteStoreConversation(){
+      if (this.deleteStoreMessageReason != ''){
+        axios.post(constants.routes.backendAPI+'/deleteStoreMessage', 
+        {
+          storeMessageID: this.deleteStoreMessageID,
+          storeMessageStoreName: this.deleteStoreMessageName,
+          storeMessageAssignedAgentID: localStorage.getItem('agentID'),
+          storeMessageDeleteReason: this.deleteStoreMessageReason
+        })
+        .then((response) =>{
+          if (response.data.success){
+            this.showNotification('success', 'Mensaje de la tienda eliminado', 'Se ha eliminado el mensaje de la tienda exitosamente.')
+          } else {
+            this.showNotification('danger', 'Error al eliminar el mensaje de la tienda', 'Ha ocurrido un error inesperado al eliminar el mensaje de la tienda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          }
+        })
+        .catch((error) => {
+          this.showNotification('danger', 'Error al eliminar el mensaje de la tienda', 'Ha ocurrido un error inesperado al eliminar el mensaje de la tienda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        })
+      } else {
+        this.showNotification('danger', 'Error al eliminar el mensaje de la tienda', 'Debe colocar un motivo para eliminar el mensaje de la tienda. Agregue un motivo e intentelo nuevamente.')
+      }
+    },
+
+    openDeleteStoreMessageModal(storeConversation){
+      this.deleteStoreMessageID = storeConversation.storeMessageID;
+      this.deleteStoreMessageName = storeConversation.storeMessageStoreName;
+      this.deleteStoreMessageReason = '';
+      this.$root.$emit('bv::hide::modal', 'escazuConversationsModal');
+      this.$root.$emit('bv::hide::modal', 'zapoteConversationsModal');
+      this.$root.$emit('bv::hide::modal', 'cartagoConversationsModal');
+      this.$root.$emit('bv::show::modal', 'deleteStoreConversationModal');
+    },
+
     sendWhatsappStickerMessage(sticker){
       this.loaderSendSticker = true;
       var repliedMessageID = '';
