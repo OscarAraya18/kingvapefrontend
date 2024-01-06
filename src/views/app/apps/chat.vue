@@ -141,6 +141,31 @@
             </div>
           </b-modal>
 
+          <b-modal scrollable size="sm" centered id="saveStickerModal" title="Guardar sticker" @ok="saveSticker()">
+            <b-form-input v-model="stickerName" type="text" placeholder="Nombre del sticker"></b-form-input>
+          </b-modal>
+
+          <b-modal hide-footer scrollable title="Stickers" size="m" centered id="sendStickerModal">   
+            <b-nav tabs justified>
+              <b-nav-item :active="getActiveStickerItem('Mis stickers')" @click="changeActiveStickerItem('Mis stickers')">Mis stickers</b-nav-item>
+              <b-nav-item :active="getActiveStickerItem('Todos los stickers')" @click="changeActiveStickerItem('Todos los stickers')">Todos los stickers</b-nav-item>
+            </b-nav>
+            <br>
+
+            <div v-if="currentStickerItem == 'Mis stickers'">
+              <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+                <img @click="sendSticker(currentSticker)" v-for="currentSticker in currentMyStickers" style="cursor: pointer; width: 105px; margin: 5px;" :src="`data:image/png;base64,${currentSticker.stickerFile}`">
+              </div>
+            </div>
+
+            <div v-else>
+              <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+                <img @click="sendSticker(currentSticker)" v-for="currentSticker in currentStickers" style="cursor: pointer; width: 105px; margin: 5px;" :src="`data:image/png;base64,${currentSticker.stickerFile}`">
+              </div>
+            </div>
+          </b-modal>
+
+
           <b-modal scrollable size="m" centered hide-footer id="historyMessageModal" hide-header>
             <b-list-group v-if="loaders.historyMessage == false && historyMessage != null">
               
@@ -291,9 +316,7 @@
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
                           <img v-b-modal.bigImageModal @click="openBigImage(currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL">
                           <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappFavoriteImageMessageCaption != null">{{currentActiveConversationMessage.whatsappFavoriteImageMessageCaption}}</p>
-
                         </div>
-                      
                       </div>
 
                       <span v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null" style="display:flex; margin-left: 0; margin-right:auto;" class="text-small text-muted">
@@ -499,7 +522,10 @@
                           </div>
                           
                           <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
-                            <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                            <div style="display: flex;">
+                              <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                              <button @click="openSaveStickerModal(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" v-if="currentActiveConversationMessage.whatsappImageMessageType == 'sticker'" class="btn btn-icon btn-rounded btn-primary ml-2" style="height: 40px;" type="button" v-b-modal.saveStickerModal><i class="i-Disk"></i></button>
+                            </div>
                             <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
                           </div>
                           
@@ -816,6 +842,9 @@
                     </b-list-group>
                   </b-modal>
 
+                  <button v-if="availableConversation == true" id="sendSticker" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="openSendStickerModal()" v-b-modal.sendStickerModal><i class="i-Teddy-Bear"></i></button>
+                  <b-tooltip target="sendSticker">Enviar sticker</b-tooltip>
+
                   <button v-if="availableConversation == true" id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>
                   <b-tooltip target="sendAudio">Enviar audio</b-tooltip>
                   <b-modal id="recordAudioModal" hide-footer hide-header size="sm" centered>
@@ -843,6 +872,7 @@
                   <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
                     <img style="width: 1000px;" :src="bigImageSource">
                   </b-modal>
+                  
                   <b-modal @ok="sendWhatsappFavoriteImageMessage()" scrollable title="Catálogo de desechables" size="m" centered id="imageModal">
                     
                     <b-nav tabs justified>
@@ -881,6 +911,7 @@
                     </div>
 
                   </b-modal>
+
                   <button v-if="availableConversation == true" id="sendFavoriteMessages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.favoriteModal @click="openAgentFavoriteMessagesModal()"><i class="i-Love"></i></button>
                   <b-tooltip target="sendFavoriteMessages">Enviar mensajes favoritos</b-tooltip>
                   
@@ -907,6 +938,9 @@
 
                     </b-list-group>
                   </b-modal>
+
+                  <button v-if="availableConversation == true" id="sendSticker" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="openSendStickerModal()" v-b-modal.sendStickerModal><i class="i-Teddy-Bear"></i></button>
+                  <b-tooltip target="sendSticker">Enviar sticker</b-tooltip>
 
                   <button v-if="availableConversation == true" id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>
                   <b-tooltip target="sendAudio">Enviar audio</b-tooltip>
@@ -1371,6 +1405,11 @@ export default {
   },
   data() {
     return { 
+      db: null,
+
+      stickerName: '',
+      stickerFile: '',
+
       agentType: '',
 
       sendEndMessage: false,
@@ -1574,20 +1613,82 @@ export default {
       currentActiveConversationID: null,
 
       currentNavItem: 'Nicotina',
+      currentStickerItem: 'Mis stickers',
 
       paymentMethodValidatorPhoneNumber: '',
       paymentMethodValidatorAmount: 0,
-      validatePaymentMethodLoader: false
+      validatePaymentMethodLoader: false,
+      
+      currentMyStickers: [],
+      currentStickers: []
     };
   },
 
   methods: {
-    handleEmojiClick(event) {
-      this.currentActiveConversation.textoEnviar = this.currentActiveConversation.textoEnviar + event.detail.unicode;
+    sendSticker(sticker){
+      console.log(sticker);
     },
 
-    getMessageStatus(){
-      return '@/assets/send.png';
+    async openSendStickerModal(){
+      const stickerCurrentData = await this.readStickerDatabase();
+      const stickerCurrentIDS = stickerCurrentData.map(currentSticker => currentSticker.stickerID);
+      axios.post(constants.routes.backendAPI+'/selectMissingLocalStickers', {stickerCurrentIDS: stickerCurrentIDS})
+      .then(async (response) =>{
+        if (response.data.success){
+          for (var stickerIndex in response.data.result){
+            await this.saveStickerDatabase(response.data.result[stickerIndex]);
+          }
+          this.currentStickers = await this.readStickerDatabase();
+          this.currentMyStickers = this.currentStickers.filter(sticker => sticker.stickerAgentID == localStorage.getItem('agentID'));
+
+        } else {
+          this.showNotification('danger', 'Error al buscar los stickers', 'Ha ocurrido un error inesperado al buscar los stickers. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        this.showNotification('danger', 'Error al buscar los stickers', 'Ha ocurrido un error inesperado al buscar los stickers. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+
+    },
+
+    changeActiveStickerItem(navItem){
+      this.currentStickerItem = navItem;
+    },
+
+    getActiveStickerItem(navItem){
+      if (this.currentStickerItem == navItem){
+        return true;
+      }
+      return false;
+    },
+
+    saveSticker(){
+      axios.post(constants.routes.backendAPI+'/insertSticker', 
+      {
+        stickerAgentID: localStorage.getItem('agentID'),
+        stickerName: this.stickerName,
+        stickerFile: this.stickerFile,
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.showNotification('success', 'Sticker guardado', "Se ha guardado el sticker con el nombre '" + this.stickerName + "'.");
+        } else {
+          this.showNotification('danger', 'Error al guardar el sticker', 'Ha ocurrido un error inesperado al guardar el sticker. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        this.showNotification('danger', 'Error al guardar el sticker', 'Ha ocurrido un error inesperado al guardar el sticker. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+    openSaveStickerModal(stickerFile){
+      this.stickerFile = stickerFile;
+      this.stickerName = '';
+    },
+
+    handleEmojiClick(event) {
+      this.currentActiveConversation.textoEnviar = this.currentActiveConversation.textoEnviar + event.detail.unicode;
     },
 
     validatePaymentMethod(){
@@ -1814,7 +1915,6 @@ export default {
         whatsappGeneralMessageID: whatsappGeneralMessageID
       })
       .then((response) => {
-        console.log(response.data);
         if (response.data.success){
           this.historyMessage = response.data.result;
           this.loaders.historyMessage = false;
@@ -3035,6 +3135,7 @@ export default {
     },
 
     changeCurrentActiveConversation(currentActiveConversation, activeConversationID){
+
       this.currentActiveConversationID = activeConversationID;
       this.currentActiveConversation = currentActiveConversation;
       this.productos = [];
@@ -3563,7 +3664,54 @@ export default {
           }
         }
       }
-    }
+    },
+
+    openStickerDatabase(){
+      const request = indexedDB.open('stickerDatabase', 1);
+      request.onerror = (event) => {
+        console.error('Error opening IndexedDB', event);
+      };
+      request.onsuccess = (event) => {
+        this.db = event.target.result;
+      };
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains('stickers')) {
+          const store = db.createObjectStore('stickers', {autoIncrement: true});
+        }
+      };
+    },
+
+    saveStickerDatabase(stickerData) {
+      return new Promise(async (saveStickerDatabasePromiseResolve) => {
+        const transaction = this.db.transaction(['stickers'], 'readwrite');
+        const objectStore = transaction.objectStore('stickers');
+        const request = objectStore.add(stickerData);
+        request.onsuccess = (event) => {
+          saveStickerDatabasePromiseResolve(event);
+        };
+        request.onerror = (event) => {
+          console.error('Error saving data to IndexedDB', event);
+        };
+      });
+    },
+
+    readStickerDatabase() {
+      return new Promise(async (readStickerDatabasePromiseResolve) => {
+        const transaction = this.db.transaction(['stickers'], 'readonly');
+        const objectStore = transaction.objectStore('stickers');
+        const request = objectStore.getAll();
+        request.onsuccess = (event) => {
+          const data = event.target.result;
+          readStickerDatabasePromiseResolve(data);
+        };
+        request.onerror = (event) => {
+          console.error('Error reading data from IndexedDB', event);
+        };
+      });
+    },
+
+
     
   },
 
@@ -3617,6 +3765,7 @@ export default {
   },
 
   created(){
+    this.openStickerDatabase();
     window.addEventListener('keydown', (keyPressed) => {
       if (keyPressed.key == 'Escape') {
         this.currentActiveConversation = null;
