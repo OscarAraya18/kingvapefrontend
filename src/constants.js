@@ -1,4 +1,4 @@
-module.exports = {
+module.exports = { 
     
     routes: {
         backendAPI: 'https://telasmasbackend.onrender.com',
