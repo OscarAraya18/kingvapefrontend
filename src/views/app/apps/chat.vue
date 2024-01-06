@@ -152,16 +152,22 @@
             </b-nav>
             <br>
 
-            <div v-if="currentStickerItem == 'Mis stickers'">
-              <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
-                <img @click="sendSticker(currentSticker)" v-for="currentSticker in currentMyStickers" style="cursor: pointer; width: 105px; margin: 5px;" :src="`data:image/png;base64,${currentSticker.stickerFile}`">
+            <div v-if="loaderSendSticker == false">
+              <div v-if="currentStickerItem == 'Mis stickers'">
+                <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+                  <img @click="sendWhatsappStickerMessage(currentSticker)" v-for="currentSticker in currentMyStickers" style="cursor: pointer; width: 105px; margin: 5px;" :src="`data:image/png;base64,${currentSticker.stickerFile}`">
+                </div>
+              </div>
+
+              <div v-else>
+                <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+                  <img @click="sendWhatsappStickerMessage(currentSticker)" v-for="currentSticker in currentStickers" style="cursor: pointer; width: 105px; margin: 5px;" :src="`data:image/png;base64,${currentSticker.stickerFile}`">
+                </div>
               </div>
             </div>
 
-            <div v-else>
-              <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
-                <img @click="sendSticker(currentSticker)" v-for="currentSticker in currentStickers" style="cursor: pointer; width: 105px; margin: 5px;" :src="`data:image/png;base64,${currentSticker.stickerFile}`">
-              </div>
+            <div v-else style="text-align: center;">
+              <br><span class="spinner-glow spinner-glow-primary"></span>
             </div>
           </b-modal>
 
@@ -323,17 +329,17 @@
                         <img :id="'r'+currentActiveConversationMessage.whatsappGeneralMessageID" v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null" style="cursor: pointer; width: 25px; height: 25px; margin-right: 5px;" src="@/assets/read.png">
                         <img :id="'d'+currentActiveConversationMessage.whatsappGeneralMessageID" v-else-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null" style="cursor: pointer; width: 25px; height: 25px; margin-right: 5px;" src="@/assets/delivered.png">
                         <img :id="'s'+currentActiveConversationMessage.whatsappGeneralMessageID" v-else style="cursor: pointer; width: 25px; height: 25px; margin-right: 5px;" src="@/assets/send.png">
-                        <b-tooltip :target="'r'+currentActiveConversationMessage.whatsappGeneralMessageID">
+                        <b-tooltip :target="'r'+currentActiveConversationMessage.whatsappGeneralMessageID" v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null">
                           <p>Envíado: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</p>
                           <p v-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null">Recibido: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime)}}</p>
                           <p v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null">Leído: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime)}}</p>
                         </b-tooltip>
-                        <b-tooltip :target="'d'+currentActiveConversationMessage.whatsappGeneralMessageID">
+                        <b-tooltip :target="'d'+currentActiveConversationMessage.whatsappGeneralMessageID" v-else-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null">
                           <p>Envíado: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</p>
                           <p v-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null">Recibido: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime)}}</p>
                           <p v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null">Leído: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime)}}</p>
                         </b-tooltip>
-                        <b-tooltip :target="'s'+currentActiveConversationMessage.whatsappGeneralMessageID">
+                        <b-tooltip :target="'s'+currentActiveConversationMessage.whatsappGeneralMessageID" v-else>
                           <p>Envíado: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</p>
                           <p v-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null">Recibido: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime)}}</p>
                           <p v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null">Leído: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime)}}</p>
@@ -563,17 +569,17 @@
                           <img :id="'r'+currentActiveConversationMessage.whatsappGeneralMessageID" v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null" style="cursor: pointer; width: 25px; height: 25px; margin-right: 5px;" src="@/assets/read.png">
                           <img :id="'d'+currentActiveConversationMessage.whatsappGeneralMessageID" v-else-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null" style="cursor: pointer; width: 25px; height: 25px; margin-right: 5px;" src="@/assets/delivered.png">
                           <img :id="'s'+currentActiveConversationMessage.whatsappGeneralMessageID" v-else style="cursor: pointer; width: 25px; height: 25px; margin-right: 5px;" src="@/assets/send.png">
-                          <b-tooltip :target="'r'+currentActiveConversationMessage.whatsappGeneralMessageID">
+                          <b-tooltip :target="'r'+currentActiveConversationMessage.whatsappGeneralMessageID" v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null">
                             <p>Envíado: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</p>
                             <p v-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null">Recibido: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime)}}</p>
                             <p v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null">Leído: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime)}}</p>
                           </b-tooltip>
-                          <b-tooltip :target="'d'+currentActiveConversationMessage.whatsappGeneralMessageID">
+                          <b-tooltip :target="'d'+currentActiveConversationMessage.whatsappGeneralMessageID" v-else-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null">
                             <p>Envíado: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</p>
                             <p v-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null">Recibido: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime)}}</p>
                             <p v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null">Leído: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime)}}</p>
                           </b-tooltip>
-                          <b-tooltip :target="'s'+currentActiveConversationMessage.whatsappGeneralMessageID">
+                          <b-tooltip :target="'s'+currentActiveConversationMessage.whatsappGeneralMessageID" v-else>
                             <p>Envíado: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</p>
                             <p v-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null">Recibido: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime)}}</p>
                             <p v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null">Leído: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime)}}</p>
@@ -1409,6 +1415,7 @@ export default {
 
       stickerName: '',
       stickerFile: '',
+      loaderSendSticker: false,
 
       agentType: '',
 
@@ -1625,8 +1632,36 @@ export default {
   },
 
   methods: {
-    sendSticker(sticker){
-      console.log(sticker);
+    sendWhatsappStickerMessage(sticker){
+      this.loaderSendSticker = true;
+      var repliedMessageID = '';
+      if (this.repliedMessage != null){
+        repliedMessageID = this.repliedMessage.whatsappGeneralMessageID
+      }
+      axios.post(constants.routes.backendAPI+'/sendWhatsappStickerMessage', 
+      {
+        stickerID: sticker.stickerID,
+        whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+        whatsappGeneralMessageRepliedMessageID: repliedMessageID
+      })
+      .then((response) =>{
+        this.loaderSendSticker = false;
+        this.$root.$emit('bv::hide::modal','sendStickerModal');
+        if (response.data.success){
+          this.repliedMessage = null;
+          const whatsappConversationID = response.data.result.whatsappConversationID;
+          this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);          
+          this.scrollDown();
+          this.sortConversations();
+        } else {
+          this.showNotification('danger', 'Error al enviar el sticker al cliente', 'Ha ocurrido un error inesperado al enviar el sticker al cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        this.loaderSendSticker = false;
+        this.$root.$emit('bv::hide::modal','sendStickerModal');
+        this.showNotification('danger', 'Error al enviar el sticker al cliente', 'Ha ocurrido un error inesperado al enviar el sticker al cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
     },
 
     async openSendStickerModal(){
@@ -2737,7 +2772,6 @@ export default {
           this.sortConversations();
         } else {
           this.sendingMessageDisable = false;
-          console.log(response);
           this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
