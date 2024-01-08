@@ -1,9 +1,9 @@
 module.exports = { 
     
     routes: {
-        backendAPI: 'https://lionfish-app-ndpri.ondigitalocean.app',
-        websocketAPI: 'lionfish-app-ndpri.ondigitalocean.app/:10000'
-    }, 
+        backendAPI: 'https://telasmasbackend.onrender.com',
+        websocketAPI: 'telasmasbackend.onrender.com:10000'
+    },
 
     credentials: 
     {
