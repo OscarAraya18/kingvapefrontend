@@ -464,7 +464,7 @@
 
             
             
-            <div style="background-image: url('https://drive.google.com/uc?export=view&id=1TipUAijdH5b7Md_DgIW_WtB_vkz2fyO5');">
+            <div style="background-image: url('https://res.cloudinary.com/dfionqbqe/image/upload/v1705012178/fondo.jpg');">
               <vue-perfect-scrollbar ref="scrollRef" :settings="{ suppressScrollX: true, wheelPropagation: false }" class="chat-content perfect-scrollbar rtl-ps-none ps scroll" style="padding-bottom: 30px;">
                 <div v-for="currentActiveConversationMessage in currentActiveConversation.whatsappConversationMessages" @contextmenu.prevent="replyMessageRightClick(currentActiveConversationMessage)">
                   <div class="d-flex mb-30" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
