@@ -1187,32 +1187,49 @@
                                   @change="modificarMetodoPago()"
                                 >
                                 </b-form-select>
-                                <b-button v-if="getPaymentMethodType()" v-b-modal.paymentMethodValidatorModal style="margin-bottom: 15px; margin-left: 10px; width: 30%" @click="openPaymentMethodValidatorModal()" variant="info">Validar</b-button>
+                                <b-button v-if="getPaymentMethodType()" v-b-modal.paymentMethodValidatorModal style="margin-bottom: 15px; margin-left: 10px; width: 30%" @click="validatePaymentMethod()" variant="info">Validar</b-button>
 
                                 <b-modal scrollable size="m" centered hide-header hide-footer id="paymentMethodValidatorModal">
                                   <div>
-
-                                    <p class="m-0 text-title text-16"><strong>Número de teléfono</strong></p>
-                                    <b-form-input
-                                      type="text"
-                                      v-model="paymentMethodValidatorPhoneNumber"
-                                      placeholder="Número telefónico asociado"
-                                      style="margin-bottom: 20px;"
-                                    ></b-form-input>
-                                    <p class="m-0 text-title text-16"><strong>Monto</strong></p>
-                                    <b-form-input
-                                      type="text"
-                                      v-model="paymentMethodValidatorAmount"
-                                      placeholder="Monto a verificar"
-                                      style="margin-bottom: 10px;"
-                                    ></b-form-input>
-
-                                    <div style="text-align: center;" v-if="validatePaymentMethodLoader == false">
-                                      <b-button style="width: 80%; margin-bottom: 15px; margin-top: 15px;" @click="validatePaymentMethod()" variant="info">Validar</b-button>
+                                    <div v-if="currentTransactions != null">
+                                      <b-list-group>
+                                        <b-list-group-item v-if="currentTransactions.length == 0">No hay transacciones por asociar</b-list-group-item>
+                                        <b-list-group-item v-b-modal.syncTransactionModal @click="openSyncTransactionModal(currentTransaction)" v-for="currentTransaction in currentTransactions" button style="cursor: pointer;">
+                                          <strong>ID:</strong> {{currentTransaction.transactionID}}<br>
+                                          <strong>Detalle:</strong> {{currentTransaction.transactionNote}}<br>
+                                          <strong>Monto:</strong> ₡{{currentTransaction.transactionAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}<br>
+                                          <strong>Fecha:</strong> {{parseHour(currentTransaction.transactionDate)}}
+                                        </b-list-group-item>
+                                      </b-list-group>
                                     </div>
                                     <div v-else style="text-align: center;">
                                       <br>
                                       <span class="spinner-glow spinner-glow-primary"></span>
+                                    </div>
+                                  </div>
+                                </b-modal>
+
+                                <b-modal size="lg" @ok="syncTransactionToMessage()" hide-header centered id="syncTransactionModal">
+                                  <div v-if="currentTransaction != null">
+                                    <div v-for="currentActiveConversationMessage in currentActiveConversation.whatsappConversationMessages">
+                                      <div @click="selectTransactionMessage(currentActiveConversationMessage.whatsappGeneralMessageID)" style="cursor: pointer;" class="d-flex mb-30" v-if="(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber != null) && ((currentActiveConversationMessage.whatsappGeneralMessageType == 'text') || (currentActiveConversationMessage.whatsappGeneralMessageType == 'image') || (currentActiveConversationMessage.whatsappGeneralMessageType == 'document'))" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
+                                        <div :style="getMessageOwnerColorTransaction(currentActiveConversationMessage.selected)" class="message flex-grow-1">
+                                          <div class="d-flex">
+                                            <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber != null">
+                                              <span style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
+
+                                              <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>                            
+                                              <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
+                                                <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                                                <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
+                                              </div>                                     
+                                              <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                                                <a style="color: black;" :href="`data:${currentActiveConversationMessage.whatsappDocumentMessageMimeType};base64,${currentActiveConversationMessage.whatsappDocumentMessageFile}`" :download="currentActiveConversationMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{currentActiveConversationMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
                                 </b-modal>
@@ -1310,7 +1327,7 @@
                                       <!-- Descripción - Dropdown -->
                                       <span v-if="props.column.field == 'descripcion'">
                                           <div style="display: flex;">
-                                            <i @click="EliminarLinea(props.row.id)" class="icon-regular ml-0 mr-3 i-Eraser-2" style="color:red; cursor: pointer; margin-right: 5px;"></i>
+                                            <i @click="EliminarLinea(props.row.CodigoP)" class="icon-regular ml-0 mr-3 i-Eraser-2" style="color:red; cursor: pointer; margin-right: 5px;"></i>
                                             <b-dropdown class="text-dropdown description-content" size="sm" no-caret>
                                                 <template slot="button-content">{{props.row.descripcion}}</template>
                                             </b-dropdown>
@@ -1416,6 +1433,8 @@ export default {
   data() {
     return { 
       db: null,
+
+      currentTransactions: null,
 
       stickerName: '',
       stickerFile: '',
@@ -1635,11 +1654,70 @@ export default {
 
       deleteStoreMessageID: 0,
       deleteStoreMessageName: '',
-      deleteStoreMessageReason: ''
+      deleteStoreMessageReason: '',
+
+      currentTransaction: null,
+      syncTransactionTitle: ''
     };
   },
 
   methods: {
+    syncTransactionToMessage(){
+      window.resizeTo(100, 100);
+      var whatsappGeneralMessageID = '';
+      for (var whatsappMessage in this.currentActiveConversation.whatsappConversationMessages){
+        if (this.currentActiveConversation.whatsappConversationMessages[whatsappMessage]['selected'] == true){
+          whatsappGeneralMessageID = this.currentActiveConversation.whatsappConversationMessages[whatsappMessage]['whatsappGeneralMessageID'];
+        }
+      }
+      if (whatsappGeneralMessageID == ''){
+        this.showNotification('danger', 'Error al validar la transacción', 'Debe seleccionar un mensaje para asociar la transacción. Seleccione un mensaje e intentelo nuevamente.');
+      } else {
+        axios.post('https://d06b-186-5-163-74.ngrok-free.app/syncTransaction',
+        {
+          transactionID: this.currentTransaction.transactionID,
+          transactionRelatedMessageID: whatsappGeneralMessageID,
+          transactionApprover: localStorage.getItem('agentID'),
+          transactionStore: 'King Vape Center'
+        })
+        .then((response) =>{
+          if (response.data.success){
+            this.showNotification('success', 'Transacción validada', 'Se ha validado la transacción exitosamente.')
+            this.$root.$emit('bv::hide::modal', 'syncTransactionModal');
+            this.$root.$emit('bv::hide::modal', 'paymentMethodValidatorModal');
+          } else {
+            this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        })
+      }
+    },
+
+    selectTransactionMessage(whatsappGeneralMessageID){
+      for (var whatsappMessage in this.currentActiveConversation.whatsappConversationMessages){
+        if (this.currentActiveConversation.whatsappConversationMessages[whatsappMessage]['whatsappGeneralMessageID'] == whatsappGeneralMessageID){
+          if (this.currentActiveConversation.whatsappConversationMessages[whatsappMessage]['selected'] == true){
+            Vue.set(this.currentActiveConversation.whatsappConversationMessages[whatsappMessage], 'selected', false);
+          } else {
+            Vue.set(this.currentActiveConversation.whatsappConversationMessages[whatsappMessage], 'selected', true);
+          }
+        } else {
+          Vue.set(this.currentActiveConversation.whatsappConversationMessages[whatsappMessage], 'selected', false);
+        }
+      }
+    },
+
+    openSyncTransactionModal(currentTransaction){
+      for (var whatsappMessage in this.currentActiveConversation.whatsappConversationMessages){ 
+        Vue.set(this.currentActiveConversation.whatsappConversationMessages[whatsappMessage], 'selected', false);
+      }
+      this.currentTransaction = currentTransaction;
+      this.syncTransactionTitle = `Detalle: ${currentTransaction.transactionNote}. Monto: ₡${currentTransaction.transactionAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}`;
+    },
+
     deleteStoreConversation(){
       if (this.deleteStoreMessageReason != ''){
         axios.post(constants.routes.backendAPI+'/deleteStoreMessage', 
@@ -1723,7 +1801,6 @@ export default {
         }
       })
       .catch((error) => {
-        console.log(error);
         this.showNotification('danger', 'Error al buscar los stickers', 'Ha ocurrido un error inesperado al buscar los stickers. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
 
@@ -1768,13 +1845,29 @@ export default {
       this.currentActiveConversation.textoEnviar = this.currentActiveConversation.textoEnviar + event.detail.unicode;
     },
 
-    validatePaymentMethod(){
+    validatePaymentMethod(){ 
       this.validatePaymentMethodLoader = true;
+      this.currentTransactions = null;
+      axios.get('https://d06b-186-5-163-74.ngrok-free.app/selectNotUsedTransactions')
+      .then((response) =>{
+        this.validatePaymentMethodLoader = false;
+        if (response.data.success){
+          this.currentTransactions = response.data.result;
+        } else {
+          this.showNotification('danger', 'Error al consultar las transacciones', 'Ha ocurrido un error inesperado al consultar las transacciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        this.validatePaymentMethodLoader = false;
+        this.showNotification('danger', 'Error al consultar las transacciones', 'Ha ocurrido un error inesperado al consultar las transacciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
     },
 
     openPaymentMethodValidatorModal(){
+      this.currentTransactions = null;
       this.paymentMethodValidatorPhoneNumber = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
-      this.paymentMethodValidatorAmount = this.calcularTotal;
+      this.paymentMethodValidatorAmount = parseInt(this.calcularTotal, 10);
     },
 
     getPaymentMethodType(){
@@ -2001,7 +2094,6 @@ export default {
         }
       })
       .catch((error) => {
-        console.log(error);
         this.showNotification('danger', 'Error al abrir el mensaje del historial', 'Ha ocurrido un error inesperado al abrir el mensaje del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
@@ -2155,7 +2247,6 @@ export default {
           }
         })
         .catch((error) => {
-          console.log(error);
           this.showNotification('danger', 'Error al consultar las imágenes del catálogo', 'Ha ocurrido un error inesperado al consultar las imágenes del catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         })
     },
@@ -2498,152 +2589,160 @@ export default {
     },
 
     OrdenExpress(){
-      this.phone = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
-      this.phone = (parseInt(this.phone.replace(/\D/g, ''), 10)).toString();
+      try {
+        this.phone = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
+        this.phone = (parseInt(this.phone.replace(/\D/g, ''), 10)).toString();
 
-      this.name = this.currentActiveConversation.whatsappConversationRecipientProfileName;
-      this.repliedMessage = null;
-      this.cedula = this.currentActiveConversation.whatsappConversationRecipientID;
-      this.email = this.currentActiveConversation.whatsappConversationRecipientEmail;
-      this.address = this.currentActiveConversation.whatsappConversationRecipientLocationDetails;
-      this.nota = this.currentActiveConversation.whatsappConversationRecipientNote; 
-      this.orden = this.currentActiveConversation.whatsappConversationProducts;
-      this.producto = '';
+        this.name = this.currentActiveConversation.whatsappConversationRecipientProfileName;
+        this.repliedMessage = null;
+        this.cedula = this.currentActiveConversation.whatsappConversationRecipientID;
+        this.email = this.currentActiveConversation.whatsappConversationRecipientEmail;
+        this.address = this.currentActiveConversation.whatsappConversationRecipientLocationDetails;
+        this.nota = this.currentActiveConversation.whatsappConversationRecipientNote; 
+        this.orden = this.currentActiveConversation.whatsappConversationProducts;
+        this.producto = '';
 
-      if(this.ValidarData() == 1){
-        var metodoEnvioCorregido = '';
-        if (this.MetodoEnvio == 'Retiro en sucursal'){
-          metodoEnvioCorregido = 'Retira en sucursal';
-        } else if (this.MetodoEnvio == 'Envío por motorizado'){
-          metodoEnvioCorregido = 'Envio Propio';
-        } else {
-          metodoEnvioCorregido = 'Correos de CR';
-        }
+        if(this.ValidarData() == 1){
+          var metodoEnvioCorregido = '';
+          if (this.MetodoEnvio == 'Retiro en sucursal'){
+            metodoEnvioCorregido = 'Retira en sucursal';
+          } else if (this.MetodoEnvio == 'Envío por motorizado'){
+            metodoEnvioCorregido = 'Envio Propio';
+          } else {
+            metodoEnvioCorregido = 'Correos de CR';
+          }
 
-        this.loaderOrdenEnviada = true;
-        var me = this;
-        this.loading = true;
-        var momentoActual = new Date(); 
-        var hora = momentoActual.getHours(); 
-        var minuto = momentoActual.getMinutes(); 
-        var segundo = momentoActual.getSeconds();
-        var time = hora + ":" + minuto + ":" + segundo;
-        let header={"Authorization" : "Bearer "};
-        let configuracion= {headers : header};
+          this.loaderOrdenEnviada = true;
+          var me = this;
+          this.loading = true;
+          var momentoActual = new Date(); 
+          var hora = momentoActual.getHours(); 
+          var minuto = momentoActual.getMinutes(); 
+          var segundo = momentoActual.getSeconds();
+          var time = hora + ":" + minuto + ":" + segundo;
+          let header={"Authorization" : "Bearer "};
+          let configuracion= {headers : header};
 
-        axios.post('https://noah.cr/BackendKingVape/api/ordenexpress/CrearMesaTotal',
-        {
-          'fecha': this.today.toString(),
-          'cajero': this.agentName,
-          'total': this.calcularTotal,
-          'Nombre': this.name,
-          'telefono': this.phone,
-          'Direccion': this.address,
-          'tipoPago1': this.MetodoPago,
-          'Hora': time,
-          'descuento': this.calcularDescuento,
-          'localidad': this.Sucursal,
-          'estado': 0,
-          'nota':" Estado Pago: " +this.estadoPago+" "+this.pagaCon+" "+this.nota,
-          'tipoCompra': metodoEnvioCorregido,
-          'detalles': this.orden,
-          'correo': this.email,
-          'latitud': this.latitud,
-          'longitud': this.longitud,
-          'Mesa':"50",
-          'TipoCedula':'FISICA',
-          'Cedula':this.cedula,
-          'Direccion2':this.DireccionCliente2,
-          'Direccion3':this.DireccionCliente3,
-          'Personas':this.dividendo,
-          'Mensajero':'',
-          'MedioOrden':'Whatsapp',
-          'Facturacion': false
-        },configuracion)
-        
-        .then(function (response) {
-          me.$swal({
-            title: "Se ha enviado la orden al sistema de comandas de la pantalla",
-            text: "¿Quiere archivar la conversación?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonText: 'Cancelar',
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Confirmar"
-          })
-          .then((result) => {
-            axios.post(constants.routes.backendAPI+'/insertOrUpdateContact',
-            {
-              'contactName': me.name,
-              'contactPhoneNumber': me.phone,
-              'contactID': me.cedula,
-              'contactEmail': me.email,
-              'contactLocations': me.currentActiveConversation.whatsappConversationRecipientLocations,
-              'contactLocationDetails': me.address,
-              'contactNote': me.nota
-            }).then(function (){
-              
+          axios.post('https://noah.cr/BackendKingVape/api/ordenexpress/CrearMesaTotal',
+          {
+            'fecha': this.today.toString(),
+            'cajero': this.agentName,
+            'total': this.calcularTotal,
+            'Nombre': this.name,
+            'telefono': this.phone,
+            'Direccion': this.address,
+            'tipoPago1': this.MetodoPago,
+            'Hora': time,
+            'descuento': this.calcularDescuento,
+            'localidad': this.Sucursal,
+            'estado': 0,
+            'nota':" Estado Pago: " +this.estadoPago+" "+this.pagaCon+" "+this.nota,
+            'tipoCompra': metodoEnvioCorregido,
+            'detalles': this.orden,
+            'correo': this.email,
+            'latitud': this.latitud,
+            'longitud': this.longitud,
+            'Mesa':"50",
+            'TipoCedula':'FISICA',
+            'Cedula':this.cedula,
+            'Direccion2':this.DireccionCliente2,
+            'Direccion3':this.DireccionCliente3,
+            'Personas':this.dividendo,
+            'Mensajero':'',
+            'MedioOrden':'Whatsapp',
+            'Facturacion': false
+          },configuracion)
+          
+          .then(function (response) {
+            me.$swal({
+              title: "Se ha enviado la orden al sistema de comandas de la pantalla",
+              text: "¿Quiere cerrar la conversación? En caso de no cerrarla, recuerde que la venta no se registrará.",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#3085d6",
+              cancelButtonText: 'Cancelar',
+              cancelButtonColor: "#d33",
+              confirmButtonText: "Confirmar"
             })
-
-            if (result.value) {
-              const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
-              if (ordenesActualesLocalStorage[me.phone]){
-                delete ordenesActualesLocalStorage[me.phone];
-              }
-              localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
-
-              const datosActualesLocalStorage = JSON.parse(localStorage.getItem('datosActuales'));
-              if (datosActualesLocalStorage[me.phone]){
-                delete datosActualesLocalStorage[me.phone];
-              }
-              localStorage.setItem('datosActuales', JSON.stringify(datosActualesLocalStorage));
-
-
-              axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
+            .then((result) => {
+              axios.post(constants.routes.backendAPI+'/insertOrUpdateContact',
               {
-                whatsappConversationRecipientPhoneNumber: me.phone,
-                whatsappConversationCloseComment: 'Venta',
-                whatsappConversationAmount: me.calcularTotal,
-                whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
-                whatsappConversationProducts: me.currentActiveConversation.whatsappConversationProducts,
-                sendAgentEndMessage: me.sendEndMessage
-              })
-              .then((response) =>{ 
-                if (response.data.success){
-                  me.showNotification('success', 'Conversación finalizada', 'Ha finalizado la conversación exitosamente.')
-                  delete me.activeConversationsAsJSON[response.data.result];
-                  me.sortConversations();
-                  me.currentActiveConversation = null;
-                } else {
-                  me.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-                }
-              })
-              .catch((error) =>{
-                me.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+                'contactName': me.name,
+                'contactPhoneNumber': me.phone,
+                'contactID': me.cedula,
+                'contactEmail': me.email,
+                'contactLocations': me.currentActiveConversation.whatsappConversationRecipientLocations,
+                'contactLocationDetails': me.address,
+                'contactNote': me.nota
+              }).then(function (){
+                
               })
 
-            }
-            me.CleanData();
-            me.loading = false;
+              if (result.value) {
+                const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
+                if (ordenesActualesLocalStorage[me.phone]){
+                  delete ordenesActualesLocalStorage[me.phone];
+                }
+                localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
+
+                const datosActualesLocalStorage = JSON.parse(localStorage.getItem('datosActuales'));
+                if (datosActualesLocalStorage[me.phone]){
+                  delete datosActualesLocalStorage[me.phone];
+                }
+                localStorage.setItem('datosActuales', JSON.stringify(datosActualesLocalStorage));
+
+
+                axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
+                {
+                  whatsappConversationRecipientPhoneNumber: me.phone,
+                  whatsappConversationCloseComment: 'Venta',
+                  whatsappConversationAmount: me.calcularTotal,
+                  whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
+                  whatsappConversationProducts: me.currentActiveConversation.whatsappConversationProducts,
+                  sendAgentEndMessage: me.sendEndMessage
+                })
+                .then((response) =>{ 
+                  if (response.data.success){
+                    me.showNotification('success', 'Conversación finalizada', 'Ha finalizado la conversación exitosamente.')
+                    delete me.activeConversationsAsJSON[response.data.result];
+                    me.sortConversations();
+                    me.currentActiveConversation = null;
+                  } else {
+                    me.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+                  }
+                })
+                .catch((error) =>{
+                  me.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+                })
+
+              }
+              me.CleanData();
+              me.loading = false;
+              me.loaderOrdenEnviada = false;
+            });
+          })
+          .catch(function (error) {
+            me.showNotification('danger', 'Error al generar la orden', 'Ha ocurrido un error inesperado al general la orden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
             me.loaderOrdenEnviada = false;
           });
-        })
-        .catch(function (error) {
-          this.showNotification('danger', 'Error al generar la orden', 'Ha ocurrido un error inesperado al general la orden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-          this.loading = false; 
-        });
+        }
+      } catch {
+        this.showNotification('danger', 'Error de tipado', 'Ha ocurrido un error inesperado de tipado. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        this.loaderOrdenEnviada = false;
       }
     },
 
-      EliminarLinea(id){
-        this.currentActiveConversation.whatsappConversationProducts = this.currentActiveConversation.whatsappConversationProducts.filter(e => e.id != id)
+      EliminarLinea(CodigoP){
+        console.log(this.currentActiveConversation.whatsappConversationProducts);
+        console.log(CodigoP);
+        this.currentActiveConversation.whatsappConversationProducts = this.currentActiveConversation.whatsappConversationProducts.filter(e => e.CodigoP != CodigoP);
         const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
         if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-          ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber].filter(e => e.id != id);
+          ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber].filter(e => e.CodigoP != CodigoP);
         }
         localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
       },
+
       AgregarItem(item,variant = null){
         this.currentActiveConversation.whatsappConversationProducts.push({
           CodigoP:item.codigoProducto,
@@ -2692,7 +2791,6 @@ export default {
           id: item.id,
           descuento: 0
         });
-        console.log(this.currentActiveConversation.whatsappConversationProducts);
         this.$bvToast.toast(descripcionVariacion + " cargado al carrito.", {
           title: `Producto cargado al carrito`,
           variant: variant,
@@ -2775,11 +2873,18 @@ export default {
       document.getElementById('imageUploader').click();
     },
 
+    getMessageOwnerColorTransaction(selected){
+      if(selected == true){
+        return "background-color:#b1fac8";
+      }
+      return "background-color:#dedede";
+    },
+
 
     getMessageOwnerColor(messageOwner){
       if(messageOwner == null){
         return "background-color:#ceefff";
-      } 
+      }
       return "background-color:#dedede";
     },
     getMessageOwnerStyle(messageOwner){
@@ -2845,12 +2950,10 @@ export default {
           this.sortConversations();
           this.$root.$emit('bv::hide::modal','favoriteModal');
         } else {
-          console.log(response)
           this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
       .catch((error) =>{
-        console.log(error)
         this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       }); 
     },
@@ -2928,7 +3031,6 @@ export default {
           }
         })
         .catch((error) =>{
-          console.log(error);
           this.showNotification('danger', 'Error al enviar la imagen al cliente', 'Ha ocurrido un error inesperado al enviar la imagen. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         })
       };
@@ -2962,7 +3064,6 @@ export default {
         }
       })
       .catch((error) => {
-        console.log(error)
         this.showNotification('danger', 'Error al enviar el audio', 'Ha ocurrido un error inesperado al enviar el audio. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
@@ -3125,7 +3226,6 @@ export default {
         }
       })
       .catch((error) =>{
-        console.log(error);
         this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
@@ -3205,7 +3305,6 @@ export default {
         }
       })
       .catch((error) =>{
-        console.log(error);
         this.showNotification('danger', 'Error al aceptar la transferencia', 'Ha ocurrido un error inesperado al aceptar la transferencia. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
@@ -3343,7 +3442,6 @@ export default {
         }
       })
       .catch((error) =>{
-        console.log(error);
         this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
@@ -3473,7 +3571,6 @@ export default {
         }
       })
       .catch((error) =>{
-        console.log(error);
         this.showNotification('danger', 'Error al consultar las conversaciones activas', 'Ha ocurrido un error inesperado al consultar las conversaciones pendientes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
@@ -3567,7 +3664,6 @@ export default {
         }
       })
       .catch((error) =>{
-        console.log(error);
         this.showNotification('danger', 'Error al consultar el estado de los agentes', 'Ha ocurrido un error inesperado al consultar el estado de los agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
