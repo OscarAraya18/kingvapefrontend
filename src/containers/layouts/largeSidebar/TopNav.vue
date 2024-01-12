@@ -1,5 +1,39 @@
 <template>
   <div class="main-header">
+
+
+    <b-modal scrollable size="m" centered id="notificationModal" hide-header hide-footer no-close-on-backdrop>
+      <div v-if="incomingNotification != null">
+        <div style="display: flex;">
+          <h5>NOTIFICACIÓN ENTRANTE:</h5>
+          <div class="flex-grow-1" ></div>
+          <i class="i-Close-Window text-25 text-danger" @click="closeNotification()" style="cursor: pointer"></i>
+        </div>
+        <br>
+        <div>
+          <strong>NOMBRE: </strong>{{incomingNotification.notificationName}}<br>
+          <strong>NÚMERO: </strong>{{incomingNotification.notificationPhoneNumber}}<br>
+          <strong>FECHA: </strong>{{parseHour(incomingNotification.notificationDateTime)}}<br>
+        </div>
+      </div>
+    </b-modal>
+
+    <b-modal scrollable size="m" centered id="createNotificationModal" hide-header hide-footer>
+      <p style="font-size: medium;"><strong>Nombre:</strong></p>
+      <b-form-textarea style="top: -10px; position: relative;" v-model="notificationName" class="mb-3"></b-form-textarea>
+      <p style="font-size: medium;"><strong>Número:</strong></p>
+      <b-form-input style="top: -10px; position: relative;" v-model="notificationPhoneNumber" class="mb-3"></b-form-input>
+      <p style="font-size: medium;"><strong>Fecha:</strong></p>
+      <b-form-datepicker style="top: -10px; position: relative;" v-model="notificationDate"></b-form-datepicker><br>
+      <p style="font-size: medium; top: -7px; position: relative;"><strong>Hora:</strong></p>
+      <b-form-timepicker style="top: -17px; position: relative;" v-model="notificationHour"></b-form-timepicker>
+      <br>
+      <div style="text-align: center; margin-bottom: 10px;">
+        <button @click="insertNotification()" class="btn btn-primary mr-2">Crear notificación</button>        
+      </div>
+
+    </b-modal>
+
     <div class="logo">
       <a href="https://www.kingvapecr.com" target="_blank">
         <img src="@/assets/images/logo.webp" alt style="width: 80px; height: auto; margin-left: 35px;"/>
@@ -14,6 +48,39 @@
       <button @click="updateApplicationStatus()" :class="getApplicationStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="(ranking == false) && (agentType == 'admin')"><strong>{{ applicationStatus }}</strong></button>
 
       <button @click="updateAgentStatus()" :class="getAgentStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="ranking == false && agentStatus!=''"><strong>{{ agentStatus }}</strong></button>
+      
+      <b-dropdown v-if="ranking == false" id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
+        <template slot="button-content">
+          <i class="i-Bell header-icon d-sm-inline-block" style="margin-right: 15px; margin-bottom:5px;"></i>
+        </template>
+        <div class="dropdown-menu-right" aria-labelledby="userDropdown">
+          <div v-for="notification in notifications" class="hover">
+            <div style="width: 400px;">
+              <div style="padding-left: 15px; padding-right: 15px; padding-top: 20px; padding-bottom: 20px;">
+                <div style="display: flex;">
+                  <div>
+                    <strong>NOMBRE: </strong>{{notification.notificationName}}<br>
+                    <strong>NÚMERO: </strong>{{notification.notificationPhoneNumber}}<br>
+                    <strong>FECHA: </strong>{{parseHour(notification.notificationDateTime)}}<br>
+                  </div>
+                  <div class="flex-grow-1" ></div>
+                  <div>
+                    <i class="i-Close-Window text-25 text-danger" @click="deleteNotification(notification.notificationID)" style="cursor: pointer"></i>
+                  </div>
+                </div>
+              </div>
+              <hr style="margin: 0">
+            </div>
+          </div>
+          <div v-b-modal.createNotificationModal class="hover" style="width: 400px; cursor: pointer; padding-left: 15px; padding-right: 15px; padding-top: 20px; padding-bottom: 20px; text-align: center;">
+            <i class="i-Flag" style="margin-right: 5px;"></i>
+            <strong>CREAR</strong>
+          </div>
+        </div>
+      </b-dropdown>
+
+      
+
       <div style="width: 50px; height: 50px; border-radius: 100%; margin-right: 15px;" v-if="ranking == false">
         <b-dropdown id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
           <template slot="button-content">
@@ -169,15 +236,61 @@ export default {
       newFavoriteMessageContent: '',
 
       newFavoriteImageTitle: '',
-      newFavoriteImageContent: ''
+      newFavoriteImageContent: '',
+
+
+      notifications: [],
+
+      notificationName: '',
+      notificationPhoneNumber: '',
+      notificationDate: null,
+      notificationHour: null,
+      incomingNotification: null
     };
   },
   mounted() {
     
-
     if (localStorage.getItem('ranking') != 'yes'){
-      this.selectApplicationStatus();
+      const notificationInterval = setInterval(() => {
+        for (var notificationIndex in this.notifications){
+          const notificationDate = new Date(this.notifications[notificationIndex].notificationDateTime);
+          if (notificationDate <= new Date()){
+            if (this.notifications[notificationIndex]['notificationUsed'] == false){
+              this.notifications[notificationIndex]['notificationUsed'] = true;
+              this.$root.$emit('bv::show::modal', 'notificationModal');
+              var soundToPlay = new Audio(require('../../../assets/pageAssets/notification.wav'));
+              soundToPlay.play();
+              this.incomingNotification = this.notifications[notificationIndex];
+              axios.post(constants.routes.backendAPI+'/useNotification',
+              {
+                notificationID: this.notifications[notificationIndex]['notificationID']
+              })
+              .then((response) =>{ 
+                console.log(response.data);
+                if (response.data.success){
+                  this.selectAgentNotifications();
+                } else {
+                  this.$bvToast.toast('Ha ocurrido un error inesperado al recibir la notificación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+                    title: 'Error al al recibir la notificación',
+                    variant: 'danger',
+                    solid: true
+                  });
+                }
+              })
+              .catch((error) =>{
+                this.$bvToast.toast('Ha ocurrido un error inesperado al recibir la notificación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+                  title: 'Error al recibir la notificación',
+                  variant: 'danger',
+                  solid: true
+                });
+              });
+            }
+          }
+        }
+      }, 1000);
 
+      this.selectApplicationStatus();
+      this.selectAgentNotifications();
       this.agentType = localStorage.getItem('agentType');
       this.agentName = localStorage.getItem('agentName');
       this.agentProfileImage = localStorage.getItem('agentProfileImage');
@@ -222,6 +335,120 @@ export default {
   },
 
   methods: {
+    deleteNotification(notificationID){
+      axios.post(constants.routes.backendAPI+'/deleteNotification',
+      {
+        notificationID: notificationID
+      })
+      .then((response) =>{ 
+        if (response.data.success){
+          this.selectAgentNotifications();
+        } else {
+          this.$bvToast.toast('Ha ocurrido un error inesperado al eliminar la notificación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+            title: 'Error al eliminar la notificación',
+            variant: 'danger',
+            solid: true
+          });
+        }
+      })
+      .catch((error) =>{
+        this.$bvToast.toast('Ha ocurrido un error inesperado al eliminar la notificación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+          title: 'Error al eliminar la notificación',
+          variant: 'danger',
+          solid: true
+        });
+      });
+    },
+
+    closeNotification(){
+      this.$root.$emit('bv::hide::modal', 'notificationModal');
+    },
+
+    selectAgentNotifications(){
+      axios.post(constants.routes.backendAPI+'/selectAgentNotifications',
+      {
+        notificationAgentID: localStorage.getItem('agentID')
+      })
+      .then((response) =>{ 
+        if (response.data.success){
+          this.notifications = response.data.result;
+        } else {
+          this.$bvToast.toast('Ha ocurrido un error inesperado al consultar las notificaciones del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+            title: 'Error al consultar las notificaciones del agente',
+            variant: 'danger',
+            solid: true
+          });
+        }
+      })
+      .catch((error) =>{
+        this.$bvToast.toast('Ha ocurrido un error inesperado al consultar las notificaciones del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+          title: 'Error al consultar las notificaciones del agente',
+          variant: 'danger',
+          solid: true
+        });
+      });
+    },
+
+
+    insertNotification(){
+      const regularExpressionChecker = /\S/;
+      if (regularExpressionChecker.test(this.notificationName) && regularExpressionChecker.test(this.notificationPhoneNumber) && regularExpressionChecker.test(this.notificationDate) && regularExpressionChecker.test(this.notificationHour)){
+        const dateTimeString = `${this.notificationDate} ${this.notificationHour}`;
+        const dateObject = new Date(dateTimeString);
+        axios.post(constants.routes.backendAPI+'/insertNotification',
+        {
+          notificationAgentID: localStorage.getItem('agentID'),
+          notificationName: this.notificationName,
+          notificationPhoneNumber: this.notificationPhoneNumber,
+          notificationDate: this.notificationDate,
+          notificationHour: this.notificationHour
+        })
+        .then((response) =>{ 
+          this.$bvToast.toast('Se ha creado la notificación exitosamente', {
+            title: 'Notificación creada',
+            variant: 'success',
+            solid: true
+          });
+          this.selectAgentNotifications();
+        })
+        .catch((error) =>{
+          this.$bvToast.toast('Ha ocurrido un error inesperado al crear la notificación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+            title: 'Error al editar crear la notificación',
+            variant: 'danger',
+            solid: true
+          });
+        });
+      } else {
+        this.$bvToast.toast('El contenido de la información de la notificación no puede estar vacío. Por favor complete los espacios requeridos e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+          title: 'Error al crear la notificación',
+          variant: 'danger',
+          solid: true
+        });
+      }
+      
+    },
+    
+    parseHour(originalHour){
+      const parsingDate = new Date(originalHour);
+      const options = {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      };
+      var formattedDate = parsingDate.toLocaleString('en-GB', options);
+      if (formattedDate.slice(-2) == 'am'){
+        formattedDate = formattedDate.slice(0,-2) + 'AM'
+      } else if (formattedDate.slice(-2) == 'pm') {
+        formattedDate = formattedDate.slice(0,-2) + 'PM'
+      }
+      if (formattedDate.includes('00') && formattedDate.includes('PM')){
+        formattedDate = formattedDate.replace('00', '12');
+      }
+      return formattedDate;
+    },
   
     updateAgentLoginCredentials(){
       const regularExpressionChecker = /\S/;
@@ -640,4 +867,14 @@ export default {
   }
 };
 </script>
+
+<style>
+  .hover {
+      transition: background-color 0.3s ease-in-out;
+    }
+
+  .hover:hover {
+    background-color: #ebebeb;
+  }
+</style>
 
