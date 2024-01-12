@@ -1140,14 +1140,20 @@
                                 style="margin-bottom: 10px;"
                               ></b-form-input>
 
-                              <b-form-input
-                                type="text"
-                                v-model="currentActiveConversation.whatsappConversationRecipientID"
-                                placeholder="Cédula del cliente"
-                                style="margin-bottom: 10px;"
-                                @keyup="modificarCedula()"
-                              ></b-form-input>
-
+                              <div style="display: flex;">
+                                <b-form-input
+                                  type="text"
+                                  v-model="currentActiveConversation.whatsappConversationRecipientID"
+                                  placeholder="Cédula del cliente"
+                                  style="margin-bottom: 10px; width: 90%"
+                                  @keyup="modificarCedula()"
+                                ></b-form-input>
+                                <div class="flex-grow-1" ></div>
+                                <div v-if="clientVerifierLoader == true" style="top: 4px; position: relative;">
+                                  <span class="spinner-glow spinner-glow-primary"></span>
+                                </div>
+                                <i v-else class="i-Yes text-25 text-info" @click="verifyClient()" style="cursor: pointer; top: 4px; position: relative;"></i>
+                              </div>
                               <b-form-input
                                 type="text"
                                 v-model="currentActiveConversation.whatsappConversationRecipientEmail"
@@ -1657,13 +1663,50 @@ export default {
       deleteStoreMessageReason: '',
 
       currentTransaction: null,
-      syncTransactionTitle: ''
+      syncTransactionTitle: '',
+
+      clientVerifierLoader: false
     };
   },
 
   methods: {
+    verifyClient(){
+      const regularExpressionChecker = /^\d{9}$/;
+      if (regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientID)){
+        this.clientVerifierLoader = true;
+        axios.post(constants.routes.backendAPI+'/verifyClient', 
+        {
+          clientID: this.currentActiveConversation.whatsappConversationRecipientID
+        })
+        .then((response) =>{
+          if (response.data.success){
+            if (response.data.result.clientVerified){
+              this.currentActiveConversation.whatsappConversationRecipientProfileName = response.data.result.clientName;
+              this.modificarNombre();
+              this.showNotification('success', 'Persona mayor de edad', 'El número de cédula coincide con una persona mayor de edad "' + response.data.result.clientName + '".')
+            } else {
+              this.showNotification('warning', 'Persona menor de edad', 'El número de cédula coincide con una persona menor de edad "' + response.data.result.clientName + '".')
+            }
+          } else {
+            if (response.data.result == '1'){
+              this.showNotification('info', 'Persona no encontrada', 'El número de cédula no coincide con ninguna persona registrada en el registro civil.')
+            } else {
+              this.showNotification('danger', 'Error al verificar al cliente', 'Ha ocurrido un error inesperado al verificar al cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+            }
+          }
+          this.clientVerifierLoader = false;
+        })
+        .catch((error) => {
+          this.showNotification('danger', 'Error al verificar al cliente', 'Ha ocurrido un error inesperado al verificar al cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          this.clientVerifierLoader = false;
+        })
+      } else {
+        this.showNotification('danger', 'Error al verificar al cliente', 'Ha ocurrido un error inesperado al verificar al cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      }
+    },
+
+
     syncTransactionToMessage(){
-      window.resizeTo(100, 100);
       var whatsappGeneralMessageID = '';
       for (var whatsappMessage in this.currentActiveConversation.whatsappConversationMessages){
         if (this.currentActiveConversation.whatsappConversationMessages[whatsappMessage]['selected'] == true){
