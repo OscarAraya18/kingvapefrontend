@@ -1665,7 +1665,9 @@ export default {
       currentTransaction: null,
       syncTransactionTitle: '',
 
-      clientVerifierLoader: false
+      clientVerifierLoader: false,
+
+      stockData: {}
     };
   },
 
@@ -1716,7 +1718,7 @@ export default {
       if (whatsappGeneralMessageID == ''){
         this.showNotification('danger', 'Error al validar la transacción', 'Debe seleccionar un mensaje para asociar la transacción. Seleccione un mensaje e intentelo nuevamente.');
       } else {
-        axios.post('https://d06b-186-5-163-74.ngrok-free.app/syncTransaction',
+        axios.post('https://a096-186-5-163-74.ngrok-free.app/syncTransaction',
         {
           transactionID: this.currentTransaction.transactionID,
           transactionRelatedMessageID: whatsappGeneralMessageID,
@@ -1838,7 +1840,6 @@ export default {
           }
           this.currentStickers = await this.readStickerDatabase();
           this.currentMyStickers = this.currentStickers.filter(sticker => sticker.stickerAgentID == localStorage.getItem('agentID'));
-
         } else {
           this.showNotification('danger', 'Error al buscar los stickers', 'Ha ocurrido un error inesperado al buscar los stickers. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
@@ -1891,7 +1892,7 @@ export default {
     validatePaymentMethod(){ 
       this.validatePaymentMethodLoader = true;
       this.currentTransactions = null;
-      axios.get('https://d06b-186-5-163-74.ngrok-free.app/selectNotUsedTransactions')
+      axios.get('https://a096-186-5-163-74.ngrok-free.app/run')
       .then((response) =>{
         this.validatePaymentMethodLoader = false;
         if (response.data.success){
@@ -2364,19 +2365,34 @@ export default {
       return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
     },
 
+
+    addToRequestedStock(productCode, productCurrentStock, productLocality){
+      const whatsappConversationRecipientPhoneNumber = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
+      if (!(whatsappConversationRecipientPhoneNumber in this.stockData)){
+        this.stockData[whatsappConversationRecipientPhoneNumber] = {};
+      }
+      if (!(productCode in this.stockData[whatsappConversationRecipientPhoneNumber])){
+        this.stockData[whatsappConversationRecipientPhoneNumber][productCode] = {};
+      }
+      this.stockData[whatsappConversationRecipientPhoneNumber][productCode][productLocality] = productCurrentStock;
+    },
+
     cargarTesting(codigo){
       return new Promise((cargarTestingPromiseResolve) => {
+        var me = this;
         axios.get('https://noah.cr/BackendKingVape/api/ProductosWebs/'+codigo).then(function(response){
-        var textoExistencia = '';
-        for (var indice in response.data){
-          if (textoExistencia == ''){
-            textoExistencia = response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
-          } else {
-            textoExistencia = textoExistencia + '\n' + response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
+          var textoExistencia = '';
+          for (var indice in response.data){
+            if (textoExistencia == ''){
+              textoExistencia = response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
+            } else {
+              textoExistencia = textoExistencia + '\n' + response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
+            }
+            me.addToRequestedStock(response.data[indice].codigoProducto, response.data[indice].cantidadInvActual, response.data[indice].sitio);
           }
-        }
-        cargarTestingPromiseResolve(textoExistencia + '\n\n');
+          cargarTestingPromiseResolve(textoExistencia + '\n\n');
         }).catch(function(error){
+          console.log(error);
           alert('Producto no encontrado');
         });
       });
@@ -2392,6 +2408,7 @@ export default {
       }
       this.stockLoader = false;
       this.stockContent = texto;
+      this.saveStockDatabase();
     },
 
     cargarExistencia(codigoProducto){
@@ -2405,11 +2422,13 @@ export default {
           } else {
             textoExistencia = textoExistencia + '\n' + response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
           }
+          me.addToRequestedStock(response.data[indice].codigoProducto, response.data[indice].cantidadInvActual, response.data[indice].sitio);
         }
         me.stockLoader = false;
         me.stockContent = textoExistencia;
-        
+        me.saveStockDatabase();
       }).catch(function(error){
+        console.log(error);
         me.$bvToast.toast("Ha ocurrido un error inesperado al consultar el stock. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
           title: "Error al consultar stock",
           variant: "danger",
@@ -2631,7 +2650,62 @@ export default {
 
     },
 
-    OrdenExpress(){
+
+    async validateStock(){
+      const stockDatabaseData = await this.readProductStockDatabase();
+      var notValidatedProducts = [];
+      var showStockConfirmation = false;
+      if (stockDatabaseData != undefined){
+        const stockInfo = stockDatabaseData['stockInfo'];
+        for (var productIndex in this.currentActiveConversation.whatsappConversationProducts){
+          const product = this.currentActiveConversation.whatsappConversationProducts[productIndex];
+          const productCode = product['CodigoP'];
+          console.log(product);
+          if (productCode in stockInfo){
+            if (stockInfo[productCode][this.Sucursal] < product['cantidad']){
+              notValidatedProducts.push(product);
+              showStockConfirmation = true;
+            }
+          } else {
+            notValidatedProducts.push(product);
+            showStockConfirmation = true;
+          }
+        }
+      } else {
+        showStockConfirmation = true;
+        notValidatedProducts = this.currentActiveConversation.whatsappConversationProducts;
+      }
+      if (showStockConfirmation){
+        var productsText = '';
+        for (var notValidatedProductIndex in notValidatedProducts){
+          console.log(notValidatedProducts[notValidatedProductIndex]);
+          productsText = productsText + notValidatedProducts[notValidatedProductIndex]['descripcion'] + '<br />'
+        }
+        this.$swal({
+          title: "Error en el stock",
+          html: "Por favor, revisa los siguientes productos: <br /><br />" + productsText,
+          type: "danger",
+          showCancelButton: true,
+          confirmButtonColor: "#58cbfc",
+          cancelButtonText: "Cancelar",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Continuar (no recomendado)"
+        }).then((result) => {
+          return false;
+        });
+      } else {
+        return true;
+      }      
+    },
+
+    deleteStockData(whatsappConversationRecipientPhoneNumber){
+      if (whatsappConversationRecipientPhoneNumber in this.stockData){
+        delete this.stockData[whatsappConversationRecipientPhoneNumber];
+      }
+      this.deleteWhatsappConversationRecipientPhoneNumberStockDatabase(whatsappConversationRecipientPhoneNumber);
+    },
+
+    async OrdenExpress(){
       try {
         this.phone = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
         this.phone = (parseInt(this.phone.replace(/\D/g, ''), 10)).toString();
@@ -2646,138 +2720,142 @@ export default {
         this.producto = '';
 
         if(this.ValidarData() == 1){
-          var metodoEnvioCorregido = '';
-          if (this.MetodoEnvio == 'Retiro en sucursal'){
-            metodoEnvioCorregido = 'Retira en sucursal';
-          } else if (this.MetodoEnvio == 'Envío por motorizado'){
-            metodoEnvioCorregido = 'Envio Propio';
-          } else {
-            metodoEnvioCorregido = 'Correos de CR';
-          }
+          if (await this.validateStock()){
+            
+            var metodoEnvioCorregido = '';
+            if (this.MetodoEnvio == 'Retiro en sucursal'){
+              metodoEnvioCorregido = 'Retira en sucursal';
+            } else if (this.MetodoEnvio == 'Envío por motorizado'){
+              metodoEnvioCorregido = 'Envio Propio';
+            } else {
+              metodoEnvioCorregido = 'Correos de CR';
+            }
 
-          this.loaderOrdenEnviada = true;
-          var me = this;
-          this.loading = true;
-          var momentoActual = new Date(); 
-          var hora = momentoActual.getHours(); 
-          var minuto = momentoActual.getMinutes(); 
-          var segundo = momentoActual.getSeconds();
-          var time = hora + ":" + minuto + ":" + segundo;
-          let header={"Authorization" : "Bearer "};
-          let configuracion= {headers : header};
+            this.loaderOrdenEnviada = true;
+            var me = this;
+            this.loading = true;
+            var momentoActual = new Date(); 
+            var hora = momentoActual.getHours(); 
+            var minuto = momentoActual.getMinutes(); 
+            var segundo = momentoActual.getSeconds();
+            var time = hora + ":" + minuto + ":" + segundo;
+            let header={"Authorization" : "Bearer "};
+            let configuracion= {headers : header};
 
-          axios.post('https://noah.cr/BackendKingVape/api/ordenexpress/CrearMesaTotal',
-          {
-            'fecha': this.today.toString(),
-            'cajero': this.agentName,
-            'total': this.calcularTotal,
-            'Nombre': this.name,
-            'telefono': this.phone,
-            'Direccion': this.address,
-            'tipoPago1': this.MetodoPago,
-            'Hora': time,
-            'descuento': this.calcularDescuento,
-            'localidad': this.Sucursal,
-            'estado': 0,
-            'nota':" Estado Pago: " +this.estadoPago+" "+this.pagaCon+" "+this.nota,
-            'tipoCompra': metodoEnvioCorregido,
-            'detalles': this.orden,
-            'correo': this.email,
-            'latitud': this.latitud,
-            'longitud': this.longitud,
-            'Mesa':"50",
-            'TipoCedula':'FISICA',
-            'Cedula':this.cedula,
-            'Direccion2':this.DireccionCliente2,
-            'Direccion3':this.DireccionCliente3,
-            'Personas':this.dividendo,
-            'Mensajero':'',
-            'MedioOrden':'Whatsapp',
-            'Facturacion': false
-          },configuracion)
-          
-          .then(function (response) {
-            me.$swal({
-              title: "Se ha enviado la orden al sistema de comandas de la pantalla",
-              text: "¿Quiere cerrar la conversación? En caso de no cerrarla, recuerde que la venta no se registrará.",
-              type: "warning",
-              showCancelButton: true,
-              confirmButtonColor: "#3085d6",
-              cancelButtonText: 'Cancelar',
-              cancelButtonColor: "#d33",
-              confirmButtonText: "Confirmar"
-            })
-            .then((result) => {
-              axios.post(constants.routes.backendAPI+'/insertOrUpdateContact',
-              {
-                'contactName': me.name,
-                'contactPhoneNumber': me.phone,
-                'contactID': me.cedula,
-                'contactEmail': me.email,
-                'contactLocations': me.currentActiveConversation.whatsappConversationRecipientLocations,
-                'contactLocationDetails': me.address,
-                'contactNote': me.nota
-              }).then(function (){
-                
+            axios.post('https://noah.cr/BackendKingVape/api/ordenexpress/CrearMesaTotal',
+            {
+              'fecha': this.today.toString(),
+              'cajero': this.agentName,
+              'total': this.calcularTotal,
+              'Nombre': this.name,
+              'telefono': this.phone,
+              'Direccion': this.address,
+              'tipoPago1': this.MetodoPago,
+              'Hora': time,
+              'descuento': this.calcularDescuento,
+              'localidad': this.Sucursal,
+              'estado': 0,
+              'nota':" Estado Pago: " +this.estadoPago+" "+this.pagaCon+" "+this.nota,
+              'tipoCompra': metodoEnvioCorregido,
+              'detalles': this.orden,
+              'correo': this.email,
+              'latitud': this.latitud,
+              'longitud': this.longitud,
+              'Mesa':"50",
+              'TipoCedula':'FISICA',
+              'Cedula':this.cedula,
+              'Direccion2':this.DireccionCliente2,
+              'Direccion3':this.DireccionCliente3,
+              'Personas':this.dividendo,
+              'Mensajero':'',
+              'MedioOrden':'Whatsapp',
+              'Facturacion': false
+            },configuracion)
+            
+            .then(function (response) {
+              me.$swal({
+                title: "Se ha enviado la orden al sistema de comandas de la pantalla",
+                text: "¿Quiere cerrar la conversación? En caso de no cerrarla, recuerde que la venta no se registrará.",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonText: 'Cancelar',
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Confirmar"
               })
-
-              if (result.value) {
-                const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
-                if (ordenesActualesLocalStorage[me.phone]){
-                  delete ordenesActualesLocalStorage[me.phone];
-                }
-                localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
-
-                const datosActualesLocalStorage = JSON.parse(localStorage.getItem('datosActuales'));
-                if (datosActualesLocalStorage[me.phone]){
-                  delete datosActualesLocalStorage[me.phone];
-                }
-                localStorage.setItem('datosActuales', JSON.stringify(datosActualesLocalStorage));
-
-
-                axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
+              .then((result) => {
+                axios.post(constants.routes.backendAPI+'/insertOrUpdateContact',
                 {
-                  whatsappConversationRecipientPhoneNumber: me.phone,
-                  whatsappConversationCloseComment: 'Venta',
-                  whatsappConversationAmount: me.calcularTotal,
-                  whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
-                  whatsappConversationProducts: me.currentActiveConversation.whatsappConversationProducts,
-                  sendAgentEndMessage: me.sendEndMessage
-                })
-                .then((response) =>{ 
-                  if (response.data.success){
-                    me.showNotification('success', 'Conversación finalizada', 'Ha finalizado la conversación exitosamente.')
-                    delete me.activeConversationsAsJSON[response.data.result];
-                    me.sortConversations();
-                    me.currentActiveConversation = null;
-                  } else {
-                    me.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-                  }
-                })
-                .catch((error) =>{
-                  me.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+                  'contactName': me.name,
+                  'contactPhoneNumber': me.phone,
+                  'contactID': me.cedula,
+                  'contactEmail': me.email,
+                  'contactLocations': me.currentActiveConversation.whatsappConversationRecipientLocations,
+                  'contactLocationDetails': me.address,
+                  'contactNote': me.nota
+                }).then(function (){
+                  
                 })
 
-              }
-              me.CleanData();
-              me.loading = false;
+                if (result.value) {
+                  const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
+                  if (ordenesActualesLocalStorage[me.phone]){
+                    delete ordenesActualesLocalStorage[me.phone];
+                  }
+                  localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
+
+                  const datosActualesLocalStorage = JSON.parse(localStorage.getItem('datosActuales'));
+                  if (datosActualesLocalStorage[me.phone]){
+                    delete datosActualesLocalStorage[me.phone];
+                  }
+                  localStorage.setItem('datosActuales', JSON.stringify(datosActualesLocalStorage));
+
+
+                  axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
+                  {
+                    whatsappConversationRecipientPhoneNumber: me.phone,
+                    whatsappConversationCloseComment: 'Venta',
+                    whatsappConversationAmount: me.calcularTotal,
+                    whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
+                    whatsappConversationProducts: me.currentActiveConversation.whatsappConversationProducts,
+                    sendAgentEndMessage: me.sendEndMessage
+                  })
+                  .then((response) =>{ 
+                    if (response.data.success){
+                      me.showNotification('success', 'Conversación finalizada', 'Ha finalizado la conversación exitosamente.')
+                      delete me.activeConversationsAsJSON[response.data.result];
+                      me.sortConversations();
+                      me.currentActiveConversation = null;
+                    } else {
+                      me.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+                    }
+                  })
+                  .catch((error) =>{
+                    me.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+                  })
+
+                }
+                me.deleteStockData(me.phone);
+                me.loading = false;
+                me.loaderOrdenEnviada = false;
+              });
+            })
+            .catch(function (error) {
+              me.showNotification('danger', 'Error al generar la orden', 'Ha ocurrido un error inesperado al general la orden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
               me.loaderOrdenEnviada = false;
             });
-          })
-          .catch(function (error) {
-            me.showNotification('danger', 'Error al generar la orden', 'Ha ocurrido un error inesperado al general la orden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-            me.loaderOrdenEnviada = false;
-          });
+          } else {
+            console.log('error de stock');
+          }
         }
-      } catch {
+      } catch (e) {
+        console.log(e);
         this.showNotification('danger', 'Error de tipado', 'Ha ocurrido un error inesperado de tipado. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         this.loaderOrdenEnviada = false;
       }
     },
 
       EliminarLinea(CodigoP){
-        console.log(this.currentActiveConversation.whatsappConversationProducts);
-        console.log(CodigoP);
         this.currentActiveConversation.whatsappConversationProducts = this.currentActiveConversation.whatsappConversationProducts.filter(e => e.CodigoP != CodigoP);
         const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
         if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
@@ -3881,20 +3959,40 @@ export default {
       }
     },
 
-    openStickerDatabase(){
-      const request = indexedDB.open('stickerDatabase', 1);
-      request.onerror = (event) => {
-        console.error('Error opening IndexedDB', event);
-      };
-      request.onsuccess = (event) => {
-        this.db = event.target.result;
-      };
-      request.onupgradeneeded = (event) => {
-        const db = event.target.result;
-        if (!db.objectStoreNames.contains('stickers')) {
-          const store = db.createObjectStore('stickers', {autoIncrement: true});
+    openIndexedDatabase(){
+      return new Promise(async (openIndexedDatabasePromiseResolve) => {
+        const request = indexedDB.open('indexedDatabase', 2);
+        request.onerror = (event) => {
+          console.error('Error opening IndexedDB', event);
+        };
+        request.onsuccess = (event) => {
+          this.db = event.target.result;
+        };
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains('stickers')) {
+            const store = db.createObjectStore('stickers', {autoIncrement: true});
+          }
+          if (!db.objectStoreNames.contains('stock')) {
+            const store = db.createObjectStore('stock', {keyPath: 'whatsappConversationRecipientPhoneNumber'});
+          }
+          openIndexedDatabasePromiseResolve()
+        };
+      });
+    },
+
+    saveStockDatabase(){
+      return new Promise(async (saveStockDatabasePromiseResolve) => {
+        const transaction = this.db.transaction(['stock'], 'readwrite');
+        const objectStore = transaction.objectStore('stock');
+        for (var whatsappConversationRecipientPhoneNumber in this.stockData){
+          const stockInfo = this.stockData[whatsappConversationRecipientPhoneNumber];
+          const request = objectStore.put({whatsappConversationRecipientPhoneNumber: whatsappConversationRecipientPhoneNumber, stockInfo: stockInfo});
         }
-      };
+        transaction.oncomplete = (event) => {
+          saveStockDatabasePromiseResolve(event);
+        };
+      });
     },
 
     saveStickerDatabase(stickerData) {
@@ -3919,6 +4017,56 @@ export default {
         request.onsuccess = (event) => {
           const data = event.target.result;
           readStickerDatabasePromiseResolve(data);
+        };
+        request.onerror = (event) => {
+          console.error('Error reading data from IndexedDB', event);
+        };
+      });
+    },
+
+    readProductStockDatabase() {
+      const whatsappConversationRecipientPhoneNumber = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
+      return new Promise(async (readProductStockDatabasePromiseResolve) => {
+        const transaction = this.db.transaction(['stock'], 'readonly');
+        const objectStore = transaction.objectStore('stock');
+        const request = objectStore.get(whatsappConversationRecipientPhoneNumber);
+        request.onsuccess = (event) => {
+          const data = event.target.result;
+          readProductStockDatabasePromiseResolve(data);
+        };
+        request.onerror = (event) => {
+          console.error('Error reading data from IndexedDB', event);
+        };
+      });
+    },
+
+    readStockDatabase() {
+      return new Promise(async (readStockDatabasePromiseResolve) => {
+        const transaction = this.db.transaction(['stock'], 'readonly');
+        const objectStore = transaction.objectStore('stock');
+        const request = objectStore.getAll();
+        request.onsuccess = (event) => {
+          const data = event.target.result;
+          var response = {};
+          for (var index in data){
+            response[data[index]['whatsappConversationRecipientPhoneNumber']] = data[index]['stockInfo'];
+          }
+          readStockDatabasePromiseResolve(response);
+        };
+        request.onerror = (event) => {
+          console.error('Error reading data from IndexedDB', event);
+        };
+      });
+    },
+
+    deleteWhatsappConversationRecipientPhoneNumberStockDatabase(whatsappConversationRecipientPhoneNumber) {
+      return new Promise(async (deleteWhatsappConversationRecipientPhoneNumberStockDatabasePromiseResolve) => {
+        const transaction = this.db.transaction(['stock'], 'readwrite');
+        const objectStore = transaction.objectStore('stock');
+        const request = objectStore.delete(whatsappConversationRecipientPhoneNumber);
+        request.onsuccess = (event) => {
+          const data = event.target.result;
+          deleteWhatsappConversationRecipientPhoneNumberStockDatabasePromiseResolve(data);
         };
         request.onerror = (event) => {
           console.error('Error reading data from IndexedDB', event);
@@ -3979,8 +4127,10 @@ export default {
 
   },
 
-  created(){
-    this.openStickerDatabase();
+  async created(){
+    await this.openIndexedDatabase();
+    this.readStockDatabase();
+
     window.addEventListener('keydown', (keyPressed) => {
       if (keyPressed.key == 'Escape') {
         this.currentActiveConversation = null;

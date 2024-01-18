@@ -162,6 +162,7 @@
 
 <script>
 import axios from 'axios';
+import router from "../../../router"; 
 const constants = require('@../../../src/constants.js'); 
 const webSocket = new WebSocket('wss:kingvapebackend2.onrender.com');
 
@@ -217,6 +218,10 @@ export default {
   },
 
   mounted(){
+    if (localStorage.getItem('agentID') == null){
+      router.push("/app/sessions/signIn");
+    }
+
     this.agentDefaultProfilePicture = constants.agentDefaultProfilePicture;
     this.getAllAgents();
 

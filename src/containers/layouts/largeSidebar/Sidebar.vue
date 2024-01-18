@@ -16,7 +16,7 @@
         <ul class="navigation-left">
           
           <li
-            
+            v-if="locality == false"
             @mouseenter="toggleSubMenu"
             class="nav-item"
             data-item="chat"
@@ -30,6 +30,7 @@
             <div class="triangle"></div>
           </li>
           <li
+            v-if="locality == false"
             @mouseenter="toggleSubMenu"
             class="nav-item"
             data-item="doc"
@@ -48,7 +49,7 @@
             :class="{ active: selectedParentMenu == 'ranking' }"
             class="nav-item"
             data-item="ranking"
-            v-if="isAdmin == true"
+            v-if="isAdmin == true && locality == false"
           >
             <router-link tag="a" class="nav-item-hold" to="/app/apps/rankingAdmin">
               <i class="nav-icon i-Bar-Chart"></i>
@@ -63,7 +64,7 @@
             :class="{ active: selectedParentMenu == 'dashboards' }"
             class="nav-item"
             data-item="dashboards"
-            v-if="isAdmin == true"
+            v-if="isAdmin == true && locality == false"
           >
             <router-link tag="a" class="nav-item-hold" to="/app/dashboards/dashboard.v1">
               <i class="nav-icon i-Financial"></i>
@@ -79,12 +80,46 @@
             data-item="agents"
             :class="{ active: selectedParentMenu == 'agents' }"
             :data-submenu="false"
-            v-if="isAdmin == true"
+            v-if="isAdmin == true && locality == false"
 
           >
             <router-link tag="a" class="nav-item-hold" to="/app/apps/agents">
               <i class="nav-icon i-Support"></i>
               <span class="nav-text"><strong>AGENTES</strong></span>
+            </router-link>
+            <div class="triangle"></div>
+          </li>
+
+
+          <li
+            @mouseenter="toggleSubMenu"
+            class="nav-item"
+            data-item="locality"
+            :class="{ active: selectedParentMenu == 'locality' }"
+            :data-submenu="false"
+            v-if="locality == true"
+
+          >
+            <router-link tag="a" class="nav-item-hold" to="/app/apps/locality">
+              <i class="nav-icon i-Check"></i>
+              <span class="nav-text"><strong>VALIDAR</strong></span>
+            </router-link>
+            <div class="triangle"></div>
+          </li>
+
+
+          <li
+            @mouseenter="toggleSubMenu"
+            class="nav-item"
+            data-item="localityReport"
+            :class="{ active: selectedParentMenu == 'localityReport' }"
+            :data-submenu="false"
+            v-if="locality == true"
+
+          >
+            <router-link tag="a" class="nav-item-hold" to="/app/apps/localityReport">
+              <i class="nav-icon i-Financial"></i>
+              <span class="nav-text"><strong>CIERRE</strong></span>
             </router-link>
             <div class="triangle"></div>
           </li>
@@ -816,7 +851,9 @@ export default {
       selectedParentMenu: "",
       isMobile,
       isAdmin: '',
-      ranking: false
+      ranking: false,
+
+      locality: false
     };
   },
   mounted() {
@@ -834,6 +871,11 @@ export default {
     if (localStorage.getItem('ranking') == 'yes'){
       this.ranking = true;
     } 
+
+    if (localStorage.getItem('locality') == 'yes'){
+      this.locality = true;
+      this.ranking = false;
+    }
   },
 
   beforeDestroy() {

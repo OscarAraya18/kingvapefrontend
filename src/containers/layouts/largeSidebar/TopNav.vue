@@ -49,7 +49,7 @@
 
       <button @click="updateAgentStatus()" :class="getAgentStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="ranking == false && agentStatus!=''"><strong>{{ agentStatus }}</strong></button>
       
-      <b-dropdown v-if="ranking == false" id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
+      <b-dropdown v-if="(ranking == false) && (locality == false)" id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
         <template slot="button-content">
           <i class="i-Bell header-icon d-sm-inline-block" style="margin-right: 15px; margin-bottom:5px;"></i>
         </template>
@@ -89,7 +89,7 @@
 
           </template>
           <div class="dropdown-menu-right" aria-labelledby="userDropdown">
-            <a class="dropdown-item" href="#" v-b-modal.updateProfileModal style="font-size: medium;">Modificar perfil</a>
+            <a class="dropdown-item" href="#" v-if="locality == false" v-b-modal.updateProfileModal style="font-size: medium;">Modificar perfil</a>
             <a class="dropdown-item" href="#" @click.prevent="logoutUser" style="font-size: medium;">Cerrar sesión</a>
           </div>
         </b-dropdown>
@@ -212,6 +212,9 @@ export default {
       agentType: '',
 
       ranking: false,
+
+      locality: false,
+
       isDisplay: true,
 
       file: null,
@@ -250,7 +253,7 @@ export default {
   },
   mounted() {
     
-    if (localStorage.getItem('ranking') != 'yes'){
+    if (localStorage.getItem('ranking') != 'yes' && (localStorage.getItem('locality') != 'yes')){
       const notificationInterval = setInterval(() => {
         for (var notificationIndex in this.notifications){
           const notificationDate = new Date(this.notifications[notificationIndex].notificationDateTime);
@@ -266,7 +269,6 @@ export default {
                 notificationID: this.notifications[notificationIndex]['notificationID']
               })
               .then((response) =>{ 
-                console.log(response.data);
                 if (response.data.success){
                   this.selectAgentNotifications();
                 } else {
@@ -299,7 +301,6 @@ export default {
       this.agentStartMessage = localStorage.getItem('agentStartMessage');
       this.agentEndMessage = localStorage.getItem('agentEndMessage');
       this.agentFavoriteMessages = JSON.parse(localStorage.getItem('agentFavoriteMessages'));
-      this.agentDefaultProfilePicture = constants.agentDefaultProfilePicture;
 
       this.selectAgentStatus();
 
@@ -327,6 +328,13 @@ export default {
       }
     } else {
       this.ranking = true;
+    }
+
+    if (localStorage.getItem('locality') == 'yes'){
+      this.locality = true;
+      this.ranking = false;
+      this.agentProfileImage = '';
+      this.agentDefaultProfilePicture = constants.agentDefaultProfilePicture;
     }
   
   },
@@ -803,29 +811,34 @@ export default {
 
     logoutUser() {
       if (this.ranking == false){
-        axios.post(constants.routes.backendAPI+'/updateAgentStatus',{
-          agentID: localStorage.getItem('agentID'),
-          agentStatus: 'offline' 
-        })
-        .then((response) =>{ 
-          if (response.data.success){
-            localStorage.clear();
-            router.push("/app/sessions/signIn");
-          } else {
+        if (this.locality == true){
+          localStorage.clear();
+          router.push("/app/sessions/signIn");
+        } else {
+          axios.post(constants.routes.backendAPI+'/updateAgentStatus',{
+            agentID: localStorage.getItem('agentID'),
+            agentStatus: 'offline' 
+          })
+          .then((response) =>{ 
+            if (response.data.success){
+              localStorage.clear();
+              router.push("/app/sessions/signIn");
+            } else {
+              this.$bvToast.toast('Ha ocurrido un error inesperado al cerrar su sesión. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+                title: 'Error al cerrar su sesión',
+                variant: 'danger',
+                solid: true
+              });
+            }
+          })
+          .catch((error) =>{
             this.$bvToast.toast('Ha ocurrido un error inesperado al cerrar su sesión. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
               title: 'Error al cerrar su sesión',
               variant: 'danger',
               solid: true
             });
-          }
-        })
-        .catch((error) =>{
-          this.$bvToast.toast('Ha ocurrido un error inesperado al cerrar su sesión. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
-            title: 'Error al cerrar su sesión',
-            variant: 'danger',
-            solid: true
-          });
-        })
+          })
+        }
       } else {
         localStorage.clear();
         router.push("/app/sessions/signIn");

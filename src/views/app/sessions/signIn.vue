@@ -55,14 +55,25 @@
                   <span class="spinner-glow spinner-glow-primary"></span>
                 </div>
 
-                <b-button
-                  class="btn btn-block mt-3"
-                  variant="mt-2"
-                  style="background-color: #fff8bc; font-size: 15px"
-                  @click="openRanking()"
-                >
-                  ABRIR RANKING
-                </b-button>
+                <div style="display: flex;">
+                  <b-button
+                    class="btn btn-block mt-3"
+                    variant="mt-2 mr-3"
+                    style="background-color: #ffd65c; font-size: 15px"
+                    @click="openLocality()"
+                  >
+                    TIENDA
+                  </b-button>
+
+                  <b-button
+                    class="btn btn-block mt-3"
+                    variant="mt-2 ml-3"
+                    style="background-color: #d8ff75; font-size: 15px"
+                    @click="openRanking()"
+                  >
+                    RANKING
+                  </b-button>
+                </div>
 
                 <div v-once class="typo__p" v-if="loading">
                   <div class="spinner sm spinner-primary mt-3"></div>
@@ -117,6 +128,32 @@ export default {
   },
 
   methods: {
+    openLocality(){
+      axios.post(constants.routes.backendAPI+'/localityLogin',{
+        localityUsername: this.username,
+        localityPassword: this.password,
+      })
+      .then(response =>{ 
+        if (response.data.success == true){
+          localStorage.setItem('locality', 'yes');
+          router.push('/app/apps/locality');
+        } else {
+          this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+            title: "Error al iniciar sesión",
+            variant: "danger",
+            solid: true
+          });
+        }
+      })
+      .catch(error =>{
+        this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+          title: "Error al iniciar sesión",
+          variant: "danger",
+          solid: true
+        });
+      })
+    },
+
     openRanking(){
       axios.post(constants.routes.backendAPI+'/rankingLogin',{
         username: this.username,
@@ -128,12 +165,11 @@ export default {
           router.push('/app/apps/ranking');
         } else {
           this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-          title: "Error al abrir el ranking",
-          variant: "danger",
-          solid: true
-        });
+            title: "Error al abrir el ranking",
+            variant: "danger",
+            solid: true
+          });
         }
-
       })
       .catch(error =>{
         this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {

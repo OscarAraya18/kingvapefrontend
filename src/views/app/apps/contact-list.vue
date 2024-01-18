@@ -494,6 +494,8 @@
 
 <script>
 import axios from 'axios';
+import router from "../../../router"; 
+
 const constants = require('@../../../src/constants.js'); 
 import * as VueGoogleMaps from 'vue2-google-maps'
 
@@ -588,6 +590,10 @@ export default {
   },
 
   mounted(){
+    if (localStorage.getItem('agentID') == null){
+      router.push("/app/sessions/signIn");
+    }
+
     this.sendingMessage = localStorage.getItem('agentStartMessage');
     this.agentType = localStorage.getItem('agentType');
   },

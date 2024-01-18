@@ -308,6 +308,10 @@ const routes = [
             component: () => import("./views/app/apps/ranking"),
           },
           {
+            path: "locality",
+            component: () => import("./views/app/apps/locality"),
+          },
+          {
             path: "contact-details",
             component: () => import("./views/app/apps/contact-details"),
           },
