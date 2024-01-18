@@ -4055,6 +4055,7 @@ export default {
         };
         request.onerror = (event) => {
           console.error('Error reading data from IndexedDB', event);
+          readStockDatabasePromiseResolve();
         };
       });
     },
@@ -4128,8 +4129,6 @@ export default {
   },
 
   async created(){
-    await this.openIndexedDatabase();
-    this.readStockDatabase();
 
     window.addEventListener('keydown', (keyPressed) => {
       if (keyPressed.key == 'Escape') {
@@ -4148,6 +4147,8 @@ export default {
       }
     });
 
+    await this.openIndexedDatabase();
+    this.readStockDatabase();
   },
 
   mounted(){

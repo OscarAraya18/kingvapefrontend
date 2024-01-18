@@ -9,10 +9,12 @@
       >
         <template slot="table-row" slot-scope="props">
           <div v-if="props.column.field == 'transactionApprover'">
-            
+            <b-form-select @change="selectTransactionApprover(props.row.transactionID, props.row.transactionApproverLocalityAgentID)" v-model="props.row.transactionApproverLocalityAgentID" class="mb-1" :options="approverOptions"></b-form-select>
           </div>
 
-          <button v-else-if="props.column.field == 'transactionAction'" class="btn btn-outline-primary text-black btn-rounded" @click="whatsappConversationOpenAction(props.row.whatsappConversationID)">Validar</button>
+          <div v-else-if="props.column.field == 'transactionAction'" style="text-align: right;">
+            <button class="btn btn-primary text-black btn-rounded" @click="validateTransaction(props.row)">Validar</button>
+          </div>
         </template>
       </vue-good-table>
     </div>
@@ -69,8 +71,12 @@ export default {
         }
       ],
 
+      notUsedTransactions: [],
 
-      notUsedTransactions: []
+      selectedApprover: '',
+      approverOptions: [],
+
+      selectedTransactionApprovers: {}
 
     };
   },
@@ -90,6 +96,68 @@ export default {
       return formattedDate;
     },
 
+    showNotification(notificationType, notificationTitle, notificationContent){
+      this.$bvToast.toast(notificationContent, {
+        title: notificationTitle,
+        variant: notificationType,
+        solid: true
+      });
+    },
+
+    validateTransaction(transaction){
+      if (transaction.transactionApproverLocalityAgentID != 0){
+        this.$swal({
+          title: "Transacción a validar",
+          html: 
+          `
+          <strong>Número de referencia: </strong> ${transaction.transactionID} <br>
+          <strong>Descripción: </strong> ${transaction.transactionNote} <br>
+          <strong>Monto: </strong> ${transaction.transactionAmount} <br>
+          <strong>Fecha: </strong> ${transaction.transactionDate} <br><br>
+          <strong>Aprovado por: </strong> ${this.approverOptions.find(option => option.value === transaction.transactionApproverLocalityAgentID).text}
+          `,
+          showCancelButton: true,
+          confirmButtonColor: "#1aad55",
+          cancelButtonText: "Cancelar",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Aceptar"
+        }).then((result) => {
+          if (result.isConfirmed == true){
+            axios.post(constants.routes.backendAPI+'/syncTransaction', 
+            {
+              transactionID: transaction.transactionID,
+              transactionStore: localStorage.getItem('localityName'),
+              transactionApprover: transaction.transactionApproverLocalityAgentID,
+              transactionRelatedMessageID: null
+            })
+            .then((response) =>{
+              if (response.data.success){
+                console.log(response.data);
+              } else {
+                this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+              }
+            })
+            .catch((error) => {
+              this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+            })
+          }
+        });
+      } else {
+        this.showNotification('danger', 'Error al validar transacción', 'Debe seleccionar el nombre de quien aprueba la transacción. Seleccione un nombre e intentelo de nuevo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      }
+    },
+
+    selectTransactionApprover(transactionID, transactionApproverLocalityAgentID){
+      this.selectedTransactionApprovers[transactionID] = transactionApproverLocalityAgentID;
+    },
+
+    getSelectedTransactionApprover(transactionID){
+      if (transactionID in this.selectedTransactionApprovers){
+        return this.selectedTransactionApprovers[transactionID];
+      }
+      return 0;
+    },
+
     selectNotUsedTransactions(){
       axios.post(constants.routes.backendAPI+'/selectNotUsedTransactions')
       .then((response) =>{
@@ -98,18 +166,42 @@ export default {
           this.notUsedTransactions = this.notUsedTransactions.map(transaction => {
             return {
               ...transaction,
+              transactionApproverLocalityAgentID: this.getSelectedTransactionApprover(transaction.transactionID),
               transactionDate: this.parseHour(transaction.transactionDate),
               transactionAmount: `₡ ${parseFloat(transaction.transactionAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}`
             };
           });
         } else {
-          //this.showNotification('danger', 'Error al consultar las transacciones', 'Ha ocurrido un error inesperado al consultar las transacciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          this.showNotification('danger', 'Error al consultar las transacciones', 'Ha ocurrido un error inesperado al consultar las transacciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
       .catch((error) => {
-        //this.showNotification('danger', 'Error al consultar las transacciones', 'Ha ocurrido un error inesperado al consultar las transacciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        this.showNotification('danger', 'Error al consultar las transacciones', 'Ha ocurrido un error inesperado al consultar las transacciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
-    }
+    },
+
+    selectLocalityAgents(){
+      axios.post(constants.routes.backendAPI+'/selectLocalityAgents', 
+      {
+        localityAgentLocalityID: localStorage.getItem('localityID')
+      })
+      .then((response) =>{
+        if (response.data.success){
+          for (var localityAgentIndex in response.data.result){
+            const localityAgentID = response.data.result[localityAgentIndex].localityAgentID;
+            const localityAgentName = response.data.result[localityAgentIndex].localityAgentName;
+            this.approverOptions.push({value: localityAgentID, text: localityAgentName});
+          }
+        } else {
+          this.showNotification('danger', 'Error al consultar las transacciones', 'Ha ocurrido un error inesperado al consultar las transacciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        this.showNotification('danger', 'Error al consultar las transacciones', 'Ha ocurrido un error inesperado al consultar las transacciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+
   },
 
 
@@ -119,6 +211,7 @@ export default {
 
   mounted(){
     this.selectNotUsedTransactions();
+    this.selectLocalityAgents();
     setInterval(() => {
       this.selectNotUsedTransactions();
     }, 5000);

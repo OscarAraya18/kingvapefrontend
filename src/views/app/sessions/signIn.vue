@@ -136,6 +136,9 @@ export default {
       .then(response =>{ 
         if (response.data.success == true){
           localStorage.setItem('locality', 'yes');
+          localStorage.setItem('localityID', response.data.result['localityID']);
+          localStorage.setItem('localityName', response.data.result['localityName']);
+
           router.push('/app/apps/locality');
         } else {
           this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
