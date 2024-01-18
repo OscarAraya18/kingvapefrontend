@@ -2652,50 +2652,52 @@ export default {
 
 
     async validateStock(){
-      const stockDatabaseData = await this.readProductStockDatabase();
-      var notValidatedProducts = [];
-      var showStockConfirmation = false;
-      if (stockDatabaseData != undefined){
-        const stockInfo = stockDatabaseData['stockInfo'];
-        for (var productIndex in this.currentActiveConversation.whatsappConversationProducts){
-          const product = this.currentActiveConversation.whatsappConversationProducts[productIndex];
-          const productCode = product['CodigoP'];
-          console.log(product);
-          if (productCode in stockInfo){
-            if (stockInfo[productCode][this.Sucursal] < product['cantidad']){
+      return new Promise(async (validateStockPromiseResolve) => {
+        const stockDatabaseData = await this.readProductStockDatabase();
+        var notValidatedProducts = [];
+        var showStockConfirmation = false;
+        if (stockDatabaseData != undefined){
+          const stockInfo = stockDatabaseData['stockInfo'];
+          for (var productIndex in this.currentActiveConversation.whatsappConversationProducts){
+            const product = this.currentActiveConversation.whatsappConversationProducts[productIndex];
+            const productCode = product['CodigoP'];
+            console.log(product);
+            if (productCode in stockInfo){
+              if (stockInfo[productCode][this.Sucursal] < product['cantidad']){
+                notValidatedProducts.push(product);
+                showStockConfirmation = true;
+              }
+            } else {
               notValidatedProducts.push(product);
               showStockConfirmation = true;
             }
-          } else {
-            notValidatedProducts.push(product);
-            showStockConfirmation = true;
           }
+        } else {
+          showStockConfirmation = true;
+          notValidatedProducts = this.currentActiveConversation.whatsappConversationProducts;
         }
-      } else {
-        showStockConfirmation = true;
-        notValidatedProducts = this.currentActiveConversation.whatsappConversationProducts;
-      }
-      if (showStockConfirmation){
-        var productsText = '';
-        for (var notValidatedProductIndex in notValidatedProducts){
-          console.log(notValidatedProducts[notValidatedProductIndex]);
-          productsText = productsText + notValidatedProducts[notValidatedProductIndex]['descripcion'] + '<br />'
-        }
-        this.$swal({
-          title: "Error en el stock",
-          html: "Por favor, revisa los siguientes productos: <br /><br />" + productsText,
-          type: "danger",
-          showCancelButton: true,
-          confirmButtonColor: "#58cbfc",
-          cancelButtonText: "Cancelar",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Continuar (no recomendado)"
-        }).then((result) => {
-          return false;
-        });
-      } else {
-        return true;
-      }      
+        if (showStockConfirmation){
+          var productsText = '';
+          for (var notValidatedProductIndex in notValidatedProducts){
+            console.log(notValidatedProducts[notValidatedProductIndex]);
+            productsText = productsText + notValidatedProducts[notValidatedProductIndex]['descripcion'] + '<br />'
+          }
+          this.$swal({
+            title: "Error en el stock",
+            html: "Por favor, revisa los siguientes productos: <br /><br />" + productsText,
+            type: "danger",
+            showCancelButton: true,
+            confirmButtonColor: "#58cbfc",
+            cancelButtonText: "Cancelar",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Continuar (no recomendado)"
+          }).then((result) => {
+            validateStockPromiseResolve(result.isConfirmed);
+          });
+        } else {
+          validateStockPromiseResolve(true);
+        }     
+      }); 
     },
 
     deleteStockData(whatsappConversationRecipientPhoneNumber){
@@ -2720,7 +2722,8 @@ export default {
         this.producto = '';
 
         if(this.ValidarData() == 1){
-          if (await this.validateStock()){
+          const test = await this.validateStock();
+          if (test){
             
             var metodoEnvioCorregido = '';
             if (this.MetodoEnvio == 'Retiro en sucursal'){
