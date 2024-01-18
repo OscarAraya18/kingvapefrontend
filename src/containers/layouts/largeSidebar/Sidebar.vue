@@ -109,6 +109,7 @@
 
 
           <li
+            v-b-modal.openClosePaymentMethod
             @mouseenter="toggleSubMenu"
             class="nav-item"
             data-item="localityReport"
@@ -117,10 +118,10 @@
             v-if="locality == true"
 
           >
-            <router-link tag="a" class="nav-item-hold" to="/app/apps/localityReport">
+            <div class="nav-item-hold">
               <i class="nav-icon i-Financial"></i>
               <span class="nav-text"><strong>CIERRE</strong></span>
-            </router-link>
+            </div>
             <div class="triangle"></div>
           </li>
 
@@ -893,6 +894,11 @@ export default {
       "changeSecondarySidebarPropertiesViaOverlay",
       "changeSidebarProperties",
     ]),
+
+
+    openPaymentClose(){
+      alert('prueba')
+    },
 
     openAgents(){
       router.push('/app/apps/chat')

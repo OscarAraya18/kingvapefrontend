@@ -132,7 +132,8 @@ export default {
             })
             .then((response) =>{
               if (response.data.success){
-                console.log(response.data);
+                this.selectNotUsedTransactions();
+                this.showNotification('success', 'Transacción validada', 'Se ha validado exitosamente la transacción.')
               } else {
                 this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
               }
@@ -161,6 +162,7 @@ export default {
     selectNotUsedTransactions(){
       axios.post(constants.routes.backendAPI+'/selectNotUsedTransactions')
       .then((response) =>{
+        console.log(response.data);
         if (response.data.success){
           this.notUsedTransactions = response.data.result;
           this.notUsedTransactions = this.notUsedTransactions.map(transaction => {
@@ -214,7 +216,7 @@ export default {
     this.selectLocalityAgents();
     setInterval(() => {
       this.selectNotUsedTransactions();
-    }, 5000);
+    }, 10000);
   },
 
   created: function() {

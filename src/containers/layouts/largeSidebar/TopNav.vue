@@ -178,6 +178,34 @@
 
     </b-modal>
 
+
+    <div style="position: fixed; bottom: 30px; right: 20px;">
+      <b-dropdown id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
+        <template slot="button-content">
+          <img class="hoverAnimationTranslator" id="traductorButton" style="cursor: pointer; width: 35px; height: 40px; position: relative; top: 10px;" src="@/assets/traductor.png">
+        </template>
+        <div class="dropdown-menu-right" aria-labelledby="userDropdown" style="width: 350px;">
+          <div style="padding: 15px;">
+            <b-form-textarea autofocus v-model="traduceInput" placeholder="Mensaje de bienvenida" rows="4"></b-form-textarea>
+            <br>
+            <div style="display: flex;">
+              <div>
+                <b-form-radio-group
+                  style="position: relative; left: 0px;"
+                  v-model="selectedLanguage"
+                  :options="languageOptions"
+                ></b-form-radio-group>
+              </div>
+              <div class="flex-grow-1"></div>
+              <b-button @click="traduce()" variant="info">Traducir</b-button>
+            </div>
+          </div>
+        </div>
+      </b-dropdown>
+
+
+    </div>
+
     
   </div>
 </template>
@@ -248,7 +276,14 @@ export default {
       notificationPhoneNumber: '',
       notificationDate: null,
       notificationHour: null,
-      incomingNotification: null
+      incomingNotification: null,
+
+
+      traduceInput: '',
+      traduceLoader: false,
+
+      selectedLanguage: 'EN',
+      languageOptions: [{ text: 'Traducir al inglés', value: 'EN' },{ text: 'Traducir al español', value: 'ES' }]
     };
   },
   mounted() {
@@ -343,6 +378,39 @@ export default {
   },
 
   methods: {
+    traduce(){
+      axios.post(constants.routes.backendAPI+'/traduceText',
+      {
+        textToTraduce: this.traduceInput,
+        languageToTraduce: this.selectedLanguage
+      })
+      .then((response) =>{ 
+        if (response.data.success){
+          this.traduceInput = response.data.result;
+          navigator.clipboard.writeText(response.data.result);
+          this.$bvToast.toast('Se ha traducido y copiado el texto exitosamente.', {
+            title: 'Texto traducido',
+            variant: 'success',
+            solid: true
+          });
+        } else {
+          this.$bvToast.toast('Ha ocurrido un error inesperado al traducir. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+            title: 'Error al traducir',
+            variant: 'danger',
+            solid: true
+          });
+        }
+      })
+      .catch((error) =>{
+        this.$bvToast.toast('Ha ocurrido un error inesperado al traducir. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+          title: 'Error al traducir',
+          variant: 'danger',
+          solid: true
+        });
+      });
+    },
+
+
     deleteNotification(notificationID){
       axios.post(constants.routes.backendAPI+'/deleteNotification',
       {
@@ -888,6 +956,22 @@ export default {
 
   .hover:hover {
     background-color: #ebebeb;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.3);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .hoverAnimationTranslator:hover {
+    animation: pulse 1.4s infinite;
   }
 </style>
 

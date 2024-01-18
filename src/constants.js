@@ -2,7 +2,7 @@ module.exports = {
     
     routes: {
         backendAPI: 'https://kingvapebackend2.onrender.com',
-        websocketAPI: 'kingvapebackend2.onrender.com:10000'
+        websocketAPI: 'https://kingvapebackend2.onrender.com:10000'
     },
 
     credentials: 
