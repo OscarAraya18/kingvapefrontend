@@ -854,7 +854,6 @@ import Topnav from "./TopNav";
 import { isMobile } from "mobile-device-detect";
 import router from "../../../router";
 
-import html2pdf from 'html2pdf.js';
 
 import { mapGetters, mapActions } from "vuex";
 
@@ -921,7 +920,6 @@ export default {
       var element = document.getElementById('invoice');
 
       element.style = 'display: block; position: fixed; bottom: 0;';
-      await html2pdf(element);
       element.style = 'display: none; position: fixed; bottom: 0;';
 
     },
