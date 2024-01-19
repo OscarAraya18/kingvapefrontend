@@ -6,6 +6,13 @@
     @mouseleave="isMenuOver = false"
     @touchstart="isMenuOver = true"
   >
+
+  <div id="invoice" style="display: none; position: fixed; bottom: 0;">
+    <div style="width:100%; margin: 30px;">
+      <img src="@/assets/images/logo.webp" alt style="width: 150px; height: auto;"/>
+    </div>
+  </div>
+
     <vue-perfect-scrollbar
       :settings="{ suppressScrollX: true, wheelPropagation: false }"
       :class="{ open: getSideBarToggleProperties.isSideNavOpen }"
@@ -109,6 +116,7 @@
 
 
           <li
+            @click="generateInvoice()"
             v-b-modal.openClosePaymentMethod
             @mouseenter="toggleSubMenu"
             class="nav-item"
@@ -124,6 +132,15 @@
             </div>
             <div class="triangle"></div>
           </li>
+
+          <b-modal hide-footer hide-header scrollable size="m" centered id="openClosePaymentMethod">
+            <div v-if="loader == true" style="text-align: center;">
+              <br><span class="spinner-glow spinner-glow-primary"></span>
+            </div>
+            <div>
+              <h1>LISTOOOOO</h1>
+            </div>
+          </b-modal>
 
 
         </ul>
@@ -837,6 +854,8 @@ import Topnav from "./TopNav";
 import { isMobile } from "mobile-device-detect";
 import router from "../../../router";
 
+import html2pdf from 'html2pdf.js';
+
 import { mapGetters, mapActions } from "vuex";
 
 export default {
@@ -854,7 +873,10 @@ export default {
       isAdmin: '',
       ranking: false,
 
-      locality: false
+      locality: false,
+
+      loader: false
+
     };
   },
   mounted() {
@@ -895,9 +917,13 @@ export default {
       "changeSidebarProperties",
     ]),
 
+    async generateInvoice(){
+      var element = document.getElementById('invoice');
 
-    openPaymentClose(){
-      alert('prueba')
+      element.style = 'display: block; position: fixed; bottom: 0;';
+      await html2pdf(element);
+      element.style = 'display: none; position: fixed; bottom: 0;';
+
     },
 
     openAgents(){

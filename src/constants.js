@@ -1,8 +1,8 @@
 module.exports = { 
     
     routes: {
-        backendAPI: 'https://kingvapebackend2.onrender.com',
-        websocketAPI: 'https://kingvapebackend2.onrender.com:10000'
+        backendAPI: 'https://telasmasbackend.onrender.com',
+        websocketAPI: 'telasmasbackend.onrender.com:10000'
     },
 
     credentials: 

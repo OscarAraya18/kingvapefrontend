@@ -1106,7 +1106,7 @@
                     </b-modal>
 
           </b-card>
-          <b-card v-else-if="vistaItems == 'Orden'" title="Resumen de la orden">
+          <b-card v-else-if="vistaItems == 'Orden'">
             <b-tabs  
                     active-nav-item-class="nav nav-tabs"
                     content-class="width:100%"
@@ -1398,7 +1398,7 @@ import { mapGetters, mapActions } from "vuex";
 import axios from 'axios';
 const constants = require('@../../../src/constants.js'); 
 
-const webSocket = new WebSocket('wss:kingvapebackend2.onrender.com');
+const webSocket = new WebSocket('wss:telasmasbackend.onrender.com');
 
 import router from "../../../router"; 
 import {gmapApi} from 'vue2-google-maps';

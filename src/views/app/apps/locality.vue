@@ -26,7 +26,7 @@
 import axios from 'axios';
 
 const constants = require('@../../../src/constants.js'); 
-const webSocket = new WebSocket('wss:kingvapebackend2.onrender.com');
+const webSocket = new WebSocket('wss:telasmasbackend.onrender.com');
 
 export default {
 
@@ -58,7 +58,7 @@ export default {
           tdClass: "text-left",
         },
         {
-          label: "",
+          label: "Aprovado por",
           field: "transactionApprover",
           thClass: "text-left",
           tdClass: "text-left",
