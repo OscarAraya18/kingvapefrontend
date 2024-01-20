@@ -377,7 +377,7 @@ import router from "../../../router";
 
 const constants = require('@../../../src/constants.js'); 
 
-const webSocket = new WebSocket('wss:telasmasbackend.onrender.com');
+const webSocket = new WebSocket('wss:kingvapebackend2.onrender.com');
 
 
 export default {
