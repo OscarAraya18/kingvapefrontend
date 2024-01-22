@@ -4079,6 +4079,19 @@ export default {
     },
 
 
+    selectAgentMessages() {
+      var currentAgentMessagesIDS = [];
+      for (var conversationID in this.activeConversationsAsJSON){
+        for (var messageIndex in this.activeConversationsAsJSON[conversationID]['whatsappConversationMessages']){
+          if (this.activeConversationsAsJSON[conversationID]['whatsappConversationMessages'][messageIndex]['whatsappGeneralMessageOwnerPhoneNumber'] != null){
+            currentAgentMessagesIDS.push(this.activeConversationsAsJSON[conversationID]['whatsappConversationMessages'][messageIndex]['whatsappGeneralMessageID']);
+          }
+        }
+      }
+      console.log(currentAgentMessagesIDS);
+    },
+
+
     
   },
 
@@ -4215,6 +4228,16 @@ export default {
     } catch (error) {
       console.log(error);
     }
+
+    /*
+    try {
+      setInterval(() => {
+        this.selectAgentMessages();
+      }, 5000);
+    } catch {
+
+    }
+    */
   },
 
 };

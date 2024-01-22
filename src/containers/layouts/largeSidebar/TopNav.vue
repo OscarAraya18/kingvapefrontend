@@ -31,7 +31,6 @@
       <div style="text-align: center; margin-bottom: 10px;">
         <button @click="insertNotification()" class="btn btn-primary mr-2">Crear notificación</button>        
       </div>
-
     </b-modal>
 
     <div class="logo">
@@ -41,7 +40,9 @@
     </div>
     <i class="i-Sidebar-Window header-icon d-sm-inline-block" style="margin-left: 10px;" @click="sideBarToggle"></i>
     <i class="i-Full-Screen header-icon d-sm-inline-block" @click="handleFullScreen"></i>
-    
+    <i @click="startRecording()" v-if="recordingScreen == false" class="i-Old-Camera header-icon d-sm-inline-block"></i>
+    <i @click="stopRecording()" v-else class="i-Stop header-icon d-sm-inline-block"></i>
+
     <div style="margin: auto"></div>
 
     <div class="header-part-right">
@@ -49,6 +50,7 @@
 
       <button @click="updateAgentStatus()" :class="getAgentStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="ranking == false && agentStatus!=''"><strong>{{ agentStatus }}</strong></button>
       
+
       <b-dropdown v-if="(ranking == false) && (locality == false)" id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
         <template slot="button-content">
           <i class="i-Bell header-icon d-sm-inline-block" style="margin-right: 15px; margin-bottom:5px;"></i>
@@ -283,7 +285,13 @@ export default {
       traduceLoader: false,
 
       selectedLanguage: 'EN',
-      languageOptions: [{ text: 'Traducir al inglés', value: 'EN' },{ text: 'Traducir al español', value: 'ES' }]
+      languageOptions: [{ text: 'Traducir al inglés', value: 'EN' },{ text: 'Traducir al español', value: 'ES' }],
+
+
+      recordingScreen: false,
+      screenRecorder: null,
+      recordedScreenChunks: []
+
     };
   },
   mounted() {
@@ -377,7 +385,55 @@ export default {
     ...mapGetters(["getSideBarToggleProperties"])
   },
 
+  created(){
+    window.addEventListener('beforeunload', (event) => {
+        if (this.recordingScreen){
+          event.preventDefault();
+          event.returnValue = 'Si actualiza la página, se perderá el progreso de la grabación de pantalla en curso. Si desea continuar, por favor, detenga la grabación';
+        }
+      });
+  },
+
   methods: {
+
+
+    startRecording(){
+      navigator.mediaDevices.getDisplayMedia({ video: {
+      width: { ideal: 1280  },
+      height: { ideal: 720 },
+      frameRate: { ideal: 30 },
+    },})
+        .then(stream => {
+          this.screenRecorder = new MediaRecorder(stream);
+          this.screenRecorder.ondataavailable = event => {
+            if (event.data.size > 0) {
+              this.recordedScreenChunks.push(event.data);
+            }
+          };
+          this.screenRecorder.onstop = () => {
+            const blob = new Blob(this.recordedScreenChunks, { type: 'video/webm' });
+            const url = URL.createObjectURL(blob);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = new Date().toString();;
+            downloadLink.click();
+            this.recordedScreenChunks = [];
+            URL.revokeObjectURL(url);
+          };
+          this.screenRecorder.start();
+          this.recordingScreen = true;
+        })
+        .catch(error => {
+          console.error('Error accessing screen:', error);
+        });
+    },
+
+    stopRecording() {
+      this.screenRecorder.stop();
+      this.recordingScreen = false;
+    },
+
+
     traduce(){
       axios.post(constants.routes.backendAPI+'/traduceText',
       {
