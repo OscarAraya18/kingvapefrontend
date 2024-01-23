@@ -231,7 +231,7 @@ export default {
         const websocketMessageID = websocketMessageJSON.websocketMessageID;
         const websocketMessageContent = websocketMessageJSON.websocketMessageContent.result;
 
-        if (websocketMessageID == '/updateAgentStatus'){
+        if (websocketMessageID == '/agent/update/agentStatus'){
           for (var agentIndex in this.agents){
             if (this.agents[agentIndex].id == websocketMessageContent.agentID){
               var status = '';
@@ -268,7 +268,7 @@ export default {
         temp = 'online';
         aux = 'ONLINE';
       }
-      axios.post(constants.routes.backendAPI+'/updateAgentStatus',
+      axios.post(constants.routes.backendAPI+'/agent/update/agentStatus',
       {
         agentID: agentID,
         agentName: this.allAgentsInformation[agentID].agentName,
@@ -351,12 +351,13 @@ export default {
     submit(){
       const regularExpressionChecker = /\S/;
       if (regularExpressionChecker.test(this.editingID) && regularExpressionChecker.test(this.editingName) && regularExpressionChecker.test(this.editingUsername) && regularExpressionChecker.test(this.editingPassword)){
-        axios.post(constants.routes.backendAPI+'/updateAgentFromAdminPortal', 
+        axios.post(constants.routes.backendAPI+'/agent/update', 
         {
           'agentID': this.editingID, 
-          'agentName': this.editingName, 
           'agentUsername': this.editingUsername, 
-          'agentPassword': this.editingPassword}
+          'agentPassword': this.editingPassword,
+          'agentName': this.editingName
+        }
         ).then((response) =>{ 
           console.log(response)
           if (response.data.success){
@@ -437,7 +438,7 @@ export default {
       this.allAgentsInformation = {};
       this.agents = [];
       this.loaderList = true;
-      axios.get(constants.routes.backendAPI+'/selectAllAgents')
+      axios.get(constants.routes.backendAPI+'/agent/select')
       .then((response) => {
         const agentsInformation = response.data.result;
 

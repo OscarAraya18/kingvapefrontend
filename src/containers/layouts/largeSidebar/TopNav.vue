@@ -352,7 +352,7 @@ export default {
           const websocketMessageJSON = JSON.parse(websocketMessage.data);
           const websocketMessageID = websocketMessageJSON.websocketMessageID;
           const websocketMessageContent = websocketMessageJSON.websocketMessageContent.result;
-          if (websocketMessageID == '/updateAgentStatus'){
+          if (websocketMessageID == '/agent/update/agentStatus'){
             if (websocketMessageContent.agentID == localStorage.getItem('agentID')){
               if (websocketMessageContent.agentStatus == 'online'){
                 this.agentStatus = 'ONLINE';
@@ -586,10 +586,10 @@ export default {
       const regularExpressionChecker = /\S/;
       if (regularExpressionChecker.test(this.agentUsername) && regularExpressionChecker.test(this.agentPassword)){
         this.loaderPerfil = true;
-        axios.post(constants.routes.backendAPI+'/updateAgentLoginCredentials',
+        axios.post(constants.routes.backendAPI+'/agent/update/loginCredentials',
         {
           agentID: parseInt(localStorage.getItem('agentID')),
-          agentProfileImage: this.agentProfileImage,
+          'agentProfileImageAsBase64': this.agentProfileImage,
           agentUsername: this.agentUsername,
           agentPassword: this.agentPassword 
         })
@@ -631,7 +631,7 @@ export default {
     updateAgentAutomaticMessages(){
       const regularExpressionChecker = /\S/;
       if (regularExpressionChecker.test(this.agentStartMessage) && regularExpressionChecker.test(this.agentEndMessage)){
-        axios.post(constants.routes.backendAPI+'/updateAgentAutomaticMessages',
+        axios.post(constants.routes.backendAPI+'/agent/update/automaticMessages',
         {
           agentID: localStorage.getItem('agentID'),
           agentStartMessage: this.agentStartMessage,
@@ -896,7 +896,7 @@ export default {
         updatedAgentStatus = 'online';
         this.agentStatus = 'ONLINE';
       }
-      axios.post(constants.routes.backendAPI+'/updateAgentStatus',{
+      axios.post(constants.routes.backendAPI+'/agent/update/agentStatus',{
         agentID: parseInt(localStorage.getItem('agentID')),
         agentStatus: updatedAgentStatus,
         agentName: localStorage.getItem('agentName')
@@ -939,7 +939,7 @@ export default {
           localStorage.clear();
           router.push("/app/sessions/signIn");
         } else {
-          axios.post(constants.routes.backendAPI+'/updateAgentStatus',{
+          axios.post(constants.routes.backendAPI+'/agent/update/status',{
             agentID: localStorage.getItem('agentID'),
             agentStatus: 'offline' 
           })

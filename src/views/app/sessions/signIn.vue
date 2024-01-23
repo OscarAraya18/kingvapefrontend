@@ -3,9 +3,6 @@
     class="auth-layout-wrap"
     :style="{ backgroundImage: 'url(' + bgImage + ')' }"
   >
-    <b-toast id="example-toast" title="BootstrapVue" static no-auto-hide>
-      Hello, world! This is a toast message.
-    </b-toast>
 
     <div class="auth-content">
       <div class="card o-hidden">
@@ -20,7 +17,7 @@
                   <b-form-input
                     class="form-control text-14"
                     type="text"
-                    v-model="username"
+                    v-model="inputs.username"
                     required
                   ></b-form-input>
                 </b-form-group>
@@ -30,7 +27,7 @@
                     <b-form-input
                     class="form-control text-14"
                     :type="passwordType"
-                    v-model="password"
+                    v-model="inputs.password"
                     ></b-form-input>
                     <i @click="seePassword()" class="i-Eye1" style="margin-left: 10px; cursor: pointer; font-size: 2em;"></i>
                   
@@ -101,9 +98,13 @@ export default {
   },
   data() {
     return {
+      inputs: 
+      {
+        username: '',
+        password: ''
+      },
+
       loaderPerfil: false,
-      username: "",
-      password: "",
 
       passwordType: 'password',
 
@@ -130,8 +131,8 @@ export default {
   methods: {
     openLocality(){
       axios.post(constants.routes.backendAPI+'/localityLogin',{
-        localityUsername: this.username,
-        localityPassword: this.password,
+        localityUsername: this.inputs.username,
+        localityPassword: this.inputs.password,
       })
       .then(response =>{ 
         if (response.data.success == true){
@@ -158,9 +159,10 @@ export default {
     },
 
     openRanking(){
-      axios.post(constants.routes.backendAPI+'/rankingLogin',{
-        username: this.username,
-        password: this.password,
+      axios.post(constants.routes.backendAPI+'/rankingLogin',
+      {
+        username: this.inputs.username,
+        password: this.inputs.password,
       })
       .then(response =>{ 
         if (response.data.success == true){
@@ -193,17 +195,17 @@ export default {
     },
 
     ...mapActions(["login"]),
+
     formSubmit() {
       this.loaderPerfil = true;
-      axios.post(constants.routes.backendAPI+'/agentLogin',{
-        agentUsername: this.username,
-        agentPassword: this.password,
+      axios.post(constants.routes.backendAPI+'/agent/login',
+      {
+        'agentUsername': this.inputs.username,
+        'agentPassword': this.inputs.password,
       })
       .then((response) =>{ 
         this.loaderPerfil = false;
-
         if (response.data.success == true){
-
           localStorage.setItem('agentID', response.data.result.agentID);
           localStorage.setItem('agentName', response.data.result.agentName);
           localStorage.setItem('agentUsername', response.data.result.agentUsername);
@@ -228,7 +230,8 @@ export default {
               });
             }
           })
-          .catch(error =>{
+          .catch(() =>{
+            this.loaderPerfil = false;
             this.$bvToast.toast("Ha ocurrido un error al consultar la información del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
               title: "Error al consultar la información del agente",
               variant: "danger",
@@ -236,6 +239,7 @@ export default {
             });
           })
         } else {
+          this.loaderPerfil = false;
           this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
             title: "Error al iniciar sesión",
             variant: "danger",
@@ -243,7 +247,8 @@ export default {
           });
         }
       })
-      .catch(error =>{
+      .catch(() =>{
+        this.loaderPerfil = false;
         this.$bvToast.toast("Ha ocurrido un error al iniciar sesión. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
           title: "Error al iniciar sesión",
           variant: "danger",

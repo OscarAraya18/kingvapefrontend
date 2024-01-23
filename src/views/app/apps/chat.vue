@@ -1398,8 +1398,6 @@ import { mapGetters, mapActions } from "vuex";
 import axios from 'axios';
 const constants = require('@../../../src/constants.js'); 
 
-const webSocket = new WebSocket('wss:kingvapebackend2.onrender.com');
-
 import router from "../../../router"; 
 import {gmapApi} from 'vue2-google-maps';
 import { BDropdown } from 'bootstrap-vue';
@@ -1667,11 +1665,77 @@ export default {
 
       clientVerifierLoader: false,
 
-      stockData: {}
+      stockData: {},
+
+
+
+      websocketConnection: null,
+      websocketIsConnected: false,
+      websocketReconnectInterval: 3000
     };
   },
 
   methods: {
+
+    manageWebsocketConnection() {
+      this.websocketConnection = new WebSocket('wss:kingvapebackend2.onrender.com');
+
+      this.websocketConnection.onopen = () => {
+        this.websocketIsConnected = true;
+      };
+
+      this.websocketConnection.onmessage = (websocketMessage) => {
+        try {
+          const websocketMessageJSON = JSON.parse(websocketMessage.data);
+          const websocketMessageID = websocketMessageJSON.websocketMessageID;
+          const websocketMessageContent = websocketMessageJSON.websocketMessageContent.result;
+          if (websocketMessageID == '/receiveWhatsappStoreMessage'){
+            this.receiveWhatsappStoreMessage(websocketMessageContent);
+          } else if (websocketMessageID == '/receiveWhatsappMessage'){
+            this.receiveWhatsappMessage(websocketMessageContent);
+          } else if (websocketMessageID == '/receiveWhatsappConversation'){
+            this.receiveWhatsappConversation(websocketMessageJSON.websocketMessageContent);
+          } else if (websocketMessageID == '/receiveWhatsappPendingConversation'){
+            this.receiveWhatsappPendingConversation(websocketMessageJSON.websocketMessageContent);
+          } else if (websocketMessageID == '/agent/update/agentStatus'){
+            this.receiveAgentStatusUpdate(websocketMessageContent);
+          } else if (websocketMessageID == '/grabPendingConversation') {
+            this.receiveGrabPendingConversation(websocketMessageContent);
+          } else if (websocketMessageID == '/grabStoreConversation') {
+            this.receiveGrabStoreConversation(websocketMessageContent);
+          } else if (websocketMessageID == '/requestTransferWhatsappConversation'){
+            this.receiveRequestTransferWhatsappConversation(websocketMessageContent);
+          } else if (websocketMessageID == '/acceptTransferWhatsappConversation'){
+            this.receiveAcceptTransferWhatsappConversation(websocketMessageContent);
+          } else if (websocketMessageID == '/receiveWhatsappMessageStatusUpdate'){
+            this.receiveWhatsappMessageStatusUpdate(websocketMessageJSON.websocketMessageContent);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
+      this.websocketConnection.onclose = (event) => {
+        alert('reconectando');
+        this.websocketIsConnected = false;
+        console.log(`WebSocket cerrado: ${event.reason}`);
+        setTimeout(() => {
+          this.manageWebsocketConnection();
+        }, this.websocketReconnectInterval);
+      };
+
+      this.websocketConnection.onerror = (error) => {
+        this.websocketIsConnected = false;
+        console.error(`Error en WebSocket: ${error.message}`);
+        setTimeout(() => {
+          this.manageWebsocketConnection();
+        }, this.websocketReconnectInterval);
+    };
+    
+    },
+
+
+
     verifyClient(){
       const regularExpressionChecker = /^\d{9}$/;
       if (regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientID)){
@@ -4198,46 +4262,7 @@ export default {
     this.selectAllPendingConversation();
     this.openImageModal();
 
-    try {
-      webSocket.onmessage = (websocketMessage) => {
-        const websocketMessageJSON = JSON.parse(websocketMessage.data);
-        const websocketMessageID = websocketMessageJSON.websocketMessageID;
-        const websocketMessageContent = websocketMessageJSON.websocketMessageContent.result;
-        if (websocketMessageID == '/receiveWhatsappStoreMessage'){
-          this.receiveWhatsappStoreMessage(websocketMessageContent);
-        } else if (websocketMessageID == '/receiveWhatsappMessage'){
-          this.receiveWhatsappMessage(websocketMessageContent);
-        } else if (websocketMessageID == '/receiveWhatsappConversation'){
-          this.receiveWhatsappConversation(websocketMessageJSON.websocketMessageContent);
-        } else if (websocketMessageID == '/receiveWhatsappPendingConversation'){
-          this.receiveWhatsappPendingConversation(websocketMessageJSON.websocketMessageContent);
-        } else if (websocketMessageID == '/updateAgentStatus'){
-          this.receiveAgentStatusUpdate(websocketMessageContent);
-        } else if (websocketMessageID == '/grabPendingConversation') {
-          this.receiveGrabPendingConversation(websocketMessageContent);
-        } else if (websocketMessageID == '/grabStoreConversation') {
-          this.receiveGrabStoreConversation(websocketMessageContent);
-        } else if (websocketMessageID == '/requestTransferWhatsappConversation'){
-          this.receiveRequestTransferWhatsappConversation(websocketMessageContent);
-        } else if (websocketMessageID == '/acceptTransferWhatsappConversation'){
-          this.receiveAcceptTransferWhatsappConversation(websocketMessageContent);
-        } else if (websocketMessageID == '/receiveWhatsappMessageStatusUpdate'){
-          this.receiveWhatsappMessageStatusUpdate(websocketMessageJSON.websocketMessageContent);
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-
-    /*
-    try {
-      setInterval(() => {
-        this.selectAgentMessages();
-      }, 5000);
-    } catch {
-
-    }
-    */
+    this.manageWebsocketConnection();
   },
 
 };
