@@ -1671,7 +1671,8 @@ export default {
 
       websocketConnection: null,
       websocketIsConnected: false,
-      websocketReconnectInterval: 3000
+      websocketReconnectInterval: 3000,
+      websocketPingInterval: null
     };
   },
 
@@ -1682,6 +1683,7 @@ export default {
 
       this.websocketConnection.onopen = () => {
         this.websocketIsConnected = true;
+        this.startWebsocketPingInterval();
       };
 
       this.websocketConnection.onmessage = (websocketMessage) => {
@@ -1713,26 +1715,42 @@ export default {
         } catch (error) {
           console.log(error);
         }
-      },
+      };
 
       this.websocketConnection.onclose = (event) => {
-        alert('reconectando');
+        alert('Se ha cerrado el websocket por desconexion. Reconectando...');
         this.websocketIsConnected = false;
-        console.log(`WebSocket cerrado: ${event.reason}`);
+        this.websocketConnection = null;
+        clearInterval(this.websocketPingInterval);
         setTimeout(() => {
           this.manageWebsocketConnection();
         }, this.websocketReconnectInterval);
       };
 
       this.websocketConnection.onerror = (error) => {
+        alert('Se ha cerrado el websocket por error. Reconectando...');
         this.websocketIsConnected = false;
-        console.error(`Error en WebSocket: ${error.message}`);
-        setTimeout(() => {
-          this.manageWebsocketConnection();
-        }, this.websocketReconnectInterval);
-    };
-    
+        this.websocketConnection = null;
+        clearInterval(this.websocketPingInterval);
+      };
     },
+
+    startWebsocketPingInterval() {
+      this.websocketPingInterval = setInterval(() => {
+        if (this.websocketIsConnected) {
+          this.websocketConnection.send('ping');
+          setTimeout(() => {
+            if (!this.websocketIsConnected) {
+              if (this.websocketConnection != null){
+                this.websocketConnection.close();
+              }
+            } else {
+            }
+          }, 5000);
+        }
+      }, 5000);
+    },
+    
 
 
 
