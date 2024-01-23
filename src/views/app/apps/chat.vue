@@ -20,7 +20,7 @@
                   <br><br><br><span class="spinner-glow spinner-glow-primary"></span>
                 </div>
                 
-                <div v-else v-for="activeConversationID in sortedConversationsID" @click="changeCurrentActiveConversation(activeConversationsAsJSON[activeConversationID], activeConversationID)" :style="getConversationStyle(activeConversationID)" class="p-3 d-flex border-bottom align-items-center hoverTest" id="hint">
+                <div v-else v-for="activeConversationID in sortedConversationsID" @click="changeCurrentActiveConversation(activeConversationsAsJSON[activeConversationID], activeConversationID)" :style="getConversationStyle(activeConversationID)" class="p-3 d-flex border-bottom align-items-center hoverTest" :id="'hint'+activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber">
                   <h3 style="margin-right: 15px;">
                     <strong>
                       {{getReferenciaSucursal(activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber)}}
@@ -41,7 +41,9 @@
                     </p>
                   </div>
                   <div v-else style="min-height: 15px; min-width: 15px; background-color: rgb(0, 177, 0); border-radius: 100px;"></div>
-                  <b-tooltip target="hint" v-if="hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]">{{hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]}}</b-tooltip>
+                  
+                  <b-tooltip :target="'hint'+activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber" v-if="hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]">{{hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]}}</b-tooltip>
+                
                 </div>
 
 
