@@ -939,7 +939,7 @@ export default {
           localStorage.clear();
           router.push("/app/sessions/signIn");
         } else {
-          axios.post(constants.routes.backendAPI+'/agent/update/status',{
+          axios.post(constants.routes.backendAPI+'/agent/update/agentStatus',{
             agentID: localStorage.getItem('agentID'),
             agentStatus: 'offline' 
           })
