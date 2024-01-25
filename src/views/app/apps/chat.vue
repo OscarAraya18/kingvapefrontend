@@ -469,7 +469,7 @@
             <div style="background-image: url('https://res.cloudinary.com/dfionqbqe/image/upload/v1705012178/fondo.jpg');">
               <vue-perfect-scrollbar ref="scrollRef" :settings="{ suppressScrollX: true, wheelPropagation: false }" class="chat-content perfect-scrollbar rtl-ps-none ps scroll" style="padding-bottom: 30px;">
                 <div v-for="currentActiveConversationMessage in currentActiveConversation.whatsappConversationMessages" @contextmenu.prevent="replyMessageRightClick(currentActiveConversationMessage)">
-                  <div class="d-flex mb-30" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
+                  <div class="d-flex mb-30 appearMessageAnimation" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
                     <div :style="getMessageOwnerColor(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)" class="message flex-grow-1">
                       <div class="d-flex">
                         <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber != null">
@@ -1396,7 +1396,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 import axios from 'axios';
 const constants = require('@../../../src/constants.js'); 
 
@@ -4283,12 +4283,14 @@ export default {
     this.openImageModal();
 
     this.manageWebsocketConnection();
-  },
+  }, 
 
 };
 </script>
 
 <style>
+
+
   emoji-picker {
     width: 500px;
   }

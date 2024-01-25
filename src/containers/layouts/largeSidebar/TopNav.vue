@@ -40,8 +40,6 @@
     </div>
     <i class="i-Sidebar-Window header-icon d-sm-inline-block" style="margin-left: 10px;" @click="sideBarToggle"></i>
     <i class="i-Full-Screen header-icon d-sm-inline-block" @click="handleFullScreen"></i>
-    <i @click="startRecording()" v-if="recordingScreen == false" class="i-Old-Camera header-icon d-sm-inline-block"></i>
-    <i @click="stopRecording()" v-else class="i-Stop header-icon d-sm-inline-block"></i>
 
     <div style="margin: auto"></div>
 
@@ -49,38 +47,6 @@
       <button @click="updateApplicationStatus()" :class="getApplicationStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="(ranking == false) && (agentType == 'admin')"><strong>{{ applicationStatus }}</strong></button>
 
       <button @click="updateAgentStatus()" :class="getAgentStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="ranking == false && agentStatus!=''"><strong>{{ agentStatus }}</strong></button>
-      
-
-      <b-dropdown v-if="(ranking == false) && (locality == false)" id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
-        <template slot="button-content">
-          <i class="i-Bell header-icon d-sm-inline-block" style="margin-right: 15px; margin-bottom:5px;"></i>
-        </template>
-        <div class="dropdown-menu-right" aria-labelledby="userDropdown">
-          <div v-for="notification in notifications" class="hover">
-            <div style="width: 400px;">
-              <div style="padding-left: 15px; padding-right: 15px; padding-top: 20px; padding-bottom: 20px;">
-                <div style="display: flex;">
-                  <div>
-                    <strong>NOMBRE: </strong>{{notification.notificationName}}<br>
-                    <strong>NÚMERO: </strong>{{notification.notificationPhoneNumber}}<br>
-                    <strong>FECHA: </strong>{{parseHour(notification.notificationDateTime)}}<br>
-                  </div>
-                  <div class="flex-grow-1" ></div>
-                  <div>
-                    <i class="i-Close-Window text-25 text-danger" @click="deleteNotification(notification.notificationID)" style="cursor: pointer"></i>
-                  </div>
-                </div>
-              </div>
-              <hr style="margin: 0">
-            </div>
-          </div>
-          <div v-b-modal.createNotificationModal class="hover" style="width: 400px; cursor: pointer; padding-left: 15px; padding-right: 15px; padding-top: 20px; padding-bottom: 20px; text-align: center;">
-            <i class="i-Flag" style="margin-right: 5px;"></i>
-            <strong>CREAR</strong>
-          </div>
-        </div>
-      </b-dropdown>
-
       
 
       <div style="width: 50px; height: 50px; border-radius: 100%; margin-right: 15px;" v-if="ranking == false">
@@ -99,26 +65,26 @@
     </div>
 
     <b-modal scrollable size="m" hide-header hide-footer centered id="updateProfileModal">
-      <b-button v-b-toggle.profileCollapseMenu style="width: 100%; font-size: large; color: red;">Perfil</b-button>
       
+      <b-button v-b-toggle.profileCollapseMenu style="width: 100%; font-size: large;">Perfil</b-button>
       <b-collapse id="profileCollapseMenu">
         <b-card v-if="loaderPerfil == false">
           <div style="display: flex;">
             <div style="width: 200px;">
-              <img v-if="agentProfileImage!=''" :src="`data:image/png;base64,${agentProfileImage}`" style="width: auto; height: 250px; cursor: pointer;" id="tooltip-target-1" @click="changeProfilePicture()">
-              <img v-else :src="agentDefaultProfilePicture" style="width: auto; height: 250px; cursor: pointer;" id="tooltip-target-1" @click="changeProfilePicture()">
+              <img v-if="agentProfileImage!=''" :src="`data:image/png;base64,${agentProfileImage}`" style="width: auto; height: 210px; cursor: pointer;" id="tooltip-target-1" @click="changeProfilePicture()">
+              <img v-else :src="agentDefaultProfilePicture" style="width: auto; height: 210x; cursor: pointer;" id="tooltip-target-1" @click="changeProfilePicture()">
 
               <input type="file" accept="image/png, image/jpeg" @change="uploadProfilePicture()" ref="profilePictureFile" style="display: none;" id="profilePictureFileDownloader">
               <b-tooltip target="tooltip-target-1" triggers="hover">Click para cambiar la foto de perfil</b-tooltip>
             </div>
             <div style="margin-left: 30px;">
-              <p style="font-size: medium;"><strong>Nombre de usuario:</strong></p>
+              <p style="font-size: medium; margin-bottom: 5px;"><strong>Nombre de usuario:</strong></p>
               <b-form-input v-model="agentUsername" placeholder="Nombre de usuario"></b-form-input>
               <br>
-              <p style="font-size: medium;"><strong>Contraseña:</strong></p>
+              <p style="font-size: medium; margin-bottom: 5px;"><strong>Contraseña:</strong></p>
               <b-form-input v-model="agentPassword" placeholder="Contraseña"></b-form-input>
-              <br><br>
-              <button @click="updateAgentLoginCredentials()" class="btn btn-icon" style="background-color: #F9E530; font-size: 15px"><i class="i-Data-Save"></i>Guardar cambios</button>
+              <br>
+              <button @click="updateAgentLoginCredentials()" class="btn btn-icon" style="background-color: #F9E530; font-size: 15px; width: 100%;"><i class="i-Data-Save" style="margin-right: 5px;"></i>Guardar</button>
             </div>
           </div>
         </b-card>
@@ -128,60 +94,109 @@
         </div>
       </b-collapse>
 
-      <br><br>
-
-      <b-button v-b-toggle.automaticMessagesCollapseMenu style="width: 100%; font-size: large; background-color: #F9E530;">Mensajes automáticos</b-button>
-      <b-collapse id="automaticMessagesCollapseMenu">
-        <b-card>
-          <div>
-            <p style="font-size: medium;"><strong>Mensaje de bienvenida:</strong></p>
-            <b-form-textarea v-model="agentStartMessage" placeholder="Mensaje de bienvenida" rows="3"></b-form-textarea>
-            Estaré encantada de atenderte el día de hoy ☺️
-            <br><br>
-            <p style="font-size: medium;"><strong>Mensaje de despedida:</strong></p>
-            <b-form-textarea v-model="agentEndMessage" placeholder="Mensaje de despedida" rows="3"></b-form-textarea>
-            Lo más importante para nosotros es la atención del cliente. Puede calificarnos accediendo al siguiente enlace: https://kingvapecr.com/pages/feedback
-            <br><br>
+      <div>
+        <br>
+        <b-button v-b-toggle.favoriteMessagesCollapseMenu style="width: 100%; font-size: large; background-color: #F9E530;">Mensajes favoritos</b-button>
+        <b-collapse id="favoriteMessagesCollapseMenu">
+          <b-card>
+            <div v-for="agentFavoriteMessage in agentFavoriteMessages">
+              <div style="display: flex; margin-bottom: -8px;">
+                <p style="font-size: medium;"><strong>{{agentFavoriteMessage.agentFavoriteMessageName}}</strong></p>
+                <div style="right: 0; position: absolute; margin-right: 20px;">
+                  <i @click="updateAgentFavoriteMessage(agentFavoriteMessage)" class="i-Eraser-2 text-25 text-success ml-2" style="cursor: pointer"></i>
+                  <i @click="deleteAgentFavoriteMessage(agentFavoriteMessage)" class="i-Close-Window text-25 ml-2 text-danger" style="cursor: pointer"></i>
+                </div>
+              </div>
+              <b-form-textarea style="margin-bottom: 10px;" v-model="agentFavoriteMessage.agentFavoriteMessageTextMessageBody" placeholder="Contenido del mensaje favorito" rows="3"></b-form-textarea>
+              <br>
+            </div>
             <div style="text-align: center;">
-              <button @click="updateAgentAutomaticMessages()" class="btn btn-icon" style="background-color: #F9E530; font-size: 15px"><i class="i-Data-Save"></i>Guardar cambios</button>
-            </div>  
-          </div>
-        </b-card>
-      </b-collapse>
+              <button @click="openCreateFavoriteMessageModal()" v-b-modal.newFavoriteMessageModal class="btn btn-icon" style="background-color: #F9E530; font-size: 15px"><i class="i-Data-Save"></i> Nuevo mensaje favorito</button>
+              <b-modal scrollable size="sm" centered id="newFavoriteMessageModal" title="Nuevo mensaje favorito" @ok="createAgentFavoriteMessage()">
+                <b-form-input v-model="newFavoriteMessageTitle" placeholder="Título del nuevo mensaje favorito"></b-form-input>
+                <br>
+                <b-form-textarea v-model="newFavoriteMessageContent" placeholder="Contenido del nuevo mensaje favorito" rows="3"></b-form-textarea>
+              </b-modal>
+            </div>
+          </b-card>
+        </b-collapse>
+      </div>
 
-      <br><br>
-
-      <b-button v-b-toggle.favoriteMessagesCollapseMenu style="width: 100%; font-size: large; background-color: #F9E530;">Mensajes favoritos</b-button>
-      <b-collapse id="favoriteMessagesCollapseMenu">
-        <b-card>
-          <div v-for="agentFavoriteMessage in agentFavoriteMessages">
+      <div v-if="agentType=='admin'">
+        <br>
+        <b-button v-b-toggle.adminCollapseMenu style="width: 100%; font-size: large; background-color: #F9E530;">Variables de entorno</b-button>
+        <b-collapse id="adminCollapseMenu">
+          <b-card>
+            
             <div style="display: flex;">
-              <p style="font-size: medium;"><strong>{{agentFavoriteMessage.agentFavoriteMessageName}}</strong></p>
+              <p style="font-size: medium; margin-bottom: 5px;"><strong>URL del servidor:</strong></p>
               <div style="right: 0; position: absolute; margin-right: 20px;">
-              <i @click="updateAgentFavoriteMessage(agentFavoriteMessage)" class="i-Eraser-2 text-25 text-success ml-2" style="cursor: pointer"></i>
-              <i @click="deleteAgentFavoriteMessage(agentFavoriteMessage)" class="i-Close-Window text-25 ml-2 text-danger" style="cursor: pointer"></i>
+                <i @click="updateBackendURL()" class="i-Eraser-2 text-25 text-success ml-2" style="cursor: pointer"></i>
               </div>
             </div>
-            <b-form-textarea v-model="agentFavoriteMessage.agentFavoriteMessageTextMessageBody" placeholder="Contenido del mensaje favorito" rows="3"></b-form-textarea>
-            <br>
-          </div>
-          <div style="text-align: center;">
-            <button @click="openCreateFavoriteMessageModal()" v-b-modal.newFavoriteMessageModal class="btn btn-icon" style="background-color: #F9E530; font-size: 15px"><i class="i-Data-Save"></i>Nuevo mensaje favorito</button>
-            <b-modal scrollable size="sm" centered id="newFavoriteMessageModal" title="Nuevo mensaje favorito" @ok="createAgentFavoriteMessage()">
-              <b-form-input v-model="newFavoriteMessageTitle" placeholder="Título del nuevo mensaje favorito"></b-form-input>
-              <br>
-              <b-form-textarea v-model="newFavoriteMessageContent" placeholder="Contenido del nuevo mensaje favorito" rows="3"></b-form-textarea>
-            </b-modal>
-          </div>
-        </b-card>
-      </b-collapse>
+            <b-form-input v-model="backendURLInput" placeholder="URL del servidor"></b-form-input>
 
-      <br>
+            <br>
+
+            <div style="display: flex;">
+              <p style="font-size: medium; margin-bottom: 5px;"><strong>URL del websocket:</strong></p>
+              <div style="right: 0; position: absolute; margin-right: 20px;">
+                <i @click="updateWebsocketURL()" class="i-Eraser-2 text-25 text-success ml-2" style="cursor: pointer"></i>
+              </div>
+            </div>
+            <b-form-input v-model="websocketURL" placeholder="URL del servidor"></b-form-input>
+
+            <br>
+
+            <div style="display: flex;">
+              <p style="font-size: medium; margin-bottom: 5px;"><strong>Token del API:</strong></p>
+              <div style="right: 0; position: absolute; margin-right: 20px;">
+                <i @click="updateTokenAPI()" class="i-Eraser-2 text-25 text-success ml-2" style="cursor: pointer"></i>
+              </div>
+            </div>
+            <b-form-textarea rows="3" v-model="tokenAPI" placeholder="Token del API"></b-form-textarea>
+
+          </b-card>
+        </b-collapse>
+      </div>
 
     </b-modal>
 
 
-    <div style="position: fixed; bottom: 30px; right: 20px;">
+    <div style="position: fixed; bottom: 140px; right: 15px;">
+      <b-dropdown dropup v-if="(ranking == false) && (locality == false)" id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
+        <template slot="button-content">
+          <img class="hoverAnimationTranslator" id="traductorButton" style="cursor: pointer; width: 45px; height: 40px; position: relative; top: 10px;" src="@/assets/icons/notification.png">
+        </template>
+        <div class="dropdown-menu-right" aria-labelledby="userDropdown">
+          <div v-for="notification in notifications" class="hover">
+            <div style="width: 350px;">
+              <div style="padding-left: 15px; padding-right: 15px; padding-top: 20px; padding-bottom: 20px;">
+                <div style="display: flex;">
+                  <div>
+                    <strong>NOMBRE: </strong>{{notification.notificationName}}<br>
+                    <strong>NÚMERO: </strong>{{notification.notificationPhoneNumber}}<br>
+                    <strong>FECHA: </strong>{{parseHour(notification.notificationDateTime)}}<br>
+                  </div>
+                  <div class="flex-grow-1" ></div>
+                  <div>
+                    <i class="i-Close-Window text-25 text-danger" @click="deleteNotification(notification.notificationID)" style="cursor: pointer"></i>
+                  </div>
+                </div>
+              </div>
+              <hr style="margin: 0">
+            </div>
+          </div>
+          <div v-b-modal.createNotificationModal class="hover" style="width: 350px; cursor: pointer; padding-left: 15px; padding-right: 15px; padding-top: 20px; padding-bottom: 20px; text-align: center;">
+            <i class="i-Flag" style="margin-right: 5px;"></i>
+            <strong>CREAR</strong>
+          </div>
+        </div>
+      </b-dropdown>
+    </div>
+
+    
+    <div style="position: fixed; bottom: 80px; right: 20px;">
       <b-dropdown id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
         <template slot="button-content">
           <img class="hoverAnimationTranslator" id="traductorButton" style="cursor: pointer; width: 35px; height: 40px; position: relative; top: 10px;" src="@/assets/traductor.png">
@@ -204,9 +219,13 @@
           </div>
         </div>
       </b-dropdown>
-
-
     </div>
+
+    <div style="position: fixed; bottom: 30px; right: 20px;">
+      <img @click="startRecording()" v-if="recordingScreen == false" class="hoverAnimationTranslator" id="traductorButton" style="cursor: pointer; width: 35px; height: 40px; position: relative; top: 10px;" src="@/assets/icons/recordScreen.png">
+      <img @click="stopRecording()" v-else class="hoverAnimationTranslator" id="traductorButton" style="cursor: pointer; width: 35px; height: 40px; position: relative; top: 10px;" src="@/assets/icons/recordingScreen.png">
+    </div>
+
 
     
   </div>
@@ -214,11 +233,11 @@
 
 
 <script>
+import { mapState, mapGetters, mapActions } from "vuex";
 import Util from "@/utils";
 import Sidebar from "./Sidebar";
 import searchComponent from "../common/search";
 import { isMobile } from "mobile-device-detect";
-import { mapGetters, mapActions } from "vuex";
 import { mixin as clickaway } from "vue-clickaway";
 import router from "../../../router";
 import axios from 'axios';
@@ -290,7 +309,11 @@ export default {
 
       recordingScreen: false,
       screenRecorder: null,
-      recordedScreenChunks: []
+      recordedScreenChunks: [],
+
+      backendURLInput: '',
+      websocketURL: '',
+      tokenAPI: ''
 
     };
   },
@@ -382,7 +405,7 @@ export default {
   
   },
   computed: {
-    ...mapGetters(["getSideBarToggleProperties"])
+    ...mapGetters(["getSideBarToggleProperties"]),
   },
 
   created(){
@@ -395,6 +418,12 @@ export default {
   },
 
   methods: {
+
+    updateBackendURL(){
+      console.log(this.$store.state.database.backendURL);
+      this.$store.commit('updateBackendURL', this.backendURLInput);
+      console.log(this.$store.state.database.backendURL);
+    },  
 
 
     startRecording(){
