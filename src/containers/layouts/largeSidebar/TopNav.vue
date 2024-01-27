@@ -144,7 +144,7 @@
                 <i @click="updateWebsocketURL()" class="i-Eraser-2 text-25 text-success ml-2" style="cursor: pointer"></i>
               </div>
             </div>
-            <b-form-input v-model="websocketURL" placeholder="URL del servidor"></b-form-input>
+            <b-form-input v-model="websocketURLInput" placeholder="URL del servidor"></b-form-input>
 
             <br>
 
@@ -312,13 +312,16 @@ export default {
       recordedScreenChunks: [],
 
       backendURLInput: '',
-      websocketURL: '',
+      websocketURLInput: '',
       tokenAPI: ''
 
     };
   },
   mounted() {
-    
+
+    this.backendURLInput = this.$store.getters.getBackendURL;
+    this.websocketURLInput = this.$store.getters.getWebsocketURL;
+
     if (localStorage.getItem('ranking') != 'yes' && (localStorage.getItem('locality') != 'yes')){
       const notificationInterval = setInterval(() => {
         for (var notificationIndex in this.notifications){

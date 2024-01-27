@@ -1677,7 +1677,7 @@ export default {
   methods: {
 
     manageWebsocketConnection() {
-      this.websocketConnection = new WebSocket('wss:kingvapebackend2.onrender.com');
+      this.websocketConnection = new WebSocket(this.$store.getters.getWebsocketURL);
 
       this.websocketConnection.onopen = () => {
         this.websocketIsConnected = true;

@@ -420,9 +420,7 @@ export default {
         whatsappConversationID: conversation.whatsappConversationID
       })
       .then((response) =>{
-        console.log(response.data);
         if (response.data.success){
-          this.$root.$emit('bv::hide::modal','conversationsModal');
           this.currentRankingConversation = response.data.result[conversation.whatsappConversationID];
           this.loader2 = false;
         } else {
