@@ -11,7 +11,6 @@ import verticalSidebar from "./modules/verticalSidebar";
 import scrumboard from "./modules/scrumboard";
 import database from "./modules/database";
 
-import createPersistedState from "vuex-persistedstate";
 
 
 // Load Vuex
@@ -30,7 +29,6 @@ export default new Vuex.Store({
     verticalSidebar,
     scrumboard,
     database
-  },
+  }
 
-  plugins: [createPersistedState()]
 });
