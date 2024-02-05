@@ -136,8 +136,11 @@
             v-if="view == 'activeConversations'"
           >
             <template slot="table-row" slot-scope="props">
-              <button v-b-modal.conversationModal  v-if="props.column.field == 'whatsappConversationOpenAction'" class="btn btn-outline-primary text-black btn-rounded" @click="whatsappConversationOpenAction(props.row.whatsappConversationID)">Abrir</button>
+              <button v-b-modal.conversationModal v-if="props.column.field == 'whatsappConversationOpenAction'" class="btn btn-outline-primary text-black btn-rounded" @click="whatsappConversationOpenAction(props.row.whatsappConversationID)">Abrir</button>
+              <button v-b-modal.transferModal v-else-if="props.column.field == 'whatsappConversationTransferAction'" class="btn btn-outline-info text-black btn-rounded" @click="whatsappTransferOpenAction(props.row)">Transferir</button>
             </template>
+
+            
           </vue-good-table>
 
           <vue-good-table
@@ -155,6 +158,16 @@
         </div>
       </div>
     </div>
+
+    <b-modal scrollable size="m" centered id="transferModal" title="Transferir la conversación" @ok="transferConversation()">
+      <b-list-group v-if="loaderTransferConversationAgents == false">
+        <b-form-select v-model="agentToTransfer" class="mb-3 mt-3" :options="transferAgentOptions"></b-form-select>
+        
+      </b-list-group>
+      <div v-else style="text-align: center;">
+        <br><span class="spinner-glow spinner-glow-primary"></span>
+      </div>
+    </b-modal>
 
     <b-modal scrollable hide-footer hide-header size="lg" centered hide-backdrop id="conversationModal" v-if="currentConversation != null">
       <div v-if="openConversationLoader == true" style="text-align: center;">
@@ -386,6 +399,8 @@ export default {
   },
   data() {
     return {
+      loaderTransferConversationAgents: false,
+
       opcionesGraficoLinea: {},
       datosGraficoLinea: [],
       displayPlot: false,
@@ -398,6 +413,7 @@ export default {
 
       agentOptionsMultiple: [],
       agentArrayOption: [],
+      transferAgentOptions: [],
 
       storeOptionsMultiple: [{value:'Escazu', text:'Escazú'}, {value:'Zapote', text:'Zapote'}, {value:'Cartago', text:'Cartago'}, {value:'Heredia', text:'Heredia'}],
       storeArrayOption: [],
@@ -441,6 +457,8 @@ export default {
 
       agentOptions: [{value:null,text:''}],
       agentFiltered: null,
+
+      agentToTransfer: null,
 
       storeOptions: [{value:null, text:''}, {value:'Escazú', text:'Escazú'}, {value:'Zapote', text:'Zapote'}, {value:'Cartago', text:'Cartago'}, {value:'Heredia', text:'Heredia'}],
       storeFiltered: '',
@@ -500,6 +518,13 @@ export default {
         {
           label: "Tiempo transcurrido",
           field: "whatsappConversationElapsedTime",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Transferir",
+          field: "whatsappConversationTransferAction",
+          html: true,
           thClass: "text-left",
           tdClass: "text-left",
         },
@@ -574,8 +599,10 @@ export default {
         }
       ],
 
-      bigImageSource: null
+      bigImageSource: null,
 
+      transferWhatsappConversationID: null,
+      transferCurrentAgentID: null
     };
   },
 
@@ -621,6 +648,7 @@ export default {
   },
 
   methods: {
+
     plot(){
       if ((this.agentArrayOption.length == 0) && (this.storeArrayOption.length == 0)){
         this.showNotification('danger', 'Filtros incompletos', 'Debe colocar al menos un agente o una tienda para filtrar. Agregue al menos una opción para filtrar e intentelo nuevamente.');
@@ -782,11 +810,30 @@ export default {
             this.agentOptionsMultiple.push({value: response.data.result[agentIndex].agentID, text: response.data.result[agentIndex].agentName});
           }
         } else {
-          
+          this.showNotification('danger', 'Error al solicitar la lista de agentes', 'Ha ocurrido un error inesperado al solicitar la lista de agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
-      .catch((error) =>{
-        console.log(error);
+      .catch(() =>{
+        this.showNotification('danger', 'Error al solicitar la lista de agentes', 'Ha ocurrido un error inesperado al solicitar la lista de agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+    transferConversation(){
+      axios.post(constants.routes.backendAPI+'/acceptTransferWhatsappConversation', 
+      {
+        currentAgentID: this.transferCurrentAgentID,
+        newAgentID: this.agentToTransfer,
+        whatsappConversationID: this.transferWhatsappConversationID
+      }).then((response) =>{
+        if (response.data.success){
+          this.selectTodayInformation();
+          this.showNotification('success', 'Conversación transferida', 'Se ha transferido la conversación exitosamente.')
+        } else {
+          this.showNotification('danger', 'Error al realizar la transferencia', 'Ha ocurrido un error inesperado al realizar la transferencia. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch(() =>{
+        this.showNotification('danger', 'Error al realizar la transferencia', 'Ha ocurrido un error inesperado al realizar la transferencia. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
 
@@ -802,19 +849,20 @@ export default {
               whatsappConversationRecipientPhoneNumber: this.parseNumber(this.activeConversations[activeConversationIndex].whatsappConversationRecipientPhoneNumber),
               whatsappConversationRecipientProfileName: this.activeConversations[activeConversationIndex].whatsappConversationRecipientProfileName,
               agentName: this.activeConversations[activeConversationIndex].agentName || 'Sin asignar',
+              agentID: this.activeConversations[activeConversationIndex].agentID,
               whatsappGeneralMessageCreationDateTime: this.activeConversations[activeConversationIndex].whatsappGeneralMessageCreationDateTime,
               whatsappGeneralMessageOwnerPhoneNumber: this.activeConversations[activeConversationIndex].whatsappGeneralMessageOwnerPhoneNumber,
               whatsappConversationState: this.getWhatsappConversationState(this.activeConversations[activeConversationIndex]),
               whatsappConversationStartDateTime: this.parseHour(this.activeConversations[activeConversationIndex].whatsappConversationStartDateTime),
               whatsappConversationElapsedTime: this.getWhatsappConversationElapsedTime(Math.round((new Date() - new Date(this.activeConversations[activeConversationIndex].whatsappConversationStartDateTime))/1000)),
-              whatsappConversationOpenAction: ''
+              whatsappConversationOpenAction: '',
+              whatsappConversationTransferAction: ''
             });
             this.originalActiveConversationsRows = this.activeConversationsRows;
             this.filterByAgent();
           }
 
           setInterval(() => {
-            
             for (var activeConversationIndex in this.activeConversationsRows){
               this.activeConversationsRows[activeConversationIndex].whatsappConversationState = this.getWhatsappConversationState(this.activeConversationsRows[activeConversationIndex]);
               this.activeConversationsRows[activeConversationIndex].whatsappConversationElapsedTime = this.getWhatsappConversationElapsedTime(Math.round((new Date() - new Date(this.activeConversations[activeConversationIndex].whatsappConversationStartDateTime))/1000))
@@ -827,7 +875,6 @@ export default {
             this.whatsappNotSelledConversations = response.data.result.whatsappNotSelledConversations;
             this.whatsappPendingConversations = response.data.result.whatsappPendingConversations;
             this.whatsappTotalSells = response.data.result.whatsappTotalSells.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
-
             this.whatsappSendedMessages = response.data.result.whatsappSendedMessages;
             this.whatsappReceivedMessages = response.data.result.whatsappReceivedMessages;
           })
@@ -1004,6 +1051,29 @@ export default {
       })
       .catch((error) => {
         this.showNotification('danger', 'Error al abrir la conversación', 'Ha ocurrido un error inesperado al abrir la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+    whatsappTransferOpenAction(whatsappConversation){
+      this.transferWhatsappConversationID = whatsappConversation.whatsappConversationID;
+      this.transferCurrentAgentID = whatsappConversation.agentID;
+
+      this.loaderTransferConversationAgents = true;
+      this.transferAgentOptions = [{value:null, text:''}];
+      this.agentToTransfer = null;
+      axios.get(constants.routes.backendAPI+'/selectTransferableAgents')
+      .then((response) =>{
+        if (response.data.success){
+          for (var agentIndex in response.data.result){
+            this.transferAgentOptions.push({value: response.data.result[agentIndex].agentID, text: response.data.result[agentIndex].agentName});
+          }
+          this.loaderTransferConversationAgents = false;
+        } else {
+          this.showNotification('danger', 'Error al solicitar los agentes para realizar la transferencia', 'Ha ocurrido un error inesperado al solicitar los agentes para realizar la transferencia. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        this.showNotification('danger', 'Error al solicitar los agentes para realizar la transferencia', 'Ha ocurrido un error inesperado al solicitar los agentes para realizar la transferencia. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
 
