@@ -52,6 +52,20 @@
       <img style="width: 1000px;" :src="bigImageSource">
     </b-modal>
 
+    <b-modal scrollable size="m" centered id="closeModal" title="Finalizar conversación" @ok="closeWhatsappConversation()">
+      <b-dropdown variant="primary" text="Motivos frecuentes" style="width: 100%">
+        <b-dropdown-item @click="addCloseConversationReason('No contestó')">No contestó</b-dropdown-item>
+        <b-dropdown-item @click="addCloseConversationReason('Pasa a tienda')">Pasa a tienda</b-dropdown-item>
+        <b-dropdown-item @click="addCloseConversationReason('Consulta sobre productos')">Consulta sobre productos</b-dropdown-item>
+        <b-dropdown-item @click="addCloseConversationReason('Vuelve a escribir')">Vuelve a escribir</b-dropdown-item>
+        <b-dropdown-item @click="addCloseConversationReason('Reclamo o garantía')">Reclamo o garantía</b-dropdown-item>
+        <b-dropdown-item @click="addCloseConversationReason('Menor de edad')">Menor de edad</b-dropdown-item>
+      </b-dropdown><br><br>
+      <b-form-textarea disabled no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
+      <br>
+      <b-form-checkbox id="checkbox-1" v-model="sendEndMessage">Enviar mensaje de despedida</b-form-checkbox>
+    </b-modal>
+
     <br>
     <b-row>
 
@@ -196,6 +210,10 @@
             <template slot="table-row" slot-scope="props">
               <button v-b-modal.conversationModal v-if="props.column.field == 'whatsappConversationOpenAction'" class="btn btn-outline-primary text-black btn-rounded" @click="whatsappConversationOpenAction(props.row.whatsappConversationID)">Abrir</button>
               <button v-b-modal.transferModal v-else-if="props.column.field == 'whatsappConversationTransferAction'" class="btn btn-outline-info text-black btn-rounded" @click="whatsappTransferOpenAction(props.row)">Transferir</button>
+              <button v-b-modal.closeModal v-else-if="props.column.field == 'whatsappConversationCloseAction'" class="btn btn-outline-danger text-black btn-rounded" @click="whatsappCloseOpenAction(props.row)">Cerrar</button>
+              <div v-else-if="props.column.field == 'whatsappConversationRecipientPhoneNumber'">
+                {{parseNumber(props.row.whatsappConversationRecipientPhoneNumber)}}
+              </div>
             </template>
 
             
@@ -457,6 +475,10 @@ export default {
   },
   data() {
     return {
+      closeConversationPhoneNumber: null,
+      closeConversationReason: '',
+      sendEndMessage: false,
+
       historyMessageLoader: false,
       historyMessage: null,
 
@@ -590,6 +612,13 @@ export default {
           tdClass: "text-left",
         },
         {
+          label: "Cerrar",
+          field: "whatsappConversationCloseAction",
+          html: true,
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
           label: "Conversación",
           field: "whatsappConversationOpenAction",
           html: true,
@@ -709,6 +738,34 @@ export default {
   },
 
   methods: {
+    closeWhatsappConversation(){
+      console.log(this.closeConversationPhoneNumber);
+      axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
+      {
+        whatsappConversationRecipientPhoneNumber: this.closeConversationPhoneNumber,
+        whatsappConversationCloseComment: this.closeConversationReason,
+        whatsappConversationAmount: 0,
+        whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
+        whatsappConversationProducts: [],
+        sendAgentEndMessage: this.sendEndMessage
+      })
+      .then((response) =>{ 
+        if (response.data.success){
+          this.showNotification('success', 'Conversación cerrada', "Se ha cerrado la conversación asociada al número '" + this.closeConversationPhoneNumber + "'.");
+          this.selectTodayInformation();
+        } else {
+          this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch((error) =>{
+        this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+    },
+
+
+    addCloseConversationReason(reason){
+      this.closeConversationReason = reason;
+    },
 
     plot(){
       this.agentArrayOption = [];
@@ -941,7 +998,7 @@ export default {
             this.activeConversationsRows.push
             ({
               whatsappConversationID: this.activeConversations[activeConversationIndex].whatsappConversationID,
-              whatsappConversationRecipientPhoneNumber: this.parseNumber(this.activeConversations[activeConversationIndex].whatsappConversationRecipientPhoneNumber),
+              whatsappConversationRecipientPhoneNumber: this.activeConversations[activeConversationIndex].whatsappConversationRecipientPhoneNumber,
               whatsappConversationRecipientProfileName: this.activeConversations[activeConversationIndex].whatsappConversationRecipientProfileName,
               agentName: this.activeConversations[activeConversationIndex].agentName || 'Sin asignar',
               agentID: this.activeConversations[activeConversationIndex].agentID,
@@ -951,7 +1008,8 @@ export default {
               whatsappConversationStartDateTime: this.parseHour(this.activeConversations[activeConversationIndex].whatsappConversationStartDateTime),
               whatsappConversationElapsedTime: this.getWhatsappConversationElapsedTime(Math.round((new Date() - new Date(this.activeConversations[activeConversationIndex].whatsappConversationStartDateTime))/1000)),
               whatsappConversationOpenAction: '',
-              whatsappConversationTransferAction: ''
+              whatsappConversationTransferAction: '',
+              whatsappConversationCloseAction: ''
             });
             this.originalActiveConversationsRows = this.activeConversationsRows;
             this.filterByAgent();
@@ -1177,6 +1235,10 @@ export default {
       .catch((error) => {
         this.showNotification('danger', 'Error al solicitar los agentes para realizar la transferencia', 'Ha ocurrido un error inesperado al solicitar los agentes para realizar la transferencia. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
+    },
+
+    whatsappCloseOpenAction(whatsappConversation){
+      this.closeConversationPhoneNumber = whatsappConversation.whatsappConversationRecipientPhoneNumber
     },
 
     getWhatsappConversationElapsedTime(seconds){
