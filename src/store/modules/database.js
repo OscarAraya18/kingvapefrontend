@@ -1,6 +1,6 @@
 const state = {
-  backendURL: 'https://1109-186-5-163-74.ngrok-free.app',
-  websocketURL: 'wss:1109-186-5-163-74.ngrok-free.app',
+  backendURL: 'https://kingvapebackend2.onrender.com',
+  websocketURL: 'wss:kingvapebackend2.onrender.com',
 };
 
 const getters = {
