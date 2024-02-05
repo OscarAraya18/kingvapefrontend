@@ -3,6 +3,52 @@
     <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
       <img style="width: 1000px;" :src="bigImageSource">
     </b-modal>
+
+    <b-modal scrollable size="m" centered hide-footer id="historyMessageModal" hide-header>
+      <div v-if="historyMessageLoader == false && historyMessage != null">
+        <p v-if="historyMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{historyMessage.whatsappTextMessageBody}}</p>
+        
+        <div v-if="historyMessage.whatsappGeneralMessageType == 'contact'"> 
+          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{historyMessage.whatsappContactMessageName}}</p>
+          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{historyMessage.whatsappContactMessagePhoneNumber}}</p>
+        </div>
+        
+        <div v-if="historyMessage.whatsappGeneralMessageType == 'image'"> 
+          <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${historyMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${historyMessage.whatsappImageMessageFile}`">
+          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="historyMessage.whatsappImageMessageCaption != null">{{historyMessage.whatsappImageMessageCaption}}</p>
+        </div>
+        
+        <div v-if="historyMessage.whatsappGeneralMessageType=='video'"> 
+          <video controls width="400" :src="`data:video/mp4;base64,${historyMessage.whatsappVideoMessageFile}`"></video>
+          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="historyMessage.whatsappImageMessageCaption != null">{{historyMessage.whatsappVideoMessageCaption}}</p>
+        </div>
+        
+        <div v-if="historyMessage.whatsappGeneralMessageType=='location'" class="m-0">
+          <GmapMap :center="getLocation(historyMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(historyMessage)" :draggable="false"/></GmapMap><br>
+          <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{historyMessage.whatsappLocationMessageLatitude}}</p>
+          <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{historyMessage.whatsappLocationMessageLongitude}}</p><br>
+          <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
+            <b-dropdown-item @click="saveLocation('CASA', historyMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
+            <b-dropdown-item @click="saveLocation('TRABAJO', historyMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
+            <b-dropdown-item @click="saveLocation('OTRO', historyMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
+          </b-dropdown>
+        </div>
+        
+        <div v-if="historyMessage.whatsappGeneralMessageType=='document'" class="m-0">
+          <a style="color: black;" :href="`data:${historyMessage.whatsappDocumentMessageMimeType};base64,${historyMessage.whatsappDocumentMessageFile}`" :download="historyMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{historyMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+        </div>
+        
+        <audio controls v-if="historyMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${historyMessage.whatsappAudioMessageFile}`"></audio>
+        
+        <div v-if="historyMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+          <img v-b-modal.bigImageModal @click="openBigImage(historyMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="historyMessage.whatsappFavoriteImageMessageDriveURL">
+          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="historyMessage.whatsappFavoriteImageMessageCaption != null">{{historyMessage.whatsappFavoriteImageMessageCaption}}</p>
+        </div>
+      </div>
+      <div v-else style="text-align: center;">
+        <br><span class="spinner-glow spinner-glow-primary"></span>
+      </div>
+    </b-modal>
     
     <div style="display: flex">
       <div style="width: 45%">
@@ -335,6 +381,9 @@ export default {
   data() {
     
     return {
+      historyMessageLoader: false,
+      historyMessage: null,
+
       loader1: false,
       loader2: false,
       currentRankingConversation: {},
@@ -383,6 +432,26 @@ export default {
 
 
   methods: {
+    getHistoryMessage(whatsappGeneralMessageID){
+      this.historyMessageLoader = true;
+      axios.post(constants.routes.backendAPI+'/selectWhatsappGeneralMessage', 
+      {
+        whatsappGeneralMessageID: whatsappGeneralMessageID
+      })
+      .then((response) => {
+        if (response.data.success){
+          this.historyMessage = response.data.result;
+          this.historyMessageLoader = false;
+        } else {
+          this.historyMessageLoader = false;
+          this.showNotification('danger', 'Error al abrir el mensaje del historial', 'Ha ocurrido un error inesperado al abrir el mensaje del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        this.showNotification('danger', 'Error al abrir el mensaje del historial', 'Ha ocurrido un error inesperado al abrir el mensaje del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
     openBigImage(bigImageSource){
       this.bigImageSource = bigImageSource;
     },

@@ -1,5 +1,53 @@
 <template>
   <div class="main-content">
+
+    <b-modal scrollable size="m" centered hide-footer id="historyMessageModal" hide-header>
+      <div v-if="historyMessageLoader == false && historyMessage != null">
+        <p v-if="historyMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{historyMessage.whatsappTextMessageBody}}</p>
+        
+        <div v-if="historyMessage.whatsappGeneralMessageType == 'contact'"> 
+          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{historyMessage.whatsappContactMessageName}}</p>
+          <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{historyMessage.whatsappContactMessagePhoneNumber}}</p>
+        </div>
+        
+        <div v-if="historyMessage.whatsappGeneralMessageType == 'image'"> 
+          <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${historyMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${historyMessage.whatsappImageMessageFile}`">
+          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="historyMessage.whatsappImageMessageCaption != null">{{historyMessage.whatsappImageMessageCaption}}</p>
+        </div>
+        
+        <div v-if="historyMessage.whatsappGeneralMessageType=='video'"> 
+          <video controls width="400" :src="`data:video/mp4;base64,${historyMessage.whatsappVideoMessageFile}`"></video>
+          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="historyMessage.whatsappImageMessageCaption != null">{{historyMessage.whatsappVideoMessageCaption}}</p>
+        </div>
+        
+        <div v-if="historyMessage.whatsappGeneralMessageType=='location'" class="m-0">
+          <GmapMap :center="getLocation(historyMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(historyMessage)" :draggable="false"/></GmapMap><br>
+          <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{historyMessage.whatsappLocationMessageLatitude}}</p>
+          <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{historyMessage.whatsappLocationMessageLongitude}}</p><br>
+          <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
+            <b-dropdown-item @click="saveLocation('CASA', historyMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
+            <b-dropdown-item @click="saveLocation('TRABAJO', historyMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
+            <b-dropdown-item @click="saveLocation('OTRO', historyMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
+          </b-dropdown>
+        </div>
+        
+        <div v-if="historyMessage.whatsappGeneralMessageType=='document'" class="m-0">
+          <a style="color: black;" :href="`data:${historyMessage.whatsappDocumentMessageMimeType};base64,${historyMessage.whatsappDocumentMessageFile}`" :download="historyMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{historyMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+        </div>
+        
+        <audio controls v-if="historyMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${historyMessage.whatsappAudioMessageFile}`"></audio>
+        
+        <div v-if="historyMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+          <img v-b-modal.bigImageModal @click="openBigImage(historyMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="historyMessage.whatsappFavoriteImageMessageDriveURL">
+          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="historyMessage.whatsappFavoriteImageMessageCaption != null">{{historyMessage.whatsappFavoriteImageMessageCaption}}</p>
+        </div>
+      </div>
+      <div v-else style="text-align: center;">
+        <br><span class="spinner-glow spinner-glow-primary"></span>
+      </div>
+    </b-modal>
+
+
     <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
       <img style="width: 1000px;" :src="bigImageSource">
     </b-modal>
@@ -86,11 +134,21 @@
       <b-form-datepicker v-model="endDateOption"></b-form-datepicker>
       <br>
       <h4><strong>Filtro por agente:</strong></h4>
-      <b-form-select v-model="agentArrayOption" class="mb-3" style="height: 150px;" :options="agentOptionsMultiple" multiple></b-form-select>
+      <div style="border: 1px solid rgb(140, 140, 140); border-radius: 5px; height: 150px; overflow-y: auto; padding-top: 10px; padding-bottom: 10px;">
+        <div v-for="agent in agentOptionsMultiple">
+          <input type="checkbox" v-model="agent.selected" style="accent-color: #FFD733; margin-left:10px; margin-right: 10px;">
+          {{ agent.text }}
+        </div>
+      </div>
       <br>
       <div v-if="plotTypeOption != 4">
         <h4><strong>Filtro por sucursal de envío:</strong></h4>
-        <b-form-select v-model="storeArrayOption" class="mb-3" style="height: 80px;" :options="storeOptionsMultiple" multiple></b-form-select>
+        <div style="border: 1px solid rgb(140, 140, 140); border-radius: 5px; height: 100px; overflow-y: auto; padding-top: 10px; padding-bottom: 10px;">
+          <div v-for="store in storeOptionsMultiple">
+            <input type="checkbox" v-model="store.selected" style="accent-color: #FFD733; margin-left:10px; margin-right: 10px;">
+            {{ store.text }}
+          </div>
+        </div>
       </div>
       <br><br>
       <button v-b-modal.plotModal class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="plot()"><i class="i-Search-People"></i>Graficar</button>
@@ -399,6 +457,9 @@ export default {
   },
   data() {
     return {
+      historyMessageLoader: false,
+      historyMessage: null,
+
       loaderTransferConversationAgents: false,
 
       opcionesGraficoLinea: {},
@@ -415,7 +476,7 @@ export default {
       agentArrayOption: [],
       transferAgentOptions: [],
 
-      storeOptionsMultiple: [{value:'Escazu', text:'Escazú'}, {value:'Zapote', text:'Zapote'}, {value:'Cartago', text:'Cartago'}, {value:'Heredia', text:'Heredia'}],
+      storeOptionsMultiple: [{value:'Escazu', text:'Escazú', selected: false}, {value:'Zapote', text:'Zapote', selected: false}, {value:'Cartago', text:'Cartago', selected: false}, {value:'Heredia', text:'Heredia', selected: false}],
       storeArrayOption: [],
 
       conversacionesTotales: 0,
@@ -650,6 +711,20 @@ export default {
   methods: {
 
     plot(){
+      this.agentArrayOption = [];
+      for (var agentIndex in this.agentOptionsMultiple){
+        if (this.agentOptionsMultiple[agentIndex].selected == true){
+          this.agentArrayOption.push(this.agentOptionsMultiple[agentIndex].value);
+        }
+      }
+
+      this.storeArrayOption = [];
+      for (var storeIndex in this.storeOptionsMultiple){
+        if (this.storeOptionsMultiple[storeIndex].selected == true){
+          this.storeArrayOption.push(this.storeOptionsMultiple[storeIndex].value);
+        }
+      }
+
       if ((this.agentArrayOption.length == 0) && (this.storeArrayOption.length == 0)){
         this.showNotification('danger', 'Filtros incompletos', 'Debe colocar al menos un agente o una tienda para filtrar. Agregue al menos una opción para filtrar e intentelo nuevamente.');
       } else {
@@ -807,7 +882,7 @@ export default {
         if (response.data.success){
           for (var agentIndex in response.data.result){
             this.agentOptions.push({value: response.data.result[agentIndex].agentID, text: response.data.result[agentIndex].agentName});
-            this.agentOptionsMultiple.push({value: response.data.result[agentIndex].agentID, text: response.data.result[agentIndex].agentName});
+            this.agentOptionsMultiple.push({value: response.data.result[agentIndex].agentID, text: response.data.result[agentIndex].agentName, selected: false});
           }
         } else {
           this.showNotification('danger', 'Error al solicitar la lista de agentes', 'Ha ocurrido un error inesperado al solicitar la lista de agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
@@ -815,6 +890,26 @@ export default {
       })
       .catch(() =>{
         this.showNotification('danger', 'Error al solicitar la lista de agentes', 'Ha ocurrido un error inesperado al solicitar la lista de agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+    getHistoryMessage(whatsappGeneralMessageID){
+      this.historyMessageLoader = true;
+      axios.post(constants.routes.backendAPI+'/selectWhatsappGeneralMessage', 
+      {
+        whatsappGeneralMessageID: whatsappGeneralMessageID
+      })
+      .then((response) => {
+        if (response.data.success){
+          this.historyMessage = response.data.result;
+          this.historyMessageLoader = false;
+        } else {
+          this.historyMessageLoader = false;
+          this.showNotification('danger', 'Error al abrir el mensaje del historial', 'Ha ocurrido un error inesperado al abrir el mensaje del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        this.showNotification('danger', 'Error al abrir el mensaje del historial', 'Ha ocurrido un error inesperado al abrir el mensaje del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
 
@@ -980,8 +1075,15 @@ export default {
       this.displayPlot = false;
       this.initialDateOption = '';
       this.endDateOption = '';
-      this.agentArrayOption = [];
-      this.storeArrayOption = [];
+
+      for (var agentIndex in this.agentOptionsMultiple){
+        this.agentOptionsMultiple[agentIndex].selected = false;
+      }
+
+      for (var storeIndex in this.storeOptionsMultiple){
+        this.storeOptionsMultiple[storeIndex].selected = false;
+      }
+
     },
 
 
