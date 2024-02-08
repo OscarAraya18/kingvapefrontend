@@ -1196,6 +1196,7 @@
                                 <b-modal scrollable size="m" centered hide-header hide-footer id="paymentMethodValidatorModal">
                                   <div>
                                     <div v-if="currentTransactions != null">
+                                      <h4><strong>Transacciones disponibles:</strong></h4><br>
                                       <b-list-group>
                                         <b-list-group-item v-if="currentTransactions.length == 0">No hay transacciones por asociar</b-list-group-item>
                                         <b-list-group-item v-b-modal.syncTransactionModal @click="openSyncTransactionModal(currentTransaction)" v-for="currentTransaction in currentTransactions" button style="cursor: pointer;">
@@ -1215,26 +1216,34 @@
 
                                 <b-modal size="lg" @ok="syncTransactionToMessage()" hide-header centered id="syncTransactionModal">
                                   <div v-if="currentTransaction != null">
-                                    <div v-for="currentActiveConversationMessage in currentActiveConversation.whatsappConversationMessages">
-                                      <div @click="selectTransactionMessage(currentActiveConversationMessage.whatsappGeneralMessageID)" style="cursor: pointer;" class="d-flex mb-30" v-if="(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber != null) && ((currentActiveConversationMessage.whatsappGeneralMessageType == 'text') || (currentActiveConversationMessage.whatsappGeneralMessageType == 'image') || (currentActiveConversationMessage.whatsappGeneralMessageType == 'document'))" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
-                                        <div :style="getMessageOwnerColorTransaction(currentActiveConversationMessage.selected)" class="message flex-grow-1">
-                                          <div class="d-flex">
-                                            <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber != null">
-                                              <span style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
-
-                                              <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>                            
-                                              <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
-                                                <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
-                                                <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
-                                              </div>                                     
-                                              <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='document'" class="m-0">
-                                                <a style="color: black;" :href="`data:${currentActiveConversationMessage.whatsappDocumentMessageMimeType};base64,${currentActiveConversationMessage.whatsappDocumentMessageFile}`" :download="currentActiveConversationMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{currentActiveConversationMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                                    <h4><strong>Mensaje relacionado:</strong></h4><br>
+                                    <div style="height: 500px; overflow-y: scroll; border: 1px solid gray;">
+                                      <div v-for="currentActiveConversationMessage in currentActiveConversation.whatsappConversationMessages">
+                                        <div @click="selectTransactionMessage(currentActiveConversationMessage.whatsappGeneralMessageID)" style="cursor: pointer;" class="d-flex mb-30" v-if="(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber != null) && ((currentActiveConversationMessage.whatsappGeneralMessageType == 'text') || (currentActiveConversationMessage.whatsappGeneralMessageType == 'image') || (currentActiveConversationMessage.whatsappGeneralMessageType == 'document'))" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
+                                          <div :style="getMessageOwnerColorTransaction(currentActiveConversationMessage.selected)" class="message flex-grow-1">
+                                            <div class="d-flex">
+                                              <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber != null">
+                                                <span style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
+                                                <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>                            
+                                                <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
+                                                  <img style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
+                                                </div>                                     
+                                                <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                                                  <a style="color: black;" :href="`data:${currentActiveConversationMessage.whatsappDocumentMessageMimeType};base64,${currentActiveConversationMessage.whatsappDocumentMessageFile}`" :download="currentActiveConversationMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{currentActiveConversationMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                                                </div>
                                               </div>
                                             </div>
                                           </div>
                                         </div>
                                       </div>
                                     </div>
+                                    <br><br>
+
+                                    <h4><strong>Sucursal relacionada:</strong></h4>
+                                    <b-form-select v-model="selectedLocality" :options="localitiesOptions"></b-form-select>
+                                    <br><br>
+                                    
                                   </div>
                                 </b-modal>
 
@@ -1434,6 +1443,9 @@ export default {
   data() {
     return { 
       db: null,
+
+      localitiesOptions: [],
+      selectedLocality: null,
 
       currentTransactions: null,
 
@@ -1754,6 +1766,25 @@ export default {
         console.log('1')
       }, 30000);
     },
+
+
+    selectLocalities(){
+      axios.post(constants.routes.backendAPI+'/selectLocalities')
+      .then((response) =>{
+        if (response.data.success){
+          for (var localityIndex in response.data.result){
+            const localityID = response.data.result[localityIndex].localityID;
+            const localityName = response.data.result[localityIndex].localityName;
+            this.localitiesOptions.push({value: localityID, text: localityName});
+          }
+        } else {
+          this.showNotification('danger', 'Error al consultar las localidades', 'Ha ocurrido un error inesperado al consultar las localidades. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al consultar las localidades', 'Ha ocurrido un error inesperado al consultar las localidades. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
     
 
 
@@ -1804,12 +1835,12 @@ export default {
       if (whatsappGeneralMessageID == ''){
         this.showNotification('danger', 'Error al validar la transacción', 'Debe seleccionar un mensaje para asociar la transacción. Seleccione un mensaje e intentelo nuevamente.');
       } else {
-        axios.post('https://a096-186-5-163-74.ngrok-free.app/syncTransaction',
+        axios.post(constants.routes.backendAPI+'/syncTransaction',
         {
           transactionID: this.currentTransaction.transactionID,
           transactionRelatedMessageID: whatsappGeneralMessageID,
           transactionApprover: localStorage.getItem('agentID'),
-          transactionStore: 'King Vape Center'
+          transactionStore: this.selectedLocality
         })
         .then((response) =>{
           if (response.data.success){
@@ -1978,7 +2009,7 @@ export default {
     validatePaymentMethod(){ 
       this.validatePaymentMethodLoader = true;
       this.currentTransactions = null;
-      axios.get('https://a096-186-5-163-74.ngrok-free.app/run')
+      axios.post(constants.routes.backendAPI+'/selectNotUsedTransactions')
       .then((response) =>{
         this.validatePaymentMethodLoader = false;
         if (response.data.success){
@@ -4286,6 +4317,7 @@ export default {
     this.selectAllStoreMessage();
     this.selectAgentConversations();
     this.selectAllPendingConversation();
+    this.selectLocalities();
     this.openImageModal();
 
     this.manageWebsocketConnection();
