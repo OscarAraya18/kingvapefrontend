@@ -1354,7 +1354,6 @@
                                               :value="props.row.descuento"
                                               @input="updateFieldDesc('descuento', $event, props.row)"
                                               required
-                                              @keyup="calcularDescuento()"
                                               onfocus="this.select();"
                                               placeholder="Descuento"
                                           ></b-form-input>
@@ -1747,6 +1746,13 @@ export default {
           }, 5000);
         }
       }, 5000);
+    },
+
+
+    startMessageRequestInterval(){
+      setInterval(() => {
+        console.log('1')
+      }, 30000);
     },
     
 
@@ -2924,7 +2930,7 @@ export default {
               });
             })
             .catch(function (error) {
-              me.showNotification('danger', 'Error al generar la orden', 'Ha ocurrido un error inesperado al general la orden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+              me.showNotification('danger', 'Error al generar la orden', 'Ha ocurrido un error inesperado al generar la orden debido a Noah. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
               me.loaderOrdenEnviada = false;
             });
           } else {
@@ -3530,6 +3536,7 @@ export default {
         }
       }
       this.availableConversation = availableConversation;
+      
       const databaseOrders = JSON.parse(localStorage.getItem('ordenesActuales'));
       if (databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
         this.currentActiveConversation.whatsappConversationProducts = databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber];        
@@ -4195,8 +4202,11 @@ export default {
 				  { 
 						resultado = resultado + ((this.currentActiveConversation.whatsappConversationProducts[j].descuento/100)*((this.currentActiveConversation.whatsappConversationProducts[j].precio) * this.currentActiveConversation.whatsappConversationProducts[j].cantidad));
           }
-			
+      if (resultado.toFixed(2) == 0.00){
+        console.log(this.currentActiveConversation.whatsappConversationProducts);
+      }
 			return resultado.toFixed(2);
+    
 		},
 
     calcularSubTotal:function(){
@@ -4279,6 +4289,7 @@ export default {
     this.openImageModal();
 
     this.manageWebsocketConnection();
+    this.startMessageRequestInterval();
   }, 
 
 };
