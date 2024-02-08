@@ -104,8 +104,7 @@
             data-item="locality"
             :class="{ active: selectedParentMenu == 'locality' }"
             :data-submenu="false"
-            v-if="locality == true"
-
+            v-if="locality == true || isAdmin == true"
           >
             <router-link tag="a" class="nav-item-hold" to="/app/apps/locality">
               <i class="nav-icon i-Check"></i>
@@ -123,24 +122,28 @@
             data-item="localityReport"
             :class="{ active: selectedParentMenu == 'localityReport' }"
             :data-submenu="false"
-            v-if="locality == true"
+            v-if="locality == true || isAdmin == true"
 
           >
             <div class="nav-item-hold">
-              <i class="nav-icon i-Financial"></i>
+              <i class="nav-icon i-Dollar"></i>
               <span class="nav-text"><strong>CIERRE</strong></span>
             </div>
             <div class="triangle"></div>
           </li>
+
 
           <b-modal hide-footer hide-header scrollable size="m" centered id="openClosePaymentMethod">
             <div v-if="loader == true" style="text-align: center;">
               <br><span class="spinner-glow spinner-glow-primary"></span>
             </div>
             <div>
-              <h1>LISTOOOOO</h1>
+              <h1>aqui se genera el recibo</h1>
             </div>
           </b-modal>
+          
+
+
 
 
         </ul>
