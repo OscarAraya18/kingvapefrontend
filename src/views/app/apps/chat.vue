@@ -792,12 +792,13 @@
                     <b-nav tabs justified>
                       <b-nav-item :active="getActiveNavItem('Nicotina')" @click="changeActiveNavItem('Nicotina')">Nicotina</b-nav-item>
                       <b-nav-item :active="getActiveNavItem('Zero')" @click="changeActiveNavItem('Zero')">Zero</b-nav-item>
+
                     </b-nav>
 
                     <br>
 
                     <div v-if="currentNavItem == 'Nicotina'">
-                      <b-list-group>
+                      <b-list-group style="height: 400px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
                         <b-list-group-item :style="getImageStyle(agentFavoriteImage)" v-for="(agentFavoriteImage, index) in agentFavoriteImages" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
                           <div style="display:flex; ">
@@ -810,8 +811,8 @@
                       </b-list-group>
                     </div>
 
-                    <div v-else>
-                      <b-list-group>
+                    <div v-else-if="currentNavItem == 'Zero'">
+                      <b-list-group style="height: 400px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
                         <b-list-group-item :style="getImageStyle(agentFavoriteImage)" v-for="(agentFavoriteImage, index) in agentFavoriteImages2" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
                           <div style="display:flex; ">
@@ -822,6 +823,12 @@
                           </div>
                         </b-list-group-item>
                       </b-list-group>
+                    </div>
+
+                    <div v-else>
+                      <div style="text-align: center">
+                        <p>El catálogo está siendo actualizado...</p>
+                      </div>
                     </div>
 
                   </b-modal>
@@ -893,7 +900,7 @@
                     <br>
 
                     <div v-if="currentNavItem == 'Nicotina'">
-                      <b-list-group>
+                      <b-list-group style="height: 400px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
                         <b-list-group-item :style="getImageStyle(agentFavoriteImage)" v-for="(agentFavoriteImage, index) in agentFavoriteImages" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
                           <div style="display:flex; ">
@@ -906,8 +913,8 @@
                       </b-list-group>
                     </div>
 
-                    <div v-else>
-                      <b-list-group>
+                    <div v-else-if="currentNavItem == 'Zero'">
+                      <b-list-group style="height: 400px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
                         <b-list-group-item :style="getImageStyle(agentFavoriteImage)" v-for="(agentFavoriteImage, index) in agentFavoriteImages2" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
                           <div style="display:flex; ">
@@ -918,6 +925,12 @@
                           </div>
                         </b-list-group-item>
                       </b-list-group>
+                    </div>
+
+                    <div v-else>
+                      <div style="text-align: center">
+                        <p>El catálogo está siendo actualizado...</p>
+                      </div>
                     </div>
 
                   </b-modal>
@@ -2209,6 +2222,35 @@ export default {
     changeActiveNavItem(navItem){
       this.currentNavItem = navItem;
       this.deselectImages();
+
+      if (navItem == 'Actualizar'){
+        axios.post(constants.routes.backendAPI+'/selectAgentFavoriteMessages',{
+          agentID: parseInt(localStorage.getItem('agentID'))
+        })
+        .then(response =>{ 
+          if (response.data.success == true){
+            localStorage.setItem('agentFavoriteMessages', JSON.stringify(response.data.result));
+            this.$bvToast.toast("Se ha actualizado el catálogo según la última versión disponible.", {
+              title: "Catálogo actualizado",
+              variant: "info",
+              solid: true
+            });
+          } else {
+            this.$bvToast.toast("Ha ocurrido un error al consultar las imágenes del catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+              title: "Error al consultar las imágenes del catálogo",
+              variant: "danger",
+              solid: true
+            });
+          }
+        })
+        .catch(() =>{
+          this.$bvToast.toast("Ha ocurrido un error al consultar las imágenes del catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+            title: "Error al consultar las imágenes del catálogo",
+            variant: "danger",
+            solid: true
+          });
+        })
+      }
     },
 
     getIncomingMessagesAmount(messages){

@@ -36,17 +36,35 @@
             </router-link>
             <div class="triangle"></div>
           </li>
+
+
+
           <li
             v-if="locality == false"
             @mouseenter="toggleSubMenu"
             class="nav-item"
-            data-item="doc"
-            :class="{ active: selectedParentMenu == 'doc' }"
+            data-item="contacts"
+            :class="{ active: selectedParentMenu == 'contacts' }"
             :data-submenu="false"
           >
             <router-link tag="a" class="nav-item-hold" to="/app/apps/contact-list">
               <i class="nav-icon i-MaleFemale"></i>
               <span class="nav-text"><strong>CONTACTOS</strong></span>
+            </router-link>
+            <div class="triangle"></div>
+          </li>
+
+          <li
+            v-if="isAdmin == true && locality == false"
+            @mouseenter="toggleSubMenu"
+            class="nav-item"
+            data-item="images"
+            :class="{ active: selectedParentMenu == 'images' }"
+            :data-submenu="false"
+          >
+            <router-link tag="a" class="nav-item-hold" to="/app/apps/images">
+              <i class="nav-icon i-Add-File"></i>
+              <span class="nav-text"><strong>IMÁGENES</strong></span>
             </router-link>
             <div class="triangle"></div>
           </li>
@@ -141,7 +159,7 @@
               <h1>aqui se genera el recibo</h1>
             </div>
           </b-modal>
-          
+
 
 
 

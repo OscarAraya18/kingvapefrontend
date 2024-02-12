@@ -332,6 +332,10 @@ const routes = [
             component: () => import("./views/app/apps/rankingadmin"),
           },
           {
+            path: "images",
+            component: () => import("./views/app/apps/images"),
+          },
+          {
             path: "payment-checkout",
             component: () => import("./views/app/apps/paymentCheckout"),
           },
