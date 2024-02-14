@@ -50,6 +50,11 @@
                 <b-form-select @change="selectTransactionStore(props.row.transactionID, props.row.transactionStoreLocalityID)" v-model="props.row.transactionStoreLocalityID" class="mb-1" :options="localitiesOptions"></b-form-select>
               </div>
             </div>
+
+            <div v-else-if="props.column.field == 'transactionSystemDate'" >
+              {{ parseDateTime(props.row.transactionSystemDate) }}
+            </div>
+
           </template>
         </vue-good-table>
       </div>
@@ -103,6 +108,7 @@
                   {{ props.row.localityAgentName }}
                 </div>
               </div>
+              
             </template>
           </vue-good-table>
         </div>
@@ -154,8 +160,20 @@ export default {
           tdClass: "text-left",
         },
         {
-          label: "Fecha",
+          label: "Fecha del banco",
           field: "transactionDate",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Fecha del sistema",
+          field: "transactionSystemDate",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Tiempo transcurrido",
+          field: "transactionTime",
           thClass: "text-left",
           tdClass: "text-left",
         },
@@ -207,8 +225,14 @@ export default {
           tdClass: "text-left",
         },
         {
-          label: "Fecha",
+          label: "Fecha del banco",
           field: "transactionDate",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Fecha del sistema",
+          field: "transactionSystemDate",
           thClass: "text-left",
           tdClass: "text-left",
         },
@@ -225,7 +249,7 @@ export default {
           tdClass: "text-left",
         },
         {
-          label: "Fecha aprobación",
+          label: "Fecha de aprobación",
           field: "transactionApprovedDate",
           thClass: "text-left",
           tdClass: "text-left",
@@ -269,8 +293,9 @@ export default {
             return {
               ...transaction,
               transactionApproverLocalityAgentID: this.getSelectedTransactionApprover(transaction.transactionID),
-              transactionDate: this.parseHour(transaction.transactionDate),
-              transactionApprovedDate: this.parseHour(transaction.transactionApprovedDate),
+              transactionDate: this.parseDate(transaction.transactionDate),
+              transactionApprovedDate: this.parseDateTime(transaction.transactionApprovedDate),
+              transactionSystemDate: this.parseDateTime(transaction.transactionSystemDate),
               transactionAmount: `₡ ${parseFloat(transaction.transactionAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}`
             };
           });
@@ -323,7 +348,7 @@ export default {
       return formattedDate;
     },
 
-    parseHour(originalHour){
+    parseDateTime(originalHour){
       const parsingDate = new Date(originalHour);
       const options = {
         day: '2-digit',
@@ -351,6 +376,28 @@ export default {
         variant: notificationType,
         solid: true
       });
+    },
+
+    startTimer(){
+      setInterval(() => {
+        for (var transactionIndex in this.notUsedTransactions){
+          this.notUsedTransactions[transactionIndex].transactionTime = this.getElapsedTime(this.notUsedTransactions[transactionIndex].transactionSystemDate);
+        }
+      }, 1000);
+    },
+
+    getElapsedTime(transactionSystemDate){
+      const startDate = new Date(transactionSystemDate);
+
+      const now = new Date();
+
+      const timeDifference = now - startDate;
+
+      const segundos = Math.floor(timeDifference / 1000) % 60;
+      const minutos = Math.floor(timeDifference / (1000 * 60)) % 60;
+      const horas = Math.floor(timeDifference / (1000 * 60 * 60)) % 24;
+      return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+
     },
 
     reverseTransaction(transaction){
@@ -518,7 +565,9 @@ export default {
               ...transaction,
               transactionApproverLocalityAgentID: this.getSelectedTransactionApprover(transaction.transactionID),
               transactionStoreLocalityID: this.getSelectedTransactionStore(transaction.transactionID),
+              transactionTime: this.getElapsedTime(transaction.transactionSystemDate),
               transactionDate: this.parseDate(transaction.transactionDate),
+              transactionSystemDate: transaction.transactionSystemDate,
               transactionAmount: `₡ ${parseFloat(transaction.transactionAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}`
             };
           });
@@ -544,8 +593,9 @@ export default {
             return {
               ...transaction,
               transactionApproverLocalityAgentID: this.getSelectedTransactionApprover(transaction.transactionID),
-              transactionDate: this.parseHour(transaction.transactionDate),
-              transactionApprovedDate: this.parseHour(transaction.transactionApprovedDate),
+              transactionDate: this.parseDate(transaction.transactionDate),
+              transactionApprovedDate: this.parseDateTime(transaction.transactionApprovedDate),
+              transactionSystemDate: this.parseDateTime(transaction.transactionSystemDate),
               transactionAmount: `₡ ${parseFloat(transaction.transactionAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}`
             };
           });
@@ -553,7 +603,8 @@ export default {
           this.showNotification('danger', 'Error al consultar las transacciones previas', 'Ha ocurrido un error inesperado al consultar las transacciones previas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
-      .catch(() => {
+      .catch((e) => {
+        console.log(e);
         this.showNotification('danger', 'Error al consultar las transacciones previas', 'Ha ocurrido un error inesperado al consultar las transacciones previas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
@@ -620,7 +671,8 @@ export default {
       if (this.filtering == false){
         this.selectUsedTransactions();
       }
-    }, 1000);
+    }, 10000);
+    this.startTimer();
   },
 
   created: function() {}

@@ -1641,7 +1641,7 @@ export default {
       dividendo: "",
       clienteTipoCedula:"FISICA",
       MetodoPago: "Método de pago",
-      MetodosPagos: ["Método de pago","Efectivo","Tarjeta","SINPE","Transferencia"],
+      MetodosPagos: ["Método de pago","Efectivo","Tarjeta","SINPE","SINPE (contra entrega)","Transferencia"],
       MetodosEnvio: ["Método de envío","Retiro en sucursal","Envío por motorizado","Correo o encomienda"],
       MetodoEnvio: "Método de envío",
 
@@ -1775,9 +1775,7 @@ export default {
 
 
     startMessageRequestInterval(){
-      setInterval(() => {
-        console.log('1')
-      }, 30000);
+      
     },
 
 
@@ -1860,12 +1858,15 @@ export default {
             this.showNotification('success', 'Transacción validada', 'Se ha validado la transacción exitosamente.')
             this.$root.$emit('bv::hide::modal', 'syncTransactionModal');
             this.$root.$emit('bv::hide::modal', 'paymentMethodValidatorModal');
+            const validationPhoneNumber = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
+            const validationsDatabase = JSON.parse(localStorage.getItem('validations'));
+            validationsDatabase[validationPhoneNumber] = 'yes';
+            localStorage.setItem('validations', JSON.stringify(validationsDatabase));
           } else {
             this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
           }
         })
-        .catch((error) => {
-          console.log(error);
+        .catch(() => {
           this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         })
       }
@@ -2032,7 +2033,6 @@ export default {
         }
       })
       .catch((error) => {
-        console.log(error);
         this.validatePaymentMethodLoader = false;
         this.showNotification('danger', 'Error al consultar las transacciones', 'Ha ocurrido un error inesperado al consultar las transacciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
@@ -2045,7 +2045,7 @@ export default {
     },
 
     getPaymentMethodType(){
-      if (this.MetodoPago == 'SINPE' || this.MetodoPago == 'Transferencia'){
+      if (this.MetodoPago == 'SINPE'){
         return true;
       }
       return false;
@@ -2053,7 +2053,7 @@ export default {
     },
 
     getPaymentMethodStyle(){
-      if (this.MetodoPago == 'SINPE' || this.MetodoPago == 'Transferencia'){
+      if (this.MetodoPago == 'SINPE'){
         return 'margin-bottom: 10px; width: 70%';
       }
       return 'margin-bottom: 10px; width: 100%';
@@ -2587,7 +2587,6 @@ export default {
         me.stockContent = textoExistencia;
         me.saveStockDatabase();
       }).catch(function(error){
-        console.log(error);
         me.$bvToast.toast("Ha ocurrido un error inesperado al consultar el stock. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
           title: "Error al consultar stock",
           variant: "danger",
@@ -2820,7 +2819,6 @@ export default {
           for (var productIndex in this.currentActiveConversation.whatsappConversationProducts){
             const product = this.currentActiveConversation.whatsappConversationProducts[productIndex];
             const productCode = product['CodigoP'];
-            console.log(product);
             if (productCode in stockInfo){
               if (stockInfo[productCode][this.Sucursal] < product['cantidad']){
                 notValidatedProducts.push(product);
@@ -2838,7 +2836,6 @@ export default {
         if (showStockConfirmation){
           var productsText = '';
           for (var notValidatedProductIndex in notValidatedProducts){
-            console.log(notValidatedProducts[notValidatedProductIndex]);
             productsText = productsText + notValidatedProducts[notValidatedProductIndex]['descripcion'] + '<br />'
           }
           this.$swal({
@@ -2866,6 +2863,28 @@ export default {
       this.deleteWhatsappConversationRecipientPhoneNumberStockDatabase(whatsappConversationRecipientPhoneNumber);
     },
 
+
+    async validatePayment(recipientPhoneNumber, paymentType){
+      return new Promise(async (validatePaymentPromiseResolve) => {
+        if (paymentType == 'SINPE'){
+          const validationsDatabase = JSON.parse(localStorage.getItem('validations'));
+          if (recipientPhoneNumber in validationsDatabase){
+            if (validationsDatabase[recipientPhoneNumber] == 'yes'){
+              validatePaymentPromiseResolve(true);
+            }
+          } 
+          validatePaymentPromiseResolve(false);
+        } else {
+          validatePaymentPromiseResolve(true);
+        }
+      }); 
+    },
+
+    /*const validationPhoneNumber = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
+            const validationsDatabase = JSON.parse(localStore.getItem('validations'));
+            validationsDatabase[validationPhoneNumber] = 'yes';
+            localStorage.setItem('validations', JSON.stringify(validationsDatabase)); */
+
     async OrdenExpress(){
       try {
         this.phone = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
@@ -2883,131 +2902,145 @@ export default {
         if(this.ValidarData() == 1){
           const test = await this.validateStock();
           if (test){
+            const validation = await this.validatePayment(this.phone, this.MetodoPago);
             
-            var metodoEnvioCorregido = '';
-            if (this.MetodoEnvio == 'Retiro en sucursal'){
-              metodoEnvioCorregido = 'Retira en sucursal';
-            } else if (this.MetodoEnvio == 'Envío por motorizado'){
-              metodoEnvioCorregido = 'Envio Propio';
-            } else {
-              metodoEnvioCorregido = 'Correos de CR';
-            }
+            if (validation){
+              var metodoEnvioCorregido = '';
+              if (this.MetodoEnvio == 'Retiro en sucursal'){
+                metodoEnvioCorregido = 'Retira en sucursal';
+              } else if (this.MetodoEnvio == 'Envío por motorizado'){
+                metodoEnvioCorregido = 'Envio Propio';
+              } else {
+                metodoEnvioCorregido = 'Correos de CR';
+              }
 
-            this.loaderOrdenEnviada = true;
-            var me = this;
-            this.loading = true;
-            var momentoActual = new Date(); 
-            var hora = momentoActual.getHours(); 
-            var minuto = momentoActual.getMinutes(); 
-            var segundo = momentoActual.getSeconds();
-            var time = hora + ":" + minuto + ":" + segundo;
-            let header={"Authorization" : "Bearer "};
-            let configuracion= {headers : header};
+              this.loaderOrdenEnviada = true;
+              var me = this;
+              this.loading = true;
+              var momentoActual = new Date(); 
+              var hora = momentoActual.getHours(); 
+              var minuto = momentoActual.getMinutes(); 
+              var segundo = momentoActual.getSeconds();
+              var time = hora + ":" + minuto + ":" + segundo;
+              let header={"Authorization" : "Bearer "};
+              let configuracion= {headers : header};
 
-            axios.post('https://noah.cr/BackendKingVape/api/ordenexpress/CrearMesaTotal',
-            {
-              'fecha': this.today.toString(),
-              'cajero': this.agentName,
-              'total': this.calcularTotal,
-              'Nombre': this.name,
-              'telefono': this.phone,
-              'Direccion': this.address,
-              'tipoPago1': this.MetodoPago,
-              'Hora': time,
-              'descuento': this.calcularDescuento,
-              'localidad': this.Sucursal,
-              'estado': 0,
-              'nota':" Estado Pago: " +this.estadoPago+" "+this.pagaCon+" "+this.nota,
-              'tipoCompra': metodoEnvioCorregido,
-              'detalles': this.orden,
-              'correo': this.email,
-              'latitud': this.latitud,
-              'longitud': this.longitud,
-              'Mesa':"50",
-              'TipoCedula':'FISICA',
-              'Cedula':this.cedula,
-              'Direccion2':this.DireccionCliente2,
-              'Direccion3':this.DireccionCliente3,
-              'Personas':this.dividendo,
-              'Mensajero':'',
-              'MedioOrden':'Whatsapp',
-              'Facturacion': false
-            },configuracion)
-            
-            .then(function (response) {
-              me.$swal({
-                title: "Se ha enviado la orden al sistema de comandas de la pantalla",
-                text: "¿Quiere cerrar la conversación? En caso de no cerrarla, recuerde que la venta no se registrará.",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonText: 'Cancelar',
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Confirmar"
-              })
-              .then((result) => {
-                axios.post(constants.routes.backendAPI+'/insertOrUpdateContact',
-                {
-                  'contactName': me.name,
-                  'contactPhoneNumber': me.phone,
-                  'contactID': me.cedula,
-                  'contactEmail': me.email,
-                  'contactLocations': me.currentActiveConversation.whatsappConversationRecipientLocations,
-                  'contactLocationDetails': me.address,
-                  'contactNote': me.nota
-                }).then(function (){
-                  
+              axios.post('https://noah.cr/BackendKingVape/api/ordenexpress/CrearMesaTotal',
+              {
+                'fecha': this.today.toString(),
+                'cajero': this.agentName,
+                'total': this.calcularTotal,
+                'Nombre': this.name,
+                'telefono': this.phone,
+                'Direccion': this.address,
+                'tipoPago1': this.MetodoPago,
+                'Hora': time,
+                'descuento': this.calcularDescuento,
+                'localidad': this.Sucursal,
+                'estado': 0,
+                'nota':" Estado Pago: " +this.estadoPago+" "+this.pagaCon+" "+this.nota,
+                'tipoCompra': metodoEnvioCorregido,
+                'detalles': this.orden,
+                'correo': this.email,
+                'latitud': this.latitud,
+                'longitud': this.longitud,
+                'Mesa':"50",
+                'TipoCedula':'FISICA',
+                'Cedula':this.cedula,
+                'Direccion2':this.DireccionCliente2,
+                'Direccion3':this.DireccionCliente3,
+                'Personas':this.dividendo,
+                'Mensajero':'',
+                'MedioOrden':'Whatsapp',
+                'Facturacion': false
+              },configuracion)
+              
+              .then(function (response) {
+                
+                me.$swal({
+                  title: "Se ha enviado la orden al sistema de comandas de la pantalla",
+                  text: "¿Quiere cerrar la conversación? En caso de no cerrarla, recuerde que la venta no se registrará.",
+                  type: "warning",
+                  showCancelButton: true,
+                  confirmButtonColor: "#3085d6",
+                  cancelButtonText: 'Cancelar',
+                  cancelButtonColor: "#d33",
+                  confirmButtonText: "Confirmar"
                 })
-
-                if (result.value) {
-                  const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
-                  if (ordenesActualesLocalStorage[me.phone]){
-                    delete ordenesActualesLocalStorage[me.phone];
+                .then((result) => {
+                  const validationsLocalStorage = JSON.parse(localStorage.getItem('validations'));
+                  if (validationsLocalStorage[me.phone]){
+                    delete validationsLocalStorage[me.phone];
                   }
-                  localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
+                  localStorage.setItem('validations', JSON.stringify(validationsLocalStorage));
 
-                  const datosActualesLocalStorage = JSON.parse(localStorage.getItem('datosActuales'));
-                  if (datosActualesLocalStorage[me.phone]){
-                    delete datosActualesLocalStorage[me.phone];
-                  }
-                  localStorage.setItem('datosActuales', JSON.stringify(datosActualesLocalStorage));
-
-
-                  axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
+                  axios.post(constants.routes.backendAPI+'/insertOrUpdateContact',
                   {
-                    whatsappConversationRecipientPhoneNumber: me.phone,
-                    whatsappConversationCloseComment: 'Venta',
-                    whatsappConversationAmount: me.calcularTotal,
-                    whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
-                    whatsappConversationProducts: me.currentActiveConversation.whatsappConversationProducts,
-                    sendAgentEndMessage: me.sendEndMessage
-                  })
-                  .then((response) =>{ 
-                    if (response.data.success){
-                      me.showNotification('success', 'Conversación finalizada', 'Ha finalizado la conversación exitosamente.')
-                      delete me.activeConversationsAsJSON[response.data.result];
-                      me.sortConversations();
-                      me.currentActiveConversation = null;
-                    } else {
-                      me.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-                    }
-                  })
-                  .catch((error) =>{
-                    me.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+                    'contactName': me.name,
+                    'contactPhoneNumber': me.phone,
+                    'contactID': me.cedula,
+                    'contactEmail': me.email,
+                    'contactLocations': me.currentActiveConversation.whatsappConversationRecipientLocations,
+                    'contactLocationDetails': me.address,
+                    'contactNote': me.nota
+                  }).then(function (){
+                    
                   })
 
-                }
-                me.deleteStockData(me.phone);
-                me.loading = false;
+                  if (result.value) {
+                    const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
+                    if (ordenesActualesLocalStorage[me.phone]){
+                      delete ordenesActualesLocalStorage[me.phone];
+                    }
+                    localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
+
+
+                    const datosActualesLocalStorage = JSON.parse(localStorage.getItem('datosActuales'));
+                    if (datosActualesLocalStorage[me.phone]){
+                      delete datosActualesLocalStorage[me.phone];
+                    }
+                    localStorage.setItem('datosActuales', JSON.stringify(datosActualesLocalStorage));
+
+
+                    axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
+                    {
+                      whatsappConversationRecipientPhoneNumber: me.phone,
+                      whatsappConversationCloseComment: 'Venta',
+                      whatsappConversationAmount: me.calcularTotal,
+                      whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
+                      whatsappConversationProducts: me.currentActiveConversation.whatsappConversationProducts,
+                      sendAgentEndMessage: me.sendEndMessage
+                    })
+                    .then((response) =>{ 
+                      if (response.data.success){
+                        me.showNotification('success', 'Conversación finalizada', 'Ha finalizado la conversación exitosamente.')
+                        delete me.activeConversationsAsJSON[response.data.result];
+                        me.sortConversations();
+                        me.currentActiveConversation = null;
+                      } else {
+                        me.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+                      }
+                    })
+                    .catch((error) =>{
+                      me.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+                    })
+
+                  }
+                  me.deleteStockData(me.phone);
+                  me.loading = false;
+                  me.loaderOrdenEnviada = false;
+                });
+              })
+              .catch(function (error) {
+                me.showNotification('danger', 'Error al generar la orden', 'Ha ocurrido un error inesperado al generar la orden debido a Noah. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
                 me.loaderOrdenEnviada = false;
               });
-            })
-            .catch(function (error) {
-              me.showNotification('danger', 'Error al generar la orden', 'Ha ocurrido un error inesperado al generar la orden debido a Noah. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-              me.loaderOrdenEnviada = false;
-            });
+            } else {
+              this.showNotification('danger', 'Error de validación de SINPE', 'Si el método de pago se trata de SINPE, debe validar la transacción y asociar un mensaje primero. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+              this.loaderOrdenEnviada = false;
+            }
           } else {
-            console.log('error de stock');
+            console.log('Error de stock');
           }
         }
       } catch (e) {
@@ -3123,8 +3156,6 @@ export default {
               axios.get('https://bakend2king.kingvape.cr/api/Productos/BuscadorEnter5/King Vape/'+myInput).then( response => {
                 me.productos = [];
                 Objeto = response.data
-                console.log(response.data);
-                  // Cargar Productos 
                   Objeto.map(function(x){
                     me.productos.push({descripcion:x.descripcion,
                       codigoProducto:x.codigoProducto,
@@ -4248,7 +4279,6 @@ export default {
           }
         }
       }
-      console.log(currentAgentMessagesIDS);
     },
 
 
@@ -4276,7 +4306,6 @@ export default {
 						resultado = resultado + ((this.currentActiveConversation.whatsappConversationProducts[j].descuento/100)*((this.currentActiveConversation.whatsappConversationProducts[j].precio) * this.currentActiveConversation.whatsappConversationProducts[j].cantidad));
           }
       if (resultado.toFixed(2) == 0.00){
-        console.log(this.currentActiveConversation.whatsappConversationProducts);
       }
 			return resultado.toFixed(2);
     
@@ -4335,6 +4364,9 @@ export default {
     
     this.agentStartMessage = localStorage.getItem('agentStartMessage');
 
+    if (localStorage.getItem('validations') == null){
+      localStorage.setItem('validations', JSON.stringify({}))
+    }
     if (localStorage.getItem('agentID') == null){
       router.push("/app/sessions/signIn");
     }
