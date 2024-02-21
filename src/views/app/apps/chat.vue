@@ -1679,6 +1679,7 @@ export default {
       currentStickers: [],
 
       deleteStoreMessageID: 0,
+      deleteStoreMessageStoreMessageID: '',
       deleteStoreMessageName: '',
       deleteStoreMessageReason: '',
 
@@ -1846,29 +1847,34 @@ export default {
       if (whatsappGeneralMessageID == ''){
         this.showNotification('danger', 'Error al validar la transacción', 'Debe seleccionar un mensaje para asociar la transacción. Seleccione un mensaje e intentelo nuevamente.');
       } else {
-        axios.post(constants.routes.backendAPI+'/syncTransaction',
-        {
-          transactionID: this.currentTransaction.transactionID,
-          transactionRelatedMessageID: whatsappGeneralMessageID,
-          transactionApprover: localStorage.getItem('agentID'),
-          transactionStore: this.selectedLocality
-        })
-        .then((response) =>{
-          if (response.data.success){
-            this.showNotification('success', 'Transacción validada', 'Se ha validado la transacción exitosamente.')
-            this.$root.$emit('bv::hide::modal', 'syncTransactionModal');
-            this.$root.$emit('bv::hide::modal', 'paymentMethodValidatorModal');
-            const validationPhoneNumber = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
-            const validationsDatabase = JSON.parse(localStorage.getItem('validations'));
-            validationsDatabase[validationPhoneNumber] = 'yes';
-            localStorage.setItem('validations', JSON.stringify(validationsDatabase));
-          } else {
+        if (this.selectedLocality == ''){
+          this.showNotification('danger', 'Error al validar la transacción', 'Debe seleccionar una sucursal para asociar la transacción. Seleccione un mensaje e intentelo nuevamente.');
+
+        } else {
+          axios.post(constants.routes.backendAPI+'/syncTransaction',
+          {
+            transactionID: this.currentTransaction.transactionID,
+            transactionRelatedMessageID: whatsappGeneralMessageID,
+            transactionApprover: localStorage.getItem('agentID'),
+            transactionStore: this.selectedLocality
+          })
+          .then((response) =>{
+            if (response.data.success){
+              this.showNotification('success', 'Transacción validada', 'Se ha validado la transacción exitosamente.')
+              this.$root.$emit('bv::hide::modal', 'syncTransactionModal');
+              this.$root.$emit('bv::hide::modal', 'paymentMethodValidatorModal');
+              const validationPhoneNumber = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
+              const validationsDatabase = JSON.parse(localStorage.getItem('validations'));
+              validationsDatabase[validationPhoneNumber] = 'yes';
+              localStorage.setItem('validations', JSON.stringify(validationsDatabase));
+            } else {
+              this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+            }
+          })
+          .catch(() => {
             this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-          }
-        })
-        .catch(() => {
-          this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        })
+          })
+        }
       }
     },
 
@@ -1887,6 +1893,7 @@ export default {
     },
 
     openSyncTransactionModal(currentTransaction){
+      this.selectedLocality = '';
       for (var whatsappMessage in this.currentActiveConversation.whatsappConversationMessages){ 
         Vue.set(this.currentActiveConversation.whatsappConversationMessages[whatsappMessage], 'selected', false);
       }
@@ -1899,6 +1906,7 @@ export default {
         axios.post(constants.routes.backendAPI+'/deleteStoreMessage', 
         {
           storeMessageID: this.deleteStoreMessageID,
+          storeMessageStoreMessageID: this.deleteStoreMessageStoreMessageID,
           storeMessageStoreName: this.deleteStoreMessageName,
           storeMessageAssignedAgentID: localStorage.getItem('agentID'),
           storeMessageDeleteReason: this.deleteStoreMessageReason
@@ -1920,6 +1928,7 @@ export default {
 
     openDeleteStoreMessageModal(storeConversation){
       this.deleteStoreMessageID = storeConversation.storeMessageID;
+      this.deleteStoreMessageStoreMessageID = storeConversation.storeMessageStoreMessageID;
       this.deleteStoreMessageName = storeConversation.storeMessageStoreName;
       this.deleteStoreMessageReason = '';
       this.$root.$emit('bv::hide::modal', 'escazuConversationsModal');
@@ -2032,7 +2041,7 @@ export default {
           this.showNotification('danger', 'Error al consultar las transacciones', 'Ha ocurrido un error inesperado al consultar las transacciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
-      .catch((error) => {
+      .catch(() => {
         this.validatePaymentMethodLoader = false;
         this.showNotification('danger', 'Error al consultar las transacciones', 'Ha ocurrido un error inesperado al consultar las transacciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })

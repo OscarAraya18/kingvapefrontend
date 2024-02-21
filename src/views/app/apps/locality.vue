@@ -545,14 +545,12 @@ export default {
       if (transactionID in this.selectedTransactionApprovers){
         return this.selectedTransactionApprovers[transactionID];
       }
-      return 0;
     },
 
     getSelectedTransactionStore(transactionID){
       if (transactionID in this.selectedTransactionStores){
         return this.selectedTransactionStores[transactionID];
       }
-      return 0;
     },
 
     selectNotUsedTransactions(){
@@ -575,7 +573,8 @@ export default {
           this.showNotification('danger', 'Error al consultar las transacciones a validar', 'Ha ocurrido un error inesperado al consultar las transacciones a validar. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
-      .catch(() => {
+      .catch((e) => {
+        console.log(e);
         this.showNotification('danger', 'Error al consultar las transacciones a validar', 'Ha ocurrido un error inesperado al consultar las transacciones a validar. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
