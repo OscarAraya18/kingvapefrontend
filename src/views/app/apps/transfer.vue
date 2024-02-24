@@ -27,6 +27,9 @@
             <span class="badge badge-pill badge-success p-2">Atendido por {{ props.row.agentName }}</span>
           </div>
         </div>
+        <div v-else-if="props.column.field == 'storeMessageStartDateTime'">
+          {{ parseHour(props.row.storeMessageStartDateTime) }}
+        </div>
       </template>
     </vue-good-table>
 
@@ -86,6 +89,12 @@ export default {
           field: "storeMessageRecipientID",
           thClass: "text-left",
           tdClass: "text-left",
+        },
+        {
+          label: "Hora",
+          field: "storeMessageStartDateTime",
+          thClass: "text-left",
+          tdClass: "text-left",
         }
       ]
 
@@ -107,6 +116,28 @@ export default {
         variant: notificationType,
         solid: true
       });
+    },
+
+    parseHour(originalHour){
+      const parsingDate = new Date(originalHour);
+      const options = {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      };
+      var formattedDate = parsingDate.toLocaleString('en-GB', options);
+      if (formattedDate.slice(-2) == 'am'){
+        formattedDate = formattedDate.slice(0,-2) + 'AM'
+      } else if (formattedDate.slice(-2) == 'pm') {
+        formattedDate = formattedDate.slice(0,-2) + 'PM'
+      }
+      if (formattedDate.includes('00') && formattedDate.includes('PM')){
+        formattedDate = formattedDate.replace('00', '12');
+      }
+      return formattedDate;
     },
 
     selectStoreMessageByStoreMessageStoreName(){
@@ -161,6 +192,10 @@ export default {
           storeMessageRecipientID: this.transferID
         }).then((response) =>{
           if (response.data.success){
+            this.transferPhoneNumber = '';
+            this.transferName = '';
+            this.transferOrder = '';
+            this.transferID = '';
             this.loading = false;
             this.showNotification('success', 'Conversación transferida', 'La conversación se ha transferido exitosamente al call center.')
 
