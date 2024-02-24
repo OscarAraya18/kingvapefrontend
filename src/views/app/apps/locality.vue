@@ -17,6 +17,59 @@
       </div>
     </b-modal>
 
+    <b-modal hide-footer hide-header scrollable size="lg" centered id="openClosePaymentMethod">
+      <div v-if="loader == true" style="text-align: center;">
+        <br><span class="spinner-glow spinner-glow-primary"></span>
+      </div>
+      <div v-if="isAdmin">
+        <div style="width: 100%;">
+          <h5><strong>Filtro por fecha inicial:</strong></h5>
+          <b-form-datepicker v-model="initialDateOptionClose"></b-form-datepicker>
+        </div>
+        <br>
+        <div style="width: 100%;">
+          <h5><strong>Filtro por fecha final:</strong></h5>
+          <b-form-datepicker v-model="endDateOptionClose"></b-form-datepicker>
+        </div>
+        <br>
+        <div style="width: 100%;">
+          <h5><strong>Filtro por localidad:</strong></h5>
+          <div style="border: 1px solid rgb(140, 140, 140); border-radius: 5px; height: 100px; overflow-y: auto; padding-top: 10px; padding-bottom: 10px;">
+            <div v-for="locality in localitiesOptions">
+              <input @click="changeLocalityOptions(locality)" type="checkbox" v-model="locality.selected" style="accent-color: #FFD733; margin-left:10px; margin-right: 10px;">
+              {{ locality.localityName }}
+            </div>
+          </div>
+        </div>
+        <br>
+        <div style="width: 100%;">
+          <h5><strong>Filtro por agente:</strong></h5>
+          <div style="border: 1px solid rgb(140, 140, 140); border-radius: 5px; height: 180px; overflow-y: auto; padding-top: 10px; padding-bottom: 10px;">
+            <div v-for="agent in agentOptions">
+              <div v-if="agent.visible">
+                <input type="checkbox" v-model="agent.selected" style="accent-color: #FFD733; margin-left:10px; margin-right: 10px;">
+                {{ agent.agentName }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
+        <div style="width: 100%; display: flex;">
+          <button class="btn btn-icon btn-info" style="margin-right:1%; width: 49%; font-size: 15px;" @click="generateInvoice()"><i class="i-Search-People"></i>Generar factura</button>
+          <button class="btn btn-icon" style="margin-left:1%; width: 49%; background-color: rgb(255, 184, 32); font-size: 15px;" @click="cleanFilterClose()"><i class="i-Folder-Trash"></i>Limpiar filtros</button>
+        </div>
+      </div>
+      
+      <div v-else>
+        <b-form-input v-model="passwordInput" placeholder="Contraseña de administrador"></b-form-input>
+        <br>
+        <div style="text-align: center;">
+          <button class="btn btn-info" style="width: 50%; font-size: 15px;" @click="generateTodayInvoice()">Generar cierre</button>
+        </div>
+      </div>
+    
+    </b-modal>
+
 
     <div v-if="agentType == 'agent'">
       <h4><strong>Transacciones a validar:</strong></h4>
@@ -57,11 +110,15 @@
 
           </template>
         </vue-good-table>
+
       </div>
     </div>
 
+    <button class="btn btn-info" style="width: 100%; font-size: 15px;" @click="openInvoiceModal()" v-b-modal.openClosePaymentMethod>Cierre</button>
+
+
     <div v-if="agentType == 'agent'">
-      <br><br>
+      <br><br><br><br>
       <h4><strong>Transacciones previas:</strong></h4>
       <br>
       <div style="display: flex;">
@@ -272,7 +329,16 @@ export default {
 
       
       initialDateOption: '',
-      endDateOption: ''
+      endDateOption: '',
+
+
+      isAdmin: '',
+      localitiesOptions: [],
+      agentOptions: [],
+
+      initialDateOptionClose: '',
+      endDateOptionClose: '',
+      passwordInput: ''
 
 
     };
@@ -368,14 +434,6 @@ export default {
         formattedDate = formattedDate.replace('00', '12');
       }
       return formattedDate;
-    },
-
-    showNotification(notificationType, notificationTitle, notificationContent){
-      this.$bvToast.toast(notificationContent, {
-        title: notificationTitle,
-        variant: notificationType,
-        solid: true
-      });
     },
 
     startTimer(){
@@ -645,7 +703,155 @@ export default {
       .catch(() => {
         this.showNotification('danger', 'Error al consultar las localidades', 'Ha ocurrido un error inesperado al consultar las localidades. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
-    }
+    },
+
+    cleanPassword(){
+      this.passwordInput = '';
+    },
+
+    generateTodayInvoice(){
+      if (localStorage.getItem('localityPassword') == this.passwordInput){
+        axios.post(constants.routes.backendAPI+'/generateTodayInvoice', {
+          localityID: localStorage.getItem('localityID')
+        }).then((response) =>{
+          if (response.data.success){
+            alert('entro')
+            const invoiceBase64 = response.data.result;
+            const byteCharacters = atob(invoiceBase64);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = 'Reporte de transacciones.pdf';
+            link.click();
+          } else {
+            this.showNotification('danger', 'Error al generar la factura', 'Ha ocurrido un error inesperado al generar la factura. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          }
+        })
+        .catch(() => {
+          this.showNotification('danger', 'Error al generar la factura', 'Ha ocurrido un error inesperado al generar la factura. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        })
+      } else {
+        this.showNotification('danger', 'Contraseña de administrador incorrecta', 'Por favor coloque la contraseña correcta para generar el cierre. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      }
+    },
+
+    generateInvoice(){
+      var localities = [];
+      var agents = [];
+      for (var localityIndex in this.localitiesOptions){
+        if (this.localitiesOptions[localityIndex].selected){
+          localities.push(this.localitiesOptions[localityIndex].localityID);
+        }
+      }
+      for (var agentIndex in this.agentOptions){
+        if (this.agentOptions[agentIndex].selected && this.agentOptions[agentIndex].visible){
+          agents.push(this.agentOptions[agentIndex].agentID);
+        }
+      }
+      axios.post(constants.routes.backendAPI+'/generateInvoice', {
+        localities: localities,
+        agents: agents,
+        initialDate: this.initialDateOption,
+        endDate: this.endDateOption
+      }).then((response) =>{
+        if (response.data.success){
+          const invoiceBase64 = response.data.result;
+          const byteCharacters = atob(invoiceBase64);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+              byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'application/pdf' });
+          const link = document.createElement('a');
+          link.href = window.URL.createObjectURL(blob);
+          link.download = 'Reporte de transacciones.pdf';
+          link.click();
+        } else {
+          this.showNotification('danger', 'Error al generar la factura', 'Ha ocurrido un error inesperado al generar la factura. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al generar la factura', 'Ha ocurrido un error inesperado al generar la factura. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+    cleanFilterClose(){
+      this.initialDateOptionClose = '';
+      this.initialDateOptionClose = '';
+      for (var agentIndex in this.agentOptions){
+        this.agentOptions[agentIndex].visible = true;
+        this.agentOptions[agentIndex].selected = true;
+      }
+      for (var localityIndex in this.localitiesOptions){
+        this.localitiesOptions[localityIndex].selected = true;
+      }
+    },
+
+    changeLocalityOptions(locality){
+      for (var agentIndex in this.agentOptions){
+        if (this.agentOptions[agentIndex].localityID == locality.localityID){
+          this.agentOptions[agentIndex].visible = !this.agentOptions[agentIndex].visible;
+        }
+      }
+    },
+
+    showNotification(notificationType, notificationTitle, notificationContent){
+      this.$bvToast.toast(notificationContent, {
+        title: notificationTitle,
+        variant: notificationType,
+        solid: true
+      });
+    },
+
+    selectLocalityAgents(){
+      axios.post(constants.routes.backendAPI+'/selectAllLocalityAgents').then((response) =>{
+        if (response.data.success){
+          this.agentOptions = [];
+          for (var agentIndex in response.data.result){
+            const agentID = response.data.result[agentIndex].agentID;
+            const agentName = response.data.result[agentIndex].agentName;
+            const localityID = response.data.result[agentIndex].localityID;
+            this.agentOptions.push({agentID: agentID, agentName: agentName, localityID: localityID, selected: true, visible: true});
+          }
+        } else {
+          this.showNotification('danger', 'Error al consultar los agentes', 'Ha ocurrido un error inesperado al consultar los agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al consultar los agentes', 'Ha ocurrido un error inesperado al consultar los agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+    selectLocalities(){
+      axios.post(constants.routes.backendAPI+'/selectLocalities')
+      .then((response) =>{
+        if (response.data.success){
+          this.localitiesOptions = [];
+          for (var localityIndex in response.data.result){
+            const localityID = response.data.result[localityIndex].localityID;
+            const localityName = response.data.result[localityIndex].localityName;
+            this.localitiesOptions.push({localityID: localityID, localityName: localityName, selected: true});
+          }
+        } else {
+          this.showNotification('danger', 'Error al consultar las localidades', 'Ha ocurrido un error inesperado al consultar las localidades. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al consultar las localidades', 'Ha ocurrido un error inesperado al consultar las localidades. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+    openInvoiceModal(){
+      this.cleanFilterClose();
+      this.selectLocalityAgents();
+      this.selectLocalities();
+    },
 
 
   },
@@ -663,6 +869,13 @@ export default {
       this.agentName = localStorage.getItem('agentName');
       this.selectLocalities();
     }
+    
+    if (localStorage.getItem('agentType') == 'admin'){
+      this.isAdmin = true;
+    } else {
+      this.isAdmin = false;
+    }
+    
     this.selectNotUsedTransactions();
     this.selectUsedTransactions();
     setInterval(() => {

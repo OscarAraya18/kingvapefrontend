@@ -605,8 +605,8 @@ export default {
           tdClass: "text-left",
         },
         {
-          label: "Transferir",
-          field: "whatsappConversationTransferAction",
+          label: "Conversación",
+          field: "whatsappConversationOpenAction",
           html: true,
           thClass: "text-left",
           tdClass: "text-left",
@@ -619,8 +619,8 @@ export default {
           tdClass: "text-left",
         },
         {
-          label: "Conversación",
-          field: "whatsappConversationOpenAction",
+          label: "Transferir",
+          field: "whatsappConversationTransferAction",
           html: true,
           thClass: "text-left",
           tdClass: "text-left",

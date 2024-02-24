@@ -147,15 +147,29 @@
             <b-list-group-item v-if="currentNotSelledConversations.length == 0">
               No hay conversaciones no vendidas
             </b-list-group-item>
-            <b-list-group-item v-b-modal.openConversationModal style="cursor: pointer; background-color: rgb(211, 128, 126);" v-for="notSelledConversation in currentNotSelledConversations" @click="openConversation(notSelledConversation)" button>
-              <div style="font-size: 15px;"> 
-                <strong>Nombre:</strong> {{notSelledConversation.whatsappConversationRecipientProfileName}}<br>
-                <strong>Número:</strong> {{formatNumber(notSelledConversation.whatsappConversationRecipientPhoneNumber)}}<br>
-                <strong>Motivo:</strong> {{notSelledConversation.whatsappConversationCloseComment}}<br>
-                <strong>Fecha:</strong> {{parseHour(notSelledConversation.whatsappConversationStartDateTime)}}<br>
-              </div>
-            </b-list-group-item>
+            
+            <div v-for="notSelledConversation in currentNotSelledConversations">
+              <b-list-group-item v-if="notSelledConversation.whatsappConversationCloseComment == 'Consulta sobre productos' || notSelledConversation.whatsappConversationCloseComment == 'No contestó'" v-b-modal.openConversationModal style="cursor: pointer; background-color: rgb(211, 128, 126);" @click="openConversation(notSelledConversation)" button>
+                <div style="font-size: 15px;"> 
+                  <strong>Nombre:</strong> {{notSelledConversation.whatsappConversationRecipientProfileName}}<br>
+                  <strong>Número:</strong> {{formatNumber(notSelledConversation.whatsappConversationRecipientPhoneNumber)}}<br>
+                  <strong>Motivo:</strong> {{notSelledConversation.whatsappConversationCloseComment}}<br>
+                  <strong>Fecha:</strong> {{parseHour(notSelledConversation.whatsappConversationStartDateTime)}}<br>
+                </div>
+              </b-list-group-item>
+
+              <b-list-group-item v-else v-b-modal.openConversationModal style="cursor: pointer; background-color: rgb(255, 166, 70);" @click="openConversation(notSelledConversation)" button>
+                <div style="font-size: 15px;"> 
+                  <strong>Nombre:</strong> {{notSelledConversation.whatsappConversationRecipientProfileName}}<br>
+                  <strong>Número:</strong> {{formatNumber(notSelledConversation.whatsappConversationRecipientPhoneNumber)}}<br>
+                  <strong>Motivo:</strong> {{notSelledConversation.whatsappConversationCloseComment}}<br>
+                  <strong>Fecha:</strong> {{parseHour(notSelledConversation.whatsappConversationStartDateTime)}}<br>
+                </div>
+              </b-list-group-item>
+            </div>
+
           </b-list-group>
+
 
         </div>
       </div>
@@ -534,10 +548,6 @@ export default {
 
     openAgentDetail(agentID){
       this.loader1 = true;
-      if (this.rankingInitialDate == ''){
-        this.rankingInitialDate = new Date();
-        this.rankingInitialDate.setHours(0, 0, 0, 0);
-      }
       axios.post(constants.routes.backendAPI+'/selectRankingFilteredConversations',
       {
         agentID: agentID,
@@ -668,6 +678,7 @@ export default {
             color: '#d10015'
           }
         ];
+        console.log(response.data.result.map(agent => agent.agentName));
       });
 
       axios.get(constants.routes.backendAPI+'/selectTodayInformation').then((response) =>{

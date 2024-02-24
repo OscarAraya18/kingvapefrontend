@@ -33,6 +33,8 @@
       </template>
     </vue-good-table>
 
+    <br><br>
+
   </div>
 </template>
 

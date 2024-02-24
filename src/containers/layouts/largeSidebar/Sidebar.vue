@@ -143,85 +143,11 @@
             v-if="isAdmin == true"
           >
             <router-link tag="a" class="nav-item-hold" to="/app/apps/locality">
-              <i class="nav-icon i-Check"></i>
-              <span class="nav-text"><strong>VALIDAR</strong></span>
+              <i class="nav-icon i-Dollar"></i>
+              <span class="nav-text"><strong>SINPE</strong></span>
             </router-link>
             <div class="triangle"></div>
           </li>
-
-
-          <li
-            @click="openInvoiceModal()"
-            v-b-modal.openClosePaymentMethod
-            @mouseenter="toggleSubMenu"
-            class="nav-item"
-            data-item="localityReport"
-            :class="{ active: selectedParentMenu == 'localityReport' }"
-            :data-submenu="false"
-            v-if="isAdmin == true"
-
-          >
-            <div class="nav-item-hold">
-              <i class="nav-icon i-Dollar"></i>
-              <span @click="cleanPassword()" class="nav-text"><strong>CIERRE</strong></span>
-            </div>
-            <div class="triangle"></div>
-          </li>
-
-
-          <b-modal hide-footer hide-header scrollable size="lg" centered id="openClosePaymentMethod">
-            <div v-if="loader == true" style="text-align: center;">
-              <br><span class="spinner-glow spinner-glow-primary"></span>
-            </div>
-            <div v-if="isAdmin">
-              <div style="width: 100%;">
-                <h5><strong>Filtro por fecha inicial:</strong></h5>
-                <b-form-datepicker v-model="initialDateOption"></b-form-datepicker>
-              </div>
-              <br>
-              <div style="width: 100%;">
-                <h5><strong>Filtro por fecha final:</strong></h5>
-                <b-form-datepicker v-model="endDateOption"></b-form-datepicker>
-              </div>
-              <br>
-              <div style="width: 100%;">
-                <h5><strong>Filtro por localidad:</strong></h5>
-                <div style="border: 1px solid rgb(140, 140, 140); border-radius: 5px; height: 100px; overflow-y: auto; padding-top: 10px; padding-bottom: 10px;">
-                  <div v-for="locality in localitiesOptions">
-                    <input @click="changeLocalityOptions(locality)" type="checkbox" v-model="locality.selected" style="accent-color: #FFD733; margin-left:10px; margin-right: 10px;">
-                    {{ locality.localityName }}
-                  </div>
-                </div>
-              </div>
-              <br>
-              <div style="width: 100%;">
-                <h5><strong>Filtro por agente:</strong></h5>
-                <div style="border: 1px solid rgb(140, 140, 140); border-radius: 5px; height: 180px; overflow-y: auto; padding-top: 10px; padding-bottom: 10px;">
-                  <div v-for="agent in agentOptions">
-                    <div v-if="agent.visible">
-                      <input type="checkbox" v-model="agent.selected" style="accent-color: #FFD733; margin-left:10px; margin-right: 10px;">
-                      {{ agent.agentName }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <br>
-              <div style="width: 100%; display: flex;">
-                <button class="btn btn-icon btn-info" style="margin-right:1%; width: 49%; font-size: 15px;" @click="generateInvoice()"><i class="i-Search-People"></i>Generar factura</button>
-                <button class="btn btn-icon" style="margin-left:1%; width: 49%; background-color: rgb(255, 184, 32); font-size: 15px;" @click="cleanFilter()"><i class="i-Folder-Trash"></i>Limpiar filtros</button>
-              </div>
-            </div>
-            
-            <div v-else>
-              <b-form-input v-model="passwordInput" placeholder="Contraseña de administrador"></b-form-input>
-              <br>
-              <div style="text-align: center;">
-                <button class="btn btn-info" style="width: 50%; font-size: 15px;" @click="generateTodayInvoice()">Generar cierre</button>
-              </div>
-            </div>
-          
-          </b-modal>
-
 
 
 
