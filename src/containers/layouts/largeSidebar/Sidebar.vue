@@ -124,7 +124,7 @@
             v-if="isAdmin == true || locality == true"
           >
             <router-link tag="a" class="nav-item-hold" to="/app/apps/transfer">
-              <i class="nav-icon i-Support"></i>
+              <i class="nav-icon i-Arrow-Right-2"></i>
               <span class="nav-text"><strong>TRANSFERIR</strong></span>
             </router-link>
             <div class="triangle"></div>

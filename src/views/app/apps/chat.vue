@@ -742,7 +742,7 @@
                       <emoji-picker class="light" @emoji-click="handleEmojiClick"></emoji-picker>
                     </div>
                   </b-modal>
-                </div>    
+                </div>
 
                 <div class="d-flex" v-if="agentType == 'agent'"> 
                   <button class="btn btn-primary mr-2" type="button" v-b-modal.endConversationModal>Finalizar</button>
@@ -755,7 +755,7 @@
                       <b-dropdown-item @click="addCloseConversationReason('Reclamo o garantía')">Reclamo o garantía</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Menor de edad')">Menor de edad</b-dropdown-item>
                     </b-dropdown><br><br>
-                    <b-form-textarea disabled no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
+                    <b-form-textarea no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
                     <br>
                     <b-form-checkbox id="checkbox-1" v-model="sendEndMessage">Enviar mensaje de despedida</b-form-checkbox>
                   </b-modal>
@@ -992,7 +992,7 @@
                         <b-dropdown-item @click="addCloseConversationReason('Reclamo o garantía')">Reclamo o garantía</b-dropdown-item>
                         <b-dropdown-item @click="addCloseConversationReason('Menor de edad')">Menor de edad</b-dropdown-item>
                       </b-dropdown><br><br>
-                      <b-form-textarea disabled no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
+                      <b-form-textarea no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
                       <br>
                       <b-form-checkbox id="checkbox-1" v-model="sendEndMessage">Enviar mensaje de despedida</b-form-checkbox>
                     </b-modal>
@@ -1066,7 +1066,7 @@
                       <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Wax')" :src="waxLogoSRC"/>
                       <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Hierba')" :src="hierbaLogoSRC"/>
                     </div>
-                    <img :src="producto.localizacion" alt="Imagen no disponible"/>
+                    <img style="cursor: pointer;" v-b-modal.bigImageModal @click="openBigImage(producto.localizacion)" :src="producto.localizacion" alt="Imagen no disponible"/>
                   </div>
                   <div class="ul-widget2__info ul-widget4__users-info">
                     <a href="#" variant="info" v-if="producto.productosAsociados.length==0" @click="AgregarItem(producto,'info')" class="ul-widget2__title">{{ producto.descripcion }}</a>
@@ -1397,13 +1397,16 @@
                                 Descuento: {{calcularDescuento}} <br>
                                 Total: {{calcularTotal}}  
                             </p>
+
                             
                             
                             
                           </b-row>
                         </b-tab>
                     </b-tabs> 
-            
+
+                    <b-button @click="fixTotal()" variant="info">Recalcular total</b-button>
+
           </b-card> 
       </div>
     </div>
@@ -1691,7 +1694,6 @@ export default {
       stockData: {},
 
 
-
       websocketConnection: null,
       websocketIsConnected: false,
       websocketReconnectInterval: 3000,
@@ -1700,6 +1702,11 @@ export default {
   },
 
   methods: {
+    fixTotal(){
+      this.calcularDescuento;
+      this.calcularDescuento;
+      this.calcularTotal;
+    },
 
     manageWebsocketConnection() {
       this.websocketConnection = new WebSocket(this.$store.getters.getWebsocketURL);
