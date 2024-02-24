@@ -142,7 +142,7 @@ export default {
           localStorage.setItem('localityName', response.data.result['localityName']);
           localStorage.setItem('localityPassword', response.data.result['localityPassword']);
 
-          router.push('/app/apps/locality');
+          router.push('/app/apps/transfer');
         } else {
           this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
             title: "Error al iniciar sesión",

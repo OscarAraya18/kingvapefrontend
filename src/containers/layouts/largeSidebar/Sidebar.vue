@@ -106,7 +106,6 @@
             :class="{ active: selectedParentMenu == 'agents' }"
             :data-submenu="false"
             v-if="isAdmin == true && locality == false"
-
           >
             <router-link tag="a" class="nav-item-hold" to="/app/apps/agents">
               <i class="nav-icon i-Support"></i>
@@ -119,10 +118,29 @@
           <li
             @mouseenter="toggleSubMenu"
             class="nav-item"
+            data-item="transfer"
+            :class="{ active: selectedParentMenu == 'transfer' }"
+            :data-submenu="false"
+            v-if="isAdmin == true || locality == true"
+          >
+            <router-link tag="a" class="nav-item-hold" to="/app/apps/transfer">
+              <i class="nav-icon i-Support"></i>
+              <span class="nav-text"><strong>TRANSFERIR</strong></span>
+            </router-link>
+            <div class="triangle"></div>
+          </li>
+
+
+
+
+
+          <li
+            @mouseenter="toggleSubMenu"
+            class="nav-item"
             data-item="locality"
             :class="{ active: selectedParentMenu == 'locality' }"
             :data-submenu="false"
-            v-if="locality == true || isAdmin == true"
+            v-if="isAdmin == true"
           >
             <router-link tag="a" class="nav-item-hold" to="/app/apps/locality">
               <i class="nav-icon i-Check"></i>
@@ -140,7 +158,7 @@
             data-item="localityReport"
             :class="{ active: selectedParentMenu == 'localityReport' }"
             :data-submenu="false"
-            v-if="locality == true || isAdmin == true"
+            v-if="isAdmin == true"
 
           >
             <div class="nav-item-hold">

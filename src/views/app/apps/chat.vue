@@ -3177,6 +3177,7 @@ export default {
                       productosAsociados: x.productosAsociados
                     });
                   });
+                  console.log(me.productos);
                   //me.productos= Objeto;
                   me.loading = false;
                 } )

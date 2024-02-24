@@ -312,6 +312,10 @@ const routes = [
             component: () => import("./views/app/apps/locality"),
           },
           {
+            path: "transfer",
+            component: () => import("./views/app/apps/transfer"),
+          },
+          {
             path: "contact-details",
             component: () => import("./views/app/apps/contact-details"),
           },
