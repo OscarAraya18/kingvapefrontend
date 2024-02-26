@@ -160,8 +160,16 @@
                   <strong>Fecha:</strong> {{parseHour(notSelledConversation.whatsappConversationStartDateTime)}}<br>
                 </div>
               </b-list-group-item>
+              <b-list-group-item v-else-if="notSelledConversation.whatsappConversationCloseComment == 'Vuelve a escribir'" v-b-modal.openConversationModal style="cursor: pointer; background-color: rgb(149, 207, 255);" @click="openConversation(notSelledConversation)" button>
+                <div style="font-size: 15px;"> 
+                  <strong>Nombre:</strong> {{notSelledConversation.whatsappConversationRecipientProfileName}}<br>
+                  <strong>Número:</strong> {{formatNumber(notSelledConversation.whatsappConversationRecipientPhoneNumber)}}<br>
+                  <strong>Motivo:</strong> {{notSelledConversation.whatsappConversationCloseComment}}<br>
+                  <strong>Fecha:</strong> {{parseHour(notSelledConversation.whatsappConversationStartDateTime)}}<br>
+                </div>
+              </b-list-group-item>
 
-              <b-list-group-item v-else v-b-modal.openConversationModal style="cursor: pointer; background-color: rgb(255, 166, 70);" @click="openConversation(notSelledConversation)" button>
+              <b-list-group-item v-else v-b-modal.openConversationModal style="cursor: pointer; background-color: rgb(255, 184, 108);" @click="openConversation(notSelledConversation)" button>
                 <div style="font-size: 15px;"> 
                   <strong>Nombre:</strong> {{notSelledConversation.whatsappConversationRecipientProfileName}}<br>
                   <strong>Número:</strong> {{formatNumber(notSelledConversation.whatsappConversationRecipientPhoneNumber)}}<br>
@@ -557,16 +565,28 @@ export default {
         initialDate: this.rankingInitialDate,
         endDate: this.rankingEndDate
       }).then((response) =>{
+
         this.currentSelledConversations = [];
         this.currentNotSelledConversations = [];
         const rankingFilteredConversations = response.data.result;
         for (var index in rankingFilteredConversations){
           if (rankingFilteredConversations[index].whatsappConversationAmount == 0){
+            if (rankingFilteredConversations[index]['whatsappConversationCloseComment'] == 'Consulta sobre productos' || rankingFilteredConversations[index]['whatsappConversationCloseComment'] == 'No contestó'){
+              rankingFilteredConversations[index]['order'] = 0
+            } else if (rankingFilteredConversations[index]['whatsappConversationCloseComment'] == 'Vuelve a escribir'){
+              rankingFilteredConversations[index]['order'] = 2;
+            } else {
+              rankingFilteredConversations[index]['order'] = 1;
+            }
             this.currentNotSelledConversations.push(rankingFilteredConversations[index]);
           } else {
             this.currentSelledConversations.push(rankingFilteredConversations[index]);
           }
         }
+
+        this.currentNotSelledConversations.sort((a, b) => a.order - b.order);
+
+        
         this.$root.$emit('bv::show::modal', 'conversationsModal');
         this.loader1 = false;
       });
