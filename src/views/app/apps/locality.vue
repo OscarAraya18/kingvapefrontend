@@ -828,7 +828,7 @@ export default {
       })
     },
 
-    selectLocalities(){
+    selectLocalitiesClose(){
       axios.post(constants.routes.backendAPI+'/selectLocalities')
       .then((response) =>{
         if (response.data.success){
@@ -850,7 +850,7 @@ export default {
     openInvoiceModal(){
       this.cleanFilterClose();
       this.selectLocalityAgents();
-      this.selectLocalities();
+      this.selectLocalitiesClose();
     },
 
 
