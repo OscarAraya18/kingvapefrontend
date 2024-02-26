@@ -403,7 +403,7 @@ export default {
       this.locality = true;
       this.ranking = false;
       this.agentProfileImage = '';
-      this.agentDefaultProfilePicture = constants.agentDefaultProfilePicture;
+      this.agentDefaultProfilePicture = constants.routes.agentDefaultProfilePicture;
     }
   
   },

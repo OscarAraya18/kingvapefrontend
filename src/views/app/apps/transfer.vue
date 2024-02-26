@@ -1,39 +1,64 @@
 <template>
   <div class="main-content">
-    <b-form-input v-model="transferPhoneNumber" class="mb-3" placeholder="Número de teléfono"></b-form-input>
-    <b-form-input v-model="transferName" class="mb-3" placeholder="Nombre"></b-form-input>
-    <b-form-select v-model="transferID" class="mb-3" :options="transferIDOptions"></b-form-select>
-    <b-form-input v-model="transferOrder" class="mb-3" placeholder="Pedido"></b-form-input>
-    <b-form-select v-if="isAdmin" v-model="transferLocality" class="mb-3" :options="transferLocalityOptions"></b-form-select>
+    <b-card>
+      <b-form-input @keydown.enter="selectContact()" v-model="transferPhoneNumber" class="mb-3" placeholder="Número de teléfono"></b-form-input>
+      <b-form-input v-model="transferName" class="mb-3" placeholder="Nombre"></b-form-input>
+      <b-form-select v-model="transferID" class="mb-3" :options="transferIDOptions"></b-form-select>
+      <b-form-textarea v-model="transferOrder" class="mb-3" rows="3" placeholder="Pedido"></b-form-textarea>
+      <b-form-select v-if="isAdmin" v-model="transferLocality" class="mb-3" :options="transferLocalityOptions"></b-form-select>
+
+      <br>
+      <button v-if="loading==false" class="btn btn-info" @click="insertStoreMessage()">Transferir al call center</button>
+      <div v-else>
+        <span class="spinner-glow spinner-glow-primary"></span>
+      </div>
+    </b-card>
+
 
     <br><br>
-    <button v-if="loading==false" class="btn btn-info mb-3" @click="insertStoreMessage()">Transferir al call center</button>
-    <div v-else>
-      <span class="spinner-glow spinner-glow-primary"></span>
-    </div>
 
-
-    <br><br>
-
-    <vue-good-table
-      :columns="transferColumns"
-      :rows="transferRows"
-      styleClass="order-table vgt-table"
-      :line-numbers="false">
-      <template slot="table-row" slot-scope="props">
-        <div v-if="props.column.field == 'storeMessageAssignedAgentID'">
-          <div v-if="props.row.agentName == null">
-            <span class="badge badge-pill badge-danger p-2">Sin agente asignado</span>
+    <b-card>
+      <vue-good-table
+        :columns="transferColumns"
+        :rows="transferRows"
+        styleClass="order-table vgt-table"
+        :line-numbers="false">
+        <template slot="table-row" slot-scope="props">
+          <div v-if="props.column.field == 'storeMessageAssignedAgentID'">
+            <div v-if="props.row.agentName == null">
+              <span class="badge badge-pill badge-danger p-2">Sin agente asignado</span>
+            </div>
+            <div v-else>
+              <div v-if="props.row.storeMessageDeleteReason == null">
+                <span class="badge badge-pill badge-success p-2">Atendido por {{ props.row.agentName }}</span>
+              </div>
+              <div v-else>
+                <span class="badge badge-pill badge-warning p-2">Eliminado por {{ props.row.agentName }}</span>
+              </div>
+            </div>
           </div>
-          <div v-else>
-            <span class="badge badge-pill badge-success p-2">Atendido por {{ props.row.agentName }}</span>
+          <div v-else-if="props.column.field == 'storeMessageStartDateTime'">
+            {{ parseHour(props.row.storeMessageStartDateTime) }}
           </div>
-        </div>
-        <div v-else-if="props.column.field == 'storeMessageStartDateTime'">
-          {{ parseHour(props.row.storeMessageStartDateTime) }}
-        </div>
-      </template>
-    </vue-good-table>
+          <div v-else-if="props.column.field == 'storeMessageDeleteReason'">
+            <div v-if="props.row.storeMessageDeleteReason == null">
+              Atendido
+            </div>
+            <div v-else>
+              {{props.row.storeMessageDeleteReason}}
+            </div>
+          </div>
+          <div v-else-if="props.column.field == 'storeMessageRecipientID'">
+            <div v-if="props.row.storeMessageRecipientID == 'S'">
+              ✔️
+            </div>
+            <div v-else>
+              ❌
+            </div>
+          </div>
+        </template>
+      </vue-good-table>
+    </b-card>
 
     <br><br>
 
@@ -51,12 +76,12 @@ export default {
     return {
       isAdmin: false,
 
-      transferIDOptions: [{value: 'S', text: 'S'}, {value: 'N', text: 'N'}],
+      transferIDOptions: [{value: 'S', text: '✔️'}, {value: 'N', text: '❌'}],
       transferLocalityOptions: [{value: 'Escazu', text: 'King Vape Escazú'}, {value: 'Cartago', text: 'King Vape Cartago'}, {value: 'Zapote', text: 'King Vape Zapote'}, {value: 'Heredia', text: 'King Vape Heredia'}],
 
-      transferPhoneNumber: '',
+      transferPhoneNumber: '506',
       transferName: '',
-      transferID: '',
+      transferID: 'S',
       transferOrder: '',
       transferLocality: '',
       loading: false,
@@ -110,6 +135,12 @@ export default {
           field: "storeMessageStoreName",
           thClass: "text-left",
           tdClass: "text-left",
+        },
+        {
+          label: "Nota",
+          field: "storeMessageDeleteReason",
+          thClass: "text-left",
+          tdClass: "text-left",
         }
       ]
 
@@ -134,6 +165,10 @@ export default {
         variant: notificationType,
         solid: true
       });
+    },
+
+    selectContact(){
+      alert('hola')
     },
 
     parseHour(originalHour){
@@ -181,7 +216,6 @@ export default {
         }
       })
       .catch((e) => {
-        console.log(e);
         this.showNotification('danger', 'Error al consultar los mensajes', 'Ha ocurrido un error inesperado al consultar los mensajes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
@@ -215,9 +249,9 @@ export default {
             storeMessageRecipientID: this.transferID
           }).then((response) =>{
             if (response.data.success){
-              this.transferPhoneNumber = '';
+              this.transferPhoneNumber = '506';
               this.transferName = '';
-              this.transferID = '';
+              this.transferID = 'S';
               this.transferOrder = '';
               this.transferLocality = '';
               this.loading = false;

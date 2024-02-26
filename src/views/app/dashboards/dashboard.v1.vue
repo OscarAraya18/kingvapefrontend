@@ -114,63 +114,79 @@
     
     <div v-if="view == 'closedConversations'">
       <br>
-      <h4><strong>Filtro por fecha inicial:</strong></h4>
-      <b-form-datepicker v-model="initialDateFiltered"></b-form-datepicker>
-      <br>
-      <h4><strong>Filtro por fecha final:</strong></h4>
-      <b-form-datepicker v-model="endDateFiltered"></b-form-datepicker>
-      <br>
-      <h4><strong>Filtro por número:</strong></h4>
-      <b-form-input v-model="numberFiltered" class="mb-3" placeholder="Coloque un número"></b-form-input>
-      <h4><strong>Filtro por agente:</strong></h4>
-      <b-form-select v-model="agentFiltered" class="mb-3" :options="agentOptions"></b-form-select>
-      <br>
-      <h4><strong>Filtro por sucursal de envío:</strong></h4>
-      <b-form-select v-model="storeFiltered" class="mb-3" :options="storeOptions"></b-form-select>
-      <br>
-      <h4><strong>Filtro por conversión:</strong></h4>
-      <b-form-select v-model="conversionFiltered" class="mb-3" :options="conversionOptions"></b-form-select>
-      <br><br>
-      <button class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="filter()"><i class="i-Search-People"></i>Aplicar filtro</button>
-      <button class="btn btn-icon" style="background-color: rgb(255, 184, 32); font-size: 15px; margin-left: 30px;" @click="cleanFilter()"><i class="i-Folder-Trash"></i>Limpiar filtros</button>
-      <br><br><br><br><br>
+      <b-card>
+        <h4><strong>Filtro por fecha inicial:</strong></h4>
+        <b-form-datepicker v-model="initialDateFiltered"></b-form-datepicker>
+        <br>
+        <h4><strong>Filtro por fecha final:</strong></h4>
+        <b-form-datepicker v-model="endDateFiltered"></b-form-datepicker>
+        <br>
+        <h4><strong>Filtro por número:</strong></h4>
+        <b-form-input v-model="numberFiltered" class="mb-3" placeholder="Coloque un número"></b-form-input>
+        <h4><strong>Filtro por agente:</strong></h4>
+        <b-form-select v-model="agentFiltered" class="mb-3" :options="agentOptions"></b-form-select>
+        <br>
+        <h4><strong>Filtro por sucursal de envío:</strong></h4>
+        <b-form-select v-model="storeFiltered" class="mb-3" :options="storeOptions"></b-form-select>
+        <br>
+        <h4><strong>Filtro por conversión:</strong></h4>
+        <b-form-select v-model="conversionFiltered" class="mb-3" :options="conversionOptions"></b-form-select>
+        <br><br>
+        <button class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="filter()"><i class="i-Search-People"></i>Aplicar filtro</button>
+        <button class="btn btn-icon" style="background-color: rgb(255, 184, 32); font-size: 15px; margin-left: 30px;" @click="cleanFilter()"><i class="i-Folder-Trash"></i>Limpiar filtros</button>
+      </b-card>
+      <br><br><br><br>
     </div>
 
     <div v-if="view == 'estadisticas'">
       <br>
-      <h4><strong>Dato a graficar:</strong></h4>
-      <b-form-select v-model="plotTypeOption" class="mb-3" :options="plotTypeOptions"></b-form-select>
-      <br>
-      <h4><strong>Filtro por fecha inicial:</strong></h4>
-      <b-form-datepicker v-model="initialDateOption"></b-form-datepicker>
-      <br>
-      <h4><strong>Filtro por fecha final:</strong></h4>
-      <b-form-datepicker v-model="endDateOption"></b-form-datepicker>
-      <br>
-      <h4><strong>Filtro por agente:</strong></h4>
-      <div style="border: 1px solid rgb(140, 140, 140); border-radius: 5px; height: 150px; overflow-y: auto; padding-top: 10px; padding-bottom: 10px;">
-        <div v-for="agent in agentOptionsMultiple">
-          <input type="checkbox" v-model="agent.selected" style="accent-color: #FFD733; margin-left:10px; margin-right: 10px;">
-          {{ agent.text }}
-        </div>
-      </div>
-      <br>
-      <div v-if="plotTypeOption != 4">
-        <h4><strong>Filtro por sucursal de envío:</strong></h4>
-        <div style="border: 1px solid rgb(140, 140, 140); border-radius: 5px; height: 100px; overflow-y: auto; padding-top: 10px; padding-bottom: 10px;">
-          <div v-for="store in storeOptionsMultiple">
-            <input type="checkbox" v-model="store.selected" style="accent-color: #FFD733; margin-left:10px; margin-right: 10px;">
-            {{ store.text }}
+      <b-card>
+        <h4><strong>Dato a graficar:</strong></h4>
+        <b-form-select v-model="plotTypeOption" class="mb-3" :options="plotTypeOptions"></b-form-select>
+        <br>
+        <h4><strong>Filtro por fecha inicial:</strong></h4>
+        <b-form-datepicker v-model="initialDateOption"></b-form-datepicker>
+        <br>
+        <h4><strong>Filtro por fecha final:</strong></h4>
+        <b-form-datepicker v-model="endDateOption"></b-form-datepicker>
+        <br>
+        <h4><strong>Filtro por agente:</strong></h4>
+        <div style="border: 1px solid rgb(140, 140, 140); border-radius: 5px; height: 150px; overflow-y: auto; padding-top: 10px; padding-bottom: 10px;">
+          <div v-for="agent in agentOptionsMultiple">
+            <input type="checkbox" v-model="agent.selected" style="accent-color: #FFD733; margin-left:10px; margin-right: 10px;">
+            {{ agent.text }}
           </div>
         </div>
-      </div>
-      <br><br>
-      <button v-b-modal.plotModal class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="plot()"><i class="i-Search-People"></i>Graficar</button>
-      <button class="btn btn-icon" style="background-color: rgb(255, 184, 32); font-size: 15px; margin-left: 30px;" @click="cleanPlotFilter()"><i class="i-Folder-Trash"></i>Limpiar filtros</button>
+        <br>
+        <div v-if="plotTypeOption != 4">
+          <h4><strong>Filtro por sucursal de envío:</strong></h4>
+          <div style="border: 1px solid rgb(140, 140, 140); border-radius: 5px; height: 100px; overflow-y: auto; padding-top: 10px; padding-bottom: 10px;">
+            <div v-for="store in storeOptionsMultiple">
+              <input type="checkbox" v-model="store.selected" style="accent-color: #FFD733; margin-left:10px; margin-right: 10px;">
+              {{ store.text }}
+            </div>
+          </div>
+        </div>
+        <br><br>
+        
+        <div style="display: flex;">
+          <div style="width: 100px;">
+            <button v-if="loaderPlot == false" class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="plot()"><i class="i-Search-People"></i>Graficar</button>
+            <div v-else style="text-align: center;">
+              <span class="spinner-glow spinner-glow-primary"></span>
+            </div>
+          </div>
+
+          <button class="btn btn-icon" style="background-color: rgb(255, 184, 32); font-size: 15px; margin-left: 30px;" @click="cleanPlotFilter()"><i class="i-Folder-Trash"></i>Limpiar filtros</button>
+        </div>
+      </b-card>
+      
       <br><br><br>
       
       <div v-if="displayPlot">
-        <apexchart type="line" width="100%" height="300" :options="opcionesGraficoLinea" :series="datosGraficoLinea"></apexchart>
+        <b-card>
+          <apexchart type="line" width="100%" height="300" :options="opcionesGraficoLinea" :series="datosGraficoLinea"></apexchart>
+        </b-card>
         <br><br>
       </div>
 
@@ -181,11 +197,14 @@
 
       <div v-if="view == 'activeConversations'">
         <br>
-        <p style="font-size: 20px;"><strong>Conversaciones recibidas:</strong> {{whatsappTotalConversations}}</p>
-        <p style="font-size: 20px;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
-        <p style="font-size: 20px;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
-        <p style="font-size: 20px;"><strong>Conversaciones pendientes:</strong> {{whatsappPendingConversations}}</p>
-        <p style="font-size: 20px;"><strong>Total de ventas:</strong> ₡{{whatsappTotalSells}}</p>
+        <b-card>
+          <p style="font-size: 20px; margin-top: 10px;"><strong>Conversaciones recibidas:</strong> {{whatsappTotalConversations}}</p>
+          <p style="font-size: 20px;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
+          <p style="font-size: 20px;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
+          <p style="font-size: 20px;"><strong>Conversaciones pendientes:</strong> {{whatsappPendingConversations}}</p>
+          <p style="font-size: 20px;"><strong>Total de ventas:</strong> ₡{{whatsappTotalSells}}</p>
+        </b-card>
+
         <br><br>
 
         <h4><strong>Filtro por agente:</strong></h4>
@@ -200,6 +219,7 @@
         
         <div class="card-body p-0">
 
+          
           <vue-good-table
             :columns="activeConversationsColumns"
             :line-numbers="false"
@@ -475,6 +495,8 @@ export default {
   },
   data() {
     return {
+      loaderPlot: false,
+
       closeConversationPhoneNumber: null,
       closeConversationReason: '',
       sendEndMessage: false,
@@ -768,6 +790,8 @@ export default {
     },
 
     plot(){
+      this.loaderPlot = true;
+
       this.agentArrayOption = [];
       for (var agentIndex in this.agentOptionsMultiple){
         if (this.agentOptionsMultiple[agentIndex].selected == true){
@@ -784,6 +808,7 @@ export default {
 
       if ((this.agentArrayOption.length == 0) && (this.storeArrayOption.length == 0)){
         this.showNotification('danger', 'Filtros incompletos', 'Debe colocar al menos un agente o una tienda para filtrar. Agregue al menos una opción para filtrar e intentelo nuevamente.');
+        this.loaderPlot = false;
       } else {
         axios.post(constants.routes.backendAPI+'/selectPlotInformation',
         {
@@ -793,6 +818,8 @@ export default {
           agents: this.agentArrayOption,
           stores: this.storeArrayOption
         }).then((response) =>{
+          this.loaderPlot = false;
+
           if (response.data.success){
             this.displayPlot = true;
             if (this.plotTypeOption == 4){
@@ -854,6 +881,8 @@ export default {
           }
         })
         .catch(() =>{
+          this.loaderPlot = false;
+
           this.showNotification('danger', 'Error al generar la gráfica', 'Ha ocurrido un error inesperado al generar la gráfica. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         })
       }

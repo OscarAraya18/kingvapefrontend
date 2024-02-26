@@ -1,5 +1,5 @@
 <template>
-  <div class="main-content" style="">
+  <div class="main-content">
     <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
       <img style="width: 1000px;" :src="bigImageSource">
     </b-modal>
@@ -103,15 +103,18 @@
       <br><br><br><br>
       <div style="display: flex; justify-content: center; align-items: center;">
         
-        <div id="chart1" style="margin-left: 10px; margin-right: 10px;">
-          <apexchart type="pie" width="100" :options="opcionesGraficoCircular" :series="facturadoPorAgente"></apexchart>
+        <div id="chart1" style="margin-left: 50px; margin-right: 10px; ">
+          <b-card>
+            <apexchart type="pie" width="100" :options="opcionesGraficoCircular" :series="facturadoPorAgente"></apexchart>
+          </b-card>
         </div>
         <div class="flex-grow-1"></div>
 
-        <div id="chart2" style="margin-left: 10px; margin-right: 10px;">
-          <apexchart type="bar" width="500" :options="opcionesGraficoBarra" :series="conversacionesPorAgente"></apexchart>
-          
-          <br><br>
+        <div id="chart2" style="margin-left: 10px; margin-right: 50px;">
+          <b-card>
+            <apexchart type="bar" width="500" :options="opcionesGraficoBarra" :series="conversacionesPorAgente"></apexchart>
+          </b-card>
+          <br><br><br>
           <div style="display: flex; justify-content: center;">
             <b-card-text style="font-size: x-large; color: #00578a">
               Venta del día:

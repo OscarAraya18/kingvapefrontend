@@ -53,6 +53,7 @@
 
     <b-form-select v-model="contactLetter" class="mb-3" :options="contactLettersOptions" @change="getContacts">
     </b-form-select>
+    <br><br>
 
     <div v-if="loaderContact==true" style="text-align: center;">
       <br>
@@ -103,7 +104,7 @@
           </span>
 
           <span v-else-if="props.column.field == 'id'">
-            <p v-if="props.row.id != '0'">✅</p>
+            <p v-if="props.row.id != '0'">✔️</p>
             <p v-else>❌</p>
           </span>
 
@@ -780,6 +781,7 @@ export default {
     },
 
     openContactLocation(location){
+      console.log(location);
       this.selectedContactLocation = location;
     },
 

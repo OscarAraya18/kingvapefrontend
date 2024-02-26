@@ -1,25 +1,27 @@
 <template>
   <div class="main-content">
-    <vue-good-table :columns="tableOptions" :line-numbers="false" styleClass="tableOne vgt-table" :rows="whatsappFavoriteImages">
-      <template slot="table-row" slot-scope="props">
+    <b-card>
+      <vue-good-table :columns="tableOptions" :line-numbers="false" styleClass="tableOne vgt-table" :rows="whatsappFavoriteImages">
+        <template slot="table-row" slot-scope="props">
 
-        <span v-if="props.column.field == 'whatsappFavoriteImageFile'">
-          <img style="height: 100px;" :src="props.row.whatsappFavoriteImageDriveURL">
-        </span>
+          <span v-if="props.column.field == 'whatsappFavoriteImageFile'">
+            <img style="height: 100px;" :src="props.row.whatsappFavoriteImageDriveURL">
+          </span>
 
-        <span v-else-if="props.column.field == 'whatsappFavoriteImageUploadDate'">
-          {{ parseHour(props.row.whatsappFavoriteImageUploadDate) }}
-        </span>
+          <span v-else-if="props.column.field == 'whatsappFavoriteImageUploadDate'">
+            {{ parseHour(props.row.whatsappFavoriteImageUploadDate) }}
+          </span>
 
-        <span v-else-if="props.column.field == 'actions'">
-          <i class="i-Eraser-2 text-25 text-success mr-2" @click="openEdit(props.row)" v-b-modal.editModal style="cursor: pointer"></i>
-          <i class="i-Close-Window text-25 text-danger" @click="deleteImage(props.row)" style="cursor: pointer"></i>
-        </span>
+          <span v-else-if="props.column.field == 'actions'">
+            <i class="i-Eraser-2 text-25 text-success mr-2" @click="openEdit(props.row)" v-b-modal.editModal style="cursor: pointer"></i>
+            <i class="i-Close-Window text-25 text-danger" @click="deleteImage(props.row)" style="cursor: pointer"></i>
+          </span>
 
-      </template>
+        </template>
 
-        
-    </vue-good-table>
+      </vue-good-table>
+    </b-card>
+    <br>
 
 
 

@@ -42,7 +42,7 @@
                   class="btn btn-block mt-2"
                   variant="mt-2"
                   style="background-color: #F9E530; font-size: 15px"
-                  :disabled="loading"
+                  :disabled="loaderPerfil || loaderTienda || loaderRanking"
                 >
                   INICIAR SESIÓN
                 </b-button>
@@ -53,23 +53,39 @@
                 </div>
 
                 <div style="display: flex;">
-                  <b-button
-                    class="btn btn-block mt-3"
-                    variant="mt-2 mr-3"
-                    style="background-color: #ffd65c; font-size: 15px"
-                    @click="openLocality()"
-                  >
-                    TIENDA
-                  </b-button>
 
-                  <b-button
-                    class="btn btn-block mt-3"
-                    variant="mt-2 ml-3"
-                    style="background-color: #d8ff75; font-size: 15px"
-                    @click="openRanking()"
-                  >
-                    RANKING
-                  </b-button>
+                  <div style="width: 50%;">
+                    <b-button
+                      v-if="loaderTienda == false"
+                      class="btn btn-block mt-3"
+                      variant="mt-2 mr-3"
+                      style="background-color: #ffd65c; font-size: 15px"
+                      @click="openLocality()"
+                      :disabled="loaderPerfil || loaderTienda || loaderRanking"
+                    >
+                      TIENDA
+                    </b-button>
+                    <div v-else style="text-align: center;">
+                      <br><span class="spinner-glow spinner-glow-primary"></span>
+                    </div>
+                  </div>
+
+                  <div style="width: 48%;">
+                    <b-button
+                      v-if="loaderRanking == false"
+                      class="btn btn-block mt-3"
+                      variant="mt-2 ml-3"
+                      style="background-color: #d8ff75; font-size: 15px"
+                      @click="openRanking()"
+                      :disabled="loaderPerfil || loaderTienda || loaderRanking"
+                    >
+                      RANKING
+                    </b-button>
+                    <div v-else style="text-align: center;">
+                      <br><span class="spinner-glow spinner-glow-primary"></span>
+                    </div>
+                  </div>
+                  
                 </div>
 
                 <div v-once class="typo__p" v-if="loading">
@@ -105,6 +121,8 @@ export default {
       },
 
       loaderPerfil: false,
+      loaderTienda: false,
+      loaderRanking: false,
 
       passwordType: 'password',
 
@@ -130,13 +148,13 @@ export default {
 
   methods: {
     openLocality(){
+      this.loaderTienda = true;
       axios.post(constants.routes.backendAPI+'/localityLogin',{
         localityUsername: this.inputs.username,
         localityPassword: this.inputs.password,
       })
       .then(response =>{ 
         if (response.data.success == true){
-          console.log(response.data);
           localStorage.setItem('locality', 'yes');
           localStorage.setItem('localityID', response.data.result['localityID']);
           localStorage.setItem('localityName', response.data.result['localityName']);
@@ -144,6 +162,8 @@ export default {
 
           router.push('/app/apps/transfer');
         } else {
+          this.loaderTienda = false;
+
           this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
             title: "Error al iniciar sesión",
             variant: "danger",
@@ -151,7 +171,9 @@ export default {
           });
         }
       })
-      .catch(error =>{
+      .catch(() =>{
+        this.loaderTienda = false;
+
         this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
           title: "Error al iniciar sesión",
           variant: "danger",
@@ -161,12 +183,14 @@ export default {
     },
 
     openRanking(){
+      this.loaderRanking = true;
       axios.post(constants.routes.backendAPI+'/rankingLogin',
       {
         username: this.inputs.username,
         password: this.inputs.password,
       })
       .then(response =>{ 
+        this.loaderRanking = false;
         if (response.data.success == true){
           localStorage.setItem('ranking', 'yes');
           router.push('/app/apps/ranking');
@@ -179,6 +203,7 @@ export default {
         }
       })
       .catch(error =>{
+        this.loaderRanking = false;
         this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
           title: "Error al iniciar sesión",
           variant: "danger",
