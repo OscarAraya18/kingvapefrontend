@@ -1092,7 +1092,7 @@
                       <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Wax')" :src="waxLogoSRC"/>
                       <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Hierba')" :src="hierbaLogoSRC"/>
                     </div>
-                    <img style="cursor: pointer;" v-b-modal.bigImageModal @click="openBigImage(producto.localizacion)" :src="producto.localizacion" alt="Imagen no disponible"/>
+                    <img style="cursor: pointer;" v-b-modal.bigImageModal @click="openBigImage(producto.localizacion)" :src="producto.localizacion" alt="N/A"/>
                   </div>
                   <div class="ul-widget2__info ul-widget4__users-info">
                     <a href="#" variant="info" v-if="producto.productosAsociados.length==0" @click="AgregarItem(producto,'info')" class="ul-widget2__title">{{ producto.descripcion }}</a>
@@ -1428,10 +1428,12 @@
                             
                             
                           </b-row>
+
+                          <b-button @click="fixTotal()" variant="info">Recalcular total</b-button>
+
                         </b-tab>
                     </b-tabs> 
 
-                    <b-button @click="fixTotal()" variant="info">Recalcular total</b-button>
 
           </b-card> 
       </div>
@@ -1734,6 +1736,7 @@ export default {
     },
 
     fixTotal(){
+      console.log(this.currentActiveConversation.whatsappConversationProducts);
       this.calcularSubTotal;
       this.calcularDescuento;
       this.calcularTotal;

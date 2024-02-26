@@ -42,7 +42,12 @@
           </div>
           <div v-else-if="props.column.field == 'storeMessageDeleteReason'">
             <div v-if="props.row.storeMessageDeleteReason == null">
-              Atendido
+              <div v-if="props.row.agentName == null">
+                Esperando agente
+              </div>
+              <div v-else>
+                Atendido
+              </div>
             </div>
             <div v-else>
               {{props.row.storeMessageDeleteReason}}
@@ -202,6 +207,10 @@ export default {
           storeMessageStoreName = 'Escazu';
         } else if (localStorage.getItem('localityName') == 'King Vape Cartago'){
           storeMessageStoreName = 'Cartago';
+        } else if (localStorage.getItem('localityName') == 'King Vape Zapote'){
+          storeMessageStoreName = 'Zapote';
+        } else if (localStorage.getItem('localityName') == 'King Vape Heredia'){
+          storeMessageStoreName = 'Heredia';
         }
       }
       
@@ -234,8 +243,11 @@ export default {
             storeMessageStoreName = 'Escazu';
           } else if (localStorage.getItem('localityName') == 'King Vape Cartago'){
             storeMessageStoreName = 'Cartago';
+          } else if (localStorage.getItem('localityName') == 'King Vape Zapote'){
+            storeMessageStoreName = 'Zapote';
+          } else if (localStorage.getItem('localityName') == 'King Vape Heredia'){
+            storeMessageStoreName = 'Heredia';
           }
-          // todas las tiendas posibles
 
           else {
             storeMessageStoreName = this.transferLocality;
