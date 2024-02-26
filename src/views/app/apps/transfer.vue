@@ -2,7 +2,7 @@
   <div class="main-content">
     <b-form-input v-model="transferPhoneNumber" class="mb-3" placeholder="Número de teléfono"></b-form-input>
     <b-form-input v-model="transferName" class="mb-3" placeholder="Nombre"></b-form-input>
-    <b-form-select v-model="transferID" class="mb-3" :options="transferIDOptions" sele></b-form-select>
+    <b-form-select v-model="transferID" class="mb-3" :options="transferIDOptions"></b-form-select>
     <b-form-input v-model="transferOrder" class="mb-3" placeholder="Pedido"></b-form-input>
     <b-form-select v-if="isAdmin" v-model="transferLocality" class="mb-3" :options="transferLocalityOptions"></b-form-select>
 
@@ -51,14 +51,14 @@ export default {
     return {
       isAdmin: false,
 
-      transferIDOptions: [{value: null, text: 'Cédula'}, {value: 'S', text: 'S'}, {value: 'N', text: 'N'}],
-      transferLocalityOptions: [{value: null, text: 'Localidad'}, {value: 'Escazu', text: 'King Vape Escazú'}, {value: 'Cartago', text: 'King Vape Cartago'}, {value: 'Zapote', text: 'King Vape Zapote'}, {value: 'Heredia', text: 'King Vape Heredia'}],
+      transferIDOptions: [{value: 'S', text: 'S'}, {value: 'N', text: 'N'}],
+      transferLocalityOptions: [{value: 'Escazu', text: 'King Vape Escazú'}, {value: 'Cartago', text: 'King Vape Cartago'}, {value: 'Zapote', text: 'King Vape Zapote'}, {value: 'Heredia', text: 'King Vape Heredia'}],
 
       transferPhoneNumber: '',
       transferName: '',
-      transferID: null,
+      transferID: '',
       transferOrder: '',
-      transferLocality: null,
+      transferLocality: '',
       loading: false,
 
       transferRows: [],
@@ -194,51 +194,46 @@ export default {
       && regularExpressionChecker.test(this.transferName)
       && regularExpressionChecker.test(this.transferOrder)){
 
-        if (this.transferID != null){
-          if (this.isAdmin && this.transferLocality != null){
+        if (this.transferID != ''){
+          this.loading = true;
+          var storeMessageStoreName = '';
+          if (localStorage.getItem('localityName') == 'King Vape Escazú'){
+            storeMessageStoreName = 'Escazu';
+          } else if (localStorage.getItem('localityName') == 'King Vape Cartago'){
+            storeMessageStoreName = 'Cartago';
+          }
+          // todas las tiendas posibles
 
-            this.loading = true;
-            var storeMessageStoreName = '';
-            if (localStorage.getItem('localityName') == 'King Vape Escazú'){
-              storeMessageStoreName = 'Escazu';
-            } else if (localStorage.getItem('localityName') == 'King Vape Cartago'){
-              storeMessageStoreName = 'Cartago';
-            }
-            // todas las tiendas posibles
+          else {
+            storeMessageStoreName = this.transferLocality;
+          }
+          
+          axios.post(constants.routes.backendAPI+'/insertStoreMessage', {
+            storeMessageStoreName: storeMessageStoreName,
+            storeMessageRecipientPhoneNumber: this.transferPhoneNumber,
+            storeMessageRecipientProfileName: this.transferName,
+            storeMessageRecipientOrder: this.transferOrder,
+            storeMessageRecipientID: this.transferID
+          }).then((response) =>{
+            if (response.data.success){
+              this.transferPhoneNumber = '';
+              this.transferName = '';
+              this.transferID = '';
+              this.transferOrder = '';
+              this.transferLocality = '';
+              this.loading = false;
+              this.showNotification('success', 'Conversación transferida', 'La conversación se ha transferido exitosamente al call center.')
 
-            else {
-              storeMessageStoreName = this.transferLocality;
-            }
-            
-            axios.post(constants.routes.backendAPI+'/insertStoreMessage', {
-              storeMessageStoreName: storeMessageStoreName,
-              storeMessageRecipientPhoneNumber: this.transferPhoneNumber,
-              storeMessageRecipientProfileName: this.transferName,
-              storeMessageRecipientOrder: this.transferOrder,
-              storeMessageRecipientID: this.transferID
-            }).then((response) =>{
-              if (response.data.success){
-                this.transferPhoneNumber = '';
-                this.transferName = '';
-                this.transferID = null;
-                this.transferOrder = '';
-                this.transferLocality = null;
-                this.loading = false;
-                this.showNotification('success', 'Conversación transferida', 'La conversación se ha transferido exitosamente al call center.')
-
-              } else {
-                this.loading = false;
-                this.showNotification('danger', 'Error al transferir la conversación', 'Ha ocurrido un error inesperado al transferir la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-              }
-            })
-            .catch(() => {
+            } else {
               this.loading = false;
               this.showNotification('danger', 'Error al transferir la conversación', 'Ha ocurrido un error inesperado al transferir la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-            })
-          } else {
+            }
+          })
+          .catch(() => {
             this.loading = false;
-            this.showNotification('danger', 'Error al transferir la conversación', 'Complete todos los espacios requeridos e intente de nuevo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-          }
+            this.showNotification('danger', 'Error al transferir la conversación', 'Ha ocurrido un error inesperado al transferir la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          })
+          
         } else {
           this.loading = false;
           this.showNotification('danger', 'Error al transferir la conversación', 'Complete todos los espacios requeridos e intente de nuevo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
