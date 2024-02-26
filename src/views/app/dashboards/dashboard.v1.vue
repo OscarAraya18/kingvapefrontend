@@ -61,7 +61,7 @@
         <b-dropdown-item @click="addCloseConversationReason('Reclamo o garantía')">Reclamo o garantía</b-dropdown-item>
         <b-dropdown-item @click="addCloseConversationReason('Menor de edad')">Menor de edad</b-dropdown-item>
       </b-dropdown><br><br>
-      <b-form-textarea disabled no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
+      <b-form-textarea no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
       <br>
       <b-form-checkbox id="checkbox-1" v-model="sendEndMessage">Enviar mensaje de despedida</b-form-checkbox>
     </b-modal>

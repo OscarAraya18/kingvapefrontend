@@ -20,7 +20,7 @@
                   <br><br><br><span class="spinner-glow spinner-glow-primary"></span>
                 </div>
                 
-                <div v-else v-for="activeConversationID in sortedConversationsID" @click="changeCurrentActiveConversation(activeConversationsAsJSON[activeConversationID], activeConversationID)" :style="getConversationStyle(activeConversationID)" class="p-3 d-flex border-bottom align-items-center hoverTest" :id="'hint'+activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber">
+                <div v-else v-for="activeConversationID in sortedConversationsID" @click="changeCurrentActiveConversation(activeConversationsAsJSON[activeConversationID], activeConversationID, false)" :style="getConversationStyle(activeConversationID)" class="p-3 d-flex border-bottom align-items-center hoverTest" :id="'hint'+activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber">
                   <h3 style="margin-right: 15px;">
                     <strong>
                       {{getReferenciaSucursal(activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber)}}
@@ -50,12 +50,23 @@
               </vue-perfect-scrollbar>
             </div>
 
+
+            <div style="position: absolute; width: 100%; bottom: 50px; background-color: rgb(59,130,256); height: 50px; text-align: center; cursor:pointer;">
+              <b-dropdown ref="dropDownSucursales" dropup text="Chat con sucursales" variant="info" style="margin: 0 auto; font-size: medium; top: 5px" size="lg">
+                <b-dropdown-item href="#" @click="openStoreChat('Escazu')">Escazú</b-dropdown-item>
+                <b-dropdown-item href="#" @click="openStoreChat('Zapote')">Zapote</b-dropdown-item>
+                <b-dropdown-item href="#" @click="openStoreChat('Cartago')">Cartago</b-dropdown-item>
+                <b-dropdown-item href="#" @click="openStoreChat('Heredia')">Heredia</b-dropdown-item>
+              </b-dropdown>
+            </div>
+
             
             <div style="position: absolute; width: 100%; bottom: 0; background-color: #F9E530; height: 50px; text-align: center; cursor:pointer;">
               <b-dropdown ref="dropDownSucursales" dropup :text="textoSucursalesCalcular" variant="primary" style="margin: 0 auto; font-size: medium; top: 5px" size="lg">
                 <b-dropdown-item href="#" v-b-modal.escazuConversationsModal>Escazú ({{escazuConversations.length}})</b-dropdown-item>
                 <b-dropdown-item href="#" v-b-modal.zapoteConversationsModal>Zapote ({{zapoteConversations.length}})</b-dropdown-item>
                 <b-dropdown-item href="#" v-b-modal.cartagoConversationsModal>Cartago ({{cartagoConversations.length}})</b-dropdown-item>
+                <b-dropdown-item href="#" v-b-modal.herediaConversationsModal>Heredia ({{herediaConversations.length}})</b-dropdown-item>
                 <b-dropdown-item href="#" v-b-modal.pendingConversationsModal>Pendientes ({{pendingConversations.length}})</b-dropdown-item>
               </b-dropdown>
             </div>
@@ -64,6 +75,7 @@
           <b-modal @ok="deleteStoreConversation()" scrollable size="m" centered id="deleteStoreConversationModal" title="Eliminar mensaje de tienda">
             <b-form-textarea class="form-control" placeholder="Motivo" v-model="deleteStoreMessageReason" style="width: 100%" no-resize rows="3"/>
           </b-modal>
+
 
           <b-modal scrollable size="m" centered hide-footer id="escazuConversationsModal" title="Conversaciones pendientes de Escazú">
             <b-list-group v-if="loaders.grabConversation == false">
@@ -104,6 +116,21 @@
                 <strong>Pedido:</strong> {{cartagoConversation.storeMessageRecipientOrder}}<br>
                 <strong>Cédula:</strong> {{cartagoConversation.storeMessageRecipientID}}<br>
                 <strong>Fecha:</strong> {{parseHour(cartagoConversation.storeMessageStartDateTime)}}
+              </b-list-group-item>
+            </b-list-group>
+            <div v-else style="text-align: center;">
+              <br><span class="spinner-glow spinner-glow-primary"></span>
+            </div>
+          </b-modal>
+          <b-modal scrollable size="m" centered hide-footer id="herediaConversationsModal" title="Conversaciones pendientes de Heredia">
+            <b-list-group v-if="loaders.grabConversation == false">
+              <b-list-group-item v-if="herediaConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
+              <b-list-group-item @contextmenu.prevent="openDeleteStoreMessageModal(herediaConversation)" v-for="herediaConversation in herediaConversations" @click="grabStoreConversation(herediaConversation)" button style="cursor: pointer;">
+                <strong>Nombre:</strong> {{herediaConversation.storeMessageRecipientProfileName}}<br>
+                <strong>Número:</strong> {{herediaConversation.storeMessageRecipientPhoneNumber}}<br>
+                <strong>Pedido:</strong> {{herediaConversation.storeMessageRecipientOrder}}<br>
+                <strong>Cédula:</strong> {{herediaConversation.storeMessageRecipientID}}<br>
+                <strong>Fecha:</strong> {{parseHour(herediaConversation.storeMessageStartDateTime)}}
               </b-list-group-item>
             </b-list-group>
             <div v-else style="text-align: center;">
@@ -772,7 +799,7 @@
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Zapote')">Zapote</b-dropdown-item>
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Escazu')">Escazu</b-dropdown-item>
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Cartago')">Cartago</b-dropdown-item>
-                    <b-dropdown-item style="z-index: 2000;">Heredia</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Heredia')">Heredia</b-dropdown-item>
                   </b-dropdown>
                   <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-right: 10px;" v-if="availableConversation == true">
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('CASA')">CASA</b-dropdown-item>
@@ -1007,7 +1034,7 @@
                       <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Zapote')">Zapote</b-dropdown-item>
                       <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Escazu')">Escazu</b-dropdown-item>
                       <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Cartago')">Cartago</b-dropdown-item>
-                      <b-dropdown-item style="z-index: 2000;">Heredia</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Heredia')">Heredia</b-dropdown-item>
                     </b-dropdown>
                     <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-left: 10px;" v-if="availableConversation == true">
                       <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('CASA')">CASA</b-dropdown-item>
@@ -1017,7 +1044,6 @@
                   </div>
 
                 </div>
-
 
               </div>
             </div>
@@ -1533,6 +1559,7 @@ export default {
       zapoteConversations: [],
       escazuConversations: [],
       cartagoConversations: [],
+      herediaConversations: [],
 
       // Variables del chat -------
       activeConversation: '',
@@ -1702,8 +1729,12 @@ export default {
   },
 
   methods: {
+    openStoreChat(storeChatName){
+      this.changeCurrentActiveConversation(null, null, true);
+    },
+
     fixTotal(){
-      this.calcularDescuento;
+      this.calcularSubTotal;
       this.calcularDescuento;
       this.calcularTotal;
     },
@@ -1941,6 +1972,7 @@ export default {
       this.$root.$emit('bv::hide::modal', 'escazuConversationsModal');
       this.$root.$emit('bv::hide::modal', 'zapoteConversationsModal');
       this.$root.$emit('bv::hide::modal', 'cartagoConversationsModal');
+      this.$root.$emit('bv::hide::modal', 'herediaConversationsModal');
       this.$root.$emit('bv::show::modal', 'deleteStoreConversationModal');
     },
 
@@ -3443,8 +3475,8 @@ export default {
         var latitud = 9.864751;
         var longitud = -83.925354;
       } else if (locationName == 'Heredia') {
-        var latitud = 9.864751;
-        var longitud = -83.925354;
+        var latitud = 9.99168;
+        var longitud = -84.135;
       }
       var repliedMessageID = '';
       if (this.repliedMessage != null){
@@ -3640,101 +3672,110 @@ export default {
       })
     },
 
-    changeCurrentActiveConversation(currentActiveConversation, activeConversationID){
+    changeCurrentActiveConversation(currentActiveConversation, activeConversationID, storeChat){
 
-      this.currentActiveConversationID = activeConversationID;
-      this.currentActiveConversation = currentActiveConversation;
-      this.productos = [];
-      this.repliedMessage = null;
-      this.sendEndMessage = false;
-      this.producto = '';
-      var availableConversation = false;
-      for (var activeConversationMessage in currentActiveConversation.whatsappConversationMessages){
-        if (currentActiveConversation.whatsappConversationMessages[activeConversationMessage] != null){
-          if (currentActiveConversation.whatsappConversationMessages[activeConversationMessage].whatsappGeneralMessageOwnerPhoneNumber != null) {
-            availableConversation = true;
+      if (storeChat == false){
+        this.currentActiveConversationID = activeConversationID;
+        this.currentActiveConversation = currentActiveConversation;
+        this.productos = [];
+        this.repliedMessage = null;
+        this.sendEndMessage = false;
+        this.producto = '';
+        var availableConversation = false;
+        for (var activeConversationMessage in currentActiveConversation.whatsappConversationMessages){
+          if (currentActiveConversation.whatsappConversationMessages[activeConversationMessage] != null){
+            if (currentActiveConversation.whatsappConversationMessages[activeConversationMessage].whatsappGeneralMessageOwnerPhoneNumber != null) {
+              availableConversation = true;
+            }
           }
         }
-      }
-      this.availableConversation = availableConversation;
-      
-      const databaseOrders = JSON.parse(localStorage.getItem('ordenesActuales'));
-      if (databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-        this.currentActiveConversation.whatsappConversationProducts = databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber];        
-      }
+        this.availableConversation = availableConversation;
+        
+        const databaseOrders = JSON.parse(localStorage.getItem('ordenesActuales'));
+        if (databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+          this.currentActiveConversation.whatsappConversationProducts = databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber];        
+        }
 
-      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
-      if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['nombre']){
-          this.currentActiveConversation.whatsappConversationRecipientProfileName = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['nombre'];
-        }
-        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['cedula']){
-          this.currentActiveConversation.whatsappConversationRecipientID = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['cedula'];
-        }
-        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['correo']){
-          this.currentActiveConversation.whatsappConversationRecipientEmail = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['correo'];
-        }
-        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['sucursalEnvio']){
-          this.Sucursal = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['sucursalEnvio'];
+        const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['nombre']){
+            this.currentActiveConversation.whatsappConversationRecipientProfileName = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['nombre'];
+          }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['cedula']){
+            this.currentActiveConversation.whatsappConversationRecipientID = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['cedula'];
+          }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['correo']){
+            this.currentActiveConversation.whatsappConversationRecipientEmail = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['correo'];
+          }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['sucursalEnvio']){
+            this.Sucursal = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['sucursalEnvio'];
+          } else {
+            this.Sucursal = 'Sucursal de envío';
+          }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoEnvio']){
+            this.MetodoEnvio = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoEnvio'];
+          } else {
+            this.MetodoEnvio = 'Método de envío';
+          }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoPago']){
+            this.MetodoPago = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoPago'];
+          } else {
+            this.MetodoPago = 'Método de pago';
+          }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['pagaCon']){
+            this.pagaCon = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['pagaCon'];
+          } else {
+            this.pagaCon = '';
+          }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['estadoPago']){
+            this.estadoPago = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['estadoPago'];
+          } else {
+            this.estadoPago = 'Estado de pago';
+          }
+
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['ubicacion']){
+            this.ubicacion = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['ubicacion'];
+          } else {
+            this.ubicacion = 'Ubicación de envío';
+          }
+
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['latitud']){
+            this.latitud = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['latitud'];
+          } else {
+            this.latitud = 0;
+          }
+
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['longitud']){
+            this.longitud = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['longitud'];
+          } else {
+            this.longitud = 0;
+          }
+
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaEnvio']){
+            currentActiveConversation.whatsappConversationRecipientNote = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaEnvio'];
+          }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaDireccion']){
+            currentActiveConversation.whatsappConversationRecipientLocationDetails = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaDireccion'];
+          }
         } else {
           this.Sucursal = 'Sucursal de envío';
-        }
-        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoEnvio']){
-          this.MetodoEnvio = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoEnvio'];
-        } else {
           this.MetodoEnvio = 'Método de envío';
-        }
-        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoPago']){
-          this.MetodoPago = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoPago'];
-        } else {
           this.MetodoPago = 'Método de pago';
-        }
-        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['pagaCon']){
-          this.pagaCon = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['pagaCon'];
-        } else {
           this.pagaCon = '';
-        }
-        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['estadoPago']){
-          this.estadoPago = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['estadoPago'];
-        } else {
           this.estadoPago = 'Estado de pago';
-        }
-
-        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['ubicacion']){
-          this.ubicacion = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['ubicacion'];
-        } else {
           this.ubicacion = 'Ubicación de envío';
-        }
-
-        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['latitud']){
-          this.latitud = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['latitud'];
-        } else {
           this.latitud = 0;
-        }
-
-        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['longitud']){
-          this.longitud = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['longitud'];
-        } else {
           this.longitud = 0;
         }
+        this.scrollDown();
 
-        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaEnvio']){
-          currentActiveConversation.whatsappConversationRecipientNote = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaEnvio'];
-        }
-        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaDireccion']){
-          currentActiveConversation.whatsappConversationRecipientLocationDetails = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaDireccion'];
-        }
       } else {
-        this.Sucursal = 'Sucursal de envío';
-        this.MetodoEnvio = 'Método de envío';
-        this.MetodoPago = 'Método de pago';
-        this.pagaCon = '';
-        this.estadoPago = 'Estado de pago';
-        this.ubicacion = 'Ubicación de envío';
-        this.latitud = 0;
-        this.longitud = 0;
+        this.repliedMessage = null;
+        this.sendEndMessage = false;
+        this.producto = '';
+        this.availableConversation = true;
+
       }
-      this.scrollDown();
     },
 
     closeWhatsappConversation(){
@@ -3802,6 +3843,9 @@ export default {
           } else if (storeMessage.storeMessageStoreName == 'Cartago'){
             referenciaSucursales[storeMessage.storeMessageRecipientPhoneNumber] = 'C';
             this.cartagoConversations = this.cartagoConversations.filter(cartagoConversation => cartagoConversation.storeMessageID != storeMessage.storeMessageID);
+          } else if (storeMessage.storeMessageStoreName == 'Heredia'){
+            referenciaSucursales[storeMessage.storeMessageRecipientPhoneNumber] = 'H';
+            this.herediaConversations = this.herediaConversations.filter(herediaConversation => herediaConversation.storeMessageID != storeMessage.storeMessageID);
           }
           localStorage.setItem('referenciaSucursales', JSON.stringify(referenciaSucursales));
 
@@ -3877,7 +3921,6 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          console.log(response.data.result);
           
           const respondedActiveConversations = response.data.result;
           const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
@@ -3968,6 +4011,8 @@ export default {
               this.escazuConversations.push(newStoreMessageInformation);
             } else if (selectAllStoreMessageResult[storeMessageIndex].storeMessageStoreName == 'Cartago'){
               this.cartagoConversations.push(newStoreMessageInformation);
+            } else if (selectAllStoreMessageResult[storeMessageIndex].storeMessageStoreName == 'Heredia'){
+              this.herediaConversations.push(newStoreMessageInformation);
             }
           }
         } else {
@@ -4027,6 +4072,11 @@ export default {
         this.cartagoConversations = [];
         newCartagoConversations.push(newWhatsappStoreMessageInformation);
         this.cartagoConversations = newCartagoConversations;
+      } else if (websocketMessageContent.storeMessageStoreName == 'Heredia'){
+        var newHerediaConversations = this.herediaConversations;
+        this.herediaConversations = [];
+        newHerediaConversations.push(newWhatsappStoreMessageInformation);
+        this.herediaConversations = newHerediaConversations;
       }
       this.playSound('receiveWhatsappStoreMessage');
     },
@@ -4088,6 +4138,8 @@ export default {
         this.zapoteConversations = this.zapoteConversations.filter(zapoteConversation => zapoteConversation.storeMessageID != storeMessageID);
       } else if (storeMessageStoreName == 'Cartago'){
         this.cartagoConversations = this.cartagoConversations.filter(cartagoConversation => cartagoConversation.storeMessageID != storeMessageID);
+      } else if (storeMessageStoreName == 'Heredia'){
+        this.herediaConversations = this.herediaConversations.filter(herediaConversation => herediaConversation.storeMessageID != storeMessageID);
       }
     },
 
@@ -4346,7 +4398,7 @@ export default {
 		},
 
     textoSucursalesCalcular: function(){
-      const total = this.escazuConversations.length + this.zapoteConversations.length + this.cartagoConversations.length + this.pendingConversations.length;
+      const total = this.escazuConversations.length + this.zapoteConversations.length + this.cartagoConversations.length + this.herediaConversations.length + this.pendingConversations.length;
       return this.textoSucursales + '(' + total + ')'
     }
 

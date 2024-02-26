@@ -173,7 +173,6 @@ export default {
       axios.post(constants.routes.backendAPI+'/selectStoreMessageByStoreMessageStoreName', {
         storeMessageStoreName: storeMessageStoreName
       }).then((response) =>{
-        console.log(this.transferRows);
 
         if (response.data.success){
           this.transferRows = response.data.result;
