@@ -954,10 +954,10 @@ export default {
     },
 
     filterByAgent(){
-      if (this.agentFiltered == null){
-        this.activeConversationsRows = this.originalActiveConversationsRows;
-      } else {
-        this.activeConversationsRows = this.originalActiveConversationsRows.filter(activeConversationRow => activeConversationRow.agentName == this.agentFiltered);
+      this.activeConversationsRows = this.originalActiveConversationsRows;
+      if (this.agentFiltered != null){
+        this.activeConversationsRows = this.originalActiveConversationsRows.filter(activeConversationRow => activeConversationRow.agentID == this.agentFiltered);
+        this.activeConversationsRows.sort((a, b) => a.whatsappConversationState.localeCompare(b.whatsappConversationState));
       }
     },
 
@@ -1040,6 +1040,8 @@ export default {
               whatsappConversationTransferAction: '',
               whatsappConversationCloseAction: ''
             });
+            this.activeConversationsRows.sort((a, b) => a.whatsappConversationState.localeCompare(b.whatsappConversationState));
+
             this.originalActiveConversationsRows = this.activeConversationsRows;
             this.filterByAgent();
           }
