@@ -56,7 +56,7 @@
             Venta del día:
           </b-card-text>
           <b-card-text style="font-size: xx-large; margin-left: 10px;">
-            {{vendedoraDelDia}}
+            {{vendedoraDelDia[0].agentName}}
           </b-card-text>
         </div>
       </div>

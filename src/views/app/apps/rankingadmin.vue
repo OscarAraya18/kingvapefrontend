@@ -110,18 +110,26 @@
         </div>
         <div class="flex-grow-1"></div>
 
-        <div id="chart2" style="margin-left: 10px; margin-right: 50px;">
-          <b-card>
+        <div id="chart2" style="margin-left: 10px; margin-right: 50px; align-items: center;">
+          <b-card style="text-align: center; align-items: center;">
             <apexchart type="bar" width="500" :options="opcionesGraficoBarra" :series="conversacionesPorAgente"></apexchart>
           </b-card>
           <br><br><br>
-          <div style="display: flex; justify-content: center;">
-            <b-card-text style="font-size: x-large; color: #00578a">
-              Venta del día:
-            </b-card-text>
-            <b-card-text style="font-size: x-large; margin-left: 10px;">
-              {{vendedoraDelDia}}
-            </b-card-text>
+
+          <div v-if="isAdmin">
+            <b-card>
+              <vue-good-table :columns="tableOptions" :line-numbers="false" styleClass="tableOne vgt-table" :rows="vendedoraDelDia">
+            
+              <template slot="table-row" slot-scope="props">
+                <span v-if="props.column.field == 'whatsappConversationAmount'">
+                  ₡{{props.row.whatsappConversationAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}
+                </span>
+                <span v-else-if="props.column.field == 'whatsappConversationRecipientPhoneNumber'">
+                  {{formatNumber(props.row.whatsappConversationRecipientPhoneNumber)}}
+                </span>
+              </template>
+            </vue-good-table>
+            </b-card>
           </div>
         </div>
       </div>
@@ -415,6 +423,34 @@ export default {
   data() {
     
     return {
+      tableOptions:
+      [
+        {
+          label: "Agente",
+          field: "agentName",
+          thClass: "text-left pl-3",
+          tdClass: "text-left pl-3",
+        },
+        {
+          label: "Monto",
+          field: "whatsappConversationAmount",
+          thClass: "text-left pl-3",
+          tdClass: "text-left pl-3",
+        },
+        {
+          label: "Número de teléfono",
+          field: "whatsappConversationRecipientPhoneNumber",
+          thClass: "text-left pl-3",
+          tdClass: "text-left pl-3",
+        },
+        {
+          label: "Nombre del cliente",
+          field: "whatsappConversationRecipientProfileName",
+          thClass: "text-left pl-3",
+          tdClass: "text-left pl-3",
+        }
+      ],
+
       historyMessageLoader: false,
       historyMessage: null,
 
@@ -442,13 +478,20 @@ export default {
       currentNotSelledConversations: [],
 
       zoom: 15,
-      bigImageSource: null
+      bigImageSource: null,
+      isAdmin: false
     };
   },
 
   mounted(){
     if (localStorage.getItem('agentID') == null){
       router.push("/app/sessions/signIn");
+    }
+
+    if (localStorage.getItem('agentType') == 'admin'){
+      this.isAdmin = true;
+    } else {
+      this.isAdmin = false;
     }
 
     this.getTodayInformation();
