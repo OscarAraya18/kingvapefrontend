@@ -152,7 +152,7 @@
             </b-list-group-item>
             
             <div v-for="notSelledConversation in currentNotSelledConversations">
-              <b-list-group-item v-if="notSelledConversation.whatsappConversationCloseComment == 'Consulta sobre productos' || notSelledConversation.whatsappConversationCloseComment == 'No contestó'" v-b-modal.openConversationModal style="cursor: pointer; background-color: rgb(211, 128, 126);" @click="openConversation(notSelledConversation)" button>
+              <b-list-group-item v-if="notSelledConversation.whatsappConversationCloseComment == 'Venta perdida' || notSelledConversation.whatsappConversationCloseComment == 'Venta para otro día' || notSelledConversation.whatsappConversationCloseComment == 'Consulta sobre productos' || notSelledConversation.whatsappConversationCloseComment == 'No contestó'" v-b-modal.openConversationModal style="cursor: pointer; background-color: rgb(211, 128, 126);" @click="openConversation(notSelledConversation)" button>
                 <div style="font-size: 15px;"> 
                   <strong>Nombre:</strong> {{notSelledConversation.whatsappConversationRecipientProfileName}}<br>
                   <strong>Número:</strong> {{formatNumber(notSelledConversation.whatsappConversationRecipientPhoneNumber)}}<br>
@@ -169,7 +169,16 @@
                 </div>
               </b-list-group-item>
 
-              <b-list-group-item v-else v-b-modal.openConversationModal style="cursor: pointer; background-color: rgb(255, 184, 108);" @click="openConversation(notSelledConversation)" button>
+              <b-list-group-item v-else-if="notSelledConversation.whatsappConversationCloseComment == 'Error'" v-b-modal.openConversationModal style="cursor: pointer; background-color: gray;" @click="openConversation(notSelledConversation)" button>
+                <div style="font-size: 15px;"> 
+                  <strong>Nombre:</strong> {{notSelledConversation.whatsappConversationRecipientProfileName}}<br>
+                  <strong>Número:</strong> {{formatNumber(notSelledConversation.whatsappConversationRecipientPhoneNumber)}}<br>
+                  <strong>Motivo:</strong> {{notSelledConversation.whatsappConversationCloseComment}}<br>
+                  <strong>Fecha:</strong> {{parseHour(notSelledConversation.whatsappConversationStartDateTime)}}<br>
+                </div>
+              </b-list-group-item>
+
+              <b-list-group-item v-else style="cursor: pointer; background-color: rgb(255, 184, 108);" @click="openConversation(notSelledConversation)" button>
                 <div style="font-size: 15px;"> 
                   <strong>Nombre:</strong> {{notSelledConversation.whatsappConversationRecipientProfileName}}<br>
                   <strong>Número:</strong> {{formatNumber(notSelledConversation.whatsappConversationRecipientPhoneNumber)}}<br>
@@ -571,9 +580,11 @@ export default {
         const rankingFilteredConversations = response.data.result;
         for (var index in rankingFilteredConversations){
           if (rankingFilteredConversations[index].whatsappConversationAmount == 0){
-            if (rankingFilteredConversations[index]['whatsappConversationCloseComment'] == 'Consulta sobre productos' || rankingFilteredConversations[index]['whatsappConversationCloseComment'] == 'No contestó'){
+            if (rankingFilteredConversations[index]['whatsappConversationCloseComment'] == 'Venta perdida' || rankingFilteredConversations[index]['whatsappConversationCloseComment'] == 'Venta para otro día' || rankingFilteredConversations[index]['whatsappConversationCloseComment'] == 'Consulta sobre productos' || rankingFilteredConversations[index]['whatsappConversationCloseComment'] == 'No contestó'){
               rankingFilteredConversations[index]['order'] = 0
             } else if (rankingFilteredConversations[index]['whatsappConversationCloseComment'] == 'Vuelve a escribir'){
+              rankingFilteredConversations[index]['order'] = 3;
+            } else if (rankingFilteredConversations[index]['whatsappConversationCloseComment'] == 'Error'){
               rankingFilteredConversations[index]['order'] = 2;
             } else {
               rankingFilteredConversations[index]['order'] = 1;
