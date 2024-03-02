@@ -780,6 +780,7 @@
                       <b-dropdown-item @click="addCloseConversationReason('Consulta sobre productos')">Consulta sobre productos</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('No contestó')">No contestó</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Pasa a tienda')">Pasa a tienda</b-dropdown-item>
+                      <b-dropdown-item @click="addCloseConversationReason('Consulta de horario/ubicación')">Consulta de horario/ubicación</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Vuelve a escribir')">Vuelve a escribir</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Reclamo o garantía')">Reclamo o garantía</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Menor de edad')">Menor de edad</b-dropdown-item>
@@ -1020,6 +1021,7 @@
                         <b-dropdown-item @click="addCloseConversationReason('Consulta sobre productos')">Consulta sobre productos</b-dropdown-item>
                         <b-dropdown-item @click="addCloseConversationReason('No contestó')">No contestó</b-dropdown-item>
                         <b-dropdown-item @click="addCloseConversationReason('Pasa a tienda')">Pasa a tienda</b-dropdown-item>
+                        <b-dropdown-item @click="addCloseConversationReason('Consulta de horario/ubicación')">Consulta de horario/ubicación</b-dropdown-item>
                         <b-dropdown-item @click="addCloseConversationReason('Vuelve a escribir')">Vuelve a escribir</b-dropdown-item>
                         <b-dropdown-item @click="addCloseConversationReason('Reclamo o garantía')">Reclamo o garantía</b-dropdown-item>
                         <b-dropdown-item @click="addCloseConversationReason('Menor de edad')">Menor de edad</b-dropdown-item>
