@@ -11,6 +11,11 @@ Vue.use(Router);
 
 const routes = [
   {
+    path: "/feedback",
+    component: () => import("./views/app/feedback"),
+  },
+  
+  {
     path: "/",
     component: () => import("./views/app"), //webpackChunkName app
     redirect: "/app/sessions/signIn",
@@ -479,7 +484,6 @@ const routes = [
           },
         ],
       },
-
       // chart_componnent//////////----------------------////////////////////////
 
       {
