@@ -2,9 +2,9 @@
   <div class="main-content">
     <b-card>
       <b-form-input @keydown.enter="selectContact()" v-model="transferPhoneNumber" class="mb-3" placeholder="Número de teléfono"></b-form-input>
-      <b-form-input v-model="transferName" class="mb-3" placeholder="Nombre"></b-form-input>
+      <b-form-input v-model="transferName" class="mb-3" placeholder="Nombre (por defecto Sin registro)"></b-form-input>
       <b-form-select v-model="transferID" class="mb-3" :options="transferIDOptions"></b-form-select>
-      <b-form-textarea v-model="transferOrder" class="mb-3" rows="3" placeholder="Pedido"></b-form-textarea>
+      <b-form-textarea v-model="transferOrder" class="mb-3" rows="3" placeholder="Pedido (por defecto No indica)"></b-form-textarea>
       <b-form-select v-if="isAdmin" v-model="transferLocality" class="mb-3" :options="transferLocalityOptions"></b-form-select>
 
       <br>
@@ -232,9 +232,15 @@ export default {
     insertStoreMessage(){
       
       const regularExpressionChecker = /\S/;
-      if (regularExpressionChecker.test(this.transferPhoneNumber) 
-      && regularExpressionChecker.test(this.transferName)
-      && regularExpressionChecker.test(this.transferOrder)){
+      if (regularExpressionChecker.test(this.transferPhoneNumber)){
+        
+        if (this.transferName == ''){
+          this.transferName = 'Sin registro';
+        }
+
+        if (this.transferOrder == ''){
+          this.transferOrder = 'No indica';
+        }
 
         if (this.transferID != ''){
           this.loading = true;
@@ -278,7 +284,6 @@ export default {
             this.loading = false;
             this.showNotification('danger', 'Error al transferir la conversación', 'Ha ocurrido un error inesperado al transferir la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
           })
-          
         } else {
           this.loading = false;
           this.showNotification('danger', 'Error al transferir la conversación', 'Complete todos los espacios requeridos e intente de nuevo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
