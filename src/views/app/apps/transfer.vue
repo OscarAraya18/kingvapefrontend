@@ -6,6 +6,7 @@
       <b-form-select v-model="transferID" class="mb-3" :options="transferIDOptions"></b-form-select>
       <b-form-textarea v-model="transferOrder" class="mb-3" rows="3" placeholder="Pedido (por defecto No indica)"></b-form-textarea>
       <b-form-select v-if="isAdmin" v-model="transferLocality" class="mb-3" :options="transferLocalityOptions"></b-form-select>
+      <b-form-select v-if="isZapote" v-model="transferZapoteLocality" class="mb-3" :options="transferZapoteLocalityOptions"></b-form-select>
 
       <br>
       <button v-if="loading==false" class="btn btn-info" @click="insertStoreMessage()">Transferir al call center</button>
@@ -79,10 +80,17 @@ const webSocket = new WebSocket('wss:kingvapebackend2.onrender.com');
 export default {
   data() {
     return {
+      isZapote: false,
       isAdmin: false,
+
+
 
       transferIDOptions: [{value: 'S', text: '✔️'}, {value: 'N', text: '❌'}],
       transferLocalityOptions: [{value: 'Escazu', text: 'King Vape Escazú'}, {value: 'Cartago', text: 'King Vape Cartago'}, {value: 'Zapote', text: 'King Vape Zapote'}, {value: 'Heredia', text: 'King Vape Heredia'}],
+
+      transferZapoteLocalityOptions: [{value: 'Zapote', text: 'King Vape Zapote'}, {value: 'Heredia', text: 'King Vape Heredia'}],
+
+      transferZapoteLocality: 'Zapote',
 
       transferPhoneNumber: '506',
       transferName: '',
@@ -154,6 +162,11 @@ export default {
   },
 
   mounted(){
+    if (localStorage.getItem('localityName') == 'King Vape Zapote'){
+      this.isZapote = true;
+    } else {
+      this.isZapote = false;
+    }
     if (localStorage.getItem('agentType') == 'admin'){
       this.isAdmin = true;
     }
@@ -245,17 +258,16 @@ export default {
         if (this.transferID != ''){
           this.loading = true;
           var storeMessageStoreName = '';
+
           if (localStorage.getItem('localityName') == 'King Vape Escazú'){
             storeMessageStoreName = 'Escazu';
           } else if (localStorage.getItem('localityName') == 'King Vape Cartago'){
             storeMessageStoreName = 'Cartago';
           } else if (localStorage.getItem('localityName') == 'King Vape Zapote'){
-            storeMessageStoreName = 'Zapote';
+            storeMessageStoreName = this.transferZapoteLocality;
           } else if (localStorage.getItem('localityName') == 'King Vape Heredia'){
             storeMessageStoreName = 'Heredia';
-          }
-
-          else {
+          } else {
             storeMessageStoreName = this.transferLocality;
           }
           
