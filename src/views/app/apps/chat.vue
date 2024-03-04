@@ -1682,7 +1682,7 @@ export default {
       clienteTipoCedula:"FISICA",
       MetodoPago: "Método de pago",
       MetodosPagos: ["Método de pago","Efectivo","Tarjeta","SINPE","SINPE (contra entrega)","Transferencia"],
-      MetodosEnvio: ["Método de envío","Retiro en sucursal","Envío por motorizado","Correo o encomienda"],
+      MetodosEnvio: ["Método de envío","Retiro en sucursal","Envío por motorizado","Correo", "Encomienda"],
       MetodoEnvio: "Método de envío",
 
       contactsList: [],
@@ -1721,7 +1721,7 @@ export default {
       deleteStoreMessageID: 0,
       deleteStoreMessageStoreMessageID: '',
       deleteStoreMessageName: '',
-      deleteStoreMessageReason: '',
+      deleteStoreMessageReason: 'Duplicado',
 
       currentTransaction: null,
       syncTransactionTitle: '',
@@ -1979,7 +1979,7 @@ export default {
       this.deleteStoreMessageID = storeConversation.storeMessageID;
       this.deleteStoreMessageStoreMessageID = storeConversation.storeMessageStoreMessageID;
       this.deleteStoreMessageName = storeConversation.storeMessageStoreName;
-      this.deleteStoreMessageReason = '';
+      this.deleteStoreMessageReason = 'Duplicado';
       this.$root.$emit('bv::hide::modal', 'escazuConversationsModal');
       this.$root.$emit('bv::hide::modal', 'zapoteConversationsModal');
       this.$root.$emit('bv::hide::modal', 'cartagoConversationsModal');
@@ -2969,8 +2969,10 @@ export default {
                 metodoEnvioCorregido = 'Retira en sucursal';
               } else if (this.MetodoEnvio == 'Envío por motorizado'){
                 metodoEnvioCorregido = 'Envio Propio';
-              } else {
+              } else if (this.MetodoEnvio == 'Correo') {
                 metodoEnvioCorregido = 'Correos de CR';
+              } else {
+                metodoEnvioCorregido = 'Encomienda';
               }
 
               this.loaderOrdenEnviada = true;
