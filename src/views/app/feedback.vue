@@ -32,9 +32,11 @@
       <b-form-textarea v-model="questionSix" placeholder="Coloca tu comentario o sugerencia" rows="3"></b-form-textarea>
       <br><br>
 
-      <button v-if="loading==false" class="btn btn-info" @click="sendFeedback()">Compartir feedback</button>
-      <div style="margin-left: 20px;" v-else>
-        <span class="spinner-glow spinner-glow-primary"></span>
+      <div style="text-align: center;">
+        <button v-if="loading==false" class="btn btn-info" @click="sendFeedback()">Compartir feedback</button>
+        <div v-else>
+          <span class="spinner-glow spinner-glow-primary"></span>
+        </div>
       </div>
     </div>
   </b-card>
