@@ -21,6 +21,9 @@ import "font-awesome/css/font-awesome.min.css";
 
 import ApexCharts from 'apexcharts'
 
+import StarRating from 'vue-star-rating'
+
+
 
 //defined as global component
 Vue.component('VueFontawesome', require('vue-fontawesome-icon/VueFontawesome.vue').default);

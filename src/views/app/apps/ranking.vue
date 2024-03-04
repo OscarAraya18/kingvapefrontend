@@ -40,25 +40,48 @@
     </div>
 
     <br><br><br><br>
+    
     <div style="display: flex; justify-content: center; align-items: center;">
-      
       <div id="chart1" style="margin-left: 70px; margin-right: 35px;">
-        <apexchart type="pie" width="800" :options="opcionesGraficoCircular" :series="facturadoPorAgente"></apexchart>
+        <b-card>
+          <apexchart type="pie" width="675" :options="opcionesGraficoCircular" :series="facturadoPorAgente"></apexchart>
+          <br><br>
+          
+          <div style="display: flex;">
+            <b-card-text style="font-size: xx-large; color: #00578a">
+              Venta del día:
+            </b-card-text>
+            <b-card-text style="font-size: xx-large; margin-left: 10px;">
+              {{vendedoraDelDia[0].agentName}}
+            </b-card-text>
+          </div>
+        </b-card>
+
+        <br><br>
       </div>
+
+      
       <div class="flex-grow-1"></div>
 
       <div id="chart2" style="margin-left: 35px; margin-right: 70px;">
-        <apexchart type="bar" width="800" :options="opcionesGraficoBarra" :series="conversacionesPorAgente"></apexchart>
+        <b-card>
+          <apexchart type="bar" width="700" :options="opcionesGraficoBarra" :series="conversacionesPorAgente"></apexchart>
+        </b-card>
         
-        <br><br><br><br>
-        <div style="display: flex; justify-content: center;">
-          <b-card-text style="font-size: xx-large; color: #00578a">
-            Venta del día:
-          </b-card-text>
-          <b-card-text style="font-size: xx-large; margin-left: 10px;">
-            {{vendedoraDelDia[0].agentName}}
-          </b-card-text>
+        <br>
+        <div>
+          <b-card>
+            <div v-for="agentInformation in feedbackInformation">
+              <div style="display: flex; margin-bottom: 15px;">
+                <star-rating v-model="agentInformation.agentScore" :star-size="25" :increment="0.5" :border-width="5" :show-rating="false"></star-rating>
+                <b-card-text style="font-size: xx-large; margin-left: 20px;">
+                  {{agentInformation.agentName}}
+                </b-card-text>
+              </div>
+            </div>
+          </b-card>
         </div>
+
       </div>
     </div>
   </div>
@@ -68,12 +91,18 @@
 <script>
 import axios from 'axios';
 import ApexCharts from 'apexcharts'
+import StarRating from 'vue-star-rating'
+
 
 const constants = require('@../../../src/constants.js'); 
 const webSocket = new WebSocket('wss:kingvapebackend2.onrender.com');
 
 export default {
   
+
+  components: {
+    StarRating
+  },
 
   data() {
     return {
@@ -87,14 +116,21 @@ export default {
       conversacionesPorAgente: [],
       opcionesGraficoBarra: {},
 
-      vendedoraDelDia: ''
-          
+      vendedoraDelDia: '',
+
+      feedbackInformation: null,
+      
+      test: 5
 
     };
   },
 
   methods: {
     getInformation(){
+
+      axios.get(constants.routes.backendAPI+'/selectTodayFeedbackInformation').then((response) =>{
+        this.feedbackInformation = response.data;
+      });
       
       axios.get(constants.routes.backendAPI+'/selectPieChartInformation').then((response) =>{
         this.facturadoPorAgente = Object.values(response.data);
@@ -134,7 +170,6 @@ export default {
       });
 
       axios.get(constants.routes.backendAPI+'/selectTodayTopSell').then((response) =>{
-        console.log(response.data);
         this.vendedoraDelDia = response.data.result;
       });
 
