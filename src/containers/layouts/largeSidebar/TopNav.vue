@@ -976,6 +976,7 @@ export default {
             agentStatus: 'offline' 
           })
           .then((response) =>{ 
+            console.log(response.data);
             if (response.data.success){
               localStorage.clear();
               router.push("/app/sessions/signIn");
@@ -988,6 +989,7 @@ export default {
             }
           })
           .catch((error) =>{
+            console.log(error);
             this.$bvToast.toast('Ha ocurrido un error inesperado al cerrar su sesión. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
               title: 'Error al cerrar su sesión',
               variant: 'danger',

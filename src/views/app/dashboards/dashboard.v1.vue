@@ -54,12 +54,16 @@
 
     <b-modal scrollable size="m" centered id="closeModal" title="Finalizar conversación" @ok="closeWhatsappConversation()">
       <b-dropdown variant="primary" text="Motivos frecuentes" style="width: 100%">
+        <b-dropdown-item @click="addCloseConversationReason('Venta perdida')">Venta perdida</b-dropdown-item>
+        <b-dropdown-item @click="addCloseConversationReason('Venta para otro día')">Venta para otro día</b-dropdown-item>
+        <b-dropdown-item @click="addCloseConversationReason('Consulta sobre productos')">Consulta sobre productos</b-dropdown-item>
         <b-dropdown-item @click="addCloseConversationReason('No contestó')">No contestó</b-dropdown-item>
         <b-dropdown-item @click="addCloseConversationReason('Pasa a tienda')">Pasa a tienda</b-dropdown-item>
-        <b-dropdown-item @click="addCloseConversationReason('Consulta sobre productos')">Consulta sobre productos</b-dropdown-item>
+        <b-dropdown-item @click="addCloseConversationReason('Consulta de horario/ubicación')">Consulta de horario/ubicación</b-dropdown-item>
         <b-dropdown-item @click="addCloseConversationReason('Vuelve a escribir')">Vuelve a escribir</b-dropdown-item>
         <b-dropdown-item @click="addCloseConversationReason('Reclamo o garantía')">Reclamo o garantía</b-dropdown-item>
         <b-dropdown-item @click="addCloseConversationReason('Menor de edad')">Menor de edad</b-dropdown-item>
+        <b-dropdown-item @click="addCloseConversationReason('Error')">Error</b-dropdown-item>
       </b-dropdown><br><br>
       <b-form-textarea no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
       <br>
@@ -197,13 +201,55 @@
 
       <div v-if="view == 'activeConversations'">
         <br>
-        <b-card>
-          <p style="font-size: 20px; margin-top: 10px;"><strong>Conversaciones recibidas:</strong> {{whatsappTotalConversations}}</p>
-          <p style="font-size: 20px;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
-          <p style="font-size: 20px;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
-          <p style="font-size: 20px;"><strong>Conversaciones pendientes:</strong> {{whatsappPendingConversations}}</p>
-          <p style="font-size: 20px;"><strong>Total de ventas:</strong> ₡{{whatsappTotalSells}}</p>
-        </b-card>
+        
+        <div style="display: flex;">
+          <b-card style="width: 50%; margin-right: 1.5%; background-color: rgb(214, 214, 214);">
+            <p style="font-size: 40px; margin-top: 10px;"><strong>TOTAL:</strong></p>
+            <p style="font-size: 25px;"><strong>Conversaciones totales:</strong> {{whatsappTotalConversations}}</p>
+            <p style="font-size: 25px;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
+            <p style="font-size: 25px;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
+            <p style="font-size: 25px;"><strong>Conversaciones pendientes:</strong> {{whatsappPendingConversations}}</p>
+            <p style="font-size: 25px;"><strong>Ventas totales:</strong> ₡{{whatsappTotalSells}}</p>
+          </b-card>
+
+          <div style="width: 50%; margin-left: 1.5%;">
+            <div style="display: flex; margin-bottom: 25px;">
+              <b-card style="width: 50%; margin-right: 1.5%; background-color: rgb(251, 118, 30);">
+                <p style="font-size: 25px; margin-top: 5px;"><strong>ZAPOTE:</strong></p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{whatsappTotalConversations}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{whatsappTotalSells}}</p>
+              </b-card>
+              <b-card style="width: 50%; margin-left: 1.5%; background-color: rgb(255, 149, 184);">
+                <p style="font-size: 25px; margin-top: 5px;"><strong>ESCAZÚ:</strong></p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{whatsappTotalConversations}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{whatsappTotalSells}}</p>
+              </b-card>
+            </div>
+
+            <div style="display: flex; margin-top: 25px;">
+              <b-card style="width: 50%; margin-right: 1.5%; background-color: rgb(177, 193, 26);">
+                <p style="font-size: 25px; margin-top: 5px;"><strong>CARTAGO:</strong></p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{whatsappTotalConversations}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{whatsappTotalSells}}</p>
+              </b-card>
+              <b-card style="width: 50%; margin-left: 1.5%; background-color: rgb(0, 227, 212);">
+                <p style="font-size: 25px; margin-top: 5px;"><strong>HEREDIA:</strong></p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{whatsappTotalConversations}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{whatsappTotalSells}}</p>
+              </b-card>
+            </div>
+            
+          </div>
+        </div>
+
 
         <br><br>
 
@@ -737,9 +783,7 @@ export default {
         const websocketMessageID = websocketMessageJSON.websocketMessageID;
         const websocketMessageContent = websocketMessageJSON.websocketMessageContent.result;
 
-        if (websocketMessageID == '/receiveWhatsappMessage'){
-          this.selectTodayInformation();
-        } else if (websocketMessageID == '/receiveWhatsappConversation'){
+        if (websocketMessageID == '/receiveWhatsappConversation'){
           this.selectTodayInformation();
         } else if (websocketMessageID == '/receiveWhatsappPendingConversation'){
           this.selectTodayInformation();
@@ -747,9 +791,7 @@ export default {
           this.selectTodayInformation();
         } else if (websocketMessageID == '/grabStoreConversation') {
           this.selectTodayInformation();
-        } else if (websocketMessageID == '/acceptTransferWhatsappConversation'){
-          this.selectTodayInformation();
-        } else if (websocketMessageID == '/sendWhatsappMessage'){
+        } else if (websocketMessageID == '/updateRanking') {
           this.selectTodayInformation();
         }
       }
