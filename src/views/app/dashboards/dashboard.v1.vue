@@ -236,14 +236,14 @@
                 <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{zapoteSelled + zapoteNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{zapoteSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{zapoteNotSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{zapoteSales}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{zapoteSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
               <b-card style="width: 50%; margin-left: 1.5%; background-color: rgb(255, 149, 184);">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>ESCAZÚ:</strong></p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{escazuSelled + escazuNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{escazuSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{escazuNotSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{escazuSales}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{escazuSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
             </div>
 
@@ -253,14 +253,14 @@
                 <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{cartagoNotSelled + cartagoSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{cartagoSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{cartagoNotSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{cartagoSales}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
               <b-card style="width: 50%; margin-left: 1.5%; background-color: rgb(0, 227, 212);">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>HEREDIA:</strong></p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{herediaSelled + herediaNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{herediaSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{herediaNotSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{herediaSales}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{herediaSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
             </div>
             

@@ -72,7 +72,7 @@
               <b-list-group-item v-if="escazuConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
               <b-list-group-item @contextmenu.prevent="openDeleteStoreMessageModal(escazuConversation)" v-for="escazuConversation in escazuConversations" @click="grabStoreConversation(escazuConversation)" button style="cursor: pointer;">
                 <strong>Nombre:</strong> {{escazuConversation.storeMessageRecipientProfileName}}<br>
-                <strong>Número:</strong> {{escazuConversation.storeMessageRecipientPhoneNumber}}<br>
+                <strong>Número:</strong> {{parsePhone(escazuConversation.storeMessageRecipientPhoneNumber)}}<br>
                 <strong>Pedido:</strong> {{escazuConversation.storeMessageRecipientOrder}}<br>
                 <strong>Cédula:</strong> {{escazuConversation.storeMessageRecipientID}}<br>
                 <strong>Fecha:</strong> {{parseHour(escazuConversation.storeMessageStartDateTime)}}
@@ -87,7 +87,7 @@
               <b-list-group-item v-if="zapoteConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
               <b-list-group-item @contextmenu.prevent="openDeleteStoreMessageModal(zapoteConversation)" v-for="zapoteConversation in zapoteConversations" @click="grabStoreConversation(zapoteConversation)" button style="cursor: pointer;">
                 <strong>Nombre:</strong> {{zapoteConversation.storeMessageRecipientProfileName}}<br>
-                <strong>Número:</strong> {{zapoteConversation.storeMessageRecipientPhoneNumber}}<br>
+                <strong>Número:</strong> {{parsePhone(zapoteConversation.storeMessageRecipientPhoneNumber)}}<br>
                 <strong>Pedido:</strong> {{zapoteConversation.storeMessageRecipientOrder}}<br>
                 <strong>Cédula:</strong> {{zapoteConversation.storeMessageRecipientID}}<br>
                 <strong>Fecha:</strong> {{parseHour(zapoteConversation.storeMessageStartDateTime)}}
@@ -102,7 +102,7 @@
               <b-list-group-item v-if="cartagoConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
               <b-list-group-item @contextmenu.prevent="openDeleteStoreMessageModal(cartagoConversation)" v-for="cartagoConversation in cartagoConversations" @click="grabStoreConversation(cartagoConversation)" button style="cursor: pointer;">
                 <strong>Nombre:</strong> {{cartagoConversation.storeMessageRecipientProfileName}}<br>
-                <strong>Número:</strong> {{cartagoConversation.storeMessageRecipientPhoneNumber}}<br>
+                <strong>Número:</strong> {{parsePhone(cartagoConversation.storeMessageRecipientPhoneNumber)}}<br>
                 <strong>Pedido:</strong> {{cartagoConversation.storeMessageRecipientOrder}}<br>
                 <strong>Cédula:</strong> {{cartagoConversation.storeMessageRecipientID}}<br>
                 <strong>Fecha:</strong> {{parseHour(cartagoConversation.storeMessageStartDateTime)}}
@@ -117,7 +117,7 @@
               <b-list-group-item v-if="herediaConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
               <b-list-group-item @contextmenu.prevent="openDeleteStoreMessageModal(herediaConversation)" v-for="herediaConversation in herediaConversations" @click="grabStoreConversation(herediaConversation)" button style="cursor: pointer;">
                 <strong>Nombre:</strong> {{herediaConversation.storeMessageRecipientProfileName}}<br>
-                <strong>Número:</strong> {{herediaConversation.storeMessageRecipientPhoneNumber}}<br>
+                <strong>Número:</strong> {{parsePhone(herediaConversation.storeMessageRecipientPhoneNumber)}}<br>
                 <strong>Pedido:</strong> {{herediaConversation.storeMessageRecipientOrder}}<br>
                 <strong>Cédula:</strong> {{herediaConversation.storeMessageRecipientID}}<br>
                 <strong>Fecha:</strong> {{parseHour(herediaConversation.storeMessageStartDateTime)}}
@@ -132,7 +132,7 @@
               <b-list-group-item v-if="pendingConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
               <b-list-group-item style="cursor: pointer" v-for="pendingConversation in pendingConversations" button @click="grabPendingConversation(pendingConversation)">
                 <strong>Nombre:</strong> {{pendingConversation.whatsappConversationRecipientProfileName}}<br>
-                <strong>Número:</strong> {{pendingConversation.whatsappConversationRecipientPhoneNumber}}<br>
+                <strong>Número:</strong> {{parsePhone(pendingConversation.whatsappConversationRecipientPhoneNumber)}}<br>
                 <strong>Fecha:</strong> {{parseHour(pendingConversation.whatsappConversationStartDateTime)}}
               </b-list-group-item>
             </b-list-group>
