@@ -41,6 +41,11 @@
           <div v-else-if="props.column.field == 'storeMessageStartDateTime'">
             {{ parseHour(props.row.storeMessageStartDateTime) }}
           </div>
+
+          <div v-else-if="props.column.field == 'storeMessageRecipientPhoneNumber'">
+            {{ parsePhone(props.row.storeMessageRecipientPhoneNumber) }}
+          </div>
+
           <div v-else-if="props.column.field == 'storeMessageDeleteReason'">
             <div v-if="props.row.storeMessageDeleteReason == null">
               <div v-if="props.row.agentName == null">
@@ -209,6 +214,15 @@ export default {
         formattedDate = formattedDate.replace('00', '12');
       }
       return formattedDate;
+    },
+
+    parsePhone(phoneNumber){
+      const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+      const match = cleaned.match(/^(\d{3})(\d{2})(\d{2})(\d{2})(\d{2})$/);
+      if (match) {
+        return `(${match[1]}) ${match[2]}${match[3]}${match[4]}${match[5]}`;
+      }
+      return phoneNumber;
     },
 
     selectStoreMessageByStoreMessageStoreName(){

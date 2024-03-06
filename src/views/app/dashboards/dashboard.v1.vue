@@ -192,7 +192,7 @@
       
       <div v-if="displayPlot">
         <b-card>
-          <apexchart type="line" width="100%" height="300" :options="opcionesGraficoLinea" :series="datosGraficoLinea"></apexchart>
+          <apexchart type="pie" width="100" :options="opcionesGraficoCircular" :series="facturadoPorAgente"></apexchart>
         </b-card>
         <br><br>
       </div>
@@ -207,12 +207,26 @@
         
         <div style="display: flex;">
           <b-card style="width: 50%; margin-right: 1.5%; background-color: rgb(214, 214, 214);">
-            <p style="font-size: 40px; margin-top: 10px;"><strong>TOTAL:</strong></p>
-            <p style="font-size: 25px;"><strong>Conversaciones totales:</strong> {{whatsappTotalConversations}}</p>
-            <p style="font-size: 25px;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
-            <p style="font-size: 25px;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
-            <p style="font-size: 25px;"><strong>Conversaciones pendientes:</strong> {{whatsappPendingConversations}}</p>
-            <p style="font-size: 25px;"><strong>Ventas totales:</strong> ₡{{whatsappTotalSells}}</p>
+            <br>
+            <div style="display: flex;">
+              <div>
+                <p style="font-size: 40px; margin-top: 10px;"><strong>TOTAL:</strong></p>
+                <br>
+                <p style="font-size: 25px;"><strong>Conversaciones totales:</strong> {{whatsappTotalConversations}}</p>
+                <p style="font-size: 25px;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
+                <p style="font-size: 25px;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
+                <p style="font-size: 25px;"><strong>Conversaciones pendientes:</strong> {{whatsappPendingConversations}}</p>
+                <p style="font-size: 25px;"><strong>Ventas totales:</strong> ₡{{whatsappTotalSells}}</p>
+              </div>
+              <div style="margin-left: 40px; text-align: center;">
+                <br>
+                
+                <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoPaquetes"></apexchart>
+                <br>
+                <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoDinero"></apexchart>
+              </div>
+            </div>
+            
           </b-card>
 
           <div style="width: 50%; margin-left: 1.5%;">
@@ -544,6 +558,10 @@ export default {
   },
   data() {
     return {
+      opcionesGraficoPaquetes: {},
+      datosGraficoPaquetes: [],
+      datosGraficoDinero: [],
+
       selectedCloseLocality: null,
       closeLocalityOptions: ["King Vape Escazu", "King Vape Zapote","King Vape Cartago", "King Vape Heredia"],
 
@@ -983,37 +1001,6 @@ export default {
     },
 
     getInformation(){
-      axios.get(constants.routes.backendAPI+'/selectPieChartInformation').then((response) =>{
-        this.facturadoPorAgente = Object.values(response.data);
-        this.opcionesGraficoCircular = {chart: {width: 850, type: 'pie', fontSize: 40}, tooltip: {enabled: false}, labels: Object.keys(response.data),
-        legend: {fontSize: '30px'}};
-      });
-
-      axios.get(constants.routes.backendAPI+'/selectBarChartInformation').then((response) =>{
-        this.opcionesGraficoBarra = 
-        {
-          chart: {type: 'bar', height: 350, stacked: true},
-          plotOptions: {bar: { horizontal: false, borderRadius: 10}},
-          xaxis: {type: 'string', categories: response.data.result.map(agent => agent.agentName),
-          labels: {style: {fontSize: '20px'}}},
-          fill: {colors: ['#008a07', '#d10015'], opacity: 1},
-          legend: {show: false},
-        };
-        this.conversacionesPorAgente = 
-        [
-          {
-            name: 'VENDIDAS',
-            data: response.data.result.map(agent => agent.whatsappSelledConversations),
-            color: '#008a07'
-          }, 
-          {
-            name: 'NO VENDIDAS',
-            data: response.data.result.map(agent => agent.whatsappNotSelledConversations),
-            color: '#d10015'
-          }
-        ];
-      });
-
       axios.get(constants.routes.backendAPI+'/selectTodayInformation').then((response) =>{
         this.conversacionesTotales = response.data.result.total.whatsappTotalConversations;
         this.conversacionesVendidas = response.data.result.total.whatsappSelledConversations;
@@ -1022,47 +1009,47 @@ export default {
         if (response.data.result.localities['King Vape Zapote']){
           this.zapoteSelled = response.data.result.localities['King Vape Zapote'].whatsappSelledConversations;
           this.zapoteNotSelled = response.data.result.localities['King Vape Zapote'].whatsappNotSelledConversations;
-          this.zapoteSales = response.data.result.localities['King Vape Zapote'].amount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+          this.zapoteSales = response.data.result.localities['King Vape Zapote'].amount;
         } else {
           this.zapoteSelled = 0;
           this.zapoteNotSelled = 0;
-          this.zapoteSales = (0).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+          this.zapoteSales = 0;
         }
 
         if (response.data.result.localities['King Vape Escazu']){
           this.escazuSelled = response.data.result.localities['King Vape Escazu'].whatsappSelledConversations;
           this.escazuNotSelled = response.data.result.localities['King Vape Escazu'].whatsappNotSelledConversations;
-          this.escazuSales = response.data.result.localities['King Vape Escazu'].amount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+          this.escazuSales = response.data.result.localities['King Vape Escazu'].amount;
         } else {
           this.escazuSelled = 0;
           this.escazuNotSelled = 0;
-          this.escazuSales = (0).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+          this.escazuSales = 0;
         }
 
         if (response.data.result.localities['King Vape Cartago']){
           this.cartagoSelled = response.data.result.localities['King Vape Cartago'].whatsappSelledConversations;
           this.cartagoNotSelled = response.data.result.localities['King Vape Cartago'].whatsappNotSelledConversations;
-          this.cartagoSales = response.data.result.localities['King Vape Cartago'].amount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+          this.cartagoSales = response.data.result.localities['King Vape Cartago'].amount;
         } else {
           this.cartagoSelled = 0;
           this.cartagoNotSelled = 0;
-          this.cartagoSales = (0).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+          this.cartagoSales = 0;
         }
 
         if (response.data.result.localities['King Vape Heredia']){
           this.herediaSelled = response.data.result.localities['King Vape Heredia'].whatsappSelledConversations;
           this.herediaNotSelled = response.data.result.localities['King Vape Heredia'].whatsappNotSelledConversations;
-          this.herediaSales = response.data.result.localities['King Vape Heredia'].amount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+          this.herediaSales = response.data.result.localities['King Vape Heredia'].amount;
         } else {
           this.herediaSelled = 0;
           this.herediaNotSelled = 0;
-          this.herediaSales = (0).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+          this.herediaSales = 0;
         }
 
-      });
+        this.opcionesGraficoPaquetes = {chart: {type: 'pie', fontSize: 20}, tooltip: {enabled: true}, labels: ['Zapote', 'Escazú', 'Cartago', 'Heredia'], colors: ['#FB761E', '#FF95B8', '#B1C11A', '#00E3D4']};
+        this.datosGraficoPaquetes = [this.zapoteSelled, this.escazuSelled, this.cartagoSelled, this.herediaSelled];
+        this.datosGraficoDinero = [this.zapoteSales, this.escazuSales, this.cartagoSales, this.herediaSales];
 
-      axios.get(constants.routes.backendAPI+'/selectTodayTopSell').then((response) =>{
-        this.vendedoraDelDia = response.data.result;
       });
     },
 
