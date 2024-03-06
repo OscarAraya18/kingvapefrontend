@@ -221,9 +221,11 @@
               <div style="margin-left: 40px; text-align: center;">
                 <br>
                 
-                <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoPaquetes"></apexchart>
-                <br>
-                <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoDinero"></apexchart>
+                <div v-if="opcionesGraficoPaquetes != null">
+                  <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoPaquetes"></apexchart>
+                  <br>
+                  <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoDinero"></apexchart>
+                </div>
               </div>
             </div>
             

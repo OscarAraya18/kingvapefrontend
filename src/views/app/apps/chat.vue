@@ -3806,7 +3806,7 @@ export default {
             whatsappConversationAmount: 0,
             whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
             whatsappConversationProducts: [],
-            whatsappConversationLocalityName: this.selectedLocality,
+            whatsappConversationLocalityName: this.selectedCloseLocality,
             sendAgentEndMessage: this.sendEndMessage
           })
           .then((response) =>{ 
