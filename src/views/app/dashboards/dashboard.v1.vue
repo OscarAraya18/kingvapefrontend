@@ -206,20 +206,23 @@
         <br>
         
         <div style="display: flex;">
-          <b-card style="width: 50%; margin-right: 1.5%; background-color: rgb(214, 214, 214);">
+          <b-card style="width: 65%; margin-right: 1.5%; background-color: rgb(214, 214, 214);">
             <br>
             <div style="display: flex;">
+              
               <div>
                 <p style="font-size: 40px; margin-top: 10px;"><strong>TOTAL:</strong></p>
-                <br>
+                <br><br>
                 <p style="font-size: 25px;"><strong>Conversaciones totales:</strong> {{whatsappTotalConversations}}</p>
                 <p style="font-size: 25px;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
                 <p style="font-size: 25px;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
                 <p style="font-size: 25px;"><strong>Conversaciones pendientes:</strong> {{whatsappPendingConversations}}</p>
                 <p style="font-size: 25px;"><strong>Ventas totales:</strong> ₡{{whatsappTotalSells}}</p>
               </div>
-              <div style="margin-left: 40px; text-align: center;">
-                <br>
+
+              <div class="flex-grow-1"></div>
+              
+              <div style="text-align: center;">
                 
                 <div v-if="opcionesGraficoPaquetes != null">
                   <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoPaquetes"></apexchart>
@@ -231,20 +234,20 @@
             
           </b-card>
 
-          <div style="width: 50%; margin-left: 1.5%;">
+          <div style="width: 35%; margin-left: 1.5%;">
             <div style="display: flex; margin-bottom: 25px;">
               <b-card style="width: 50%; margin-right: 1.5%; background-color: rgb(251, 118, 30);">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>ZAPOTE:</strong></p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{zapoteSelled + zapoteNotSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{zapoteSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{zapoteNotSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{zapoteSelled + zapoteNotSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{zapoteSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{zapoteNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{zapoteSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
               <b-card style="width: 50%; margin-left: 1.5%; background-color: rgb(255, 149, 184);">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>ESCAZÚ:</strong></p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{escazuSelled + escazuNotSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{escazuSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{escazuNotSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{escazuSelled + escazuNotSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{escazuSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{escazuNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{escazuSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
             </div>
@@ -252,16 +255,16 @@
             <div style="display: flex; margin-top: 25px;">
               <b-card style="width: 50%; margin-right: 1.5%; background-color: rgb(177, 193, 26);">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>CARTAGO:</strong></p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{cartagoNotSelled + cartagoSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{cartagoSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{cartagoNotSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{cartagoNotSelled + cartagoSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{cartagoSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{cartagoNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
               <b-card style="width: 50%; margin-left: 1.5%; background-color: rgb(0, 227, 212);">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>HEREDIA:</strong></p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{herediaSelled + herediaNotSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{herediaSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{herediaNotSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{herediaSelled + herediaNotSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{herediaSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{herediaNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{herediaSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
             </div>
@@ -1048,7 +1051,7 @@ export default {
           this.herediaSales = 0;
         }
 
-        this.opcionesGraficoPaquetes = {chart: {type: 'pie', fontSize: 20}, tooltip: {enabled: true}, labels: ['Zapote', 'Escazú', 'Cartago', 'Heredia'], colors: ['#FB761E', '#FF95B8', '#B1C11A', '#00E3D4']};
+        this.opcionesGraficoPaquetes = {chart: {width: 330, type: 'pie', fontSize: 20}, tooltip: {enabled: true}, labels: ['Zapote', 'Escazú', 'Cartago', 'Heredia'], colors: ['#FB761E', '#FF95B8', '#B1C11A', '#00E3D4']};
         this.datosGraficoPaquetes = [this.zapoteSelled, this.escazuSelled, this.cartagoSelled, this.herediaSelled];
         this.datosGraficoDinero = [this.zapoteSales, this.escazuSales, this.cartagoSales, this.herediaSales];
 
