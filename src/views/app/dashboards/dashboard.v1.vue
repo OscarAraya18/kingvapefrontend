@@ -827,7 +827,7 @@ export default {
       if (this.selectedCloseLocality == null){
         this.showNotification('danger', 'Error al cerrar la conversación', 'Por favor, complete la sucursal relacionada a la conversación por cerrar. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       } else {
-        const regularExpressionChecker = /^\d{9}$/;
+        const regularExpressionChecker = /\S/;
         if (regularExpressionChecker.test(this.closeConversationReason)){
           axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
           {

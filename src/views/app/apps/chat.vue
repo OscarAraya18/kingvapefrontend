@@ -3797,7 +3797,7 @@ export default {
       if (this.selectedCloseLocality == null){
         this.showNotification('danger', 'Error al cerrar la conversación', 'Por favor, complete la sucursal relacionada a la conversación por cerrar. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       } else {
-        const regularExpressionChecker = /^\d{9}$/;
+        const regularExpressionChecker = /\S/;
         if (regularExpressionChecker.test(this.closeConversationReason)){
           axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
           {
@@ -3887,12 +3887,16 @@ export default {
         } else {
           if (response.data.result == 'Duplicate'){
             this.showNotification('info', 'Conversación duplicada', 'No ha podido tomar esta conversación porque ya se encuentra asignada a otro agente.');
+            this.loaders.grabConversation = false;
           } else {
             this.showNotification('danger', 'Error al tomar la conversación', 'Ha ocurrido un error inesperado al tomar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            this.loaders.grabConversation = false;
           }
         }
       })
       .catch((error) =>{
+        this.loaders.grabConversation = false;
+
         this.showNotification('danger', 'Error al tomar la conversación', 'Ha ocurrido un error inesperado al tomar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
