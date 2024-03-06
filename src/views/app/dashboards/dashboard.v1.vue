@@ -53,6 +53,9 @@
     </b-modal>
 
     <b-modal scrollable size="m" centered id="closeModal" title="Finalizar conversación" @ok="closeWhatsappConversation()">
+      <b-form-select v-model="selectedCloseLocality" :options="closeLocalityOptions"></b-form-select>
+      <br><br><br>
+
       <b-dropdown variant="primary" text="Motivos frecuentes" style="width: 100%">
         <b-dropdown-item @click="addCloseConversationReason('Venta perdida')">Venta perdida</b-dropdown-item>
         <b-dropdown-item @click="addCloseConversationReason('Venta para otro día')">Venta para otro día</b-dropdown-item>
@@ -216,34 +219,34 @@
             <div style="display: flex; margin-bottom: 25px;">
               <b-card style="width: 50%; margin-right: 1.5%; background-color: rgb(251, 118, 30);">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>ZAPOTE:</strong></p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{whatsappTotalConversations}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{whatsappTotalSells}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{zapoteSelled + zapoteNotSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{zapoteSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{zapoteNotSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{zapoteSales}}</p>
               </b-card>
               <b-card style="width: 50%; margin-left: 1.5%; background-color: rgb(255, 149, 184);">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>ESCAZÚ:</strong></p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{whatsappTotalConversations}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{whatsappTotalSells}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{escazuSelled + escazuNotSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{escazuSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{escazuNotSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{escazuSales}}</p>
               </b-card>
             </div>
 
             <div style="display: flex; margin-top: 25px;">
               <b-card style="width: 50%; margin-right: 1.5%; background-color: rgb(177, 193, 26);">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>CARTAGO:</strong></p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{whatsappTotalConversations}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{whatsappTotalSells}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{cartagoNotSelled + cartagoSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{cartagoSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{cartagoNotSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{cartagoSales}}</p>
               </b-card>
               <b-card style="width: 50%; margin-left: 1.5%; background-color: rgb(0, 227, 212);">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>HEREDIA:</strong></p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{whatsappTotalConversations}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{whatsappTotalSells}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones recibidas:</strong> {{herediaSelled + herediaNotSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones vendidas:</strong> {{herediaSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Conversaciones no vendidas:</strong> {{herediaNotSelled}}</p>
+                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{herediaSales}}</p>
               </b-card>
             </div>
             
@@ -541,6 +544,24 @@ export default {
   },
   data() {
     return {
+      selectedCloseLocality: null,
+      closeLocalityOptions: ["King Vape Escazu", "King Vape Zapote","King Vape Cartago", "King Vape Heredia"],
+
+      zapoteSelled: 0,
+      zapoteNotSelled: 0,
+      escazuSelled: 0,
+      escazuNotSelled: 0,
+      cartagoSelled: 0,
+      cartagoNotSelled: 0,
+      herediaSelled: 0,
+      herediaNotSelled: 0,
+
+      zapoteSales: 0,
+      herediaSales: 0,
+      escazuSales: 0,
+      cartagoSales: 0,
+
+
       loaderPlot: false,
 
       closeConversationPhoneNumber: null,
@@ -803,27 +824,36 @@ export default {
 
   methods: {
     closeWhatsappConversation(){
-      console.log(this.closeConversationPhoneNumber);
-      axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
-      {
-        whatsappConversationRecipientPhoneNumber: this.closeConversationPhoneNumber,
-        whatsappConversationCloseComment: this.closeConversationReason,
-        whatsappConversationAmount: 0,
-        whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
-        whatsappConversationProducts: [],
-        sendAgentEndMessage: this.sendEndMessage
-      })
-      .then((response) =>{ 
-        if (response.data.success){
-          this.showNotification('success', 'Conversación cerrada', "Se ha cerrado la conversación asociada al número '" + this.closeConversationPhoneNumber + "'.");
-          this.selectTodayInformation();
+      if (this.selectedCloseLocality == null){
+        this.showNotification('danger', 'Error al cerrar la conversación', 'Por favor, complete la sucursal relacionada a la conversación por cerrar. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      } else {
+        const regularExpressionChecker = /^\d{9}$/;
+        if (regularExpressionChecker.test(this.closeConversationReason)){
+          axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
+          {
+            whatsappConversationRecipientPhoneNumber: this.closeConversationPhoneNumber,
+            whatsappConversationCloseComment: this.closeConversationReason,
+            whatsappConversationAmount: 0,
+            whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
+            whatsappConversationProducts: [],
+            whatsappConversationLocalityName: this.selectedLocality,
+            sendAgentEndMessage: this.sendEndMessage
+          })
+          .then((response) =>{ 
+            if (response.data.success){
+              this.showNotification('success', 'Conversación cerrada', "Se ha cerrado la conversación asociada al número '" + this.closeConversationPhoneNumber + "'.");
+              this.selectTodayInformation();
+            } else {
+              this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            }
+          })
+          .catch((error) =>{
+            this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          })
         } else {
-          this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al cerrar la conversación', 'Por favor, complete el motivo de cierre de la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
-      })
-      .catch((error) =>{
-        this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-      })
+      }
     },
 
 
@@ -985,9 +1015,50 @@ export default {
       });
 
       axios.get(constants.routes.backendAPI+'/selectTodayInformation').then((response) =>{
-        this.conversacionesTotales = response.data.result[0].whatsappTotalConversations;
-        this.conversacionesVendidas = response.data.result[0].whatsappSelledConversations;
-        this.conversacionesNoVendidas = response.data.result[0].whatsappNotSelledConversations;
+        this.conversacionesTotales = response.data.result.total.whatsappTotalConversations;
+        this.conversacionesVendidas = response.data.result.total.whatsappSelledConversations;
+        this.conversacionesNoVendidas = response.data.result.total.whatsappNotSelledConversations;
+
+        if (response.data.result.localities['King Vape Zapote']){
+          this.zapoteSelled = response.data.result.localities['King Vape Zapote'].whatsappSelledConversations;
+          this.zapoteNotSelled = response.data.result.localities['King Vape Zapote'].whatsappNotSelledConversations;
+          this.zapoteSales = response.data.result.localities['King Vape Zapote'].amount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+        } else {
+          this.zapoteSelled = 0;
+          this.zapoteNotSelled = 0;
+          this.zapoteSales = (0).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+        }
+
+        if (response.data.result.localities['King Vape Escazu']){
+          this.escazuSelled = response.data.result.localities['King Vape Escazu'].whatsappSelledConversations;
+          this.escazuNotSelled = response.data.result.localities['King Vape Escazu'].whatsappNotSelledConversations;
+          this.escazuSales = response.data.result.localities['King Vape Escazu'].amount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+        } else {
+          this.escazuSelled = 0;
+          this.escazuNotSelled = 0;
+          this.escazuSales = (0).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+        }
+
+        if (response.data.result.localities['King Vape Cartago']){
+          this.cartagoSelled = response.data.result.localities['King Vape Cartago'].whatsappSelledConversations;
+          this.cartagoNotSelled = response.data.result.localities['King Vape Cartago'].whatsappNotSelledConversations;
+          this.cartagoSales = response.data.result.localities['King Vape Cartago'].amount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+        } else {
+          this.cartagoSelled = 0;
+          this.cartagoNotSelled = 0;
+          this.cartagoSales = (0).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+        }
+
+        if (response.data.result.localities['King Vape Heredia']){
+          this.herediaSelled = response.data.result.localities['King Vape Heredia'].whatsappSelledConversations;
+          this.herediaNotSelled = response.data.result.localities['King Vape Heredia'].whatsappNotSelledConversations;
+          this.herediaSales = response.data.result.localities['King Vape Heredia'].amount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+        } else {
+          this.herediaSelled = 0;
+          this.herediaNotSelled = 0;
+          this.herediaSales = (0).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+        }
+
       });
 
       axios.get(constants.routes.backendAPI+'/selectTodayTopSell').then((response) =>{
@@ -1311,7 +1382,9 @@ export default {
     },
 
     whatsappCloseOpenAction(whatsappConversation){
-      this.closeConversationPhoneNumber = whatsappConversation.whatsappConversationRecipientPhoneNumber
+      this.closeConversationPhoneNumber = whatsappConversation.whatsappConversationRecipientPhoneNumber;
+      this.selectedCloseLocality = null;
+      this.closeConversationReason = '';
     },
 
     getWhatsappConversationElapsedTime(seconds){

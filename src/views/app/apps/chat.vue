@@ -51,16 +51,6 @@
             </div>
 
 
-            <div style="position: absolute; width: 100%; bottom: 50px; background-color: rgb(59,130,256); height: 50px; text-align: center; cursor:pointer;">
-              <b-dropdown ref="dropDownSucursales" dropup text="Chat con sucursales" variant="info" style="margin: 0 auto; font-size: medium; top: 5px" size="lg">
-                <b-dropdown-item href="#" @click="openStoreChat('Escazu')">Escazú</b-dropdown-item>
-                <b-dropdown-item href="#" @click="openStoreChat('Zapote')">Zapote</b-dropdown-item>
-                <b-dropdown-item href="#" @click="openStoreChat('Cartago')">Cartago</b-dropdown-item>
-                <b-dropdown-item href="#" @click="openStoreChat('Heredia')">Heredia</b-dropdown-item>
-              </b-dropdown>
-            </div>
-
-            
             <div style="position: absolute; width: 100%; bottom: 0; background-color: #F9E530; height: 50px; text-align: center; cursor:pointer;">
               <b-dropdown ref="dropDownSucursales" dropup :text="textoSucursalesCalcular" variant="primary" style="margin: 0 auto; font-size: medium; top: 5px" size="lg">
                 <b-dropdown-item href="#" v-b-modal.escazuConversationsModal>Escazú ({{escazuConversations.length}})</b-dropdown-item>
@@ -772,8 +762,11 @@
                 </div>
 
                 <div class="d-flex" v-if="agentType == 'agent'"> 
-                  <button class="btn btn-primary mr-2" type="button" v-b-modal.endConversationModal>Finalizar</button>
+                  <button class="btn btn-primary mr-2" type="button" @click="openEndConversationModal()" v-b-modal.endConversationModal>Finalizar</button>
                   <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación" @ok="closeWhatsappConversation()">
+                    <b-form-select v-model="selectedCloseLocality" :options="closeLocalityOptions"></b-form-select>
+                    <br><br><br>
+                    
                     <b-dropdown variant="primary" text="Motivos frecuentes" style="width: 100%">
                       <b-dropdown-item @click="addCloseConversationReason('Venta perdida')">Venta perdida</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Venta para otro día')">Venta para otro día</b-dropdown-item>
@@ -1013,8 +1006,11 @@
                   </b-modal>
 
                   <div style="margin-top: 10px;">
-                    <button class="btn btn-primary mr-2" type="button" v-b-modal.endConversationModal>Finalizar</button>
+                    <button class="btn btn-primary mr-2" type="button" @click="openEndConversationModal()" v-b-modal.endConversationModal>Finalizar</button>
                     <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación" @ok="closeWhatsappConversation()">
+                      <b-form-select v-model="selectedCloseLocality" :options="closeLocalityOptions"></b-form-select>
+                      <br><br><br>
+                      
                       <b-dropdown variant="primary" text="Motivos frecuentes" style="width: 100%">
                         <b-dropdown-item @click="addCloseConversationReason('Venta perdida')">Venta perdida</b-dropdown-item>
                         <b-dropdown-item @click="addCloseConversationReason('Venta para otro día')">Venta para otro día</b-dropdown-item>
@@ -1494,7 +1490,11 @@ export default {
   },
   data() {
     return { 
+      
       db: null,
+
+      selectedCloseLocality: null,
+      closeLocalityOptions: ["King Vape Escazu", "King Vape Zapote","King Vape Cartago", "King Vape Heredia"],
 
       localitiesOptions: [],
       selectedLocality: null,
@@ -1739,8 +1739,9 @@ export default {
   },
 
   methods: {
-    openStoreChat(storeChatName){
-      this.changeCurrentActiveConversation(null, null, true);
+    openEndConversationModal(){
+      this.selectedCloseLocality = null;
+      this.closeConversationReason = '';
     },
 
     fixTotal(){
@@ -3070,6 +3071,7 @@ export default {
                       whatsappConversationAmount: me.calcularTotal,
                       whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
                       whatsappConversationProducts: me.currentActiveConversation.whatsappConversationProducts,
+                      whatsappConversationLocalityName: me.Sucursal,
                       sendAgentEndMessage: me.sendEndMessage
                     })
                     .then((response) =>{ 
@@ -3792,44 +3794,54 @@ export default {
     },
 
     closeWhatsappConversation(){
-      axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
-      {
-        whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
-        whatsappConversationCloseComment: this.closeConversationReason,
-        whatsappConversationAmount: 0,
-        whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
-        whatsappConversationProducts: [],
-        sendAgentEndMessage: this.sendEndMessage
-      })
-      .then((response) =>{ 
-        if (response.data.success){
-          const whatsappConversationID = response.data.result;
-          this.showNotification('success', 'Conversación cerrada', "Se ha cerrado la conversación asociada al número '" + this.currentActiveConversation.whatsappConversationRecipientPhoneNumber + "'.");
-          
-          const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
-          if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-            delete ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
-          }
-          localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
+      if (this.selectedCloseLocality == null){
+        this.showNotification('danger', 'Error al cerrar la conversación', 'Por favor, complete la sucursal relacionada a la conversación por cerrar. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      } else {
+        const regularExpressionChecker = /^\d{9}$/;
+        if (regularExpressionChecker.test(this.closeConversationReason)){
+          axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
+          {
+            whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+            whatsappConversationCloseComment: this.closeConversationReason,
+            whatsappConversationAmount: 0,
+            whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
+            whatsappConversationProducts: [],
+            whatsappConversationLocalityName: this.selectedLocality,
+            sendAgentEndMessage: this.sendEndMessage
+          })
+          .then((response) =>{ 
+            if (response.data.success){
+              const whatsappConversationID = response.data.result;
+              this.showNotification('success', 'Conversación cerrada', "Se ha cerrado la conversación asociada al número '" + this.currentActiveConversation.whatsappConversationRecipientPhoneNumber + "'.");
+              
+              const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
+              if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+                delete ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
+              }
+              localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
 
-          const datosActualesLocalStorage = JSON.parse(localStorage.getItem('datosActuales'));
-          if (datosActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-            delete datosActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
-          }
-          localStorage.setItem('datosActuales', JSON.stringify(datosActualesLocalStorage));
+              const datosActualesLocalStorage = JSON.parse(localStorage.getItem('datosActuales'));
+              if (datosActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+                delete datosActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
+              }
+              localStorage.setItem('datosActuales', JSON.stringify(datosActualesLocalStorage));
 
-          delete this.activeConversationsAsJSON[whatsappConversationID];
-          this.currentActiveConversation = null;
-          this.repliedMessage = null;
-          this.sortConversations();
+              delete this.activeConversationsAsJSON[whatsappConversationID];
+              this.currentActiveConversation = null;
+              this.repliedMessage = null;
+              this.sortConversations();
 
+            } else {
+              this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            }
+          })
+          .catch(() =>{
+            this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          })
         } else {
-          this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al cerrar la conversación', 'Por favor, complete el motivo de cierre de la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
-      })
-      .catch((error) =>{
-        this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-      })
+      }
     },
 
     grabStoreConversation(storeMessage){

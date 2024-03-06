@@ -759,9 +759,9 @@ export default {
       });
 
       axios.get(constants.routes.backendAPI+'/selectTodayInformation').then((response) =>{
-        this.conversacionesTotales = response.data.result[0].whatsappTotalConversations;
-        this.conversacionesVendidas = response.data.result[0].whatsappSelledConversations;
-        this.conversacionesNoVendidas = response.data.result[0].whatsappNotSelledConversations;
+        this.conversacionesTotales = response.data.result.total.whatsappTotalConversations;
+        this.conversacionesVendidas = response.data.result.total.whatsappSelledConversations;
+        this.conversacionesNoVendidas = response.data.result.total.whatsappNotSelledConversations;
       });
 
       axios.get(constants.routes.backendAPI+'/selectTodayTopSell').then((response) =>{
