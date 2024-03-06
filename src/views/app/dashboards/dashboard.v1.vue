@@ -225,6 +225,7 @@
               <div style="text-align: center;">
                 
                 <div v-if="opcionesGraficoPaquetes != null">
+                  
                   <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoPaquetes"></apexchart>
                   <br>
                   <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoDinero"></apexchart>
@@ -271,7 +272,99 @@
             
           </div>
         </div>
+        
+        <div v-if="feedbackRows.length != 0">
+          <br><br>
+          <b-card style="background-color: rgb(214, 214, 214);">
+            <vue-good-table
+              :columns="feedbackColumns"
+              :line-numbers="false"
+              styleClass="order-table vgt-table"
+              :rows="feedbackRows"
+              v-if="view == 'activeConversations'">
+              
+              <template slot="table-row" slot-scope="props">
+                
+                <div v-if="props.column.field == 'whatsappConversationRecipientPhoneNumber'">
+                  {{parseNumber(props.row.whatsappConversationRecipientPhoneNumber)}}
+                </div>
 
+                <div v-else-if="props.column.field == 'whatsappConversationEndDateTime'">
+                  {{parseHour(props.row.whatsappConversationEndDateTime)}}
+                </div>
+
+                <div v-else-if="props.column.field == 'whatsappFeedbackDateTime'">
+                  {{parseHour(props.row.whatsappFeedbackDateTime)}}
+                </div>
+
+                <div v-else-if="props.column.field == 'whatsappConversationLocalityName'">
+                  <div v-if="props.row.whatsappConversationLocalityName == 'King Vape Zapote'">
+                    <span class="badge badge-pill p-2" style="background-color: rgb(251, 118, 30);">Zapote</span>
+                  </div>
+                  <div v-else-if="props.row.whatsappConversationLocalityName == 'King Vape Escazu'">
+                    <span class="badge badge-pill p-2" style="background-color: rgb(255, 149, 184);">Escazu</span>
+                  </div>
+                  <div v-else-if="props.row.whatsappConversationLocalityName == 'King Vape Cartago'">
+                    <span class="badge badge-pill p-2" style="background-color: rgb(177, 193, 26);">Cartago</span>
+                  </div>
+                  <div v-else-if="props.row.whatsappConversationLocalityName == 'King Vape Heredia'">
+                    <span class="badge badge-pill p-2" style="background-color: rgb(0, 227, 212);">Heredia</span>
+                  </div>
+                  <div v-else>
+                    <span class="badge badge-pill p-2" style="background-color: rgb(214, 214, 214);">Sin localidad</span>
+                  </div>
+                </div>
+
+                <div v-else-if="props.column.field == 'whatsappConversationResult'">
+                  <div v-if="props.row.whatsappConversationResult == 0">
+                    <span class="badge badge-pill badge-danger p-2">Sin venta</span>
+                  </div>
+                  <div v-else>
+                    <span class="badge badge-pill badge-success p-2">Venta por  ₡{{props.row.whatsappConversationResult.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</span>
+                  </div>
+                </div>
+
+                <div v-else-if="props.column.field == 'whatsappFeedbackOne'">
+                  <star-rating v-model="props.row.whatsappFeedbackOne" :read-only="true" :star-size="13" :increment="0.5" :border-width="3" :show-rating="false"></star-rating>
+                </div>
+
+                <div v-else-if="props.column.field == 'whatsappFeedbackTwo'">
+                  <star-rating v-model="props.row.whatsappFeedbackTwo" :read-only="true" :star-size="13" :increment="0.5" :border-width="3" :show-rating="false"></star-rating>
+                </div>
+
+                <div v-else-if="props.column.field == 'whatsappFeedbackThree'">
+                  <star-rating v-model="props.row.whatsappFeedbackThree" :read-only="true" :star-size="13" :increment="0.5" :border-width="3" :show-rating="false"></star-rating>
+                </div>
+
+                <div v-else-if="props.column.field == 'whatsappFeedbackFour'">
+                  <star-rating v-model="props.row.whatsappFeedbackFour" :read-only="true" :star-size="13" :increment="0.5" :border-width="3" :show-rating="false"></star-rating>
+                </div>
+
+                <div v-else-if="props.column.field == 'whatsappFeedbackTotal'">
+                  <star-rating v-model="props.row.whatsappFeedbackTotal" :read-only="true" :star-size="13" :increment="0.5" :border-width="3" :show-rating="false"></star-rating>
+                </div>
+
+                <div v-else-if="props.column.field == 'whatsappFeedbackSix'">
+                  <div v-if="props.row.whatsappFeedbackSix == ''">
+                    Sin comentario
+                  </div>
+                  <div v-else>
+                    {{props.row.whatsappFeedbackSix}}
+                  </div>      
+                </div>
+
+                <div v-else-if="props.column.field == 'whatsappFeedbackAction'">
+                  <button v-if="props.row.whatsappFeedbackLoading==false" class="btn btn-primary" @click="closeFeedback(props.row)">Recibir</button>
+                  <div v-else>
+                    <span class="spinner-glow spinner-glow-primary"></span>
+                  </div>
+                </div>
+
+              </template>
+              
+            </vue-good-table>
+          </b-card>
+        </div>
 
         <br><br>
 
@@ -279,7 +372,7 @@
           <b-form-select v-model="agentFiltered" class="mb-3" :options="agentOptions" @change="filterByAgent()"></b-form-select>
         <br>
 
-        <br><br><br>
+        <br><br>
       </div>
 
       <div class="card mb-30">
@@ -303,8 +396,6 @@
                 {{parseNumber(props.row.whatsappConversationRecipientPhoneNumber)}}
               </div>
             </template>
-
-            
           </vue-good-table>
 
           <vue-good-table
@@ -551,6 +642,7 @@ import {
 import axios from 'axios';
 import ApexCharts from 'apexcharts'
 import router from "../../../router"; 
+import StarRating from 'vue-star-rating'
 
 const constants = require('@../../../src/constants.js'); 
 
@@ -561,6 +653,11 @@ export default {
   metaInfo: {
     title: "Dashboard",
   },
+
+  components: {
+    StarRating
+  },
+  
   data() {
     return {
       opcionesGraficoPaquetes: {},
@@ -671,6 +768,95 @@ export default {
       openConversationLoader: false,
       
       view: 'activeConversations',
+
+      feedbackColumns: [
+        {
+          label: "Número del cliente",
+          field: "whatsappConversationRecipientPhoneNumber",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Nombre del cliente",
+          field: "whatsappConversationRecipientProfileName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Localidad",
+          field: "whatsappConversationLocalityName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Fecha de la conversación",
+          field: "whatsappConversationEndDateTime",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Fecha del feedback",
+          field: "whatsappFeedbackDateTime",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Nombre del agente",
+          field: "agentName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Resultado",
+          field: "whatsappConversationResult",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Calidad de atención",
+          field: "whatsappFeedbackOne",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Velocidad de respuesta",
+          field: "whatsappFeedbackTwo",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Calidad del producto",
+          field: "whatsappFeedbackThree",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Probabilidad de recomendación",
+          field: "whatsappFeedbackFour",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Puntaje general",
+          field: "whatsappFeedbackTotal",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Comentario",
+          field: "whatsappFeedbackSix",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "",
+          field: "whatsappFeedbackAction",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+      ],
+
+      feedbackRows: [],
 
       activeConversationsColumns: [
         {
@@ -813,6 +999,8 @@ export default {
       router.push("/app/sessions/signIn");
     }
     
+    this.selectNotResolvedWhatsappFeedbacks();
+
     this.selectTodayInformation();
     this.selectAgentNames();
     this.getInformation();
@@ -846,6 +1034,35 @@ export default {
   },
 
   methods: {
+    closeFeedback(feedback){
+      feedback.whatsappFeedbackLoading = true;
+      axios.post(constants.routes.backendAPI+'/updateWhatsappFeedback', {'whatsappFeedbackID': feedback.whatsappFeedbackAction}).then((response) =>{ 
+        feedback.whatsappFeedbackLoading = false;
+        if (response.data.success){
+          this.selectNotResolvedWhatsappFeedbacks();
+        } else {
+          this.showNotification('danger', 'Error al recibir el feedback', 'Ha ocurrido un error inesperado al recibir el feedback. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch(() =>{
+        feedback.whatsappFeedbackLoading = false;
+        this.showNotification('danger', 'Error al recibir el feedback', 'Ha ocurrido un error inesperado al recibir el feedback. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+    },
+
+    selectNotResolvedWhatsappFeedbacks(){
+      axios.post(constants.routes.backendAPI+'/selectNotResolvedWhatsappFeedback').then((response) =>{ 
+        if (response.data.success){
+          this.feedbackRows = response.data.result;
+        } else {
+          this.showNotification('danger', 'Error al consultar el feedback', 'Ha ocurrido un error inesperado al consultar el feedback. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch(() =>{
+        this.showNotification('danger', 'Error al consultar el feedback', 'Ha ocurrido un error inesperado al consultar el feedback. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+    },
+
     closeWhatsappConversation(){
       if (this.selectedCloseLocality == null){
         this.showNotification('danger', 'Error al cerrar la conversación', 'Por favor, complete la sucursal relacionada a la conversación por cerrar. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
@@ -870,7 +1087,7 @@ export default {
               this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
             }
           })
-          .catch((error) =>{
+          .catch(() =>{
             this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           })
         } else {
