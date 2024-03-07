@@ -126,6 +126,29 @@ export default {
   },
 
   methods: {
+    getAgentColors(agentNames){
+      var agentColors = [];
+      const colorByAgent = 
+      {
+        'Sharon Espinoza': '#fae187',
+        'Sofia Hernandez': '#a0d995',
+        'Daniela Vega': '#dcd9f8',
+        'Nicole Badilla': '#a2edce',
+        'Diana Jimenez': '#ffa8b8',
+        'Stef Ponce': '#b5dcf9'
+      };
+      for (var agentIndex in agentNames){
+        const agentName = agentNames[agentIndex];
+        if (agentName in colorByAgent){
+          agentColors.push(colorByAgent[agentName]);
+        } else {
+          agentColors.push('#d3bead');
+        }
+      }
+      return agentColors;
+    },
+
+
     getInformation(){
 
       axios.get(constants.routes.backendAPI+'/selectTodayFeedbackInformation').then((response) =>{
@@ -134,8 +157,14 @@ export default {
       
       axios.get(constants.routes.backendAPI+'/selectPieChartInformation').then((response) =>{
         this.facturadoPorAgente = Object.values(response.data);
-        this.opcionesGraficoCircular = {chart: {width: 850, type: 'pie', fontSize: 40}, tooltip: {enabled: false}, labels: Object.keys(response.data),
-        legend: {fontSize: '30px'}};
+        this.opcionesGraficoCircular = 
+        {
+          chart: {width: 850, type: 'pie', fontSize: 40}, 
+          tooltip: {enabled: false}, 
+          labels: Object.keys(response.data),
+          legend: {fontSize: '30px'},
+          colors: this.getAgentColors(Object.keys(response.data))
+        };
       });
 
       axios.get(constants.routes.backendAPI+'/selectBarChartInformation').then((response) =>{
