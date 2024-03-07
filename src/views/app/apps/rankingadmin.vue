@@ -750,7 +750,7 @@ export default {
         this.opcionesGraficoCircular = 
         {
           chart: {width: 700, type: 'pie', fontSize: 20}, 
-          tooltip: {enabled: false}, 
+          tooltip: {enabled: true}, 
           labels: Object.keys(response.data),
           legend: {fontSize: '20px'},
           colors: this.getAgentColors(Object.keys(response.data))
