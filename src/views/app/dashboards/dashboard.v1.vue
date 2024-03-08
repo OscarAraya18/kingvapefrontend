@@ -366,11 +366,23 @@
           </b-card>
         </div>
 
-        <br><br>
+        <br><br><br>
 
-        <h4><strong>Filtro por agente:</strong></h4>
-          <b-form-select v-model="agentFiltered" class="mb-3" :options="agentOptions" @change="filterByAgent()"></b-form-select>
-        <br>
+        <b-card style="background-color: rgb(214, 214, 214);">
+          <h4><strong>Búsqueda por número:</strong></h4>
+            <div style="display: flex;">  
+              <b-form-input style="width: 90%;" v-model="numberSearched" class="mb-2" placeholder="Coloque un número para buscar" @keyup="searchByNumber()"></b-form-input>
+              <button class="btn btn-icon" style="background-color: rgb(255, 184, 32); top:-5px; position:relative; margin-left: 20px;" @click="searchAllNumbers()"><i class="i-Folder-Trash"></i>Mostrar todo</button>
+            </div>
+          <br>
+          <h4><strong>Filtro por agente:</strong></h4>
+            <div style="display: flex;">  
+              <b-form-select style="width: 90%;" v-model="agentFiltered" class="mb-2" :options="agentOptions" @change="filterByAgent()"></b-form-select>
+              <button class="btn btn-icon" style="background-color: rgb(255, 184, 32); top:-5px; position:relative; margin-left: 20px;" @click="cleanAgentFilter()"><i class="i-Folder-Trash"></i>Mostrar todo</button>
+
+            </div>
+        </b-card>
+        
 
         <br><br>
       </div>
@@ -990,7 +1002,9 @@ export default {
       bigImageSource: null,
 
       transferWhatsappConversationID: null,
-      transferCurrentAgentID: null
+      transferCurrentAgentID: null,
+
+      numberSearched: ''
     };
   },
 
@@ -1034,6 +1048,21 @@ export default {
   },
 
   methods: {
+    cleanAgentFilter(){
+      this.agentFiltered = '';
+      this.activeConversationsRows = this.originalActiveConversationsRows;
+    },
+
+    searchAllNumbers(){
+      this.numberSearched = '';
+      this.activeConversationsRows = this.originalActiveConversationsRows;
+    },
+
+    searchByNumber(){
+      this.activeConversationsRows = this.originalActiveConversationsRows;
+      this.activeConversationsRows = this.originalActiveConversationsRows.filter(activeConversationRow => activeConversationRow.whatsappConversationRecipientPhoneNumber.includes(this.numberSearched.split(' ').join('')));
+    },
+
     closeFeedback(feedback){
       feedback.whatsappFeedbackLoading = true;
       axios.post(constants.routes.backendAPI+'/updateWhatsappFeedback', {'whatsappFeedbackID': feedback.whatsappFeedbackAction}).then((response) =>{ 
