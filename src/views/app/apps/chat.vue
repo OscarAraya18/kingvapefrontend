@@ -3370,6 +3370,7 @@ export default {
           repliedMessageID = this.repliedMessage.messageID;
         }
         this.sendingMessageDisable = true;
+        whatsappTextMessageContent = whatsappTextMessageContent.replace('#','');
         axios.get(constants.routes.backendAPI
             +'/sendWhatsappTextMessage?'
             +'&whatsappConversationRecipientPhoneNumber='+this.currentActiveConversation.whatsappConversationRecipientPhoneNumber
