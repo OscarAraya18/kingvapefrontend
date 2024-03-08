@@ -74,7 +74,11 @@
                 <strong>Nombre:</strong> {{escazuConversation.storeMessageRecipientProfileName}}<br>
                 <strong>Número:</strong> {{parsePhone(escazuConversation.storeMessageRecipientPhoneNumber)}}<br>
                 <strong>Pedido:</strong> {{escazuConversation.storeMessageRecipientOrder}}<br>
-                <strong>Cédula:</strong> {{escazuConversation.storeMessageRecipientID}}<br>
+                <div style="display: flex;">
+                  <strong>Cédula:</strong>
+                  <div style="margin-left: 3px;" v-if="escazuConversation.storeMessageRecipientID == 'S'">✔️</div>
+                  <div style="margin-left: 3px;" v-else>❌</div>
+                </div>
                 <strong>Fecha:</strong> {{parseHour(escazuConversation.storeMessageStartDateTime)}}
               </b-list-group-item>
             </b-list-group>
@@ -89,7 +93,11 @@
                 <strong>Nombre:</strong> {{zapoteConversation.storeMessageRecipientProfileName}}<br>
                 <strong>Número:</strong> {{parsePhone(zapoteConversation.storeMessageRecipientPhoneNumber)}}<br>
                 <strong>Pedido:</strong> {{zapoteConversation.storeMessageRecipientOrder}}<br>
-                <strong>Cédula:</strong> {{zapoteConversation.storeMessageRecipientID}}<br>
+                <div style="display: flex;">
+                  <strong>Cédula:</strong>
+                  <div style="margin-left: 3px;" v-if="zapoteConversation.storeMessageRecipientID == 'S'">✔️</div>
+                  <div style="margin-left: 3px;" v-else>❌</div>
+                </div>
                 <strong>Fecha:</strong> {{parseHour(zapoteConversation.storeMessageStartDateTime)}}
               </b-list-group-item>
             </b-list-group>
@@ -104,7 +112,11 @@
                 <strong>Nombre:</strong> {{cartagoConversation.storeMessageRecipientProfileName}}<br>
                 <strong>Número:</strong> {{parsePhone(cartagoConversation.storeMessageRecipientPhoneNumber)}}<br>
                 <strong>Pedido:</strong> {{cartagoConversation.storeMessageRecipientOrder}}<br>
-                <strong>Cédula:</strong> {{cartagoConversation.storeMessageRecipientID}}<br>
+                <div style="display: flex;">
+                  <strong>Cédula:</strong>
+                  <div style="margin-left: 3px;" v-if="cartagoConversation.storeMessageRecipientID == 'S'">✔️</div>
+                  <div style="margin-left: 3px;" v-else>❌</div>
+                </div>
                 <strong>Fecha:</strong> {{parseHour(cartagoConversation.storeMessageStartDateTime)}}
               </b-list-group-item>
             </b-list-group>
@@ -119,7 +131,11 @@
                 <strong>Nombre:</strong> {{herediaConversation.storeMessageRecipientProfileName}}<br>
                 <strong>Número:</strong> {{parsePhone(herediaConversation.storeMessageRecipientPhoneNumber)}}<br>
                 <strong>Pedido:</strong> {{herediaConversation.storeMessageRecipientOrder}}<br>
-                <strong>Cédula:</strong> {{herediaConversation.storeMessageRecipientID}}<br>
+                <div style="display: flex;">
+                  <strong>Cédula:</strong>
+                  <div style="margin-left: 3px;" v-if="herediaConversation.storeMessageRecipientID == 'S'">✔️</div>
+                  <div style="margin-left: 3px;" v-else>❌</div>
+                </div>
                 <strong>Fecha:</strong> {{parseHour(herediaConversation.storeMessageStartDateTime)}}
               </b-list-group-item>
             </b-list-group>
