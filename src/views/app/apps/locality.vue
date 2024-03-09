@@ -809,7 +809,7 @@ export default {
       });
     },
 
-    selectLocalityAgents(){
+    selectAllLocalityAgents(){
       axios.post(constants.routes.backendAPI+'/selectAllLocalityAgents').then((response) =>{
         if (response.data.success){
           this.agentOptions = [];

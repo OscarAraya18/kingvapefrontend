@@ -163,7 +163,8 @@ export default {
           tooltip: {enabled: false}, 
           labels: Object.keys(response.data),
           legend: {fontSize: '30px'},
-          colors: this.getAgentColors(Object.keys(response.data))
+          colors: this.getAgentColors(Object.keys(response.data)),
+          dataLabels: {enabled: false}
         };
       });
 

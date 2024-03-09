@@ -232,7 +232,10 @@
               </div>
               
               <div v-if="historyMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                <GmapMap :center="getLocation(historyMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(historyMessage)" :draggable="false"/></GmapMap><br>
+                <GmapMap :center="getLocation(historyMessage)" :zoom="zoom" style="width: 1000px; height: 450px">
+                  <GmapMarker :position="getLocation(historyMessage)" :draggable="false"/>
+                </GmapMap>
+                <br>
                 <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{historyMessage.whatsappLocationMessageLatitude}}</p>
                 <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{historyMessage.whatsappLocationMessageLongitude}}</p><br>
                 <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
@@ -580,7 +583,16 @@
                           </div>
                           
                           <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                            <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/></GmapMap><br>
+
+                            
+                            <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 1000px; height: 450px">
+                              <GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/>
+                              <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
+                              <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
+                              <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
+                              <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
+                            </GmapMap>
+                            <br>
                             <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
                             <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
                             <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
@@ -657,7 +669,10 @@
                                   </div>
                                   
                                   <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                                    <GmapMap :center="getLocation(answeredMessage)" :zoom="zoom" style="width: 1000px; height: 450px"><GmapMarker :position="getLocation(answeredMessage)" :draggable="false"/></GmapMap><br>
+                                    <GmapMap :center="getLocation(answeredMessage)" :zoom="zoom" style="width: 1000px; height: 450px">
+                                      <GmapMarker :position="getLocation(answeredMessage)" :draggable="false"/>
+                                      <GmapPolygon :paths="cartagoMap" :editable="false"></GmapPolygon>
+                                    </GmapMap><br>
                                     <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
                                     <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
                                     <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
@@ -1509,6 +1524,46 @@ export default {
       
       db: null,
 
+      cartagoMap: [],
+      cartagoMapOptions: {
+        strokeColor: "#B1C11A",
+        strokeOpacity: 0.5,
+        strokeWeight: 3,
+        fillColor: "#B1C11A",
+        fillOpacity: 0.3,
+      },
+
+      zapoteMap: [],
+      zapoteMapOptions: {
+        strokeColor: "#FB761E",
+        strokeOpacity: 0.5,
+        strokeWeight: 3,
+        fillColor: "#FB761E",
+        fillOpacity: 0.3,
+      },
+
+      herediaMap: [],
+      herediaMapOptions: {
+        strokeColor: "#00e3d4",
+        strokeOpacity: 0.5,
+        strokeWeight: 3,
+        fillColor: "#00e3d4",
+        fillOpacity: 0.3,
+      },
+
+      escazuMap: [],
+      escazuMapOptions: {
+        strokeColor: "#ff95b8",
+        strokeOpacity: 0.5,
+        strokeWeight: 3,
+        fillColor: "#ff95b8",
+        fillOpacity: 0.3,
+      },
+
+
+
+
+
       selectedCloseLocality: null,
       closeLocalityOptions: ["King Vape Escazu", "King Vape Zapote","King Vape Cartago", "King Vape Heredia"],
 
@@ -1755,6 +1810,62 @@ export default {
   },
 
   methods: {
+    changeCartagoMap(mvcArray){
+      let paths = [];
+      for (let i=0; i<mvcArray.getLength(); i++) {
+        let path = [];
+        for (let j=0; j<mvcArray.getAt(i).getLength(); j++) {
+          let point = mvcArray.getAt(i).getAt(j);
+          path.push({lat: point.lat(), lng: point.lng()});
+        }
+        paths.push(path);
+      }
+      console.log('CARTAGO: ');
+      console.log(paths);
+    },
+
+    changeHerediaMap(mvcArray){
+      let paths = [];
+      for (let i=0; i<mvcArray.getLength(); i++) {
+        let path = [];
+        for (let j=0; j<mvcArray.getAt(i).getLength(); j++) {
+          let point = mvcArray.getAt(i).getAt(j);
+          path.push({lat: point.lat(), lng: point.lng()});
+        }
+        paths.push(path);
+      }
+      console.log('HEREDIA: ');
+      console.log(paths);
+    },
+
+    changeZapoteMap(mvcArray){
+      let paths = [];
+      for (let i=0; i<mvcArray.getLength(); i++) {
+        let path = [];
+        for (let j=0; j<mvcArray.getAt(i).getLength(); j++) {
+          let point = mvcArray.getAt(i).getAt(j);
+          path.push({lat: point.lat(), lng: point.lng()});
+        }
+        paths.push(path);
+      }
+      console.log('ZAPOTE: ');
+      console.log(paths);
+    },
+
+    changeEscazuMap(mvcArray){
+      let paths = [];
+      for (let i=0; i<mvcArray.getLength(); i++) {
+        let path = [];
+        for (let j=0; j<mvcArray.getAt(i).getLength(); j++) {
+          let point = mvcArray.getAt(i).getAt(j);
+          path.push({lat: point.lat(), lng: point.lng()});
+        }
+        paths.push(path);
+      }
+      console.log('ESCAZU: ');
+      console.log(paths);
+    },
+
     openEndConversationModal(){
       this.selectedCloseLocality = null;
       this.closeConversationReason = '';
@@ -4475,6 +4586,11 @@ export default {
   },
 
   mounted(){
+    this.cartagoMap = constants.routes.cartagoMap;
+    this.herediaMap = constants.routes.herediaMap;
+    this.zapoteMap = constants.routes.zapoteMap;
+    this.escazuMap = constants.routes.escazuMap;
+    
     this.agentType = localStorage.getItem('agentType');
     
     this.agentStartMessage = localStorage.getItem('agentStartMessage');
