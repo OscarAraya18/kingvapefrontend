@@ -321,6 +321,10 @@ const routes = [
             component: () => import("./views/app/apps/transfer"),
           },
           {
+            path: "centralInvoice",
+            component: () => import("./views/app/apps/centralInvoice"),
+          },
+          {
             path: "contact-details",
             component: () => import("./views/app/apps/contact-details"),
           },

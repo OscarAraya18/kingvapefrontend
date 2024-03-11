@@ -54,17 +54,34 @@
             <div class="triangle"></div>
           </li>
 
+      
+
           <li
+            @mouseenter="toggleSubMenu"
+            :class="{ active: selectedParentMenu == 'dashboards' }"
+            class="nav-item"
+            data-item="dashboards"
             v-if="isAdmin == true && locality == false"
+          >
+            <router-link tag="a" class="nav-item-hold" to="/app/dashboards/dashboard.v1">
+              <i class="nav-icon i-Financial"></i>
+              <span class="nav-text"><strong>DASHBOARD</strong></span>
+            </router-link>
+            <div class="triangle"></div>
+          </li>
+
+
+          <li
             @mouseenter="toggleSubMenu"
             class="nav-item"
-            data-item="images"
-            :class="{ active: selectedParentMenu == 'images' }"
+            data-item="centralInvoice"
+            :class="{ active: selectedParentMenu == 'centralInvoice' }"
             :data-submenu="false"
+            v-if="isAdmin == true"
           >
-            <router-link tag="a" class="nav-item-hold" to="/app/apps/images">
-              <i class="nav-icon i-Add-File"></i>
-              <span class="nav-text"><strong>IMÁGENES</strong></span>
+            <router-link tag="a" class="nav-item-hold" to="/app/apps/centralInvoice">
+              <i class="nav-icon i-Board"></i>
+              <span class="nav-text"><strong>COMANDAS</strong></span>
             </router-link>
             <div class="triangle"></div>
           </li>
@@ -86,37 +103,6 @@
 
           <li
             @mouseenter="toggleSubMenu"
-            :class="{ active: selectedParentMenu == 'dashboards' }"
-            class="nav-item"
-            data-item="dashboards"
-            v-if="isAdmin == true && locality == false"
-          >
-            <router-link tag="a" class="nav-item-hold" to="/app/dashboards/dashboard.v1">
-              <i class="nav-icon i-Financial"></i>
-              <span class="nav-text"><strong>DASHBOARD</strong></span>
-            </router-link>
-            <div class="triangle"></div>
-          </li>
-
-
-          <li
-            @mouseenter="toggleSubMenu"
-            class="nav-item"
-            data-item="agents"
-            :class="{ active: selectedParentMenu == 'agents' }"
-            :data-submenu="false"
-            v-if="isAdmin == true && locality == false"
-          >
-            <router-link tag="a" class="nav-item-hold" to="/app/apps/agents">
-              <i class="nav-icon i-Support"></i>
-              <span class="nav-text"><strong>AGENTES</strong></span>
-            </router-link>
-            <div class="triangle"></div>
-          </li>
-
-
-          <li
-            @mouseenter="toggleSubMenu"
             class="nav-item"
             data-item="transfer"
             :class="{ active: selectedParentMenu == 'transfer' }"
@@ -129,9 +115,6 @@
             </router-link>
             <div class="triangle"></div>
           </li>
-
-
-
 
 
           <li
@@ -150,6 +133,36 @@
           </li>
 
 
+          <li
+            v-if="isAdmin == true && locality == false"
+            @mouseenter="toggleSubMenu"
+            class="nav-item"
+            data-item="images"
+            :class="{ active: selectedParentMenu == 'images' }"
+            :data-submenu="false"
+          >
+            <router-link tag="a" class="nav-item-hold" to="/app/apps/images">
+              <i class="nav-icon i-Add-File"></i>
+              <span class="nav-text"><strong>IMÁGENES</strong></span>
+            </router-link>
+            <div class="triangle"></div>
+          </li>
+
+          
+          <li
+            @mouseenter="toggleSubMenu"
+            class="nav-item"
+            data-item="agents"
+            :class="{ active: selectedParentMenu == 'agents' }"
+            :data-submenu="false"
+            v-if="isAdmin == true && locality == false"
+          >
+            <router-link tag="a" class="nav-item-hold" to="/app/apps/agents">
+              <i class="nav-icon i-Support"></i>
+              <span class="nav-text"><strong>AGENTES</strong></span>
+            </router-link>
+            <div class="triangle"></div>
+          </li>
 
 
         </ul>
