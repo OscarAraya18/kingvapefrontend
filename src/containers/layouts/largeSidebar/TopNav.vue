@@ -1,6 +1,19 @@
 <template>
   <div class="main-header">
 
+    <b-modal scrollable size="lg" centered id="mapModal" hide-header hide-footer>
+      <GmapMap :center="{lat: 9.9242503, lng: -84.0585289}" :zoom="10" style="width: 100%; height: 600px">
+        <GmapMarker id="zapoteTag" :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
+        <GmapMarker id="escazuTag" :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
+        <GmapMarker id="cartagoTag" :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
+        <GmapMarker id="herediaTag" :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
+        <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
+        <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
+        <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
+        <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
+      </GmapMap>
+    </b-modal>
+
 
     <b-modal scrollable size="m" centered id="notificationModal" hide-header hide-footer no-close-on-backdrop>
       <div v-if="incomingNotification != null">
@@ -17,6 +30,7 @@
         </div>
       </div>
     </b-modal>
+
 
     <b-modal scrollable size="m" centered id="createNotificationModal" hide-header hide-footer>
       <p style="font-size: medium;"><strong>Nombre:</strong></p>
@@ -162,6 +176,10 @@
 
     </b-modal>
 
+    <div style="position: fixed; bottom: 200px; right: 18px;" v-if="(ranking == false) && (locality == false)">
+      <img v-b-modal.mapModal  class="hoverAnimationTranslator" style="cursor: pointer; width: 40px; height: 40px; position: relative; top: 10px;" src="@/assets/pageAssets/map.png">
+    </div>
+
 
     <div style="position: fixed; bottom: 140px; right: 15px;">
       <b-dropdown dropup v-if="(ranking == false) && (locality == false)" id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
@@ -253,6 +271,42 @@ export default {
 
   data() {
     return {
+      cartagoMap: [],
+      cartagoMapOptions: {
+        strokeColor: "#26a699",
+        strokeOpacity: 0.5,
+        strokeWeight: 3,
+        fillColor: "#26a699",
+        fillOpacity: 0.4,
+      },
+
+      zapoteMap: [],
+      zapoteMapOptions: {
+        strokeColor: "#fed330",
+        strokeOpacity: 0.5,
+        strokeWeight: 3,
+        fillColor: "#fed330",
+        fillOpacity: 0.4,
+      },
+
+      herediaMap: [],
+      herediaMapOptions: {
+        strokeColor: "#9f7cd0",
+        strokeOpacity: 0.5,
+        strokeWeight: 3,
+        fillColor: "#9f7cd0",
+        fillOpacity: 0.4,
+      },
+
+      escazuMap: [],
+      escazuMapOptions: {
+        strokeColor: "#e44f9c",
+        strokeOpacity: 0.5,
+        strokeWeight: 3,
+        fillColor: "#e44f9c",
+        fillOpacity: 0.4,
+      },
+
       agentStatus: '',
       applicationStatus: '',
 
@@ -318,11 +372,15 @@ export default {
     };
   },
   mounted() {
-
+    this.cartagoMap = constants.routes.cartagoMap;
+    this.herediaMap = constants.routes.herediaMap;
+    this.zapoteMap = constants.routes.zapoteMap;
+    this.escazuMap = constants.routes.escazuMap;
     this.backendURLInput = this.$store.getters.getBackendURL;
     this.websocketURLInput = this.$store.getters.getWebsocketURL;
 
     if (localStorage.getItem('ranking') != 'yes' && (localStorage.getItem('locality') != 'yes')){
+
       const notificationInterval = setInterval(() => {
         for (var notificationIndex in this.notifications){
           const notificationDate = new Date(this.notifications[notificationIndex].notificationDateTime);

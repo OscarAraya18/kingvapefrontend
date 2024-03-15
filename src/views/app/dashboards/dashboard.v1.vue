@@ -204,7 +204,7 @@
       
       <div v-if="displayPlot">
         <b-card>
-          <apexchart type="pie" width="100" :options="opcionesGraficoCircular" :series="facturadoPorAgente"></apexchart>
+          <apexchart width="1000" :options="opcionesGraficoLinea" :series="datosGraficoLinea"></apexchart>
         </b-card>
         <br><br>
       </div>
@@ -249,14 +249,14 @@
 
           <div style="width: 35%; margin-left: 1.5%;">
             <div style="display: flex; margin-bottom: 25px;">
-              <b-card style="width: 50%; margin-right: 1.5%; background-color: rgb(251, 118, 30);">
+              <b-card style="width: 50%; margin-right: 1.5%; background-color: #fed330;">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>ZAPOTE:</strong></p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{zapoteSelled + zapoteNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{zapoteSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{zapoteNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{zapoteSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
-              <b-card style="width: 50%; margin-left: 1.5%; background-color: rgb(255, 149, 184);">
+              <b-card style="width: 50%; margin-left: 1.5%; background-color: #e44f9c;">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>ESCAZÚ:</strong></p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{escazuSelled + escazuNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{escazuSelled}}</p>
@@ -266,14 +266,14 @@
             </div>
 
             <div style="display: flex; margin-top: 25px;">
-              <b-card style="width: 50%; margin-right: 1.5%; background-color: rgb(177, 193, 26);">
+              <b-card style="width: 50%; margin-right: 1.5%; background-color: #26a699;">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>CARTAGO:</strong></p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{cartagoNotSelled + cartagoSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{cartagoSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{cartagoNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
-              <b-card style="width: 50%; margin-left: 1.5%; background-color: rgb(0, 227, 212);">
+              <b-card style="width: 50%; margin-left: 1.5%; background-color: #9f7cd0;">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>HEREDIA:</strong></p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{herediaSelled + herediaNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{herediaSelled}}</p>
@@ -403,7 +403,6 @@
 
         
         <div class="card-body p-0">
-
           
           <vue-good-table
             :columns="activeConversationsColumns"
@@ -438,7 +437,7 @@
       </div>
     </div>
 
-    <b-modal scrollable size="m" centered id="transferModal" title="Transferir la conversación" @ok="transferConversation()">
+    <b-modal scrollable size="m" centered id="transferModal" title="Transferir conversación" @ok="transferConversation()">
       <b-list-group v-if="loaderTransferConversationAgents == false">
         <b-form-select v-model="agentToTransfer" class="mb-3 mt-3" :options="transferAgentOptions"></b-form-select>
         
@@ -784,7 +783,7 @@ export default {
       datosGraficoDinero: [],
 
       selectedCloseLocality: null,
-      closeLocalityOptions: ["King Vape Escazu", "King Vape Zapote","King Vape Cartago", "King Vape Heredia"],
+      closeLocalityOptions: ["King Vape Escazu", "King Vape Zapote","King Vape Cartago", "King Vape Heredia", "King Vape Center"],
 
       zapoteSelled: 0,
       zapoteNotSelled: 0,
@@ -1129,6 +1128,7 @@ export default {
 
     this.selectTodayInformation();
     this.selectAgentNames();
+    this.selectTransferableAgents();
     this.getInformation();
 
     setInterval(() => {
@@ -1162,16 +1162,14 @@ export default {
   methods: {
     scrollToBottom(){
       let scrollInterval = setInterval(() => {
-        if (this.openConversationLoader == false){
-          this.$nextTick(() => {
-            if (this.$refs.scrollHistory) {
-              const scrollableDiv = this.$refs.scrollHistory;
-              scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
-            }
-          });
-          clearInterval(scrollInterval);
-        }
-      }, 100);
+        this.$nextTick(() => {
+          if (this.$refs.scrollHistory) {
+            const scrollableDiv = this.$refs.scrollHistory;
+            scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
+            clearInterval(scrollInterval);
+          }
+        });
+      }, 1);
     },
 
     cleanAgentFilter(){
@@ -1423,7 +1421,7 @@ export default {
           this.herediaSales = 0;
         }
 
-        this.opcionesGraficoPaquetes = {chart: {width: 330, type: 'pie', fontSize: 20}, tooltip: {enabled: true}, labels: ['Zapote', 'Escazú', 'Cartago', 'Heredia'], colors: ['#FB761E', '#FF95B8', '#B1C11A', '#00E3D4']};
+        this.opcionesGraficoPaquetes = {chart: {width: 330, type: 'pie', fontSize: 20}, tooltip: {enabled: true}, labels: ['Zapote', 'Escazú', 'Cartago', 'Heredia'], colors: ['#fed330', '#e44f9c', '#26a699', '#9f7cd0']};
         this.datosGraficoPaquetes = [this.zapoteSelled, this.escazuSelled, this.cartagoSelled, this.herediaSelled];
         this.datosGraficoDinero = [this.zapoteSales, this.escazuSales, this.cartagoSales, this.herediaSales];
 
@@ -1733,24 +1731,7 @@ export default {
     whatsappTransferOpenAction(whatsappConversation){
       this.transferWhatsappConversationID = whatsappConversation.whatsappConversationID;
       this.transferCurrentAgentID = whatsappConversation.agentID;
-
-      this.loaderTransferConversationAgents = true;
-      this.transferAgentOptions = [{value:null, text:''}];
       this.agentToTransfer = null;
-      axios.get(constants.routes.backendAPI+'/selectTransferableAgents')
-      .then((response) =>{
-        if (response.data.success){
-          for (var agentIndex in response.data.result){
-            this.transferAgentOptions.push({value: response.data.result[agentIndex].agentID, text: response.data.result[agentIndex].agentName});
-          }
-          this.loaderTransferConversationAgents = false;
-        } else {
-          this.showNotification('danger', 'Error al solicitar los agentes para realizar la transferencia', 'Ha ocurrido un error inesperado al solicitar los agentes para realizar la transferencia. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        }
-      })
-      .catch((error) => {
-        this.showNotification('danger', 'Error al solicitar los agentes para realizar la transferencia', 'Ha ocurrido un error inesperado al solicitar los agentes para realizar la transferencia. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-      })
     },
 
     whatsappCloseOpenAction(whatsappConversation){
@@ -1765,6 +1746,23 @@ export default {
       const remainingSeconds = seconds % 60;
       const timeFormat = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
       return timeFormat;
+    },
+
+    selectTransferableAgents(){
+      axios.get(constants.routes.backendAPI+'/selectTransferableAgents')
+      .then((response) =>{
+        if (response.data.success){
+          for (var agentIndex in response.data.result){
+            this.transferAgentOptions.push({value: response.data.result[agentIndex].agentID, text: response.data.result[agentIndex].agentName});
+          }
+          this.loaderTransferConversationAgents = false;
+        } else {
+          this.showNotification('danger', 'Error al solicitar los agentes para realizar la transferencia', 'Ha ocurrido un error inesperado al solicitar los agentes para realizar la transferencia. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        this.showNotification('danger', 'Error al solicitar los agentes para realizar la transferencia', 'Ha ocurrido un error inesperado al solicitar los agentes para realizar la transferencia. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
     }
   }
 };

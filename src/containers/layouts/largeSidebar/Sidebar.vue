@@ -70,14 +70,13 @@
             <div class="triangle"></div>
           </li>
 
-
+          <!--
           <li
             @mouseenter="toggleSubMenu"
             class="nav-item"
             data-item="centralInvoice"
             :class="{ active: selectedParentMenu == 'centralInvoice' }"
             :data-submenu="false"
-            v-if="isAdmin == true"
           >
             <router-link tag="a" class="nav-item-hold" to="/app/apps/centralInvoice">
               <i class="nav-icon i-Board"></i>
@@ -85,7 +84,7 @@
             </router-link>
             <div class="triangle"></div>
           </li>
-
+-->
           <li
             @mouseenter="toggleSubMenu"
             :class="{ active: selectedParentMenu == 'ranking' }"

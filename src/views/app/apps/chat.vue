@@ -14,6 +14,10 @@
               </div>
             </b-modal>
 
+            <b-modal scrollable size="sm" centered id="saveInvoiceLocation" hide-header @ok="saveInvoiceLocation()">
+              <b-form-input v-model="invoiceLocationName" type="text" placeholder="Coloque un nombre para la ubicación"></b-form-input>
+            </b-modal>
+
             <div class="border-right" style="height: 100%;">
               <vue-perfect-scrollbar :settings="{ suppressScrollX: true}" class="contacts-scrollable perfect-scrollbar rtl-ps-none ps scroll">   
                 <div v-if="loaders.activeConversations == true" style="text-align: center;">
@@ -157,27 +161,31 @@
             </div>
           </b-modal>
 
-          <b-modal scrollable size="m" centered hide-footer id="historyConversationsModal" title="Historial de conversaciones">
-            <b-list-group v-if="historyLoader == false">
-              <b-list-group-item v-if="historyConversations.length == 0">
-                No hay conversaciones en el historial
-              </b-list-group-item>
-              <b-list-group-item v-b-modal.historyOpenModal style="cursor: pointer" v-for="historyConversation in historyConversations" @click="openHistoryConversation(historyConversation)" button>
-                <div style="display: flex;">
-                  <div>
-                    <strong>Atendido por:</strong> {{historyConversation.agentName}}<br>
-                    <strong>Resultado:</strong> {{historyConversation.whatsappConversationCloseComment}}<br>
-                    <strong>Inicio:</strong> {{parseHour(historyConversation.whatsappConversationStartDateTime)}}<br>
-                    <strong>Fin:</strong> {{parseHour(historyConversation.whatsappConversationEndDateTime)}}<br>
-                  </div>
-                  <div class="flex-grow-1"></div>
-                  <button v-if="availableConversation == true" @click="rememberCart(historyConversation)" class="btn btn-icon btn-primary mr-2"><i class="i-Shopping-Cart"></i>Recordar carrito</button>
-                </div>
-              </b-list-group-item>
-            </b-list-group>
-            <div v-else style="text-align: center;">
+          <b-modal scrollable size="lg" centered hide-footer hide-header id="historyConversationsModal" @shown="scrollToBottomHistory()">
+            <div v-if="historyLoader == true" style="text-align: center;">
               <br><span class="spinner-glow spinner-glow-primary"></span>
             </div>
+            
+            <div v-else style="height: 60vh; overflow-y: auto;" ref='historyScroll'>
+              <vue-good-table
+                :columns="historyConversationsColumns"
+                :line-numbers="false"
+                styleClass="order-table vgt-table"
+                :rows="historyConversations">
+                <template slot="table-row" slot-scope="props">  
+                  <div v-if="props.column.field == 'whatsappConversationStartDateTime'">
+                    <p>{{parseHour(props.row.whatsappConversationStartDateTime)}}</p>
+                  </div>
+                  <div v-else-if="props.column.field == 'whatsappConversationEndDateTime'">
+                    <p>{{parseHour(props.row.whatsappConversationEndDateTime)}}</p>
+                  </div>
+                  <div v-else-if="props.column.field == 'whatsappConversationActions'">
+                    <i v-if='props.row.whatsappConversationAmount != 0' class="i-Shopping-Cart text-25 text-info" @click="rememberCart(props.row)" style="cursor: pointer; margin-right: 10px;"></i>
+                    <i class="i-Notepad text-25 text-warning" @click="openHistoryConversation(props.row)" v-b-modal.historyOpenModal style="cursor: pointer; margin-right: 7px;"></i>
+                  </div>
+                </template>
+              </vue-good-table>
+            </div>  
           </b-modal>
 
           <b-modal scrollable size="sm" centered id="saveStickerModal" title="Guardar sticker" @ok="saveSticker()">
@@ -253,6 +261,7 @@
                   <b-dropdown-item @click="saveLocation('CASA', historyMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
                   <b-dropdown-item @click="saveLocation('TRABAJO', historyMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
                   <b-dropdown-item @click="saveLocation('OTRO', historyMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
+                  <b-dropdown-item v-b-modal.saveInvoiceLocation @click="openSaveInvoiceLocationModal(historyMessage)" style="z-index: 1000;">COMANDA</b-dropdown-item>
                 </b-dropdown>
               </div>
               
@@ -332,6 +341,7 @@
                                     <b-dropdown-item @click="saveLocation('CASA', answeredMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
                                     <b-dropdown-item @click="saveLocation('TRABAJO', answeredMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
                                     <b-dropdown-item @click="saveLocation('OTRO', answeredMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
+                                    <b-dropdown-item v-b-modal.saveInvoiceLocation @click="openSaveInvoiceLocationModal(answeredMessage)" style="z-index: 1000;">COMANDA</b-dropdown-item>
                                   </b-dropdown>
                                 </div>
                                 
@@ -387,6 +397,7 @@
                             <b-dropdown-item @click="saveLocation('CASA', currentActiveConversationMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
                             <b-dropdown-item @click="saveLocation('TRABAJO', currentActiveConversationMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
                             <b-dropdown-item @click="saveLocation('OTRO', currentActiveConversationMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
+                            <b-dropdown-item v-b-modal.saveInvoiceLocation @click="openSaveInvoiceLocationModal(currentActiveConversationMessage)" style="z-index: 1000;">COMANDA</b-dropdown-item>
                           </b-dropdown>
                         </div>
                         
@@ -474,6 +485,7 @@
                                     <b-dropdown-item @click="saveLocation('CASA', answeredMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
                                     <b-dropdown-item @click="saveLocation('TRABAJO', answeredMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
                                     <b-dropdown-item @click="saveLocation('OTRO', answeredMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
+                                    <b-dropdown-item v-b-modal.saveInvoiceLocation @click="openSaveInvoiceLocationModal(answeredMessage)" style="z-index: 1000;">COMANDA</b-dropdown-item>
                                   </b-dropdown>
                                 </div>
                                 
@@ -616,6 +628,7 @@
                                       <b-dropdown-item @click="saveLocation('CASA', answeredMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
                                       <b-dropdown-item @click="saveLocation('TRABAJO', answeredMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
                                       <b-dropdown-item @click="saveLocation('OTRO', answeredMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
+                                      <b-dropdown-item v-b-modal.saveInvoiceLocation @click="openSaveInvoiceLocationModal(answeredMessage)" style="z-index: 1000;">COMANDA</b-dropdown-item>
                                     </b-dropdown>
                                   </div>
                                   
@@ -678,6 +691,7 @@
                               <b-dropdown-item @click="saveLocation('CASA', currentActiveConversationMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
                               <b-dropdown-item @click="saveLocation('TRABAJO', currentActiveConversationMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
                               <b-dropdown-item @click="saveLocation('OTRO', currentActiveConversationMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
+                              <b-dropdown-item v-b-modal.saveInvoiceLocation @click="openSaveInvoiceLocationModal(currentActiveConversationMessage)" style="z-index: 1000;">COMANDA</b-dropdown-item>
                             </b-dropdown>
                           </div>
                           
@@ -766,6 +780,7 @@
                                       <b-dropdown-item @click="saveLocation('CASA', answeredMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
                                       <b-dropdown-item @click="saveLocation('TRABAJO', answeredMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
                                       <b-dropdown-item @click="saveLocation('OTRO', answeredMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
+                                      <b-dropdown-item v-b-modal.saveInvoiceLocation @click="openSaveInvoiceLocationModal(answeredMessage)" style="z-index: 1000;">COMANDA</b-dropdown-item>
                                     </b-dropdown>
                                   </div>
                                   
@@ -877,6 +892,7 @@
                         <b-dropdown-item @click="saveLocation('CASA', repliedMessage)" style="z-index: 1000;">CASA</b-dropdown-item>
                         <b-dropdown-item @click="saveLocation('TRABAJO', repliedMessage)" style="z-index: 1000;">TRABAJO</b-dropdown-item>
                         <b-dropdown-item @click="saveLocation('OTRO', repliedMessage)" style="z-index: 1000;">OTRO</b-dropdown-item>
+                        <b-dropdown-item v-b-modal.saveInvoiceLocation @click="openSaveInvoiceLocationModal(repliedMessage)" style="z-index: 1000;">COMANDA</b-dropdown-item>
                       </b-dropdown>
                     </div>
                     
@@ -1560,7 +1576,7 @@
 
                                       
                                   </template>
-                              </vue-good-table >
+                              </vue-good-table>
                             
                             
                             <p class="font-weight-bold text-muted" style="font-size: medium;"> 
@@ -1676,7 +1692,7 @@ export default {
 
 
       selectedCloseLocality: null,
-      closeLocalityOptions: ["King Vape Escazu", "King Vape Zapote","King Vape Cartago", "King Vape Heredia"],
+      closeLocalityOptions: ["King Vape Escazu", "King Vape Zapote","King Vape Cartago", "King Vape Heredia", "King Vape Center"],
 
       localitiesOptions: [],
       selectedLocality: null,
@@ -1710,6 +1726,41 @@ export default {
       openHistoryLoader: false,
       historyLoader: false,
       historyConversations: [],
+
+      historyConversationsColumns: [
+        {
+          label: "Atendido por",
+          field: "agentName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Resultado",
+          field: "whatsappConversationCloseComment",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Fecha de inicio",
+          field: "whatsappConversationStartDateTime",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Fecha de finalización",
+          field: "whatsappConversationEndDateTime",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "",
+          field: "whatsappConversationActions",
+          thClass: "text-right",
+          tdClass: "text-right",
+        }
+      ],
+
+
       currentHistoryConversation: {},
 
       hints: {},
@@ -1916,11 +1967,52 @@ export default {
       websocketConnection: null,
       websocketIsConnected: false,
       websocketReconnectInterval: 3000,
-      websocketPingInterval: null
+      websocketPingInterval: null,
+
+      invoiceLocationMessage: null,
+      invoiceLocationName: ''
     };
   },
 
   methods: {
+    scrollToBottomHistory(){
+      let scrollInterval = setInterval(() => {
+        if (this.$refs.historyScroll) {
+          const scrollableDiv = this.$refs.historyScroll;
+          scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
+          clearInterval(scrollInterval);
+        }
+      }, 1);
+    },
+
+    saveInvoiceLocation(){
+      if (this.invoiceLocationName != ''){
+        axios.post(constants.routes.backendAPI+'/insertWhatsappInvoiceLocation',
+        {
+          whatsappInvoiceLocationName: this.invoiceLocationName,
+          whatsappInvoiceLocationLocation: {'latitude': this.invoiceLocationMessage.whatsappLocationMessageLatitude, 'longitude': this.invoiceLocationMessage.whatsappLocationMessageLongitude}
+        })
+        .then((response) =>{
+          if (response.data.success){
+            this.showNotification('success', 'Ubicación guardada', 'Se ha guardado la ubicación exitosamente.');
+          } else {
+            this.showNotification('danger', 'Error al guardar la ubicación', 'Ha ocurrido un error inesperado al guardar la ubicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }
+        })
+        .catch(() => {
+          this.showNotification('danger', 'Error al guardar la ubicación', 'Ha ocurrido un error inesperado al guardar la ubicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        })
+      } else {
+        this.showNotification('danger', 'Error al guardar la ubicación', 'Por favor coloque el nombre de la ubicación e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      }
+    },
+
+    openSaveInvoiceLocationModal(invoiceLocationMessage){
+      this.invoiceLocationMessage = invoiceLocationMessage;
+      this.invoiceLocationName = '';
+    },
+
+
     changeCartagoMap(mvcArray){
       let paths = [];
       for (let i=0; i<mvcArray.getLength(); i++) {
@@ -1931,8 +2023,6 @@ export default {
         }
         paths.push(path);
       }
-      console.log('CARTAGO: ');
-      console.log(paths);
     },
 
     openEndConversationModal(){
@@ -2643,7 +2733,6 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.$root.$emit('bv::hide::modal','historyConversationsModal');
           this.currentHistoryConversation = response.data.result[historyConversation.whatsappConversationID];
           this.openHistoryLoader = false;
         } else {
@@ -2830,7 +2919,7 @@ export default {
       this.stockLoader = true;
       let me = this;
       axios.get('https://noah.cr/BackendKingVape/api/ProductosWebs/'+codigoProducto).then(function(response){
-        var textoExistencia = '';
+        console.log(response.data);
         for (var indice in response.data){
           if (textoExistencia == ''){
             textoExistencia = response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
@@ -2857,7 +2946,7 @@ export default {
     },
 
     getLocation(whatsappGeneralMessage){
-      return {lat: whatsappGeneralMessage.whatsappLocationMessageLatitude, lng: whatsappGeneralMessage.whatsappLocationMessageLongitude}
+      return {lat: whatsappGeneralMessage.whatsappLocationMessageLatitude, lng: whatsappGeneralMessage.whatsappLocationMessageLongitude};
     },
 
 
@@ -3551,6 +3640,8 @@ export default {
         }
         this.sendingMessageDisable = true;
         whatsappTextMessageContent = whatsappTextMessageContent.replace('#','');
+        whatsappTextMessageContent = whatsappTextMessageContent.replace('&',' ');
+
         axios.get(constants.routes.backendAPI
             +'/sendWhatsappTextMessage?'
             +'&whatsappConversationRecipientPhoneNumber='+this.currentActiveConversation.whatsappConversationRecipientPhoneNumber
