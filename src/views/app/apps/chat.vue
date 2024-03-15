@@ -2919,7 +2919,7 @@ export default {
       this.stockLoader = true;
       let me = this;
       axios.get('https://noah.cr/BackendKingVape/api/ProductosWebs/'+codigoProducto).then(function(response){
-        console.log(response.data);
+        var textoExistencia = '';
         for (var indice in response.data){
           if (textoExistencia == ''){
             textoExistencia = response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
@@ -2932,6 +2932,7 @@ export default {
         me.stockContent = textoExistencia;
         me.saveStockDatabase();
       }).catch(function(error){
+        console.log(error);
         me.$bvToast.toast("Ha ocurrido un error inesperado al consultar el stock. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
           title: "Error al consultar stock",
           variant: "danger",
