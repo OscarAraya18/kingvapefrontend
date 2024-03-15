@@ -502,8 +502,6 @@
 import axios from 'axios';
 const constants = require('@../../../src/constants.js');
 
-import VueBarcode from 'vue-barcode'
-
 
 export default {
   components: {VueBarcode},
