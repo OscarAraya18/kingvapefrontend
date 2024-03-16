@@ -30,7 +30,6 @@
         :rows="whatsappInvoiceProducts">
         <template slot="table-row" slot-scope="props">  
           <div v-if="props.column.field == 'CodigoP'">
-            <VueBarcode :value="props.row.CodigoP" :width="1" :height="35"></VueBarcode>
           </div>
           <div v-else-if="props.column.field == 'precio'">
             ₡{{ parseInt(props.row.precio).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}
@@ -127,6 +126,55 @@
       <div style="text-align: center;">
         <b-button @click="returnWhatsappConversation()" variant="info">Regresar al call center</b-button>
       </div>
+
+    </b-modal>
+
+
+    <b-modal id="mensajeroModal" size="lg" centered hide-footer title="Información del envío">
+          <h5><strong>Estado: </strong> {{ updatedWhatsappInvoice.whatsappInvoiceState }}</h5>
+          <h5><strong>Método de envío: </strong> {{ updatedWhatsappInvoice.whatsappInvoiceShippingMethod }}</h5>
+          <h5><strong>Método de pago: </strong> {{updatedWhatsappInvoice.whatsappInvoicePaymentMethod}}</h5>
+          <h5><strong>Estado de pago: </strong> {{ updatedWhatsappInvoice.whatsappInvoicePaymentState }}</h5>
+
+          <br>
+          <h5><strong>Nota de la dirección: </strong></h5>
+          <div style="display: flex;">
+            <b-form-textarea disabled no-resize rows="5" class="form-control" placeholder="Coloque una nota de la dirección" v-model="updatedWhatsappInvoice.whatsappInvoiceLocationNote"/>
+            <div class="flex-grow-1"></div>
+          </div>
+          <br>
+
+          <h5><strong>Nota del envío: </strong></h5>
+          <div style="display: flex;">
+            <b-form-textarea disabled no-resize rows="5" class="form-control" placeholder="Coloque una nota del envío" v-model="updatedWhatsappInvoice.whatsappInvoiceShippingNote"/>    
+            <div class="flex-grow-1"></div>
+          </div>
+          <br>
+
+          
+          <h5><strong>Ubicación: </strong></h5>
+          <GmapMap :center="getWhatsappInvoiceClientLocation()" :zoom="13" style="width: 100%; height: 300px" v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation">
+            <GmapMarker :position="getWhatsappInvoiceClientLocation()" :draggable="false"/>
+            <GmapMarker id="zapoteTag" :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
+            <GmapMarker id="escazuTag" :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
+            <GmapMarker id="cartagoTag" :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
+            <GmapMarker id="herediaTag" :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
+            <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
+            <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
+            <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
+            <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
+          </GmapMap>
+          <br>
+
+          <div style="text-align: center;">
+            <div style="display: flex;">
+              <img @click="contactClient()" src="@/assets/pageAssets/w.png" alt style="width: 50px; margin-right: 20px; height: auto;"/>
+              <img @click="goWithMaps()" src="@/assets/pageAssets/map.png" alt style="width: 50px; margin-right: 20px; height: auto;"/>
+              <img @click="goWithWaze()" src="@/assets/pageAssets/z.png" alt style="width: 50px; height: auto;"/>
+
+            </div>
+          </div>
+
 
     </b-modal>
 
@@ -411,13 +459,13 @@
     </div>
 
     <div v-if="agentType == 'locality'">
-      <b-card :style="localityColor">
+      <b-card>
         <div style="justify-content: center; display: flex;">
           <div style="display: flex;">
             <h1 style="margin-top: auto; margin-bottom: auto;"><strong>{{ localityName }}</strong></h1>
             <div style="margin-left: 30px;">
-              <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="warning">{{zapoteLocalityWhatsappInvoiceAmount}}</b-badge>
-              <b-badge style="font-size: x-large;" pill variant="success">{{zapoteShippingWhatsappInvoiceAmount}}</b-badge>
+              <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="warning">{{localityWhatsappInvoiceAmount}}</b-badge>
+              <b-badge style="font-size: x-large;" pill variant="success">{{shippingWhatsappInvoiceAmount}}</b-badge>
             </div>
           </div>
         </div>
@@ -446,6 +494,48 @@
                 <div style="text-align: end; margin-bottom: 10px;">
                   <b-badge v-if="whatsappInvoice.whatsappInvoiceState == 'S'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="warning">S</b-badge>
                   <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'R'" @click="clickOnShippingInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">R</b-badge>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </b-card>
+    </div>
+
+    
+    <div v-if="agentType == 'localityAgent'">
+      <b-card :style="localityColor">
+        <div style="justify-content: center; display: flex;">
+          <div style="display: flex;">
+            <div style="margin-left: 30px;">
+              <b-badge style="font-size: x-large;" pill variant="success">{{localityAgentInvoicesAmount}}</b-badge>
+            </div>
+          </div>
+        </div>
+        <br>
+        
+        <div style="max-height: 75vh; overflow-y: auto; display: flex; gap: 10px; flex-wrap: wrap;  width: 100%;">
+          <div v-for="whatsappInvoice in localityAgentInvoices">
+            <div style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white; width: 100%;">
+              <div style="width: 70%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
+                <h5 style="cursor: pointer; margin-top: 10px;"><strong>Órden: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
+                <h5 style="cursor: pointer;"><strong>Nombre: </strong>{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
+                <h5 style="cursor: pointer;"><strong>Número: </strong>{{ parsePhoneNumber(whatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h5>
+                <h5 style="cursor: pointer;"><strong>Monto: </strong>₡{{ parseInt(whatsappInvoice.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h5>
+                <h5 style="cursor: pointer;"><strong>Agente: </strong>{{ whatsappInvoice.agentName }}</h5>
+              </div>
+              <div style="width: 30%; margin-top: auto; margin-bottom: auto;">
+                <div style="display: flex; margin-top: 10px;"> 
+                  <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(whatsappInvoice)" class="i-Shopping-Cart" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
+                  <i v-b-modal.mensajeroModal @click="openWhatsappInvoiceInformation(whatsappInvoice)" class="i-Information text-info" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
+                </div>
+                <div style="margin-top: 10px; margin-bottom: 10px; margin-right: 10px;">
+                  <b-badge style="font-size: larger; margin-bottom: 10px;" pill variant="warning">{{ whatsappInvoice.whatsappInvoiceLocalityDateTimeRepresentation }}</b-badge>
+                  <br>
+                  <b-badge style="font-size: larger;" pill variant="success">{{ whatsappInvoice.whatsappInvoiceShippingDateTimeRepresentation }}</b-badge>
+                </div>
+                <div style="text-align: end; margin-bottom: 10px;">
+                  <b-badge v-if="whatsappInvoice.whatsappInvoiceState == 'R'" @click="clickOnShippingInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">R</b-badge>
                 </div>
               </div>
             </div>
@@ -504,10 +594,13 @@ const constants = require('@../../../src/constants.js');
 
 
 export default {
-  components: {VueBarcode},
+  components: {},
 
   data() {
     return {
+
+      localityAgentInvoices: [],
+      localityAgentInvoicesAmount: 0,
 
       cartagoMap: [],
       cartagoMapOptions: {
@@ -635,6 +728,30 @@ export default {
   },
   
   methods: {
+
+    contactClient(){
+      const whatsappNumber = this.updatedWhatsappInvoice.whatsappInvoiceClientPhoneNumber;
+      const agentName = localStorage.getItem('localityAgentName');
+      const whatsappInvoiceID = this.updatedWhatsappInvoice.whatsappInvoiceID;
+
+      const texto = 'Hola! Mi nombre es ' + agentName + ' y el día de hoy estaré entregando tu pedido con el número de órden ' + whatsappInvoiceID 
+      var url = 'https://api.whatsapp.com/send?phone=' + whatsappNumber + '&text=' + texto
+      window.open(url, '_blank');
+
+    },
+
+    goWithMaps(){
+      const location = JSON.parse(this.updatedWhatsappInvoice.whatsappInvoiceClientLocation);
+      var url = 'https://maps.google.com?q=' + location.latitude  + ',' + location.longitude;
+      window.open(url, '_blank');
+    },
+
+    goWithWaze(){
+      const location = JSON.parse(this.updatedWhatsappInvoice.whatsappInvoiceClientLocation);
+      var url = 'https://www.waze.com/ul?ll=' + location.latitude + ',' + location.longitude;
+      window.open(url, '_blank');
+    },
+
     clickOnCentralInvoice(whatsappInvoice){
       if (this.agentType == 'central'){
         axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceState', 
@@ -920,7 +1037,6 @@ export default {
           }
         }
       }
-      alert(whatsappInvoiceLocationID);
       axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceClientLocation', 
       {
         whatsappInvoiceID: this.updatedWhatsappInvoice.whatsappInvoiceID,
@@ -1102,63 +1218,21 @@ export default {
     selectAllActiveWhatsappInvoiceFromLocalityAgent(){
       axios.post(constants.routes.backendAPI+'/selectAllActiveWhatsappInvoiceFromLocalityAgent', 
       {
-        localityAgentID: localStorage.getItem('localityAgentID') 
+        localityAgentID: localStorage.getItem('localityAgentID')
       })
       .then((response) =>{
         if (response.data.success){
           this.localityAgentInvoices = [];
           this.localityAgentInvoicesAmount = 0;
-          
           const whatsappInvoices = response.data.result;
           for (var whatsappInvoiceIndex in whatsappInvoices){
             const whatsappInvoice = whatsappInvoices[whatsappInvoiceIndex];
-
             whatsappInvoice.whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceCentralDateTime))/1000), whatsappInvoice.whatsappInvoiceCentralDateTime);
             whatsappInvoice.whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceLocalityDateTime))/1000), whatsappInvoice.whatsappInvoiceLocalityDateTime);
             whatsappInvoice.whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceShippingDateTime))/1000), whatsappInvoice.whatsappInvoiceShippingDateTime);
-
-            if (whatsappInvoice.localityName == 'King Vape Zapote'){ 
-              this.zapoteWhatsappInvoices.push(whatsappInvoice);
-              if (whatsappInvoice.whatsappInvoiceState == 'C'){
-                this.zapoteCentralWhatsappInvoiceAmount = this.zapoteCentralWhatsappInvoiceAmount + 1;
-              } else if (whatsappInvoice.whatsappInvoiceState == 'S'){
-                this.zapoteLocalityWhatsappInvoiceAmount = this.zapoteLocalityWhatsappInvoiceAmount + 1;
-              } else if (whatsappInvoice.whatsappInvoiceState == 'R'){
-                this.zapoteShippingWhatsappInvoiceAmount = this.zapoteShippingWhatsappInvoiceAmount + 1;
-              }
-
-            } else if (whatsappInvoice.localityName == 'King Vape Escazú'){
-              this.escazuWhatsappInvoices.push(whatsappInvoice);
-              if (whatsappInvoice.whatsappInvoiceState == 'C'){
-                this.escazuCentralWhatsappInvoiceAmount = this.escazuCentralWhatsappInvoiceAmount + 1;
-              } else if (whatsappInvoice.whatsappInvoiceState == 'S'){
-                this.escazuLocalityWhatsappInvoiceAmount = this.escazuLocalityWhatsappInvoiceAmount + 1;
-              } else {
-                this.escazuShippingWhatsappInvoiceAmount = this.escazuShippingWhatsappInvoiceAmount + 1;
-              }
-
-            } else if (whatsappInvoice.localityName == 'King Vape Heredia'){
-              this.herediaWhatsappInvoices.push(whatsappInvoice);
-              if (whatsappInvoice.whatsappInvoiceState == 'C'){
-                this.herediaCentralWhatsappInvoiceAmount = this.herediaCentralWhatsappInvoiceAmount + 1;
-              } else if (whatsappInvoice.whatsappInvoiceState == 'S'){
-                this.herediaLocalityWhatsappInvoiceAmount = this.herediaLocalityWhatsappInvoiceAmount + 1;
-              } else if (whatsappInvoice.whatsappInvoiceState == 'R'){
-                this.herediaShippingWhatsappInvoiceAmount = this.herediaShippingWhatsappInvoiceAmount + 1;
-              }
-
-            } else if (whatsappInvoice.localityName == 'King Vape Cartago'){
-              this.cartagoWhatsappInvoices.push(whatsappInvoice);
-              if (whatsappInvoice.whatsappInvoiceState == 'C'){
-                this.cartagoCentralWhatsappInvoiceAmount = this.cartagoCentralWhatsappInvoiceAmount + 1;
-              } else if (whatsappInvoice.whatsappInvoiceState == 'S'){
-                this.cartagoLocalityWhatsappInvoiceAmount = this.cartagoLocalityWhatsappInvoiceAmount + 1;
-              } else if (whatsappInvoice.whatsappInvoiceState == 'R'){
-                this.cartagoShippingWhatsappInvoiceAmount = this.cartagoShippingWhatsappInvoiceAmount + 1;
-              }
-            }
+            this.localityAgentInvoices.push(whatsappInvoice);
+            this.localityAgentInvoicesAmount = this.localityAgentInvoicesAmount + 1;
           }
-
         } else {
           this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
@@ -1280,6 +1354,7 @@ export default {
       this.selectAllActiveWhatsappInvoice();
       this.selectAgentNames();
       this.runTimers();
+
     } else if (localStorage.getItem('agentType') == 'locality'){
       this.agentType = 'locality';
 
@@ -1299,6 +1374,7 @@ export default {
 
       this.selectAllActiveWhatsappInvoiceFromLocality();
       this.selectLocalityAgentNames();
+
     } else if (localStorage.getItem('agentType') == 'localityAgent'){
       this.agentType = 'localityAgent';
       this.selectAllActiveWhatsappInvoiceFromLocalityAgent();

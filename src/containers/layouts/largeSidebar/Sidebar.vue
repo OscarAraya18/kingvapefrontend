@@ -23,7 +23,7 @@
         <ul class="navigation-left">
           
           <li
-            v-if="locality == false"
+            v-if="locality == false && localityAgent == false"
             @mouseenter="toggleSubMenu"
             class="nav-item"
             data-item="chat"
@@ -40,7 +40,7 @@
 
 
           <li
-            v-if="locality == false"
+            v-if="locality == false && localityAgent == false"
             @mouseenter="toggleSubMenu"
             class="nav-item"
             data-item="contacts"
@@ -70,7 +70,7 @@
             <div class="triangle"></div>
           </li>
 
-          <!--
+          
           <li
             @mouseenter="toggleSubMenu"
             class="nav-item"
@@ -84,7 +84,7 @@
             </router-link>
             <div class="triangle"></div>
           </li>
--->
+
           <li
             @mouseenter="toggleSubMenu"
             :class="{ active: selectedParentMenu == 'ranking' }"
@@ -896,6 +896,7 @@ export default {
       ranking: false,
 
       locality: false,
+      localityAgent: false,
 
       loader: false,
 
@@ -926,6 +927,11 @@ export default {
 
     if (localStorage.getItem('locality') == 'yes'){
       this.locality = true;
+      this.ranking = false;
+    }
+
+    if (localStorage.getItem('agentType') == 'localityAgent'){
+      this.localityAgent = true;
       this.ranking = false;
     }
   },

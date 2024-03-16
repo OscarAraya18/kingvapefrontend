@@ -71,7 +71,7 @@
 
           </template>
           <div class="dropdown-menu-right" aria-labelledby="userDropdown">
-            <a class="dropdown-item" href="#" v-if="locality == false" v-b-modal.updateProfileModal style="font-size: medium;">Modificar perfil</a>
+            <a class="dropdown-item" href="#" v-if="locality == false && localityAgent == false" v-b-modal.updateProfileModal style="font-size: medium;">Modificar perfil</a>
             <a class="dropdown-item" href="#" @click.prevent="logoutUser" style="font-size: medium;">Cerrar sesión</a>
           </div>
         </b-dropdown>
@@ -176,13 +176,13 @@
 
     </b-modal>
 
-    <div style="position: fixed; bottom: 200px; right: 18px;" v-if="(ranking == false) && (locality == false)">
+    <div style="position: fixed; bottom: 200px; right: 18px;" v-if="(ranking == false) && (locality == false) && (localityAgent == false)">
       <img v-b-modal.mapModal  class="hoverAnimationTranslator" style="cursor: pointer; width: 40px; height: 40px; position: relative; top: 10px;" src="@/assets/pageAssets/map.png">
     </div>
 
 
     <div style="position: fixed; bottom: 140px; right: 15px;">
-      <b-dropdown dropup v-if="(ranking == false) && (locality == false)" id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
+      <b-dropdown dropup v-if="(ranking == false) && (locality == false) && (localityAgent == false)" id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
         <template slot="button-content">
           <img class="hoverAnimationTranslator" id="traductorButton" style="cursor: pointer; width: 45px; height: 40px; position: relative; top: 10px;" src="@/assets/icons/notification.png">
         </template>
@@ -215,7 +215,7 @@
 
     
     <div style="position: fixed; bottom: 80px; right: 20px;">
-      <b-dropdown v-if="(ranking == false) && (locality == false)" id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
+      <b-dropdown v-if="(ranking == false) && (locality == false) && (localityAgent == false)" id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
         <template slot="button-content">
           <img class="hoverAnimationTranslator" id="traductorButton" style="cursor: pointer; width: 35px; height: 40px; position: relative; top: 10px;" src="@/assets/traductor.png">
         </template>
@@ -239,7 +239,7 @@
       </b-dropdown>
     </div>
 
-    <div style="position: fixed; bottom: 30px; right: 20px;" v-if="(ranking == false) && (locality == false)">
+    <div style="position: fixed; bottom: 30px; right: 20px;" v-if="(ranking == false) && (locality == false) && (localityAgent == false)">
       <img @click="startRecording()" v-if="recordingScreen == false" class="hoverAnimationTranslator" id="traductorButton" style="cursor: pointer; width: 35px; height: 40px; position: relative; top: 10px;" src="@/assets/icons/recordScreen.png">
       <img @click="stopRecording()" v-else class="hoverAnimationTranslator" id="traductorButton" style="cursor: pointer; width: 35px; height: 40px; position: relative; top: 10px;" src="@/assets/icons/recordingScreen.png">
     </div>
@@ -260,7 +260,7 @@ import { mixin as clickaway } from "vue-clickaway";
 import router from "../../../router";
 import axios from 'axios';
 const constants = require('@../../../src/constants.js'); 
-const webSocket = new WebSocket('wss:kingvapebackend2.onrender.com');
+const webSocket = new WebSocket('wss:telasmasbackend.onrender.com');
 
 export default {
   mixins: [clickaway],
@@ -317,6 +317,7 @@ export default {
       ranking: false,
 
       locality: false,
+      localityAgent: false,
 
       isDisplay: true,
 
@@ -379,7 +380,7 @@ export default {
     this.backendURLInput = this.$store.getters.getBackendURL;
     this.websocketURLInput = this.$store.getters.getWebsocketURL;
 
-    if (localStorage.getItem('ranking') != 'yes' && (localStorage.getItem('locality') != 'yes')){
+    if (localStorage.getItem('ranking') != 'yes' && (localStorage.getItem('locality') != 'yes') && (localStorage.getItem('agentType') != 'localityAgent')){
 
       const notificationInterval = setInterval(() => {
         for (var notificationIndex in this.notifications){
@@ -463,6 +464,14 @@ export default {
       this.agentProfileImage = '';
       this.agentDefaultProfilePicture = constants.routes.agentDefaultProfilePicture;
     }
+
+    if (localStorage.getItem('agentType') == 'localityAgent'){
+      this.localityAgent = true;
+      this.ranking = false;
+      this.agentProfileImage = '';
+      this.agentDefaultProfilePicture = constants.routes.agentDefaultProfilePicture;
+    }
+    
   
   },
   computed: {

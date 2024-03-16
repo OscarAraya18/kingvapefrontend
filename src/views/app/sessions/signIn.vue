@@ -42,7 +42,7 @@
                   class="btn btn-block mt-2"
                   variant="mt-2"
                   style="background-color: #F9E530; font-size: 15px"
-                  :disabled="loaderPerfil || loaderTienda || loaderRanking"
+                  :disabled="loaderPerfil || loaderTienda || loaderRanking || loaderLocalityAgent"
                 >
                   INICIAR SESIÓN
                 </b-button>
@@ -54,14 +54,14 @@
 
                 <div style="display: flex;">
 
-                  <div style="width: 50%;">
+                  <div style="width: 33%;">
                     <b-button
                       v-if="loaderTienda == false"
                       class="btn btn-block mt-3"
                       variant="mt-2 mr-3"
-                      style="background-color: #ffd65c; font-size: 15px"
+                      style="background-color: #ffd65c; font-size: 15px;"
                       @click="openLocality()"
-                      :disabled="loaderPerfil || loaderTienda || loaderRanking"
+                      :disabled="loaderPerfil || loaderTienda || loaderRanking || loaderLocalityAgent"
                     >
                       TIENDA
                     </b-button>
@@ -70,14 +70,30 @@
                     </div>
                   </div>
 
-                  <div style="width: 48%;">
+                  <div style="width: 33%;">
+                    <b-button
+                      v-if="loaderMensajero == false"
+                      class="btn btn-block mt-3"
+                      variant="mt-2 mr-3"
+                      style="background-color: #92e4fc; font-size: 15px; margin-left: 3%;"
+                      @click="localityAgentLogin()"
+                      :disabled="loaderPerfil || loaderTienda || loaderRanking || loaderLocalityAgent"
+                    >
+                      MENSAJERO
+                    </b-button>
+                    <div v-else style="text-align: center;">
+                      <br><span class="spinner-glow spinner-glow-primary"></span>
+                    </div>
+                  </div>
+
+                  <div style="width: 31.5%;">
                     <b-button
                       v-if="loaderRanking == false"
                       class="btn btn-block mt-3"
                       variant="mt-2 ml-3"
                       style="background-color: #d8ff75; font-size: 15px"
                       @click="openRanking()"
-                      :disabled="loaderPerfil || loaderTienda || loaderRanking"
+                      :disabled="loaderPerfil || loaderTienda || loaderRanking || loaderLocalityAgent"
                     >
                       RANKING
                     </b-button>
@@ -123,6 +139,7 @@ export default {
       loaderPerfil: false,
       loaderTienda: false,
       loaderRanking: false,
+      loaderMensajero: false,
 
       passwordType: 'password',
 
@@ -147,6 +164,38 @@ export default {
   },
 
   methods: {
+    localityAgentLogin(){
+      this.loaderMensajero = true;
+      axios.post(constants.routes.backendAPI+'/localityAgentLogin',{
+        localityAgentUsername: this.inputs.username,
+        localityAgentPassword: this.inputs.password
+      })
+      .then(response =>{ 
+        if (response.data.success == true){
+          localStorage.setItem('agentType', 'localityAgent');
+          localStorage.setItem('localityAgentLocalityID', response.data.result['localityAgentLocalityID']);
+          localStorage.setItem('localityAgentName', response.data.result['localityAgentName']);
+          localStorage.setItem('localityAgentID', response.data.result['localityAgentID']);
+          router.push('/app/apps/centralInvoice');
+        } else {
+          this.loaderMensajero = false;
+          this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+            title: "Error al iniciar sesión",
+            variant: "danger",
+            solid: true
+          });
+        }
+      })
+      .catch(() =>{
+        this.loaderMensajero = false;
+        this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+          title: "Error al iniciar sesión",
+          variant: "danger",
+          solid: true
+        });
+      })
+    },
+
     openLocality(){
       this.loaderTienda = true;
       axios.post(constants.routes.backendAPI+'/localityLogin',{
@@ -174,7 +223,6 @@ export default {
       })
       .catch(() =>{
         this.loaderTienda = false;
-
         this.$bvToast.toast("Por favor, revise que su nombre de usuario y contraseña sean correctas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
           title: "Error al iniciar sesión",
           variant: "danger",
