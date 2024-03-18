@@ -502,7 +502,7 @@ export default {
 
   methods: {
     getTodayInvoices(){
-      axios.post(constants.routes.backendAPI+'/selectTodayLocalityAgentShippedInvoices',
+      axios.post('https://telasmasbackend.onrender.com/selectTodayLocalityAgentShippedInvoices',
       {
         whatsappInvoiceLocalityAgentID: localStorage.getItem('localityAgentID')
       })

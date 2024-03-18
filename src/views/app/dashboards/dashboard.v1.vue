@@ -276,16 +276,16 @@
             <div style="display: flex; margin-bottom: 25px;">
               <b-card style="width: 50%; margin-right: 1.5%; background-color: #fed330;">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>ZAPOTE:</strong></p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Zapote', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{zapoteSelled + zapoteNotSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Zapote', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{zapoteSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Zapote', 2)"v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{zapoteNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('1', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{zapoteSelled + zapoteNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('1', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{zapoteSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('1', 2)"v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{zapoteNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{zapoteSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
               <b-card style="width: 50%; margin-left: 1.5%; background-color: #e44f9c;">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>ESCAZÚ:</strong></p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Escazu', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{escazuSelled + escazuNotSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Escazu', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{escazuSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Escazu', 2)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{escazuNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('4', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{escazuSelled + escazuNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('4', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{escazuSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('4', 2)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{escazuNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{escazuSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
             </div>
@@ -293,16 +293,16 @@
             <div style="display: flex; margin-top: 25px;">
               <b-card style="width: 50%; margin-right: 1.5%; background-color: #26a699;">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>CARTAGO:</strong></p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Cartago', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{cartagoNotSelled + cartagoSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Cartago', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{cartagoSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Cartago', 2)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{cartagoNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('3', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{cartagoNotSelled + cartagoSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('3', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{cartagoSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('3', 2)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{cartagoNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
               <b-card style="width: 50%; margin-left: 1.5%; background-color: #9f7cd0;">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>HEREDIA:</strong></p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Heredia', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{herediaSelled + herediaNotSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Heredia', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{herediaSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Heredia', 2)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{herediaNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('5', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{herediaSelled + herediaNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('5', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{herediaSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('5', 2)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{herediaNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{herediaSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
             </div>
@@ -1480,40 +1480,40 @@ export default {
         this.conversacionesVendidas = response.data.result.total.whatsappSelledConversations;
         this.conversacionesNoVendidas = response.data.result.total.whatsappNotSelledConversations;
 
-        if (response.data.result.localities['King Vape Zapote']){
-          this.zapoteSelled = response.data.result.localities['King Vape Zapote'].whatsappSelledConversations;
-          this.zapoteNotSelled = response.data.result.localities['King Vape Zapote'].whatsappNotSelledConversations;
-          this.zapoteSales = response.data.result.localities['King Vape Zapote'].amount;
+        if (response.data.result.localities['1']){
+          this.zapoteSelled = response.data.result.localities['1'].whatsappSelledConversations;
+          this.zapoteNotSelled = response.data.result.localities['1'].whatsappNotSelledConversations;
+          this.zapoteSales = response.data.result.localities['1'].amount;
         } else {
           this.zapoteSelled = 0;
           this.zapoteNotSelled = 0;
           this.zapoteSales = 0;
         }
 
-        if (response.data.result.localities['King Vape Escazu']){
-          this.escazuSelled = response.data.result.localities['King Vape Escazu'].whatsappSelledConversations;
-          this.escazuNotSelled = response.data.result.localities['King Vape Escazu'].whatsappNotSelledConversations;
-          this.escazuSales = response.data.result.localities['King Vape Escazu'].amount;
+        if (response.data.result.localities['4']){
+          this.escazuSelled = response.data.result.localities['4'].whatsappSelledConversations;
+          this.escazuNotSelled = response.data.result.localities['4'].whatsappNotSelledConversations;
+          this.escazuSales = response.data.result.localities['4'].amount;
         } else {
           this.escazuSelled = 0;
           this.escazuNotSelled = 0;
           this.escazuSales = 0;
         }
 
-        if (response.data.result.localities['King Vape Cartago']){
-          this.cartagoSelled = response.data.result.localities['King Vape Cartago'].whatsappSelledConversations;
-          this.cartagoNotSelled = response.data.result.localities['King Vape Cartago'].whatsappNotSelledConversations;
-          this.cartagoSales = response.data.result.localities['King Vape Cartago'].amount;
+        if (response.data.result.localities['3']){
+          this.cartagoSelled = response.data.result.localities['3'].whatsappSelledConversations;
+          this.cartagoNotSelled = response.data.result.localities['3'].whatsappNotSelledConversations;
+          this.cartagoSales = response.data.result.localities['3'].amount;
         } else {
           this.cartagoSelled = 0;
           this.cartagoNotSelled = 0;
           this.cartagoSales = 0;
         }
 
-        if (response.data.result.localities['King Vape Heredia']){
-          this.herediaSelled = response.data.result.localities['King Vape Heredia'].whatsappSelledConversations;
-          this.herediaNotSelled = response.data.result.localities['King Vape Heredia'].whatsappNotSelledConversations;
-          this.herediaSales = response.data.result.localities['King Vape Heredia'].amount;
+        if (response.data.result.localities['5']){
+          this.herediaSelled = response.data.result.localities['5'].whatsappSelledConversations;
+          this.herediaNotSelled = response.data.result.localities['5'].whatsappNotSelledConversations;
+          this.herediaSales = response.data.result.localities['5'].amount;
         } else {
           this.herediaSelled = 0;
           this.herediaNotSelled = 0;

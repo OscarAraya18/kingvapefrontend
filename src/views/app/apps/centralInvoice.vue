@@ -678,6 +678,8 @@
                 <h5 style="cursor: pointer;"><strong>Nombre: </strong>{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
                 <h5 style="cursor: pointer;"><strong>Número: </strong>{{ parsePhoneNumber(whatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h5>
                 <h5 style="cursor: pointer;"><strong>Monto: </strong>₡{{ parseInt(whatsappInvoice.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h5>
+                <h5 style="cursor: pointer;"><strong>Método de pago: </strong>{{ whatsappInvoice.whatsappInvoicePaymentMethod }}</h5>
+
                 <h5 style="cursor: pointer;"><strong>Agente: </strong>{{ whatsappInvoice.agentName }}</h5>
               </div>
               <div style="width: 30%; margin-top: auto; margin-bottom: auto;">
@@ -935,7 +937,7 @@ export default {
       updateWhatsappInvoiceStateOptions: [{value: 'C', text: 'Central'}, , {value: 'S', text: 'Sucursal'}, {value: 'E', text: 'Entregado'}, {value: 'X', text: 'Cancelado'}],
       updateWhatsappInvoiceShippingMethodOptions: [{value: 'Envío por motorizado', text: 'Envío por motorizado'}, {value: 'Retiro en sucursal', text: 'Retiro en sucursal'}, {value: 'Correos de CR', text: 'Correos de CR'}, {value: 'Encomienda', text: 'Encomienda'}, {value: 'Uber Flash', text: 'Uber Flash'}],
       updateWhatsappInvoicePaymentMethodOptions: [{value: 'Efectivo', text: 'Efectivo'}, {value: 'Tarjeta', text: 'Tarjeta'}, {value: 'SINPE (confirmado)', text: 'SINPE (confirmado)'}, {value: 'SINPE (contra entrega)', text: 'SINPE (contra entrega)'}, {value: 'Transferencia', text: 'Transferencia'}, {value: 'Pago mixto', text: 'Pago mixto'}],
-      updateWhatsappInvoicePaymentStateOptions: [{value: 'Pago', text: 'Pago'}, {value: 'Pendiente', text: 'Pendiente'}, {value: 'Pago parcial', text: 'Pago parcial'}],
+      updateWhatsappInvoicePaymentStateOptions: [{value: 'Pagado', text: 'Pagado'}, {value: 'Pendiente', text: 'Pendiente'}, {value: 'Pago parcial', text: 'Pago parcial'}],
 
 
       updatedWhatsappInvoiceLocation: 'Ubicación original',
@@ -1754,12 +1756,12 @@ export default {
         }
 
         for (var herediaWhatsappInvoiceIndex in this.herediaWhatsappInvoices){
-          this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime))/1000), this.herediaWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime);
-          this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime))/1000), this.herediaWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime);
-          this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime))/1000), this.herediaWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime);
+          this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime))/1000), this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime);
+          this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime))/1000), this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime);
+          this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime))/1000), this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime);
         }
 
-        for (var cartagoWhatsappInvoiceIndex in this.herediaWhatsappInvoices){
+        for (var cartagoWhatsappInvoiceIndex in this.cartagoWhatsappInvoices){
           this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime))/1000), this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime);
           this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime))/1000), this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime);
           this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime))/1000), this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime);

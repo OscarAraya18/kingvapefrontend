@@ -1706,7 +1706,7 @@ export default {
       whatsappInvoicePaymentMethodOptions: ['Método de pago', 'Efectivo', 'Tarjeta', 'Pago mixto', 'SINPE (confirmado)', 'SINPE (contra entrega)', 'Transferencia'],
       whatsappInvoicePaymentMethod: 'Método de pago',
 
-      whatsappInvoicePaymentStateOptions: ['Estado del pago', 'Pago', 'Pendiente', 'Pago parcial'],
+      whatsappInvoicePaymentStateOptions: ['Estado del pago', 'Pagado', 'Pendiente', 'Pago parcial'],
       whatsappInvoicePaymentState: 'Estado del pago',
 
       whatsappInvoiceClientLocationOptions: ['Ubicación de envío', 'CASA', 'TRABAJO', 'OTRO'],
@@ -2749,7 +2749,7 @@ export default {
             descuento = descuento + ((this.currentActiveConversation.whatsappConversationProducts[productIndex].descuento/100)*((this.currentActiveConversation.whatsappConversationProducts[productIndex].precio)*this.currentActiveConversation.whatsappConversationProducts[productIndex].cantidad));
           }
           var amount = subTotal - descuento;
-
+          amount = Math.round(amount);
 
           axios.post(constants.routes.backendAPI+'/insertWhatsappInvoice',
           {
