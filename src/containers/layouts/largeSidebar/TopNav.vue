@@ -47,15 +47,21 @@
       </div>
     </b-modal>
 
-    <div class="logo">
+    <div class="logo" v-if="agentType != 'localityAgent'">
       <a href="https://www.kingvapecr.com" target="_blank">
         <img src="@/assets/images/logo.webp" alt style="width: 80px; height: auto; margin-left: 35px;"/>
       </a>
     </div>
-    <i class="i-Sidebar-Window header-icon d-sm-inline-block" style="margin-left: 10px;" @click="sideBarToggle"></i>
-    <i class="i-Full-Screen header-icon d-sm-inline-block" @click="handleFullScreen"></i>
+    <i v-if="agentType != 'localityAgent'" class="i-Sidebar-Window header-icon d-sm-inline-block" style="margin-left: 10px;" @click="sideBarToggle"></i>
+    <i v-if="agentType != 'localityAgent'" class="i-Full-Screen header-icon d-sm-inline-block" @click="handleFullScreen"></i>
+
+    <div v-else>
+      <b-badge style="font-size: x-large;" pill variant="success">{{ todayInvoices }}</b-badge>
+    </div>
 
     <div style="margin: auto"></div>
+
+
 
     <div class="header-part-right">
       <button @click="updateApplicationStatus()" :class="getApplicationStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="(ranking == false) && (agentType == 'admin')"><strong>{{ applicationStatus }}</strong></button>
@@ -368,7 +374,10 @@ export default {
 
       backendURLInput: '',
       websocketURLInput: '',
-      tokenAPI: ''
+      tokenAPI: '',
+
+
+      todayInvoices: 0
 
     };
   },
@@ -379,6 +388,10 @@ export default {
     this.escazuMap = constants.routes.escazuMap;
     this.backendURLInput = this.$store.getters.getBackendURL;
     this.websocketURLInput = this.$store.getters.getWebsocketURL;
+
+
+    this.agentType = localStorage.getItem('agentType');
+
 
     if (localStorage.getItem('ranking') != 'yes' && (localStorage.getItem('locality') != 'yes') && (localStorage.getItem('agentType') != 'localityAgent')){
 
@@ -421,7 +434,6 @@ export default {
 
       this.selectApplicationStatus();
       this.selectAgentNotifications();
-      this.agentType = localStorage.getItem('agentType');
       this.agentName = localStorage.getItem('agentName');
       this.agentProfileImage = localStorage.getItem('agentProfileImage');
       this.agentUsername = localStorage.getItem('agentUsername');
@@ -470,6 +482,7 @@ export default {
       this.ranking = false;
       this.agentProfileImage = '';
       this.agentDefaultProfilePicture = constants.routes.agentDefaultProfilePicture;
+      this.getTodayInvoices();
     }
     
   
@@ -488,6 +501,30 @@ export default {
   },
 
   methods: {
+    getTodayInvoices(){
+      axios.post(constants.routes.backendAPI+'/selectTodayLocalityAgentShippedInvoices',
+      {
+        whatsappInvoiceLocalityAgentID: localStorage.getItem('localityAgentID')
+      })
+      .then((response) =>{ 
+        if (response.data.success){
+          this.todayInvoices = response.data.result[0].result;
+        } else {
+          this.$bvToast.toast('Ha ocurrido un error inesperado al consultar las comandas entregadas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+            title: 'Error al consultar las comandas entregadas',
+            variant: 'danger',
+            solid: true
+          });
+        }
+      })
+      .catch((error) =>{
+        this.$bvToast.toast('Ha ocurrido un error inesperado al consultar las comandas entregadas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+          title: 'Error al consultar las comandas entregadas',
+          variant: 'danger',
+          solid: true
+        });
+      });
+    },
 
     updateBackendURL(){
       console.log(this.$store.state.database.backendURL);
@@ -1034,7 +1071,7 @@ export default {
 
     logoutUser() {
       if (this.ranking == false){
-        if (this.locality == true){
+        if (this.locality == true || this.agentType == 'localityAgent'){
           localStorage.clear();
           router.push("/app/sessions/signIn");
         } else {

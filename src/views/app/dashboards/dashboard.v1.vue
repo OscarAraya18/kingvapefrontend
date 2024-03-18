@@ -59,6 +59,31 @@
       </div>
     </b-modal>
 
+    <b-modal scrollable size="lg" centered id="conversationListModal" hide-footer hide-header>
+      <div v-if="localityLoader" style="text-align: center;">
+        <br><span class="spinner-glow spinner-glow-primary"></span>
+      </div>
+
+      <div v-else>
+        <div style="height: 85vh; overflow-y: auto;">
+          <vue-good-table
+            :columns="localityConversationColumns"
+            :line-numbers="false"
+            styleClass="order-table vgt-table"
+            :rows="conversationsByLocalityNameAndType"
+          >
+            <template slot="table-row" slot-scope="props">
+              <button v-b-modal.conversationModal  v-if="props.column.field == 'whatsappConversationID'" class="btn btn-outline-primary text-black btn-rounded" @click="whatsappConversationOpenAction(props.row)">Abrir</button>
+              <div v-else-if="props.column.field == 'whatsappConversationRecipientPhoneNumber'">{{ parseNumber(props.row.whatsappConversationRecipientPhoneNumber) }}</div>
+              <div v-else-if="props.column.field == 'whatsappConversationStartDateTime'">{{ parseHour(props.row.whatsappConversationStartDateTime) }}</div>
+              <div v-else-if="props.column.field == 'whatsappConversationAmount'">₡{{props.row.whatsappConversationAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</div>
+
+            </template>
+          </vue-good-table>
+        </div>
+      </div>
+    </b-modal>
+
 
     <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
       <img style="width: 1000px;" :src="bigImageSource">
@@ -251,16 +276,16 @@
             <div style="display: flex; margin-bottom: 25px;">
               <b-card style="width: 50%; margin-right: 1.5%; background-color: #fed330;">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>ZAPOTE:</strong></p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{zapoteSelled + zapoteNotSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{zapoteSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{zapoteNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Zapote', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{zapoteSelled + zapoteNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Zapote', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{zapoteSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Zapote', 2)"v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{zapoteNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{zapoteSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
               <b-card style="width: 50%; margin-left: 1.5%; background-color: #e44f9c;">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>ESCAZÚ:</strong></p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{escazuSelled + escazuNotSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{escazuSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{escazuNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Escazu', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{escazuSelled + escazuNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Escazu', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{escazuSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Escazu', 2)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{escazuNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{escazuSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
             </div>
@@ -268,16 +293,16 @@
             <div style="display: flex; margin-top: 25px;">
               <b-card style="width: 50%; margin-right: 1.5%; background-color: #26a699;">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>CARTAGO:</strong></p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{cartagoNotSelled + cartagoSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{cartagoSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{cartagoNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Cartago', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{cartagoNotSelled + cartagoSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Cartago', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{cartagoSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Cartago', 2)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{cartagoNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
               <b-card style="width: 50%; margin-left: 1.5%; background-color: #9f7cd0;">
                 <p style="font-size: 25px; margin-top: 5px;"><strong>HEREDIA:</strong></p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{herediaSelled + herediaNotSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{herediaSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{herediaNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Heredia', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{herediaSelled + herediaNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Heredia', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{herediaSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('King Vape Heredia', 2)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{herediaNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{herediaSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
             </div>
@@ -370,6 +395,10 @@
                   <div v-else>
                     <span class="spinner-glow spinner-glow-primary"></span>
                   </div>
+                </div>
+
+                <div v-else-if="props.column.field == 'whatsappConversationID'">
+                  <button v-b-modal.conversationModal class="btn btn-outline-primary text-black btn-rounded" @click="whatsappConversationOpenAction(props.row)">Abrir</button>
                 </div>
 
               </template>
@@ -889,6 +918,12 @@ export default {
 
       feedbackColumns: [
         {
+          label: "Conversación",
+          field: "whatsappConversationID",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
           label: "Número del cliente",
           field: "whatsappConversationRecipientPhoneNumber",
           thClass: "text-left",
@@ -1047,6 +1082,46 @@ export default {
       originalActiveConversationsRows: [],
       closedConversationsRows: [],
 
+      localityConversationColumns: [
+        {
+          label: "Conversación",
+          field: "whatsappConversationID",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Número del cliente",
+          field: "whatsappConversationRecipientPhoneNumber",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Nombre del cliente",
+          field: "whatsappConversationRecipientProfileName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Cantidad",
+          field: "whatsappConversationAmount",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Fecha",
+          field: "whatsappConversationStartDateTime",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Resultado",
+          field: "whatsappConversationCloseComment",
+          thClass: "text-left",
+          tdClass: "text-left",
+        }
+      ],
+
+
       closedConversationsColumns: [
         {
           label: "Estado",
@@ -1110,7 +1185,10 @@ export default {
       transferWhatsappConversationID: null,
       transferCurrentAgentID: null,
 
-      numberSearched: ''
+      numberSearched: '',
+
+      conversationsByLocalityNameAndType: [],
+      localityLoader: false
     };
   },
 
@@ -1170,6 +1248,27 @@ export default {
           }
         });
       }, 1);
+    },
+
+    selectTodayConversationsByLocalityNameAndType(whatsappConversationLocalityName, whatsappConversationType){
+      this.localityLoader = true;
+      axios.post(constants.routes.backendAPI+'/selectTodayConversationsByLocalityNameAndType', 
+      {
+        'whatsappConversationLocalityName': whatsappConversationLocalityName,
+        'whatsappConversationType': whatsappConversationType
+      }).then((response) =>{
+        this.localityLoader = false; 
+        if (response.data.success){
+          this.conversationsByLocalityNameAndType = response.data.result;
+        } else {
+          this.showNotification('danger', 'Error al consultar las conversaciones', 'Ha ocurrido un error inesperado al consultar las conversaciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch(() =>{
+        this.localityLoader = false;
+        feedback.whatsappFeedbackLoading = false;
+        this.showNotification('danger', 'Error al consultar las conversaciones', 'Ha ocurrido un error inesperado al consultar las conversaciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
     },
 
     cleanAgentFilter(){
@@ -1702,14 +1801,12 @@ export default {
     },
 
     whatsappConversationOpenAction(whatsappConversation){
-
       this.openedName = whatsappConversation.whatsappConversationRecipientProfileName;
       this.openedNumber = whatsappConversation.whatsappConversationRecipientPhoneNumber;
 
       var whatsappConversationID = whatsappConversation.whatsappConversationID;
       this.openConversationLoader = true;
       this.currentConversation = {};
-      const me = this;
       axios.post(constants.routes.backendAPI+'/selectAgentConversation', 
       {
         whatsappConversationID: whatsappConversationID

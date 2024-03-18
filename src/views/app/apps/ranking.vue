@@ -95,7 +95,7 @@ import StarRating from 'vue-star-rating'
 
 
 const constants = require('@../../../src/constants.js'); 
-const webSocket = new WebSocket('wss:kingvapebackend2.onrender.com');
+const webSocket = new WebSocket('wss:telasmasbackend.onrender.com');
 
 export default {
   
@@ -164,7 +164,7 @@ export default {
           labels: Object.keys(response.data),
           legend: {fontSize: '30px'},
           colors: this.getAgentColors(Object.keys(response.data)),
-          dataLabels: {enabled: false}
+          dataLabels: {enabled: true}
         };
       });
 

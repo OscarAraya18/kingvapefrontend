@@ -24,7 +24,7 @@
                   <br><br><br><span class="spinner-glow spinner-glow-primary"></span>
                 </div>
                 
-                <div v-else v-for="activeConversationID in sortedConversationsID" @click="changeCurrentActiveConversation(activeConversationsAsJSON[activeConversationID], activeConversationID, false)" :style="getConversationStyle(activeConversationID)" class="p-3 d-flex border-bottom align-items-center hoverTest" :id="'hint'+activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber">
+                <div v-else v-for="activeConversationID in sortedConversationsID" @click="changeCurrentActiveConversation(activeConversationsAsJSON[activeConversationID], activeConversationID)" :style="getConversationStyle(activeConversationID)" class="p-3 d-flex border-bottom align-items-center hoverTest" :id="'hint'+activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber">
                   <h3 style="margin-right: 15px;">
                     <strong>
                       {{getReferenciaSucursal(activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber)}}
@@ -982,7 +982,7 @@
                     <div v-if="currentNavItem == 'Nicotina'">
                       <b-list-group style="height: 400px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
-                        <b-list-group-item :style="getImageStyle(agentFavoriteImage)" v-for="(agentFavoriteImage, index) in agentFavoriteImages" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
+                        <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
                           <div style="display:flex; ">
                             <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
                             <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
@@ -996,7 +996,7 @@
                     <div v-else-if="currentNavItem == 'Zero'">
                       <b-list-group style="height: 400px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
-                        <b-list-group-item :style="getImageStyle(agentFavoriteImage)" v-for="(agentFavoriteImage, index) in agentFavoriteImages2" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
+                        <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages2" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
                           <div style="display:flex; ">
                             <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
                             <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
@@ -1084,7 +1084,7 @@
                     <div v-if="currentNavItem == 'Nicotina'">
                       <b-list-group style="height: 400px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
-                        <b-list-group-item :style="getImageStyle(agentFavoriteImage)" v-for="(agentFavoriteImage, index) in agentFavoriteImages" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
+                        <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
                           <div style="display:flex; ">
                             <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
                             <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
@@ -1318,81 +1318,27 @@
                             </template>
 
                             <br>
+
                             <p style="font-size: medium;">Información personal</p>
-                            <b-form-group
-                              style="width:100%"
-                              label-for="input-1"
-                            >
-                              <b-form-input 
-                                v-model="currentActiveConversation.whatsappConversationRecipientProfileName"
-                                type="text"
-                                required
-                                placeholder="Nombre del cliente"
-                                style="margin-bottom: 10px;"
-                                @keyup="modificarNombre()"
-                              ></b-form-input>
-
-                              <b-form-input
-                                type="text"
-                                v-model="currentActiveConversation.whatsappConversationRecipientPhoneNumber"
-                                placeholder="Número de teléfono del cliente"
-                                style="margin-bottom: 10px;"
-                              ></b-form-input>
-
-                              <div style="display: flex;">
-                                <b-form-input
-                                  type="text"
-                                  v-model="currentActiveConversation.whatsappConversationRecipientID"
-                                  placeholder="Cédula del cliente"
-                                  style="margin-bottom: 10px; width: 90%"
-                                  @keyup="modificarCedula()"
-                                ></b-form-input>
-                                <div class="flex-grow-1" ></div>
-                                <div v-if="clientVerifierLoader == true" style="top: 4px; position: relative;">
-                                  <span class="spinner-glow spinner-glow-primary"></span>
-                                </div>
-                                <i v-else class="i-Yes text-25 text-info" @click="verifyClient()" style="cursor: pointer; top: 4px; position: relative;"></i>
-                              </div>
-                              <b-form-input
-                                type="text"
-                                v-model="currentActiveConversation.whatsappConversationRecipientEmail"
-                                placeholder="Correo electrónico del cliente"
-                                @keyup="modificarCorreo()"
-                              ></b-form-input>
-                              
+                            <b-form-group style="width:100%;">
+                              <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientProfileName" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientName', currentActiveConversation.whatsappConversationRecipientProfileName)" placeholder='Nombre del cliente' style='margin-bottom: 10px;'></b-form-input>
+                              <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientPhoneNumber" placeholder="Número de teléfono del cliente" style="margin-bottom: 10px;"></b-form-input>
+                              <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientID" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientID', currentActiveConversation.whatsappConversationRecipientID)" placeholder='Cédula del cliente' style='margin-bottom: 10px;'></b-form-input>
+                              <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientEmail" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientEmail', currentActiveConversation.whatsappConversationRecipientEmail)" placeholder="Correo electrónico del cliente"></b-form-input> 
                             </b-form-group>
                             
                             <br>
+                            
                             <p style="font-size: medium;">Información del envío</p>
-                            <b-form-group
-                              style="width:100%"
-                              label-for="input-1"
-                            >
-                              <b-form-select
-                                v-model="Sucursal"
-                                :options="Sucursales"
-                                id="inline-form-custom-select-pref1"
-                                style="margin-bottom: 10px;"
-                                @change="modificarSucursal()"
-                              />
-                              <b-form-select
-                                v-model="MetodoEnvio"
-                                :options="MetodosEnvio"
-                                id="inline-form-custom-select-pref1"
-                                style="margin-bottom: 10px;"
-                                @change="modificarMetodoEnvio()"
-                              >
-                              </b-form-select>
+                            <b-form-group style="width:100%">
+                              <b-form-select v-model="selectedLocality" :options="localityOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceLocalityName', selectedLocality)" style="margin-bottom: 10px;"/>
+                              
+                              <b-form-select v-model="whatsappInvoiceShippingMethod" :options="whatsappInvoiceShippingMethodOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceShippingMethod', whatsappInvoiceShippingMethod)" style="margin-bottom: 10px;"/>
+                              
                               <div style="display: flex;">
-                                <b-form-select
-                                  v-model="MetodoPago"
-                                  :options="MetodosPagos"
-                                  id="inline-form-custom-select-pref1"
-                                  :style="getPaymentMethodStyle()"
-                                  @change="modificarMetodoPago()"
-                                >
-                                </b-form-select>
-                                <b-button v-if="getPaymentMethodType()" v-b-modal.paymentMethodValidatorModal style="margin-bottom: 15px; margin-left: 10px; width: 30%" @click="validatePaymentMethod()" variant="info">Validar</b-button>
+                                <b-form-select v-model="whatsappInvoicePaymentMethod" :options="whatsappInvoicePaymentMethodOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoicePaymentMethod', whatsappInvoicePaymentMethod)" :style="getWhatsappInvoicePaymentMethodStyle()"></b-form-select>
+                                <b-button v-if="getWhatsappInvoicePaymentMethodIsSINPE()" v-b-modal.paymentMethodValidatorModal style="margin-bottom: 15px; margin-left: 10px; width: 30%" @click="validatePaymentMethod()" variant="info">Validar</b-button>
+
 
                                 <b-modal scrollable size="m" centered hide-header hide-footer id="paymentMethodValidatorModal">
                                   <div>
@@ -1442,72 +1388,30 @@
                                     <br><br>
 
                                     <h4><strong>Sucursal relacionada:</strong></h4>
-                                    <b-form-select v-model="selectedLocality" :options="localitiesOptions"></b-form-select>
+                                    <b-form-select v-model="selectedLocality" :options="localityOptions"></b-form-select>
                                     <br><br>
                                     
                                   </div>
                                 </b-modal>
-
                               </div>
-                              <b-form-input
-                                type="text"
-                                v-model="pagaCon"
-                                placeholder="El cliente paga con..."
-                                style="margin-bottom: 10px;"
-                                @keyup="modificarPagaCon()"
-                              ></b-form-input>
-                              <b-form-select
-                                type="text"
-                                v-model="estadoPago"
-                                :options="estadosPagos"
-                                style="margin-bottom: 10px;"
-                                @change="modificarEstadoPago()"
-                              ></b-form-select>
+                              
+                              <b-form-select v-model="whatsappInvoicePaymentState" :options="whatsappInvoicePaymentStateOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoicePaymentState', whatsappInvoicePaymentState)" style="margin-bottom: 10px;"></b-form-select>
+                              
+                              <b-form-select v-model="whatsappInvoiceClientLocationName" :options="whatsappInvoiceClientLocationOptions" style="margin-bottom: 10px;" @change="changeLocalStorageWhatsappInvoiceLocationInformation()"></b-form-select>
+                              <b-form-input v-model="latitud" placeholder="Latitud" style="margin-bottom: 10px;"></b-form-input>
+                              <b-form-input v-model="longitud" placeholder="Longitud" style="margin-bottom: 10px;"></b-form-input>
 
-                              <b-form-select
-                                type="text"
-                                v-model="ubicacion" 
-                                style="margin-bottom: 10px;"
-                                :options="ubicaciones"
-                                @change="modificarUbicacion()"
-                              ></b-form-select>
+                              <b-form-input v-model="whatsappInvoiceClientLocationURL" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientLocationURL', whatsappInvoiceClientLocationURL)" placeholder="Enlace de ubicación" style="margin-bottom: 10px;"></b-form-input>
 
-                              <b-form-input
-                                type="text"
-                                v-model="latitud"
-                                placeholder="Latitud"
-                                style="margin-bottom: 10px;"
-                              ></b-form-input>
-
-                              <b-form-input
-                                type="text"
-                                v-model="longitud"
-                                style="margin-bottom: 10px;"
-                                placeholder="Longitud"
-                              ></b-form-input>
                         
-                              <b-form-textarea
-                                rows="3"
-                                type="text"
-                                v-model="currentActiveConversation.whatsappConversationRecipientLocationDetails"
-                                style="margin-bottom: 10px;"
-                                placeholder="Nota de la dirección"
-                                @keyup="modificarNotaDireccion()"
-                              ></b-form-textarea>
-
-                              <b-form-textarea
-                                rows="3"
-                                type="text"
-                                style="margin-bottom: 10px;"
-                                placeholder="Nota del envío"
-                                v-model="currentActiveConversation.whatsappConversationRecipientNote"
-                                @keyup="modificarNotaEnvio()"
-                              ></b-form-textarea>
+                              <b-form-textarea v-model="currentActiveConversation.whatsappConversationRecipientLocationDetails" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceShippingNote', currentActiveConversation.whatsappConversationRecipientLocationDetails)" placeholder="Nota de la dirección" rows="3" style="margin-bottom: 10px;"></b-form-textarea>
+                              <b-form-textarea v-model="currentActiveConversation.whatsappConversationRecipientNote" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceLocationNote', currentActiveConversation.whatsappConversationRecipientNote)" placeholder="Nota del envío" rows="3" style="margin-bottom: 10px;"></b-form-textarea>
                             </b-form-group>
+
 
                             <div style="text-align: center;" v-if="loaderOrdenEnviada == false">
                               <br>
-                              <b-button @click="OrdenExpress()" variant="primary"
+                              <b-button @click="insertWhatsappInvoice()" variant="primary"
                                 >Enviar orden a la central</b-button
                               >
                               <br><br>
@@ -1591,8 +1495,6 @@
                             
                           </b-row>
 
-                          <b-button @click="fixTotal()" variant="info">Recalcular total</b-button>
-
                         </b-tab>
                     </b-tabs> 
 
@@ -1606,19 +1508,17 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from "vuex";
+import {mapGetters} from "vuex";
 import axios from 'axios';
 const constants = require('@../../../src/constants.js'); 
 
 import router from "../../../router"; 
-import {gmapApi} from 'vue2-google-maps';
 import { BDropdown } from 'bootstrap-vue';
-
 import Vue from 'vue';
 
 export default {
   watch: {
-    ubicacion(newLocation, old){
+    whatsappInvoiceClientLocationName(newLocation, old){
       if (newLocation != 'Ubicación de envío'){
         this.latitud = this.currentActiveConversation.whatsappConversationRecipientLocations[newLocation].latitude;
         this.longitud = this.currentActiveConversation.whatsappConversationRecipientLocations[newLocation].longitude;
@@ -1628,77 +1528,32 @@ export default {
       }
     },
 
-    letra(newLetra, old){
-      if (newLetra == 'Select by letter'){
-        for (var contactIndex in this.contactsList){
-          this.contactsList[contactIndex].selected = false;
-        } 
-      } else {
-        for (var contactIndex in this.contactsList){
-          if (this.contactsList[contactIndex].contactName[0].toUpperCase() == newLetra){
-            this.contactsList[contactIndex].selected = true;
-          }
-        }
-      }
-    }
   }, 
-  metaInfo: {
-    // if no subcomponents specify a metaInfo.title, this title will be used
-    title: "Chat",
-  },
   data() {
-    return { 
+    return {
       
       db: null,
 
       cartagoMap: [],
-      cartagoMapOptions: {
-        strokeColor: "#26a699",
-        strokeOpacity: 0.5,
-        strokeWeight: 3,
-        fillColor: "#26a699",
-        fillOpacity: 0.4,
-      },
-
+      cartagoMapOptions: {},
       zapoteMap: [],
-      zapoteMapOptions: {
-        strokeColor: "#fed330",
-        strokeOpacity: 0.5,
-        strokeWeight: 3,
-        fillColor: "#fed330",
-        fillOpacity: 0.4,
-      },
-
+      zapoteMapOptions: {},
       herediaMap: [],
-      herediaMapOptions: {
-        strokeColor: "#9f7cd0",
-        strokeOpacity: 0.5,
-        strokeWeight: 3,
-        fillColor: "#9f7cd0",
-        fillOpacity: 0.4,
-      },
-
+      herediaMapOptions: {},
       escazuMap: [],
-      escazuMapOptions: {
-        strokeColor: "#e44f9c",
-        strokeOpacity: 0.5,
-        strokeWeight: 3,
-        fillColor: "#e44f9c",
-        fillOpacity: 0.4,
-      },
+      escazuMapOptions: {},
 
+      zapoteConversations: [],
+      escazuConversations: [],
+      cartagoConversations: [],
+      herediaConversations: [],
 
-
-
-
-      selectedCloseLocality: null,
-      closeLocalityOptions: ["King Vape Escazu", "King Vape Zapote","King Vape Cartago", "King Vape Heredia", "King Vape Center"],
-
-      localitiesOptions: [],
+      localityOptions: [],
       selectedLocality: null,
-
+      selectedCloseLocality: 'Seleccione una localidad',
+      closeLocalityOptions: [],
+      
       currentTransactions: null,
-
       stickerName: '',
       stickerFile: '',
       loaderSendSticker: false,
@@ -1727,38 +1582,7 @@ export default {
       historyLoader: false,
       historyConversations: [],
 
-      historyConversationsColumns: [
-        {
-          label: "Atendido por",
-          field: "agentName",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Resultado",
-          field: "whatsappConversationCloseComment",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Fecha de inicio",
-          field: "whatsappConversationStartDateTime",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Fecha de finalización",
-          field: "whatsappConversationEndDateTime",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "",
-          field: "whatsappConversationActions",
-          thClass: "text-right",
-          tdClass: "text-right",
-        }
-      ],
+      historyConversationsColumns: [{label: "Atendido por", field: "agentName", thClass: "text-left", tdClass: "text-left"}, {label: "Resultado", field: "whatsappConversationCloseComment", thClass: "text-left", tdClass: "text-left"}, {label: "Fecha de inicio", field: "whatsappConversationStartDateTime", thClass: "text-left", tdClass: "text-left"}, {label: "Fecha de finalización", field: "whatsappConversationEndDateTime", thClass: "text-left", tdClass: "text-left"}, {label: "", field: "whatsappConversationActions", thClass: "text-right", tdClass: "text-right"}],
 
 
       currentHistoryConversation: {},
@@ -1774,11 +1598,12 @@ export default {
       allImageSelected: false,
 
       availableConversation: true,
-      iceLogoSRC: `data:image/png;base64,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`,
-      postreLogoSRC: `data:image/png;base64,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`,
-      tabacoLogoSRC: `data:image/png;base64,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`,
-      waxLogoSRC: `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAwCAYAAABqkJjhAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAMLSURBVGhD7Zg/kAtxFMe/d7nj5s5xc8gkjAIFlU6loqIwVCoVnYYGDZVKp6JBRXMVGjRGo9LpzBgKkiGXy925/JNkE9+fezuTWZG835/E3Ew+M5l9e7ez89m37/f27U50CLYQk7LdMoyFh81YeNiE7xLLz4FKDth+Hsjukz+GI6xw8TF/92VnG7DwFshwG5CwJVF+KIGhAVTfSxyOcMLRB6BOyW4a74BfEgcinPDyKwm6WWKJbEgchkDClCpTrhfVlxKEIYxwiVItiZNET5hliQMQQJh1u3ZP4l7k+f9e5eKGv3CRGWwkFluSFltdYcAxSvyEI2ZvNe67/TDH8cIi2fXAT/gHZbUSHR6bp7gn7sI19tiflrVZuQusS+yIozDbWP66xDbwIs2s4VEabsLfbgFNx0XUugN85VPREXthM+CUmSkf6pR27Bp2wtFHYEXTFQbxZbO71GTXAjvhHBdNqGG0wzZXYAIs0QubrlB1r72e1B6xvCRWohcu8uTBecMSs8uyUpg1Vwuc3Zg675xFm9MJr1O2LXFoOs+4ACVWoBOuM8NDg4/rhn7I1wk3k8IngMUXwK4Lsu9JW9+T9Yuum9QpIM1X+Oxp+cPo0AlPyDYmykmwH5iScETohKePSBDDVvRn6toNzLA8fJnmeZTohOeOShBjRkuZbbNX/r4DVvCCZyVUoBQ+zixIHFPhLGCeUilm/8ADnsnxC49ZD/MSK1AuOp5xLtkROLx/56u9GWBmeUGHX7Nr3GBN8wImD24eMhBe5PwZiXVYfFtbAT6d5TybaEGTF4HMNWCn7MfkKL/BR28/UreBQ+e4lX0FygwbuDD23pS4izanrvxJPr35JrHGB0D8fSIa9DGCtZu2kzVYZFgosHZLHOK9YMksPqWwfd1bZFhIsyvs4c+ZY7xZvGAHWYN9hmPMbJy7yltv8bEvxQvNXLLqCknchWNW2ZNLnJWb/xo/aTfFWl24zDvjYSr4C8dE7B51ZrvyWV6j2DZ2cN6YoaTlwupHOOERYb/o/jNj4WEzFh4uwG9BieBgJKlt7QAAAABJRU5ErkJggg==`,
-      hierbaLogoSRC: `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC8AAAAqCAYAAAAj6gIfAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAQ9SURBVGhD7ZhfSFt3FMe/iSZqNNHMjKHbJHMP+lAflkkHzhep0OEg3YNlD4KwkYeBD5XSQqllYw/tU9lfBnnoKghSxgajwgIjDxksDaykHSx7MC/WpW10602MXk3ivdHsl/Q4Y3L/1dxrEfZ5yTnnJd977jnnd37XVGTgmGKm32OJoeJXnszjxt9xZMnXG+PEZ37A19mvcDfvw7dPBArqi0HieYQ2vwRXtgXEcvNYLJQdXTFEvJiaxe2dimwXbyKY0T/7BojnEWaZPljnLPvZBSTI0wv9xW9GcGeH7EqK8/hljWyd0F38RvaOTIaTuJ+Pk60POovncU/4mexaskIEi2Trgb7i8zH8KVUy/xFCLEOmDugrfiuKGJnSxBHfTpFdP/LiCzwSqRiWeAEihdRYEqNkyZMoPCBLHXFzGTEuDk7mjJBdzDb++RgXcnv160aPZQJjbe/A47BSrBp2MD0axS3FsmGYLuJSzzh6ya2mJPg3/iZus95Zp5ir+Udce6mbvH1kM++wvAYb2cAyEuJV+NdOYerhLMIZnuKVpMDtkqlEMSmZSZGP4tYjH6ZT72OuQniJLrOLrIPIl419CB4y92EltOvH3Ppo+SHuHngGHilNy/UDcBUnmMjH8P3jSUylpxDaiUmU6GmcsEm/bXnxjX14w1r7qvYoPcSN9Cg+SUbBlU7+LQ7PNEhYTy2uXsJ02odgQWH+N4zgzVayq1CcNgO2CUi/sD14rIhTuLx6FYFsEjmKKhNBIh+BPzmGz7ZDKsPAioHmt+EgrxqVm1SpCcdYExqz0qrCmvsKa+4ecqtRzDwrfIy0fljRuEcJy3qLV1Z4CRXxDOc4zjTIjUcDMZ3Du07l/1UXX8p+2zmV2tebbnhavehtJFcGDeIZHeOYtLrJOQIaL2KyU/1taxPP6HdewUkTOYbCEvXCkKY+0ywezQPwdcwoNlD9uOFhJTrcQq4K2sQXBKykIwhsxTUvaYejCZntBQRTy+DyFFJAcc6Xju4gW5J+EiMGi5bCjvaGD3DWcRYnZZZBefFrs5je8Bv2wUg7VvTbAjj/op38fbTX/HOjiX5rUV4PtpYR3ji4Wx8dneiyfIQzdi88tUkvo7LbEKxhuc04fs+HcI/dllZ3jfj+6Ea7uQ+vNw7iRNMg3nJ0w6JySGkTr4iA8ONTmGMP+EyYZ/Dpq150kXsY6q/59QUEJIRb2B7+VFg3XCyjNezOIpgm+5DULX4pt0AfVPcYxHBrAF+8MkHi3Rhun8N1xwz6TZUjL4lwLlrXCK4/88Xt8o/FdBojtu9w/eVvMOnqhKUc3cfh9OJ8z6+41jYDj7nzabDIa7zASKNDzQPZrABbzT0zBv9fPtzHEN5zfo6xquuQmGMXYItdtSmV0GXO1wpXx9JSn/ASumReGgGJ1B9YLdrR29EHV51CpTBQvPEcg/VAnv/FPx+AfwHCw33sgBcIGAAAAABJRU5ErkJggg==`,
+      
+      iceLogoSRC: '',
+      postreLogoSRC: '',
+      tabacoLogoSRC: '',
+      waxLogoSRC: '',
+      hierbaLogoSRC: '',
 
       loaderImages: false,
       loader2: false,
@@ -1792,17 +1617,10 @@ export default {
       transferConversationProducts: '',
       
 
-      status: 'accepted',
 			zoom: 15,
 
       agentName: '',
       pendingConversations: [],
-
-
-      zapoteConversations: [],
-      escazuConversations: [],
-      cartagoConversations: [],
-      herediaConversations: [],
 
       // Variables del chat -------
       activeConversation: '',
@@ -1874,53 +1692,27 @@ export default {
         },
       ],
 
-
-      today: new Date().toISOString().substr(0, 10),
-      name:"",
       multiplo: 10,
-      phone:"",
-      address:"",
-      email:"",
-      detallesOrden:"",
-      tipoPago:"",
       descuento:0,
-      localidad:"",
-      metodoPago:"",
-      metodoToma:"",
-      Sucursal:"Sucursal de envío",
-      Sucursales:["Sucursal de envío","King Vape Escazu", "King Vape Zapote","King Vape Cartago", "King Vape Heredia"],
-      
-      letra: "Select by letter",
-      letras: ["Select by letter", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
-
-      ubicacion: "Ubicación de envío",
-      ubicaciones: ["Ubicación de envío", "CASA", "TRABAJO", "OTRO"],
-
-      estadoPago:"Estado de pago",
-      estadosPagos:["Estado de pago", "Pagado","Pendiente"],
-      pagaCon:"",
-      modoretiro:"",
-
+    
       latitud:"",
       longitud:"",
       locations: [],
       
-      cedula:"",
-      nota:"",
-      NoOrden:"5",
-      MesaSeleccionada: 0,
-      DireccionCliente2: "",
-      DireccionCliente3: "",
-      dividendo: "",
-      clienteTipoCedula:"FISICA",
-      MetodoPago: "Método de pago",
-      MetodosPagos: ["Método de pago","Efectivo","Tarjeta","SINPE","SINPE (contra entrega)","Transferencia"],
-      MetodosEnvio: ["Método de envío","Retiro en sucursal","Envío por motorizado","Correo", "Encomienda"],
-      MetodoEnvio: "Método de envío",
 
-      contactsList: [],
-      allContactSelected: false,
-      massTextMessageContent: '',
+      whatsappInvoiceShippingMethodOptions: ['Método de envío', 'Retiro en sucursal', 'Envío por motorizado', 'Correos de CR', 'Encomienda', 'Uber Flash'],
+      whatsappInvoiceShippingMethod: 'Método de envío',
+      
+      whatsappInvoicePaymentMethodOptions: ['Método de pago', 'Efectivo', 'Tarjeta', 'Pago mixto', 'SINPE (confirmado)', 'SINPE (contra entrega)', 'Transferencia'],
+      whatsappInvoicePaymentMethod: 'Método de pago',
+
+      whatsappInvoicePaymentStateOptions: ['Estado del pago', 'Pago', 'Pendiente', 'Pago parcial'],
+      whatsappInvoicePaymentState: 'Estado del pago',
+
+      whatsappInvoiceClientLocationOptions: ['Ubicación de envío', 'CASA', 'TRABAJO', 'OTRO'],
+      whatsappInvoiceClientLocationName: 'Ubicación de envío',
+
+      whatsappInvoiceClientLocationURL: '',
 
       agentFavoriteMessages: [],
       agentFavoriteImages: [],
@@ -1961,8 +1753,6 @@ export default {
 
       clientVerifierLoader: false,
 
-      stockData: {},
-
 
       websocketConnection: null,
       websocketIsConnected: false,
@@ -1980,6 +1770,16 @@ export default {
         if (this.$refs.historyScroll) {
           const scrollableDiv = this.$refs.historyScroll;
           scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
+          clearInterval(scrollInterval);
+        }
+      }, 1);
+    },
+
+    scrollDown(){
+      let scrollInterval = setInterval(() => {
+        if (this.$refs.scrollRef) {
+          const psContainer = this.$refs.scrollRef.$el;
+          psContainer.scrollTop = psContainer.scrollHeight;
           clearInterval(scrollInterval);
         }
       }, 1);
@@ -2022,11 +1822,12 @@ export default {
           path.push({lat: point.lat(), lng: point.lng()});
         }
         paths.push(path);
+        console.log(paths);
       }
     },
 
     openEndConversationModal(){
-      this.selectedCloseLocality = null;
+      this.selectedCloseLocality = 'Seleccione una localidad';
       this.closeConversationReason = '';
     },
 
@@ -2111,19 +1912,17 @@ export default {
     },
 
 
-    startMessageRequestInterval(){
-      
-    },
-
-
     selectLocalities(){
       axios.post(constants.routes.backendAPI+'/selectLocalities')
       .then((response) =>{
         if (response.data.success){
+          this.localityOptions = [{value: null, text: 'Localidad de envío'}];
+          this.closeLocalityOptions = ['Seleccione una localidad', 'King Vape Center'];
           for (var localityIndex in response.data.result){
             const localityID = response.data.result[localityIndex].localityID;
             const localityName = response.data.result[localityIndex].localityName;
-            this.localitiesOptions.push({value: localityID, text: localityName});
+            this.localityOptions.push({value: localityID, text: localityName});
+            this.closeLocalityOptions.push(localityName);
           }
         } else {
           this.showNotification('danger', 'Error al consultar las localidades', 'Ha ocurrido un error inesperado al consultar las localidades. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
@@ -2134,44 +1933,6 @@ export default {
       })
     },
     
-
-
-
-    verifyClient(){
-      const regularExpressionChecker = /^\d{9}$/;
-      if (regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientID)){
-        this.clientVerifierLoader = true;
-        axios.post(constants.routes.backendAPI+'/verifyClient', 
-        {
-          clientID: this.currentActiveConversation.whatsappConversationRecipientID
-        })
-        .then((response) =>{
-          if (response.data.success){
-            if (response.data.result.clientVerified){
-              this.currentActiveConversation.whatsappConversationRecipientProfileName = response.data.result.clientName;
-              this.modificarNombre();
-              this.showNotification('success', 'Persona mayor de edad', 'El número de cédula coincide con una persona mayor de edad "' + response.data.result.clientName + '".')
-            } else {
-              this.showNotification('warning', 'Persona menor de edad', 'El número de cédula coincide con una persona menor de edad "' + response.data.result.clientName + '".')
-            }
-          } else {
-            if (response.data.result == '1'){
-              this.showNotification('info', 'Persona no encontrada', 'El número de cédula no coincide con ninguna persona registrada en el registro civil.')
-            } else {
-              this.showNotification('danger', 'Error al verificar al cliente', 'Ha ocurrido un error inesperado al verificar al cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-            }
-          }
-          this.clientVerifierLoader = false;
-        })
-        .catch((error) => {
-          this.showNotification('danger', 'Error al verificar al cliente', 'Ha ocurrido un error inesperado al verificar al cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-          this.clientVerifierLoader = false;
-        })
-      } else {
-        this.showNotification('danger', 'Error al verificar al cliente', 'Ha ocurrido un error inesperado al verificar al cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-      }
-    },
-
 
     syncTransactionToMessage(){
       var whatsappGeneralMessageID = '';
@@ -2199,10 +1960,7 @@ export default {
               this.showNotification('success', 'Transacción validada', 'Se ha validado la transacción exitosamente.')
               this.$root.$emit('bv::hide::modal', 'syncTransactionModal');
               this.$root.$emit('bv::hide::modal', 'paymentMethodValidatorModal');
-              const validationPhoneNumber = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
-              const validationsDatabase = JSON.parse(localStorage.getItem('validations'));
-              validationsDatabase[validationPhoneNumber] = 'yes';
-              localStorage.setItem('validations', JSON.stringify(validationsDatabase));
+              
             } else {
               this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
             }
@@ -2390,19 +2148,12 @@ export default {
       this.paymentMethodValidatorAmount = parseInt(this.calcularTotal, 10);
     },
 
-    getPaymentMethodType(){
-      if (this.MetodoPago == 'SINPE'){
-        return true;
-      }
-      return false;
-
+    getWhatsappInvoicePaymentMethodIsSINPE(){
+      return this.whatsappInvoicePaymentMethod == 'SINPE';
     },
 
-    getPaymentMethodStyle(){
-      if (this.MetodoPago == 'SINPE'){
-        return 'margin-bottom: 10px; width: 70%';
-      }
-      return 'margin-bottom: 10px; width: 100%';
+    getWhatsappInvoicePaymentMethodStyle(){
+      return this.whatsappInvoicePaymentMethod == 'SINPE' ? 'margin-bottom: 10px; width: 70%' : 'margin-bottom: 10px; width: 100%';
     },
 
     getReferenciaSucursal(recipientPhoneNumber){
@@ -2410,114 +2161,35 @@ export default {
       return referenciaSucursales[recipientPhoneNumber];
     },
 
-    modificarNombre(){
+
+    changeLocalStorageWhatsappInvoiceInformation(whatsappInvoiceInformationToChange, whatsappInvoiceNewInformation){
+      var datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]) {
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber][whatsappInvoiceInformationToChange] = whatsappInvoiceNewInformation;
+      } else {
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = {};
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber][whatsappInvoiceInformationToChange] = whatsappInvoiceNewInformation;
+      }
+      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
+    },
+
+    changeLocalStorageWhatsappInvoiceLocationInformation(){
       const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
       if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['nombre'] = this.currentActiveConversation.whatsappConversationRecipientProfileName;
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationName'] = this.whatsappInvoiceClientLocationName;
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLatitude'] = this.currentActiveConversation.whatsappConversationRecipientLocations[this.whatsappInvoiceClientLocationName].latitude;
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLongitude'] = this.currentActiveConversation.whatsappConversationRecipientLocations[this.whatsappInvoiceClientLocationName].longitude;
       } else {
         datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
         {
-          'nombre': this.currentActiveConversation.whatsappConversationRecipientProfileName
+          'whatsappInvoiceClientLocationName': this.whatsappInvoiceClientLocationName,
+          'whatsappInvoiceClientLocationLatitude': this.currentActiveConversation.whatsappConversationRecipientLocations[this.whatsappInvoiceClientLocationName].latitude,
+          'whatsappInvoiceClientLocationLongitude': this.currentActiveConversation.whatsappConversationRecipientLocations[this.whatsappInvoiceClientLocationName].longitude
         }
       }
       localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
     },
 
-    modificarCedula(){
-      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
-      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['cedula'] = this.currentActiveConversation.whatsappConversationRecipientID;
-      } else {
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
-        {
-          'cedula': this.currentActiveConversation.whatsappConversationRecipientID
-        }
-      }
-      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
-    },
-
-    modificarCorreo(){
-      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
-      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['correo'] = this.currentActiveConversation.whatsappConversationRecipientEmail;
-      } else {
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
-        {
-          'correo': this.currentActiveConversation.whatsappConversationRecipientEmail
-        }
-      }
-      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
-    },
-
-
-    modificarSucursal(){
-      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
-      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['sucursalEnvio'] = this.Sucursal;
-      } else {
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
-        {
-          'sucursalEnvio': this.Sucursal
-        }
-      }
-      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
-    },
-
-    modificarMetodoEnvio(){
-      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
-      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoEnvio'] = this.MetodoEnvio;
-      } else {
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
-        {
-          'metodoEnvio': this.MetodoEnvio
-        }
-      }
-      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
-    },
-
-    modificarEstadoPago(){
-      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
-      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['estadoPago'] = this.estadoPago;
-      } else {
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
-        {
-          'estadoPago': this.estadoPago
-        }
-      }
-      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
-    },
-
-    modificarUbicacion(){
-      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
-      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['ubicacion'] = this.ubicacion;
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['latitud'] = this.currentActiveConversation.whatsappConversationRecipientLocations[this.ubicacion].latitude;
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['longitud'] = this.currentActiveConversation.whatsappConversationRecipientLocations[this.ubicacion].longitude;
-      } else {
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
-        {
-          'ubicacion': this.ubicacion,
-          'latitud': this.currentActiveConversation.whatsappConversationRecipientLocations[this.ubicacion].latitude,
-          'longitud': this.currentActiveConversation.whatsappConversationRecipientLocations[this.ubicacion].longitude
-        }
-      }
-      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
-    },
-
-    modificarMetodoPago(){
-      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
-      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoPago'] = this.MetodoPago;
-      } else {
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
-        {
-          'metodoPago': this.MetodoPago
-        }
-      }
-      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
-    },
 
     modificarNotaEnvio(){
       const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
@@ -2545,19 +2217,7 @@ export default {
       localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
     },
 
-    modificarPagaCon(){
-      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
-      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['pagaCon'] = this.pagaCon;
-      } else {
-        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
-        {
-          'pagaCon': this.pagaCon
-        }
-      }
-      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
-    },
-
+  
     getActiveNavItem(navItem){
       if (this.currentNavItem == navItem){
         return true;
@@ -2870,16 +2530,7 @@ export default {
     },
 
 
-    addToRequestedStock(productCode, productCurrentStock, productLocality){
-      const whatsappConversationRecipientPhoneNumber = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
-      if (!(whatsappConversationRecipientPhoneNumber in this.stockData)){
-        this.stockData[whatsappConversationRecipientPhoneNumber] = {};
-      }
-      if (!(productCode in this.stockData[whatsappConversationRecipientPhoneNumber])){
-        this.stockData[whatsappConversationRecipientPhoneNumber][productCode] = {};
-      }
-      this.stockData[whatsappConversationRecipientPhoneNumber][productCode][productLocality] = productCurrentStock;
-    },
+    
 
     cargarTesting(codigo){
       return new Promise((cargarTestingPromiseResolve) => {
@@ -2892,7 +2543,6 @@ export default {
             } else {
               textoExistencia = textoExistencia + '\n' + response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
             }
-            me.addToRequestedStock(response.data[indice].codigoProducto, response.data[indice].cantidadInvActual, response.data[indice].sitio);
           }
           cargarTestingPromiseResolve(textoExistencia + '\n\n');
         }).catch(function(error){
@@ -2912,7 +2562,6 @@ export default {
       }
       this.stockLoader = false;
       this.stockContent = texto;
-      this.saveStockDatabase();
     },
 
     cargarExistencia(codigoProducto){
@@ -2926,11 +2575,9 @@ export default {
           } else {
             textoExistencia = textoExistencia + '\n' + response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
           }
-          me.addToRequestedStock(response.data[indice].codigoProducto, response.data[indice].cantidadInvActual, response.data[indice].sitio);
         }
         me.stockLoader = false;
         me.stockContent = textoExistencia;
-        me.saveStockDatabase();
       }).catch(function(error){
         console.log(error);
         me.$bvToast.toast("Ha ocurrido un error inesperado al consultar el stock. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
@@ -2957,10 +2604,6 @@ export default {
       } else {
         return 'default'
       }
-    },
-
-    getImageStyle(image){
-      return 'cursor: pointer';
     },
 
     getAllFavoriteVariant(){
@@ -3016,19 +2659,6 @@ export default {
     },
 
     
-    CleanData(){
-      this.name = "";
-      this.phone = "";
-      this.cedula = "";
-      this.email = "";
-      this.MetodoEnvio = "";
-      this.MetodoPago= "";
-      this.pagaCon ="";
-      this.estadoPago = "";
-      this.address = "";
-      this.nota = "";
-    },
-
     updateFieldCant(field, value, row) {
       this.currentActiveConversation.whatsappConversationProducts[row.originalIndex].cantidad = value;
 
@@ -3062,335 +2692,152 @@ export default {
     },
 
 
-    ValidarData(){
-      var Valido = 1;
+    validateInvoiceInformation(){
+      const regularExpressionChecker = /\S/;
 
-      if(this.orden.length == 0){
-          this.$bvToast.toast('Por favor, agregue al menos un producto al carrito para generar la orden, e intentelo nuevamente.', {
-            title: 'Error al generar la orden',
-            variant: 'danger',
-            solid: true
-          });
-          Valido = 0;
-
-        } else if(this.name == ""){
-          this.$bvToast.toast('Por favor, agregue el nombre del cliente para generar la orden, e intentelo nuevamente.', {
-            title: 'Error al generar la orden',
-            variant: 'danger',
-            solid: true
-          });
-          Valido = 0;
-
-        } else if(this.phone == ""){
-        this.$bvToast.toast('Por favor, agregue el teléfono del cliente para generar la orden, e intentelo nuevamente.', {
-          title: 'Error al generar la orden',
-          variant: 'danger',
-          solid: true
-        });
-        Valido = 0;
-
-        } else if(this.cedula == ""){
-        this.$bvToast.toast('Por favor, agregue la cédula del cliente para generar la orden, e intentelo nuevamente.', {
-          title: 'Error al generar la orden',
-          variant: 'danger',
-          solid: true
-        });
-        Valido = 0;
-
-      } else if(this.Sucursal == "Sucursal de envío"){
-        this.$bvToast.toast('Por favor, seleccione una sucursal de envío para generar la orden, e intentelo nuevamente.', {
-          title: 'Error al generar la orden',
-          variant: 'danger',
-          solid: true
-        });
-        Valido = 0;
-
-      
-      } else if(this.MetodoEnvio == "Método de envío"){
-        this.$bvToast.toast('Por favor, seleccione un método de envío para generar la orden, e intentelo nuevamente.', {
-          title: 'Error al generar la orden',
-          variant: 'danger',
-          solid: true
-        });
-        Valido = 0;
-
-      } else if(this.MetodoPago == "Método de pago"){
-        this.$bvToast.toast('Por favor, seleccione un método de pago para generar la orden, e intentelo nuevamente.', {
-          title: 'Error al generar la orden',
-          variant: 'danger',
-          solid: true
-        });
-        Valido = 0;
-      
-      } else if(this.estadoPago == "Estado de pago"){
-        this.$bvToast.toast('Por favor, seleccione un estado de pago para generar la orden, e intentelo nuevamente.', {
-          title: 'Error al generar la orden',
-          variant: 'danger',
-          solid: true
-        });
-        Valido = 0;
-      
-      
-      } else if(this.currentActiveConversation.address == ""){
-        this.$bvToast.toast('Por favor, agregue una nota de la dirección para generar la orden, e intentelo nuevamente.', {
-          title: 'Error al generar la orden',
-          variant: 'danger',
-          solid: true
-        });
-        Valido = 0;
-        
-      
-      } else if(this.currentActiveConversation.nota == ""){
-        this.$bvToast.toast('Por favor, agregue una nota del envío para generar la orden, e intentelo nuevamente.', {
-          title: 'Error al generar la orden',
-          variant: 'danger',
-          solid: true
-        });
-        Valido = 0;
+      if (this.currentActiveConversation.whatsappConversationProducts == 0){
+        this.showNotification('danger', 'Carrito vacío', 'Por favor, agregue al menos un producto al carrito para generar la orden, e intentelo nuevamente');
+        return false;
+      } else if (regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientProfileName) == false){
+        this.showNotification('danger', 'Nombre incompleto', 'Por favor, agregue el nombre del cliente para generar la orden, e intentelo nuevamente');
+        return false;
+      } else if (regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientPhoneNumber) == false){
+        this.showNotification('danger', 'Número de teléfono incompleto', 'Por favor, agregue el número de teléfono del cliente para generar la orden, e intentelo nuevamente');
+        return false;
+      } else if (regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientID) == false){
+        this.showNotification('danger', 'Cédula incompleta', 'Por favor, agregue la cédula del cliente para generar la orden, e intentelo nuevamente');
+        return false;
+      } else if (this.selectedLocality == null){
+        this.showNotification('danger', 'Localidad de envío incompleta', 'Por favor, seleccione una localidad de envío para generar la orden, e intentelo nuevamente');
+        return false;
+      } else if (this.whatsappInvoiceShippingMethod == 'Método de envío'){
+        this.showNotification('danger', 'Método de envío incompleto', 'Por favor, seleccione un método de envío para generar la orden, e intentelo nuevamente');
+        return false;
+      } else if (this.whatsappInvoicePaymentMethod == 'Método de pago'){
+        this.showNotification('danger', 'Método de pago incompleto', 'Por favor, seleccione un método de pago para generar la orden, e intentelo nuevamente');
+        return false;
+      } else if (this.whatsappInvoicePaymentState == 'Estado del pago'){
+        this.showNotification('danger', 'Estado del pago incompleto', 'Por favor, seleccione un estado del pago para generar la orden, e intentelo nuevamente');
+        return false;
+      } else if (regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientLocationDetails) == false){
+        this.showNotification('danger', 'Nota de la ubicación incompleta', 'Por favor, seleccione una nota de la ubicación para generar la orden, e intentelo nuevamente');
+        return false;
+      } else if (regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientNote) == false){
+        this.showNotification('danger', 'Nota del envío incompleta', 'Por favor, seleccione una nota del envío para generar la orden, e intentelo nuevamente');
+        return false;
       } 
-
-
-    return Valido;
-
+      return true;
     },
+   
 
-
-    async validateStock(){
-      return new Promise(async (validateStockPromiseResolve) => {
-        const stockDatabaseData = await this.readProductStockDatabase();
-        var notValidatedProducts = [];
-        var showStockConfirmation = false;
-        if (stockDatabaseData != undefined){
-          const stockInfo = stockDatabaseData['stockInfo'];
-          for (var productIndex in this.currentActiveConversation.whatsappConversationProducts){
-            const product = this.currentActiveConversation.whatsappConversationProducts[productIndex];
-            const productCode = product['CodigoP'];
-            if (productCode in stockInfo){
-              if (stockInfo[productCode][this.Sucursal] < product['cantidad']){
-                notValidatedProducts.push(product);
-                showStockConfirmation = true;
-              }
-            } else {
-              notValidatedProducts.push(product);
-              showStockConfirmation = true;
-            }
-          }
-        } else {
-          showStockConfirmation = true;
-          notValidatedProducts = this.currentActiveConversation.whatsappConversationProducts;
-        }
-        if (showStockConfirmation){
-          var productsText = '';
-          for (var notValidatedProductIndex in notValidatedProducts){
-            productsText = productsText + notValidatedProducts[notValidatedProductIndex]['descripcion'] + '<br />'
-          }
-          this.$swal({
-            title: "Error en el stock",
-            html: "Por favor, revisa los siguientes productos: <br /><br />" + productsText,
-            type: "danger",
-            showCancelButton: true,
-            confirmButtonColor: "#58cbfc",
-            cancelButtonText: "Cancelar",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Continuar (no recomendado)"
-          }).then((result) => {
-            validateStockPromiseResolve(result.isConfirmed);
-          });
-        } else {
-          validateStockPromiseResolve(true);
-        }     
-      }); 
-    },
-
-    deleteStockData(whatsappConversationRecipientPhoneNumber){
-      if (whatsappConversationRecipientPhoneNumber in this.stockData){
-        delete this.stockData[whatsappConversationRecipientPhoneNumber];
-      }
-      this.deleteWhatsappConversationRecipientPhoneNumberStockDatabase(whatsappConversationRecipientPhoneNumber);
-    },
-
-
-    async validatePayment(recipientPhoneNumber, paymentType){
-      return new Promise(async (validatePaymentPromiseResolve) => {
-        if (paymentType == 'SINPE'){
-          const validationsDatabase = JSON.parse(localStorage.getItem('validations'));
-          if (recipientPhoneNumber in validationsDatabase){
-            if (validationsDatabase[recipientPhoneNumber] == 'yes'){
-              validatePaymentPromiseResolve(true);
-            }
-          } 
-          validatePaymentPromiseResolve(false);
-        } else {
-          validatePaymentPromiseResolve(true);
-        }
-      }); 
-    },
-
-    /*const validationPhoneNumber = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
-            const validationsDatabase = JSON.parse(localStore.getItem('validations'));
-            validationsDatabase[validationPhoneNumber] = 'yes';
-            localStorage.setItem('validations', JSON.stringify(validationsDatabase)); */
-
-    async OrdenExpress(){
+    async insertWhatsappInvoice(){
       try {
-        this.phone = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
-        this.phone = (parseInt(this.phone.replace(/\D/g, ''), 10)).toString();
 
-        this.name = this.currentActiveConversation.whatsappConversationRecipientProfileName;
-        this.repliedMessage = null;
-        this.cedula = this.currentActiveConversation.whatsappConversationRecipientID;
-        this.email = this.currentActiveConversation.whatsappConversationRecipientEmail;
-        this.address = this.currentActiveConversation.whatsappConversationRecipientLocationDetails;
-        this.nota = this.currentActiveConversation.whatsappConversationRecipientNote; 
-        this.orden = this.currentActiveConversation.whatsappConversationProducts;
-        this.producto = '';
+        if (this.validateInvoiceInformation()){
 
-        if(this.ValidarData() == 1){
-          const test = await this.validateStock();
-          if (test){
-            const validation = await this.validatePayment(this.phone, this.MetodoPago);
-            
-            if (validation){
-              var metodoEnvioCorregido = '';
-              if (this.MetodoEnvio == 'Retiro en sucursal'){
-                metodoEnvioCorregido = 'Retira en sucursal';
-              } else if (this.MetodoEnvio == 'Envío por motorizado'){
-                metodoEnvioCorregido = 'Envio Propio';
-              } else if (this.MetodoEnvio == 'Correo') {
-                metodoEnvioCorregido = 'Correos de CR';
-              } else {
-                metodoEnvioCorregido = 'Encomienda';
+          this.currentActiveConversation.whatsappConversationRecipientPhoneNumber = (parseInt(this.currentActiveConversation.whatsappConversationRecipientPhoneNumber.replace(/\D/g, ''), 10)).toString();
+          this.repliedMessage = null;
+          this.producto = '';
+
+          this.loaderOrdenEnviada = true;
+          this.loading = true;
+
+          var subTotal = 0.0;
+          var descuento = 0.0;
+          for (var productIndex in this.currentActiveConversation.whatsappConversationProducts){
+            subTotal = subTotal + (this.currentActiveConversation.whatsappConversationProducts[productIndex].cantidad * this.currentActiveConversation.whatsappConversationProducts[productIndex].precio);
+            descuento = descuento + ((this.currentActiveConversation.whatsappConversationProducts[productIndex].descuento/100)*((this.currentActiveConversation.whatsappConversationProducts[productIndex].precio)*this.currentActiveConversation.whatsappConversationProducts[productIndex].cantidad));
+          }
+          var amount = subTotal - descuento;
+
+
+          axios.post(constants.routes.backendAPI+'/insertWhatsappInvoice',
+          {
+            whatsappInvoiceWhatsappConversationID: this.currentActiveConversationID,
+            whatsappInvoiceLocalityID: this.selectedLocality,
+            whatsappInvoiceAgentID: localStorage.getItem('agentID'),
+            whatsappInvoiceState: 'C',
+            whatsappInvoiceClientName: this.currentActiveConversation.whatsappConversationRecipientProfileName,
+            whatsappInvoiceClientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+            whatsappInvoiceClientLocation: {'latitude': this.latitud, 'longitude': this.longitud},
+            whatsappInvoiceClientLocationURL: this.whatsappInvoiceClientLocationURL,
+            whatsappInvoiceAmount: amount,
+            whatsappInvoiceShippingMethod: this.whatsappInvoiceShippingMethod,
+            whatsappInvoicePaymentMethod: this.whatsappInvoicePaymentMethod,
+            whatsappInvoicePaymentState: this.whatsappInvoicePaymentState,
+            whatsappInvoiceLocationNote: this.currentActiveConversation.whatsappConversationRecipientLocationDetails,
+            whatsappInvoiceShippingNote: this.currentActiveConversation.whatsappConversationRecipientNote,
+            whatsappInvoiceProducts: this.currentActiveConversation.whatsappConversationProducts,
+          })
+          .then((response) =>{ 
+            if (response.data.success){
+              const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
+              if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+                delete ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
               }
+              localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
+              const datosActualesLocalStorage = JSON.parse(localStorage.getItem('datosActuales'));
+              if (datosActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+                delete datosActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
+              }
+              localStorage.setItem('datosActuales', JSON.stringify(datosActualesLocalStorage));
 
-              this.loaderOrdenEnviada = true;
-              var me = this;
-              this.loading = true;
-              var momentoActual = new Date(); 
-              var hora = momentoActual.getHours(); 
-              var minuto = momentoActual.getMinutes(); 
-              var segundo = momentoActual.getSeconds();
-              var time = hora + ":" + minuto + ":" + segundo;
-              let header={"Authorization" : "Bearer "};
-              let configuracion= {headers : header};
-
-              axios.post('https://noah.cr/BackendKingVape/api/ordenexpress/CrearMesaTotal',
+              axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
               {
-                'fecha': this.today.toString(),
-                'cajero': this.agentName,
-                'total': this.calcularTotal,
-                'Nombre': this.name,
-                'telefono': this.phone,
-                'Direccion': this.address,
-                'tipoPago1': this.MetodoPago,
-                'Hora': time,
-                'descuento': this.calcularDescuento,
-                'localidad': this.Sucursal,
-                'estado': 0,
-                'nota':" Estado Pago: " +this.estadoPago+" "+this.pagaCon+" "+this.nota,
-                'tipoCompra': metodoEnvioCorregido,
-                'detalles': this.orden,
-                'correo': this.email,
-                'latitud': this.latitud,
-                'longitud': this.longitud,
-                'Mesa':"50",
-                'TipoCedula':'FISICA',
-                'Cedula':this.cedula,
-                'Direccion2':this.DireccionCliente2,
-                'Direccion3':this.DireccionCliente3,
-                'Personas':this.dividendo,
-                'Mensajero':'',
-                'MedioOrden':'Whatsapp',
-                'Facturacion': false
-              },configuracion)
-              
-              .then(function (response) {
-                
-                me.$swal({
-                  title: "Se ha enviado la orden al sistema de comandas de la pantalla",
-                  text: "¿Quiere cerrar la conversación? En caso de no cerrarla, recuerde que la venta no se registrará.",
-                  type: "warning",
-                  showCancelButton: true,
-                  confirmButtonColor: "#3085d6",
-                  cancelButtonText: 'Cancelar',
-                  cancelButtonColor: "#d33",
-                  confirmButtonText: "Confirmar"
-                })
-                .then((result) => {
-                  const validationsLocalStorage = JSON.parse(localStorage.getItem('validations'));
-                  if (validationsLocalStorage[me.phone]){
-                    delete validationsLocalStorage[me.phone];
-                  }
-                  localStorage.setItem('validations', JSON.stringify(validationsLocalStorage));
+                whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+                whatsappConversationCloseComment: 'Venta',
+                whatsappConversationAmount: amount,
+                whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
+                whatsappConversationProducts: this.currentActiveConversation.whatsappConversationProducts,
+                whatsappConversationLocalityName: this.selectedLocality,
+                sendAgentEndMessage: this.sendEndMessage
+              })
+              .then((response) =>{ 
+                if (response.data.success){
+                  this.showNotification('success', 'Conversación finalizada', 'Ha finalizado la conversación exitosamente.')
+                  delete this.activeConversationsAsJSON[response.data.result];
+                  this.sortConversations();
+                  this.loading = false;
+                  this.loaderOrdenEnviada = false;
 
                   axios.post(constants.routes.backendAPI+'/insertOrUpdateContact',
                   {
-                    'contactName': me.name,
-                    'contactPhoneNumber': me.phone,
-                    'contactID': me.cedula,
-                    'contactEmail': me.email,
-                    'contactLocations': me.currentActiveConversation.whatsappConversationRecipientLocations,
-                    'contactLocationDetails': me.address,
-                    'contactNote': me.nota
-                  }).then(function (){
-                    
+                    'contactName': this.currentActiveConversation.whatsappConversationRecipientProfileName,
+                    'contactPhoneNumber': this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+                    'contactID': this.currentActiveConversation.whatsappConversationRecipientID,
+                    'contactEmail': this.currentActiveConversation.whatsappConversationRecipientEmail,
+                    'contactLocations': this.currentActiveConversation.whatsappConversationRecipientLocations,
+                    'contactLocationDetails': this.currentActiveConversation.whatsappConversationRecipientLocationDetails,
+                    'contactNote': this.currentActiveConversation.whatsappConversationRecipientNote
+                  }).then((response) =>{
+                    if (response.data.success){
+                      this.currentActiveConversation = null;
+                    } else {
+                      this.showNotification('danger', 'Error al actualizar el contacto', 'Ha ocurrido un error inesperado al actualizar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+                    }
                   })
-
-                  if (result.value) {
-                    const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
-                    if (ordenesActualesLocalStorage[me.phone]){
-                      delete ordenesActualesLocalStorage[me.phone];
-                    }
-                    localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
-
-
-                    const datosActualesLocalStorage = JSON.parse(localStorage.getItem('datosActuales'));
-                    if (datosActualesLocalStorage[me.phone]){
-                      delete datosActualesLocalStorage[me.phone];
-                    }
-                    localStorage.setItem('datosActuales', JSON.stringify(datosActualesLocalStorage));
-
-
-                    axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
-                    {
-                      whatsappConversationRecipientPhoneNumber: me.phone,
-                      whatsappConversationCloseComment: 'Venta',
-                      whatsappConversationAmount: me.calcularTotal,
-                      whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
-                      whatsappConversationProducts: me.currentActiveConversation.whatsappConversationProducts,
-                      whatsappConversationLocalityName: me.Sucursal,
-                      sendAgentEndMessage: me.sendEndMessage
-                    })
-                    .then((response) =>{ 
-                      if (response.data.success){
-                        me.showNotification('success', 'Conversación finalizada', 'Ha finalizado la conversación exitosamente.')
-                        delete me.activeConversationsAsJSON[response.data.result];
-                        me.sortConversations();
-                        me.currentActiveConversation = null;
-                      } else {
-                        me.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-                      }
-                    })
-                    .catch((error) =>{
-                      me.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-                    })
-
-                  }
-                  me.deleteStockData(me.phone);
-                  me.loading = false;
-                  me.loaderOrdenEnviada = false;
-                });
+                  .catch((error) =>{
+                    this.showNotification('danger', 'Error al actualizar el contacto', 'Ha ocurrido un error inesperado al actualizar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+                  })
+                } else {
+                  this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+                }
               })
-              .catch(function (error) {
-                me.showNotification('danger', 'Error al generar la orden', 'Ha ocurrido un error inesperado al generar la orden debido a Noah. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-                me.loaderOrdenEnviada = false;
-              });
+              .catch((error) =>{
+                this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+              })
             } else {
-              this.showNotification('danger', 'Error de validación de SINPE', 'Si el método de pago se trata de SINPE, debe validar la transacción y asociar un mensaje primero. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+              this.loading = false;
               this.loaderOrdenEnviada = false;
+              this.showNotification('danger', 'Error al generar la comanda', 'Ha ocurrido un error inesperado al generar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
             }
-          } else {
-            console.log('Error de stock');
-          }
+          })
+          .catch((e) =>{
+            console.log(e);
+            this.loading = false;
+            this.loaderOrdenEnviada = false;
+            this.showNotification('danger', 'Error al generar la comanda', 'Ha ocurrido un error inesperado al generar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          })    
         }
       } catch (e) {
         console.log(e);
@@ -3729,6 +3176,7 @@ export default {
         } else {
           this.showNotification('danger', 'Error al enviar el audio', 'Ha ocurrido un error inesperado al enviar el audio. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
+        this.recordedAudioFile = null;
       })
       .catch((error) => {
         this.showNotification('danger', 'Error al enviar el audio', 'Ha ocurrido un error inesperado al enviar el audio. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
@@ -3976,9 +3424,7 @@ export default {
       })
     },
 
-    changeCurrentActiveConversation(currentActiveConversation, activeConversationID, storeChat){
-
-      if (storeChat == false){
+    changeCurrentActiveConversation(currentActiveConversation, activeConversationID){
         this.currentActiveConversationID = activeConversationID;
         this.currentActiveConversation = currentActiveConversation;
         this.productos = [];
@@ -4002,88 +3448,74 @@ export default {
 
         const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
         if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['nombre']){
-            this.currentActiveConversation.whatsappConversationRecipientProfileName = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['nombre'];
-          }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['cedula']){
-            this.currentActiveConversation.whatsappConversationRecipientID = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['cedula'];
-          }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['correo']){
-            this.currentActiveConversation.whatsappConversationRecipientEmail = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['correo'];
-          }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['sucursalEnvio']){
-            this.Sucursal = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['sucursalEnvio'];
-          } else {
-            this.Sucursal = 'Sucursal de envío';
-          }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoEnvio']){
-            this.MetodoEnvio = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoEnvio'];
-          } else {
-            this.MetodoEnvio = 'Método de envío';
-          }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoPago']){
-            this.MetodoPago = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['metodoPago'];
-          } else {
-            this.MetodoPago = 'Método de pago';
-          }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['pagaCon']){
-            this.pagaCon = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['pagaCon'];
-          } else {
-            this.pagaCon = '';
-          }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['estadoPago']){
-            this.estadoPago = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['estadoPago'];
-          } else {
-            this.estadoPago = 'Estado de pago';
-          }
 
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['ubicacion']){
-            this.ubicacion = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['ubicacion'];
-          } else {
-            this.ubicacion = 'Ubicación de envío';
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientName']){
+            this.currentActiveConversation.whatsappConversationRecipientProfileName = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientName'];
           }
-
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['latitud']){
-            this.latitud = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['latitud'];
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientID']){
+            this.currentActiveConversation.whatsappConversationRecipientID = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientID'];
+          }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientEmail']){
+            this.currentActiveConversation.whatsappConversationRecipientEmail = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientEmail'];
+          }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocalityName']){
+            this.selectedLocality = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocalityName'];
+          } else {
+            this.selectedLocality = null;
+          }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceShippingMethod']){
+            this.whatsappInvoiceShippingMethod = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceShippingMethod'];
+          } else {
+            this.whatsappInvoiceShippingMethod = 'Método de envío';
+          }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoicePaymentMethod']){
+            this.whatsappInvoicePaymentMethod = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoicePaymentMethod'];
+          } else {
+            this.whatsappInvoicePaymentMethod = 'Método de pago';
+          }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoicePaymentState']){
+            this.whatsappInvoicePaymentState = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoicePaymentState'];
+          } else {
+            this.whatsappInvoicePaymentState = 'Estado del pago';
+          }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationName']){
+            this.whatsappInvoiceClientLocationName = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationName'];
+          } else {
+            this.whatsappInvoiceClientLocationName = 'Ubicación de envío';
+          }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLatitude']){
+            this.latitud = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLatitude'];
           } else {
             this.latitud = 0;
           }
-
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['longitud']){
-            this.longitud = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['longitud'];
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLongitude']){
+            this.longitud = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLongitude'];
           } else {
             this.longitud = 0;
           }
-
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaEnvio']){
-            currentActiveConversation.whatsappConversationRecipientNote = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaEnvio'];
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationURL']){
+            this.whatsappInvoiceClientLocationURL = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationURL'];
           }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaDireccion']){
-            currentActiveConversation.whatsappConversationRecipientLocationDetails = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['notaDireccion'];
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceShippingNote']){
+            currentActiveConversation.whatsappConversationRecipientNote = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceShippingNote'];
+          }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocationNote']){
+            currentActiveConversation.whatsappConversationRecipientLocationDetails = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocationNote'];
           }
         } else {
-          this.Sucursal = 'Sucursal de envío';
-          this.MetodoEnvio = 'Método de envío';
-          this.MetodoPago = 'Método de pago';
-          this.pagaCon = '';
-          this.estadoPago = 'Estado de pago';
-          this.ubicacion = 'Ubicación de envío';
+          this.selectedLocality = null;
+          this.whatsappInvoiceShippingMethod = 'Método de envío';
+          this.whatsappInvoicePaymentMethod = 'Método de pago';
+          this.whatsappInvoicePaymentState = 'Estado del pago';
+          this.whatsappInvoiceClientLocationName = 'Ubicación de envío';
           this.latitud = 0;
           this.longitud = 0;
         }
         this.scrollDown();
-
-      } else {
-        this.repliedMessage = null;
-        this.sendEndMessage = false;
-        this.producto = '';
-        this.availableConversation = true;
-
-      }
     },
 
     closeWhatsappConversation(){
-      if (this.selectedCloseLocality == null){
+      if (this.selectedCloseLocality == 'Seleccione una localidad'){
         this.showNotification('danger', 'Error al cerrar la conversación', 'Por favor, complete la sucursal relacionada a la conversación por cerrar. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       } else {
         const regularExpressionChecker = /\S/;
@@ -4337,14 +3769,13 @@ export default {
           this.showNotification('danger', 'Error al consultar los mensajes de las sucursales', 'Ha ocurrido un error inesperado al consultar los mensajes de las sucursales. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
-      .catch((error) =>{
+      .catch(() =>{
         this.showNotification('danger', 'Error al consultar los mensajes de las sucursales', 'Ha ocurrido un error inesperado al consultar los mensajes de las sucursales. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
 
     selectAllAgentStatus(){
-      axios.get(constants.routes.backendAPI+'/selectAllAgentStatus')
-      .then((response) =>{
+      axios.get(constants.routes.backendAPI+'/selectAllAgentStatus').then((response) =>{
         if (response.data.success){
           const agentStatusInformation = response.data.result;
           this.agents = [];
@@ -4355,11 +3786,11 @@ export default {
             }
           }
         } else {
-          this.showNotification('danger', 'Error al consultar el estado de los agentes', 'Ha ocurrido un error inesperado al consultar el estado de los agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          this.showNotification('danger', 'Error al consultar el estado de los agentes', 'Ha ocurrido un error inesperado al consultar el estado de los agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
-      .catch((error) =>{
-        this.showNotification('danger', 'Error al consultar el estado de los agentes', 'Ha ocurrido un error inesperado al consultar el estado de los agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      .catch(() =>{
+        this.showNotification('danger', 'Error al consultar el estado de los agentes', 'Ha ocurrido un error inesperado al consultar el estado de los agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
@@ -4499,14 +3930,7 @@ export default {
       soundToPlay.play();
     },
 
-    scrollDown(){
-      this.$nextTick(() => {
-        if (this.$refs.scrollRef) {
-          const psContainer = this.$refs.scrollRef.$el;
-          psContainer.scrollTop = psContainer.scrollHeight;
-        }
-      });
-    },
+  
 
     scrollUp(){
       this.$nextTick(() => {
@@ -4562,19 +3986,7 @@ export default {
       });
     },
 
-    saveStockDatabase(){
-      return new Promise(async (saveStockDatabasePromiseResolve) => {
-        const transaction = this.db.transaction(['stock'], 'readwrite');
-        const objectStore = transaction.objectStore('stock');
-        for (var whatsappConversationRecipientPhoneNumber in this.stockData){
-          const stockInfo = this.stockData[whatsappConversationRecipientPhoneNumber];
-          const request = objectStore.put({whatsappConversationRecipientPhoneNumber: whatsappConversationRecipientPhoneNumber, stockInfo: stockInfo});
-        }
-        transaction.oncomplete = (event) => {
-          saveStockDatabasePromiseResolve(event);
-        };
-      });
-    },
+
 
     saveStickerDatabase(stickerData) {
       return new Promise(async (saveStickerDatabasePromiseResolve) => {
@@ -4603,88 +4015,12 @@ export default {
           console.error('Error reading data from IndexedDB', event);
         };
       });
-    },
-
-    readProductStockDatabase() {
-      const whatsappConversationRecipientPhoneNumber = this.currentActiveConversation.whatsappConversationRecipientPhoneNumber;
-      return new Promise(async (readProductStockDatabasePromiseResolve) => {
-        const transaction = this.db.transaction(['stock'], 'readonly');
-        const objectStore = transaction.objectStore('stock');
-        const request = objectStore.get(whatsappConversationRecipientPhoneNumber);
-        request.onsuccess = (event) => {
-          const data = event.target.result;
-          readProductStockDatabasePromiseResolve(data);
-        };
-        request.onerror = (event) => {
-          console.error('Error reading data from IndexedDB', event);
-        };
-      });
-    },
-
-    readStockDatabase() {
-      return new Promise(async (readStockDatabasePromiseResolve) => {
-        const transaction = this.db.transaction(['stock'], 'readonly');
-        const objectStore = transaction.objectStore('stock');
-        const request = objectStore.getAll();
-        request.onsuccess = (event) => {
-          const data = event.target.result;
-          var response = {};
-          for (var index in data){
-            response[data[index]['whatsappConversationRecipientPhoneNumber']] = data[index]['stockInfo'];
-          }
-          readStockDatabasePromiseResolve(response);
-        };
-        request.onerror = (event) => {
-          console.error('Error reading data from IndexedDB', event);
-          readStockDatabasePromiseResolve();
-        };
-      });
-    },
-
-    deleteWhatsappConversationRecipientPhoneNumberStockDatabase(whatsappConversationRecipientPhoneNumber) {
-      return new Promise(async (deleteWhatsappConversationRecipientPhoneNumberStockDatabasePromiseResolve) => {
-        const transaction = this.db.transaction(['stock'], 'readwrite');
-        const objectStore = transaction.objectStore('stock');
-        const request = objectStore.delete(whatsappConversationRecipientPhoneNumber);
-        request.onsuccess = (event) => {
-          const data = event.target.result;
-          deleteWhatsappConversationRecipientPhoneNumberStockDatabasePromiseResolve(data);
-        };
-        request.onerror = (event) => {
-          console.error('Error reading data from IndexedDB', event);
-        };
-      });
-    },
-
-
-    selectAgentMessages() {
-      var currentAgentMessagesIDS = [];
-      for (var conversationID in this.activeConversationsAsJSON){
-        for (var messageIndex in this.activeConversationsAsJSON[conversationID]['whatsappConversationMessages']){
-          if (this.activeConversationsAsJSON[conversationID]['whatsappConversationMessages'][messageIndex]['whatsappGeneralMessageOwnerPhoneNumber'] != null){
-            currentAgentMessagesIDS.push(this.activeConversationsAsJSON[conversationID]['whatsappConversationMessages'][messageIndex]['whatsappGeneralMessageID']);
-          }
-        }
-      }
-    },
-
+    }
 
     
   },
 
   computed: {
-    ...mapGetters([
-      "getContactLists",
-      "getRecentUser",
-      "getCurrentUser",
-      "getSelectedUser",
-    ]),
-
-    filterContacts() {
-      return this.getContactLists.filter((contact) => {
-        return contact.name.toLowerCase().match(this.search.toLowerCase());
-      });
-    },
 
     calcularDescuento:function(){
 			var resultado=0.0; 
@@ -4743,25 +4079,33 @@ export default {
     });
 
     await this.openIndexedDatabase();
-    this.readStockDatabase();
   },
 
   mounted(){
     this.cartagoMap = constants.routes.cartagoMap;
+    this.cartagoMapOptions = constants.routes.cartagoMapOptions;
     this.herediaMap = constants.routes.herediaMap;
+    this.herediaMapOptions = constants.routes.herediaMapOptions;
     this.zapoteMap = constants.routes.zapoteMap;
+    this.zapoteMapOptions = constants.routes.zapoteMapOptions;
     this.escazuMap = constants.routes.escazuMap;
-    
+    this.escazuMapOptions = constants.routes.escazuMapOptions;
+
+    this.iceLogoSRC = constants.routes.iceLogoSRC;
+    this.postreLogoSRC = constants.routes.postreLogoSRC;
+    this.tabacoLogoSRC = constants.routes.tabacoLogoSRC;
+    this.waxLogoSRC = constants.routes.waxLogoSRC;
+
     this.agentType = localStorage.getItem('agentType');
-    
+    this.agentName = localStorage.getItem('agentName');
     this.agentStartMessage = localStorage.getItem('agentStartMessage');
 
-    if (localStorage.getItem('validations') == null){
-      localStorage.setItem('validations', JSON.stringify({}))
-    }
+   
+    
     if (localStorage.getItem('agentID') == null){
       router.push("/app/sessions/signIn");
     }
+
     if (localStorage.getItem('ordenesActuales') == null){
       localStorage.setItem('ordenesActuales', JSON.stringify({}))
     }
@@ -4771,6 +4115,7 @@ export default {
     if (localStorage.getItem('referenciaSucursales') == null){
       localStorage.setItem('referenciaSucursales', JSON.stringify({}))
     }
+
     if (localStorage.getItem('hints') == null){
       localStorage.setItem('hints', JSON.stringify({}))
     } else {
@@ -4778,7 +4123,6 @@ export default {
       this.hints = hintsStorage;
     }
 
-    this.agentName = localStorage.getItem('agentName');
     this.selectAllAgentStatus();
     this.selectAllStoreMessage();
     this.selectAgentConversations();
@@ -4787,14 +4131,12 @@ export default {
     this.openImageModal();
 
     this.manageWebsocketConnection();
-    this.startMessageRequestInterval();
   }, 
 
 };
 </script>
 
 <style>
-
 
   emoji-picker {
     width: 500px;
@@ -4830,8 +4172,8 @@ export default {
   }
 
   .scrollable-container {
-    max-height: 80vh; /* 80% de la altura del viewport */
-    overflow-y: auto; /* permite el desplazamiento vertical cuando sea necesario */
+    max-height: 80vh;
+    overflow-y: auto;
   }
   .loading-effect::before {
       content: "";
@@ -4879,10 +4221,6 @@ export default {
   }
 
 
-  .scrollable-container {
-    max-height: 80vh; /* 80% de la altura del viewport */
-    overflow-y: auto; /* permite el desplazamiento vertical cuando sea necesario */
-  }
   .loading-effect::before {
       content: "";
       position: absolute;

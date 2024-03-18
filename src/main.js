@@ -23,6 +23,7 @@ import ApexCharts from 'apexcharts'
 
 import StarRating from 'vue-star-rating'
 
+import VueBarcode from 'vue-barcode';
 
 
 //defined as global component

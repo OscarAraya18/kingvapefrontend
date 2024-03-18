@@ -1,6 +1,60 @@
 <template>
   <div>
 
+    <b-modal id="deliveredInvoicesModal" size="lg" centered hide-header hide-footer>
+      <div v-if="loaderDelivered" style="text-align: center;">
+        <br><span class="spinner-glow spinner-glow-primary"></span>
+      </div>
+      <div v-else>
+        <vue-good-table
+          :columns="deliveredInvoicesTable"
+          :rows="deliveredInvoices"
+          styleClass="order-table vgt-table"
+          :line-numbers="false">
+          <template slot="table-row" slot-scope="props">
+            <div v-if="props.column.field == 'whatsappInvoiceAgentID'">
+              <i v-b-modal.informacionModal @click="openWhatsappInvoiceInformation(props.row)" class="i-Information" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
+
+              <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(props.row)" class="i-Shopping-Cart" style="font-size: xx-large; cursor: pointer;"></i>
+            </div>
+            <div v-else-if="props.column.field == 'whatsappInvoiceClientPhoneNumber'">
+              {{ parsePhoneNumber(props.row.whatsappInvoiceClientPhoneNumber) }}
+            </div>
+            <div v-else-if="props.column.field == 'whatsappInvoiceAmount'">
+              ₡{{ parseInt(props.row.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}
+            </div>
+            
+          </template>
+        </vue-good-table>
+      </div>
+    </b-modal>
+
+    <b-modal id="localityAgentInvoicesModal" size="m" centered hide-header hide-footer>
+      <div v-if="loaderDelivered" style="text-align: center;">
+        <br><span class="spinner-glow spinner-glow-primary"></span>
+      </div>
+      <div v-else>
+        <h1>hola</h1>
+      </div>
+    </b-modal>
+
+    <b-modal id="notShippedModal" size="sm" centered hide-header @ok="notShippedInvoice()">
+      <b-form-textarea no-resize rows="5" class="form-control" placeholder="Coloque un motivo para no entregar" v-model="notShippedReason"/>
+    </b-modal>
+
+    <b-modal id="shippingModal" size="sm" centered hide-header hide-footer>
+      <div style="text-align: center" v-if="shippingInvoice">
+        <h5><strong>ID: </strong>{{ shippingInvoice.whatsappInvoiceID }}</h5>
+        <h5><strong>Nombre: </strong>{{ shippingInvoice.whatsappInvoiceClientName }}</h5>
+        <h5><strong>Número: </strong>{{ parsePhoneNumber(shippingInvoice.whatsappInvoiceClientPhoneNumber) }}</h5>
+        <br><br>
+        <b-button @click="clickOnShippingInvoice(shippingInvoice)" variant="success">Entregado</b-button>
+        <br><br>
+        <b-button v-b-modal.notShippedModal variant="danger">No entregado</b-button>
+      </div>
+
+    </b-modal>
+
     <b-modal id="assignLocalityAgentModal" size="sm" centered hide-header @ok="assignLocalityAgent()">
       <b-form-select v-model="assignedLocalityAgent" :options="localityAgentOptions"></b-form-select>
     </b-modal>
@@ -30,6 +84,8 @@
         :rows="whatsappInvoiceProducts">
         <template slot="table-row" slot-scope="props">  
           <div v-if="props.column.field == 'CodigoP'">
+            <VueBarcode :value="props.row.CodigoP" width="1" height="50">
+            </VueBarcode>
           </div>
           <div v-else-if="props.column.field == 'precio'">
             ₡{{ parseInt(props.row.precio).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}
@@ -90,15 +146,36 @@
             <div class="flex-grow-1"></div>
             <i @click="updateWhatsappInvoiceShippingNote()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>    
           </div>
-          <br><br>
+          <br>
+
+          <div v-if="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason">
+            <h5><strong>Motivo del fallo en la entrega: </strong></h5>
+            <div style="display: flex;">
+              <b-form-textarea no-resize rows="5" class="form-control" disabled v-model="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason"/>    
+            </div>
+            <br>
+          </div>
+          
+          <br>
         </div>
 
         <div style="width: 50%;">
-          <h5><strong>Mensajero: </strong></h5>
+          <div v-if="updatedWhatsappInvoice.localityAgentName">
+            <h5><strong>Mensajero: </strong></h5>
+            <div style="display: flex;">
+              <b-form-select v-model="updatedWhatsappInvoice.whatsappInvoiceLocalityAgentID" :options="localityAgentOptions"></b-form-select>
+              <div class="flex-grow-1"></div>
+              <i @click="updateWhatsappInvoiceLocalityAgentID()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>    
+            </div>
+          </div>
+          <h5 v-else><strong>Mensajero: </strong>No asignado</h5> 
+          <br>
+
+          <h5><strong>Enlace de la ubicación: </strong></h5>
           <div style="display: flex;">
-            <b-form-select v-model="updatedWhatsappInvoice.whatsappInvoiceLocalityAgentID" :options="localityAgentOptions"></b-form-select>
+            <b-form-input v-model="updatedWhatsappInvoice.whatsappInvoiceClientLocationURL" class="mb-3" placeholder="Enlace de la ubicación"></b-form-input>
             <div class="flex-grow-1"></div>
-            <i @click="updateWhatsappInvoiceLocalityAgentID()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>    
+            <i @click="updateWhatsappInvoiceClientLocationURL()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
           </div>
           <br>
 
@@ -123,11 +200,84 @@
         </div>
       </div>
 
+      <br><br>
+
       <div style="text-align: center;">
-        <b-button @click="returnWhatsappConversation()" variant="info">Regresar al call center</b-button>
+        <div v-if="loaderReturned" style="text-align: center;">
+          <br><span class="spinner-glow spinner-glow-primary"></span>
+        </div>
+        <b-button v-else @click="returnWhatsappConversation()" variant="info">Regresar al call center</b-button>
+
       </div>
 
     </b-modal>
+
+    
+    <b-modal id="informacionModal" size="lg" centered hide-footer hide-header>
+      <h5><strong>ID: </strong> {{ updatedWhatsappInvoice.whatsappInvoiceID }}</h5>
+      <h5><strong>Nombre del cliente: </strong> {{ updatedWhatsappInvoice.whatsappInvoiceClientName }}</h5>
+      <h5><strong>Número del cliente: </strong> {{ parsePhoneNumber(updatedWhatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h5>
+      <h5><strong>Monto: </strong> ₡{{ parseInt(updatedWhatsappInvoice.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h5>
+
+      <br>
+
+      <h5><strong>Nombre del agente: </strong> {{ updatedWhatsappInvoice.agentName }}</h5>
+      <h5><strong>Nombre del mensajero: </strong> {{ updatedWhatsappInvoice.localityAgentName }}</h5>
+
+      <br>
+
+      <h5><strong>Método de envío: </strong> {{ updatedWhatsappInvoice.whatsappInvoiceShippingMethod }}</h5>
+      <h5><strong>Método de pago: </strong> {{updatedWhatsappInvoice.whatsappInvoicePaymentMethod}}</h5>
+      <h5><strong>Estado de pago: </strong> {{ updatedWhatsappInvoice.whatsappInvoicePaymentState }}</h5>
+
+      <br>
+
+      <h5><strong>Nota de la dirección: </strong></h5>
+      <div style="display: flex;">
+        <b-form-textarea disabled no-resize rows="3" class="form-control" placeholder="Coloque una nota de la dirección" v-model="updatedWhatsappInvoice.whatsappInvoiceLocationNote"/>
+        <div class="flex-grow-1"></div>
+      </div>
+      <br>
+
+      <h5><strong>Nota del envío: </strong></h5>
+      <div style="display: flex;">
+        <b-form-textarea disabled no-resize rows="3" class="form-control" placeholder="Coloque una nota del envío" v-model="updatedWhatsappInvoice.whatsappInvoiceShippingNote"/>    
+        <div class="flex-grow-1"></div>
+      </div>
+      <br>
+
+      <div v-if="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason">
+        <h5><strong>Motivo del fallo en la entrega: </strong></h5>
+        <div style="display: flex;">
+          <b-form-textarea no-resize rows="3" class="form-control" disabled v-model="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason"/>    
+        </div>
+        <br>
+      </div>
+
+      <div v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocationURL != ''">
+        <h5><strong>Enlace de la ubicación: </strong></h5>
+        <div style="display: flex;">
+          <b-form-input v-model="updatedWhatsappInvoice.whatsappInvoiceClientLocationURL" disabled class="mb-3" placeholder="Enlace de la ubicación"></b-form-input>
+        </div>
+        <br>
+      </div>
+      
+      <h5><strong>Ubicación: </strong></h5>
+      <GmapMap :center="getWhatsappInvoiceClientLocation()" :zoom="13" style="width: 100%; height: 300px" v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation">
+        <GmapMarker :position="getWhatsappInvoiceClientLocation()" :draggable="false"/>
+        <GmapMarker id="zapoteTag" :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
+        <GmapMarker id="escazuTag" :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
+        <GmapMarker id="cartagoTag" :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
+        <GmapMarker id="herediaTag" :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
+        <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
+        <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
+        <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
+        <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
+      </GmapMap>
+      <br>
+
+    </b-modal>
+
 
 
     <b-modal id="mensajeroModal" size="lg" centered hide-footer title="Información del envío">
@@ -151,6 +301,15 @@
           </div>
           <br>
 
+          <div v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocationURL != ''">
+            <h5><strong>Enlace de la ubicación: </strong></h5>
+            <div style="display: flex;">
+              <b-form-input v-model="updatedWhatsappInvoice.whatsappInvoiceClientLocationURL" disabled class="mb-3" placeholder="Enlace de la ubicación"></b-form-input>
+              <img @click="goToURL(updatedWhatsappInvoice.whatsappInvoiceClientLocationURL)" src="@/assets/pageAssets/map.png" alt style="cursor:pointer; width: 35px; margin-left: 20px; height: 35px;"/>
+              <img @click="goToURL(updatedWhatsappInvoice.whatsappInvoiceClientLocationURL)" src="@/assets/pageAssets/z.png" alt style="cursor:pointer; margin-left: 10px; width: 35px; height: 35px;"/>
+            </div>
+            <br>
+          </div>
           
           <h5><strong>Ubicación: </strong></h5>
           <GmapMap :center="getWhatsappInvoiceClientLocation()" :zoom="13" style="width: 100%; height: 300px" v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation">
@@ -223,16 +382,34 @@
 
           <h5><strong>Nota del envío: </strong></h5>
           <div style="display: flex;">
-            <b-form-textarea no-resize rows="5" class="form-control" placeholder="Coloque una nota del envío" v-model="updatedWhatsappInvoice.whatsappInvoiceShippingNote"/>    
+            <b-form-textarea no-resize rows="3" class="form-control" placeholder="Coloque una nota del envío" v-model="updatedWhatsappInvoice.whatsappInvoiceShippingNote"/>    
             <div class="flex-grow-1"></div>
             <i @click="updateWhatsappInvoiceShippingNote()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>    
           </div>
-          <br><br>
+          <br>
+
+          <div v-if="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason">
+            <h5><strong>Motivo del fallo en la entrega: </strong></h5>
+            <div style="display: flex;">
+              <b-form-textarea no-resize rows="3" class="form-control" disabled v-model="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason"/>
+            </div>
+            <br>
+          </div>
+
+          <br>
         </div>
 
         <div style="width: 50%;">
           <h5 v-if="updatedWhatsappInvoice.localityAgentName"><strong>Mensajero: </strong>{{ updatedWhatsappInvoice.localityAgentName }}</h5>
           <h5 v-else><strong>Mensajero: </strong>No asignado</h5> 
+          <br>
+
+          <h5><strong>Enlace de la ubicación: </strong></h5>
+          <div style="display: flex;">
+            <b-form-input v-model="updatedWhatsappInvoice.whatsappInvoiceClientLocationURL" class="mb-3" placeholder="Enlace de la ubicación"></b-form-input>
+            <div class="flex-grow-1"></div>
+            <i @click="updateWhatsappInvoiceClientLocationURL()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
+          </div>
           <br>
 
           <h5><strong>Ubicación: </strong></h5>
@@ -256,8 +433,13 @@
         </div>
       </div>
 
+      <br><br>
+
       <div style="text-align: center;">
-        <b-button @click="returnWhatsappConversation()" variant="info">Regresar al call center</b-button>
+        <div v-if="loaderReturned" style="text-align: center;">
+          <br><span class="spinner-glow spinner-glow-primary"></span>
+        </div>
+        <b-button v-else @click="returnWhatsappConversation()" variant="info">Regresar al call center</b-button>
       </div>
 
     </b-modal>
@@ -282,7 +464,8 @@
             <div v-for="whatsappInvoice in zapoteWhatsappInvoices">
               <div style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white;">
                 <div style="width: 60%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
-                  <h5 style="cursor: pointer; margin-top: 10px;"><strong>Órden: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
+                  <h4 style="color:red" v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated"><strong>COMANDA MODIFICADA</strong></h4>
+                  <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
                   <h5 v-b-modal.updateWhatsappInvoiceClientNameModal style="cursor: pointer;" @click="openUpdateWhatsappInvoiceClientName(whatsappInvoice)"><strong>Nombre: </strong>{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
                   <h5 v-b-modal.updateWhatsappInvoiceClientPhoneNumberModal style="cursor: pointer;" @click="openUpdateWhatsappInvoiceClientPhoneNumber(whatsappInvoice)"><strong>Número: </strong>{{ parsePhoneNumber(whatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h5>
                   <h5 v-b-modal.updateWhatsappInvoiceAmountModal style="cursor: pointer;" @click="openUpdateWhatsappInvoiceAmount(whatsappInvoice)"><strong>Monto: </strong>₡{{ parseInt(whatsappInvoice.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h5>
@@ -303,8 +486,10 @@
                   <div style="text-align: end;">
                     <br>
                     <b-badge v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="danger">C</b-badge>
-                    <b-badge v-if="whatsappInvoice.whatsappInvoiceState == 'S'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="warning">S</b-badge>
+                    <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'S'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="warning">S</b-badge>
                     <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'R'" @click="clickOnShippingInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">R</b-badge>
+                    <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'NE'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">NE</b-badge>
+
                   </div>
                 </div>
               </div>
@@ -330,7 +515,8 @@
             <div v-for="whatsappInvoice in escazuWhatsappInvoices">
               <div style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white;">
                 <div style="width: 60%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
-                  <h5 style="cursor: pointer; margin-top: 10px;"><strong>Órden: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
+                  <h4 style="color:red" v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated"><strong>COMANDA MODIFICADA</strong></h4>
+                  <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
                   <h5 v-b-modal.updateWhatsappInvoiceClientNameModal style="cursor: pointer;" @click="openUpdateWhatsappInvoiceClientName(whatsappInvoice)"><strong>Nombre: </strong>{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
                   <h5 v-b-modal.updateWhatsappInvoiceClientPhoneNumberModal style="cursor: pointer;" @click="openUpdateWhatsappInvoiceClientPhoneNumber(whatsappInvoice)"><strong>Número: </strong>{{ parsePhoneNumber(whatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h5>
                   <h5 v-b-modal.updateWhatsappInvoiceAmountModal style="cursor: pointer;" @click="openUpdateWhatsappInvoiceAmount(whatsappInvoice)"><strong>Monto: </strong>₡{{ parseInt(whatsappInvoice.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h5>
@@ -353,6 +539,8 @@
                     <b-badge v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="danger">C</b-badge>
                     <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'S'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="warning">S</b-badge>
                     <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'R'" @click="clickOnShippingInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">R</b-badge>
+                    <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'NE'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">NE</b-badge>
+
                   </div>
                 </div>
               </div>
@@ -378,7 +566,8 @@
             <div v-for="whatsappInvoice in herediaWhatsappInvoices">
               <div style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white;">
                 <div style="width: 60%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
-                  <h5 style="cursor: pointer; margin-top: 10px;"><strong>Órden: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
+                  <h4 style="color:red" v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated"><strong>COMANDA MODIFICADA</strong></h4>
+                  <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
                   <h5 v-b-modal.updateWhatsappInvoiceClientNameModal style="cursor: pointer;" @click="openUpdateWhatsappInvoiceClientName(whatsappInvoice)"><strong>Nombre: </strong>{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
                   <h5 v-b-modal.updateWhatsappInvoiceClientPhoneNumberModal style="cursor: pointer;" @click="openUpdateWhatsappInvoiceClientPhoneNumber(whatsappInvoice)"><strong>Número: </strong>{{ parsePhoneNumber(whatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h5>
                   <h5 v-b-modal.updateWhatsappInvoiceAmountModal style="cursor: pointer;" @click="openUpdateWhatsappInvoiceAmount(whatsappInvoice)"><strong>Monto: </strong>₡{{ parseInt(whatsappInvoice.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h5>
@@ -401,6 +590,7 @@
                     <b-badge v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="danger">C</b-badge>
                     <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'S'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="warning">S</b-badge>
                     <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'R'" @click="clickOnShippingInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">R</b-badge>
+                    <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'NE'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">NE</b-badge>
                   </div>
                 </div>
               </div>
@@ -426,7 +616,8 @@
             <div v-for="whatsappInvoice in cartagoWhatsappInvoices">
               <div style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white;">
                 <div style="width: 60%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
-                  <h5 style="cursor: pointer; margin-top: 10px;"><strong>Órden: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
+                  <h4 style="color:red" v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated"><strong>COMANDA MODIFICADA</strong></h4>
+                  <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
                   <h5 v-b-modal.updateWhatsappInvoiceClientNameModal style="cursor: pointer;" @click="openUpdateWhatsappInvoiceClientName(whatsappInvoice)"><strong>Nombre: </strong>{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
                   <h5 v-b-modal.updateWhatsappInvoiceClientPhoneNumberModal style="cursor: pointer;" @click="openUpdateWhatsappInvoiceClientPhoneNumber(whatsappInvoice)"><strong>Número: </strong>{{ parsePhoneNumber(whatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h5>
                   <h5 v-b-modal.updateWhatsappInvoiceAmountModal style="cursor: pointer;" @click="openUpdateWhatsappInvoiceAmount(whatsappInvoice)"><strong>Monto: </strong>₡{{ parseInt(whatsappInvoice.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h5>
@@ -449,6 +640,7 @@
                     <b-badge v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="danger">C</b-badge>
                     <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'S'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="warning">S</b-badge>
                     <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'R'" @click="clickOnShippingInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">R</b-badge>
+                    <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'NE'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">NE</b-badge>
                   </div>
                 </div>
               </div>
@@ -467,6 +659,12 @@
               <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="warning">{{localityWhatsappInvoiceAmount}}</b-badge>
               <b-badge style="font-size: x-large;" pill variant="success">{{shippingWhatsappInvoiceAmount}}</b-badge>
             </div>
+            <div style="display: flex; margin-left: 30px;">
+              <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayDeliveredInvoices()" style="margin-right: 7px; cursor: pointer;">📦</h1>
+              <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayInvoicesByLocalityAgent()" style="margin-right: 7px; cursor: pointer;">🏍️</h1>
+              <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayCanceledInvoices()" style="cursor: pointer;">❌</h1>
+
+            </div>
           </div>
         </div>
         <br>
@@ -475,7 +673,8 @@
           <div v-for="whatsappInvoice in localityWhatsappInvoices">
             <div style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white; width: 100%;">
               <div style="width: 70%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
-                <h5 style="cursor: pointer; margin-top: 10px;"><strong>Órden: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
+                <h4 style="color:red" v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated"><strong>COMANDA MODIFICADA</strong></h4>
+                <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
                 <h5 style="cursor: pointer;"><strong>Nombre: </strong>{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
                 <h5 style="cursor: pointer;"><strong>Número: </strong>{{ parsePhoneNumber(whatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h5>
                 <h5 style="cursor: pointer;"><strong>Monto: </strong>₡{{ parseInt(whatsappInvoice.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h5>
@@ -494,6 +693,7 @@
                 <div style="text-align: end; margin-bottom: 10px;">
                   <b-badge v-if="whatsappInvoice.whatsappInvoiceState == 'S'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="warning">S</b-badge>
                   <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'R'" @click="clickOnShippingInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">R</b-badge>
+                  <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'NE'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">NE</b-badge>
                 </div>
               </div>
             </div>
@@ -506,11 +706,7 @@
     <div v-if="agentType == 'localityAgent'">
       <b-card :style="localityColor">
         <div style="justify-content: center; display: flex;">
-          <div style="display: flex;">
-            <div style="margin-left: 30px;">
-              <b-badge style="font-size: x-large;" pill variant="success">{{localityAgentInvoicesAmount}}</b-badge>
-            </div>
-          </div>
+          <b-badge style="font-size: x-large;" pill variant="success">{{localityAgentInvoicesAmount}}</b-badge>
         </div>
         <br>
         
@@ -518,7 +714,8 @@
           <div v-for="whatsappInvoice in localityAgentInvoices">
             <div style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white; width: 100%;">
               <div style="width: 70%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
-                <h5 style="cursor: pointer; margin-top: 10px;"><strong>Órden: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
+                <h4 style="color:red" v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated"><strong>COMANDA MODIFICADA</strong></h4>
+                <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
                 <h5 style="cursor: pointer;"><strong>Nombre: </strong>{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
                 <h5 style="cursor: pointer;"><strong>Número: </strong>{{ parsePhoneNumber(whatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h5>
                 <h5 style="cursor: pointer;"><strong>Monto: </strong>₡{{ parseInt(whatsappInvoice.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h5>
@@ -535,7 +732,7 @@
                   <b-badge style="font-size: larger;" pill variant="success">{{ whatsappInvoice.whatsappInvoiceShippingDateTimeRepresentation }}</b-badge>
                 </div>
                 <div style="text-align: end; margin-bottom: 10px;">
-                  <b-badge v-if="whatsappInvoice.whatsappInvoiceState == 'R'" @click="clickOnShippingInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">R</b-badge>
+                  <b-badge v-if="whatsappInvoice.whatsappInvoiceState == 'R'" v-b-modal.shippingModal @click="tryToShippingInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">R</b-badge>
                 </div>
               </div>
             </div>
@@ -591,13 +788,40 @@
 <script>
 import axios from 'axios';
 const constants = require('@../../../src/constants.js');
+import VueBarcode from 'vue-barcode';
 
 
 export default {
-  components: {},
+  components: {VueBarcode},
 
   data() {
     return {
+      deliveredInvoicesTable: [
+        {
+          label: "",
+          field: "whatsappInvoiceAgentID",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Nombre",
+          field: "whatsappInvoiceClientName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Número",
+          field: "whatsappInvoiceClientPhoneNumber",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Monto",
+          field: "whatsappInvoiceAmount",
+          thClass: "text-left",
+          tdClass: "text-left",
+        }
+      ],
 
       localityAgentInvoices: [],
       localityAgentInvoicesAmount: 0,
@@ -708,7 +932,7 @@ export default {
 
       updatedWhatsappInvoice: {},
 
-      updateWhatsappInvoiceStateOptions: [{value: 'C', text: 'Central'}, {value: 'S', text: 'Sucursal'}, {value: 'X', text: 'Cancelado'}],
+      updateWhatsappInvoiceStateOptions: [{value: 'C', text: 'Central'}, , {value: 'S', text: 'Sucursal'}, {value: 'E', text: 'Entregado'}, {value: 'X', text: 'Cancelado'}],
       updateWhatsappInvoiceShippingMethodOptions: [{value: 'Envío por motorizado', text: 'Envío por motorizado'}, {value: 'Retiro en sucursal', text: 'Retiro en sucursal'}, {value: 'Correos de CR', text: 'Correos de CR'}, {value: 'Encomienda', text: 'Encomienda'}, {value: 'Uber Flash', text: 'Uber Flash'}],
       updateWhatsappInvoicePaymentMethodOptions: [{value: 'Efectivo', text: 'Efectivo'}, {value: 'Tarjeta', text: 'Tarjeta'}, {value: 'SINPE (confirmado)', text: 'SINPE (confirmado)'}, {value: 'SINPE (contra entrega)', text: 'SINPE (contra entrega)'}, {value: 'Transferencia', text: 'Transferencia'}, {value: 'Pago mixto', text: 'Pago mixto'}],
       updateWhatsappInvoicePaymentStateOptions: [{value: 'Pago', text: 'Pago'}, {value: 'Pendiente', text: 'Pendiente'}, {value: 'Pago parcial', text: 'Pago parcial'}],
@@ -722,22 +946,170 @@ export default {
       assignedWhatsappInvoice: {},
 
       queryInterval: null,
-      agentType: 'central'
+      agentType: 'central',
+
+      shippingInvoice: null,
+      notShippedReason: '',
+
+      deliveredInvoices: [],
+      loaderDelivered: false,
+      loaderReturned: false
 
     };
   },
   
   methods: {
+    playSound(soundType){
+      if (soundType == 'invoice'){
+        var soundToPlay = new Audio(require('../../../assets/pageAssets/invoice.wav'));
+      } else if (soundType == 'update'){
+        var soundToPlay = new Audio(require('../../../assets/pageAssets/update.wav'));
+      }
+      soundToPlay.play();
+    },
+
+    returnWhatsappConversation(){
+      this.loaderReturned = true;
+      axios.post(constants.routes.backendAPI+'/returnWhatsappConversation', 
+      {
+        whatsappConversationRecipientPhoneNumber: this.updatedWhatsappInvoice.whatsappInvoiceClientPhoneNumber,
+        whatsappConversationID: this.updatedWhatsappInvoice.whatsappInvoiceWhatsappConversationID,
+        whatsappInvoiceID: this.updatedWhatsappInvoice.whatsappInvoiceID
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.$root.$emit('bv::hide::modal', 'localityWhatsappInvoiceInformationModal');
+          this.$root.$emit('bv::hide::modal', 'updateWhatsappInvoiceInformation');
+          this.loaderReturned = false;
+          this.showNotification('success', 'Comanda regresada al call center', 'Se ha regresado la comanda al call center. Para que la conversación se refleje en el sistema del usuario, recuerde actualizar la aplicación');
+        } else {
+          if (response.data.result == 1){
+            this.showNotification('danger', 'Error al regresar la comanda al call center', 'Ha ocurrido un error inesperado al regresar la comanda al call center. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          } else if (response.data.result == 2){
+            this.showNotification('danger', 'Error al regresar la comanda al call center', 'El cliente tiene una conversación activa en este momento. Si necesita regresar la comanda, por favor cierre la conversación activa con el cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          } else if (response.data.result == 3){
+            this.showNotification('danger', 'Error al eliminar la comanda', 'Ha ocurrido un error inesperado al regresar la eliminar la comanda. Si necesita regresar la comanda, por favor cierre la conversación activa con el cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          } else if (response.data.result == 4){
+            this.showNotification('danger', 'Error al reactivar la conversación', 'Ha ocurrido un error inesperado al reactivar la conversación. Si necesita regresar la comanda, por favor cierre la conversación activa con el cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }
+          this.loaderReturned = false;
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al regresar la comanda al call center', 'Ha ocurrido un error inesperado al regresar la comanda al call center. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.loaderReturned = false;
+      })
+
+    },
+
+    selectTodayInvoicesByLocalityAgent(){
+      this.loaderDelivered = true;
+      axios.post(constants.routes.backendAPI+'/selectTodayInvoicesByLocalityAgent', 
+      {
+        whatsappInvoiceLocalityID: localStorage.getItem('localityID')
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.loaderDelivered = false;
+          this.deliveredInvoices = response.data.result;
+        } else {
+          this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.loaderDelivered = false;
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al no entregar la comanda', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.loaderDelivered = false;
+      })
+    },
+
+    selectTodayDeliveredInvoices(){
+      this.loaderDelivered = true;
+      axios.post(constants.routes.backendAPI+'/selectTodayDeliveredInvoicesByLocality', 
+      {
+        whatsappInvoiceLocalityID: localStorage.getItem('localityID')
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.loaderDelivered = false;
+          this.deliveredInvoices = response.data.result;
+        } else {
+          this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.loaderDelivered = false;
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al no entregar la comanda', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.loaderDelivered = false;
+      })
+    },
+
+    selectTodayCanceledInvoices(){
+      this.loaderDelivered = true;
+      axios.post(constants.routes.backendAPI+'/selectTodayCanceledInvoicesByLocality', 
+      {
+        whatsappInvoiceLocalityID: localStorage.getItem('localityID')
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.loaderDelivered = false;
+          this.deliveredInvoices = response.data.result;
+        } else {
+          this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.loaderDelivered = false;
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al no entregar la comanda', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.loaderDelivered = false;
+      })
+    },
+
+    notShippedInvoice(){
+      const regularExpressionChecker = /\S/;
+      if (regularExpressionChecker.test(this.notShippedReason)){
+        axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceState', 
+        {
+          whatsappInvoiceID: this.shippingInvoice.whatsappInvoiceID,
+          whatsappInvoiceState: 'NE',
+          whatsappInvoiceLocalityID: this.shippingInvoice.whatsappInvoiceLocalityID,
+          returnedFromShippingToLocality: true,
+          whatsappInvoiceNotShippedReason: this.notShippedReason
+        })
+        .then((response) =>{
+          if (response.data.success){
+            this.showNotification('success', 'Comanda marcada como no entregada', 'Se ha marcado la comanda como no entregada exitosamente.');
+            this.$root.$emit('bv::hide::modal', 'shippingModal');
+          } else {
+            this.showNotification('danger', 'Error al no entregar la comanda', 'Ha ocurrido un error inesperado al no entregar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }
+        })
+        .catch(() => {
+          this.showNotification('danger', 'Error al no entregar la comanda', 'Ha ocurrido un error inesperado al no entregar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        })
+      } else {
+        this.showNotification('danger', 'Error al no entregar la comanda', 'Por favor, coloque un motivo para no entregar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      }
+    },
+
+    tryToShippingInvoice(whatsappInvoice){
+      this.shippingInvoice = whatsappInvoice;
+      this.notShippedReason = '';
+    },
 
     contactClient(){
       const whatsappNumber = this.updatedWhatsappInvoice.whatsappInvoiceClientPhoneNumber;
       const agentName = localStorage.getItem('localityAgentName');
       const whatsappInvoiceID = this.updatedWhatsappInvoice.whatsappInvoiceID;
 
-      const texto = 'Hola! Mi nombre es ' + agentName + ' y el día de hoy estaré entregando tu pedido con el número de órden ' + whatsappInvoiceID 
+      const texto = '¡Hola! Mi nombre es ' + agentName + ', soy el mensajero de King Vape. El día de hoy estaré entregando tu pedido con el número de órden ' + whatsappInvoiceID + '. Estaré lo más pronto posible en tu ubicación. ¡Muchas gracias por tu espera! 🏍️🔥';
       var url = 'https://api.whatsapp.com/send?phone=' + whatsappNumber + '&text=' + texto
       window.open(url, '_blank');
 
+    },
+
+    goToURL(url){
+      window.open(url, '_blank');
     },
 
     goWithMaps(){
@@ -758,7 +1130,8 @@ export default {
         {
           whatsappInvoiceID: whatsappInvoice.whatsappInvoiceID,
           whatsappInvoiceState: 'S',
-          whatsappInvoiceLocalityID: whatsappInvoice.whatsappInvoiceLocalityID
+          whatsappInvoiceLocalityID: whatsappInvoice.whatsappInvoiceLocalityID,
+          returnedFromShippingToLocality: false
         })
         .then((response) =>{
           if (response.data.success){
@@ -791,6 +1164,7 @@ export default {
         .then((response) =>{
           if (response.data.success){
             this.showNotification('success', 'Comanda entregada', 'Se ha entregado la comanda existosamente.');
+            this.$root.$emit('bv::hide::modal', 'shippingModal');
           } else {
             this.showNotification('danger', 'Error al entregar la comanda', 'Ha ocurrido un error inesperado al entregar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           }
@@ -821,7 +1195,6 @@ export default {
         .catch(() => {
           this.showNotification('danger', 'Error al asignar la comanda', 'Ha ocurrido un error inesperado al asignar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         })
-        this.showNotification('danger', 'Error al asignar la comanda', 'Coloque un mensajero e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       }
     },
 
@@ -902,17 +1275,18 @@ export default {
       {
         whatsappInvoiceID: this.updatedWhatsappInvoice.whatsappInvoiceID,
         whatsappInvoiceState: this.updatedWhatsappInvoice.whatsappInvoiceState,
-        whatsappInvoiceLocalityID: this.updatedWhatsappInvoice.whatsappInvoiceLocalityID
+        whatsappInvoiceLocalityID: this.updatedWhatsappInvoice.whatsappInvoiceLocalityID,
+        returnedFromShippingToLocality: true
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Comanda enviada', 'Se ha enviado la comanda existosamente.');
+          this.showNotification('success', 'Estado modificado', 'Se ha modificado el estado de la comanda existosamente.');
         } else {
-          this.showNotification('danger', 'Error al enviar la comanda', 'Ha ocurrido un error inesperado al enviar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al cambiar el estado de la comanda', 'Ha ocurrido un error inesperado al cambiar el estado de la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al enviar la comanda', 'Ha ocurrido un error inesperado al enviar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al cambiar el estado de la comanda', 'Ha ocurrido un error inesperado al cambiar el estado de la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
@@ -1054,6 +1428,24 @@ export default {
         this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
+
+    updateWhatsappInvoiceClientLocationURL(){
+      axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceClientLocationURL', 
+      {
+        whatsappInvoiceID: this.updatedWhatsappInvoice.whatsappInvoiceID,
+        whatsappInvoiceClientLocationURL: this.updatedWhatsappInvoice.whatsappInvoiceClientLocationURL
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.showNotification('success', 'Enlace de ubicación modificada', 'Se ha modificado el enlace de la ubicación de la comanda existosamente.');
+        } else {
+          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+    },
     
 
     openUpdateWhatsappInvoiceClientName(whatsappInvoice){
@@ -1102,10 +1494,14 @@ export default {
       return phoneNumber;
     },
 
-    selectAllActiveWhatsappInvoice(){
+    selectAllActiveWhatsappInvoice(onBoot){
       axios.post(constants.routes.backendAPI+'/selectAllActiveWhatsappInvoice')
       .then((response) =>{
         if (response.data.success){
+          const currentInvoicesAmount = this.zapoteWhatsappInvoices.length + this.escazuWhatsappInvoices.length + this.herediaWhatsappInvoices.length + this.cartagoWhatsappInvoices.length;
+          const currentUpdatedInvoicesAmount = [this.zapoteWhatsappInvoices, this.escazuWhatsappInvoices, this.herediaWhatsappInvoices, this.cartagoWhatsappInvoices].reduce((total, invoices) => total + invoices.filter(invoice => invoice.whatsappInvoiceHasBeenUpdated == true).length, 0);
+
+
           this.zapoteWhatsappInvoices = [];
           this.zapoteCentralWhatsappInvoiceAmount = 0;
           this.zapoteLocalityWhatsappInvoiceAmount = 0;
@@ -1173,6 +1569,19 @@ export default {
             }
           }
 
+          const newInvoicesAmount = this.zapoteWhatsappInvoices.length + this.escazuWhatsappInvoices.length + this.herediaWhatsappInvoices.length + this.cartagoWhatsappInvoices.length;
+          const newUpdatedInvoicesAmount = [this.zapoteWhatsappInvoices, this.escazuWhatsappInvoices, this.herediaWhatsappInvoices, this.cartagoWhatsappInvoices].reduce((total, invoices) => total + invoices.filter(invoice => invoice.whatsappInvoiceHasBeenUpdated == true).length, 0);
+
+          if (onBoot == false){
+            if (newInvoicesAmount > currentInvoicesAmount){
+              this.playSound('invoice');
+            }
+            if (newUpdatedInvoicesAmount > currentUpdatedInvoicesAmount){
+              this.playSound('update');
+            }
+          }    
+    
+
         } else {
           this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
@@ -1182,13 +1591,16 @@ export default {
       })
     },
 
-    selectAllActiveWhatsappInvoiceFromLocality(){
+    selectAllActiveWhatsappInvoiceFromLocality(onBoot){
       axios.post(constants.routes.backendAPI+'/selectAllActiveWhatsappInvoiceFromLocality',
       {
         localityID: localStorage.getItem('localityID')
       })
       .then((response) =>{
         if (response.data.success){
+          const currentInvoicesAmount = this.localityWhatsappInvoices.length;
+          const currentUpdatedInvoicesAmount = this.localityWhatsappInvoices.filter(invoice => invoice.whatsappInvoiceHasBeenUpdated == true).length;
+
           this.localityWhatsappInvoices = [];
           this.localityWhatsappInvoiceAmount = 0;
           this.shippingWhatsappInvoiceAmount = 0;
@@ -1206,6 +1618,18 @@ export default {
               this.shippingWhatsappInvoiceAmount = this.shippingWhatsappInvoiceAmount + 1;
             }
           }
+
+          const newInvoicesAmount = this.localityWhatsappInvoices.length;
+          const newUpdatedInvoicesAmount = this.localityWhatsappInvoices.filter(invoice => invoice.whatsappInvoiceHasBeenUpdated == true).length;
+
+          if (onBoot == false){
+            if (newInvoicesAmount > currentInvoicesAmount){
+              this.playSound('invoice');
+            }
+            if (newUpdatedInvoicesAmount > currentUpdatedInvoicesAmount){
+              this.playSound('update');
+            }
+          }   
         } else {
           this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
@@ -1215,13 +1639,17 @@ export default {
       })
     },
 
-    selectAllActiveWhatsappInvoiceFromLocalityAgent(){
+    selectAllActiveWhatsappInvoiceFromLocalityAgent(onBoot){
       axios.post(constants.routes.backendAPI+'/selectAllActiveWhatsappInvoiceFromLocalityAgent', 
       {
         localityAgentID: localStorage.getItem('localityAgentID')
       })
       .then((response) =>{
         if (response.data.success){
+          const currentInvoicesAmount = this.localityAgentInvoices.length;
+          const currentUpdatedInvoicesAmount = this.localityAgentInvoices.filter(invoice => invoice.whatsappInvoiceHasBeenUpdated == true).length;
+
+
           this.localityAgentInvoices = [];
           this.localityAgentInvoicesAmount = 0;
           const whatsappInvoices = response.data.result;
@@ -1232,6 +1660,18 @@ export default {
             whatsappInvoice.whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceShippingDateTime))/1000), whatsappInvoice.whatsappInvoiceShippingDateTime);
             this.localityAgentInvoices.push(whatsappInvoice);
             this.localityAgentInvoicesAmount = this.localityAgentInvoicesAmount + 1;
+          }
+
+          const newInvoicesAmount = this.localityAgentInvoices.length;
+          const newUpdatedInvoicesAmount = this.localityAgentInvoices.filter(invoice => invoice.whatsappInvoiceHasBeenUpdated == true).length;
+
+          if (onBoot == false){
+            if (newInvoicesAmount > currentInvoicesAmount){
+              this.playSound('invoice');
+            }
+            if (newUpdatedInvoicesAmount > currentUpdatedInvoicesAmount){
+              this.playSound('update');
+            }
           }
         } else {
           this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
@@ -1323,6 +1763,16 @@ export default {
           this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime))/1000), this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime);
         }
 
+        for (var localityInvoiceIndex in this.localityWhatsappInvoices){
+          this.localityWhatsappInvoices[localityInvoiceIndex].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.localityWhatsappInvoices[localityInvoiceIndex].whatsappInvoiceLocalityDateTime))/1000), this.localityWhatsappInvoices[localityInvoiceIndex].whatsappInvoiceLocalityDateTime);
+          this.localityWhatsappInvoices[localityInvoiceIndex].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.localityWhatsappInvoices[localityInvoiceIndex].whatsappInvoiceShippingDateTime))/1000), this.localityWhatsappInvoices[localityInvoiceIndex].whatsappInvoiceShippingDateTime);
+        }
+
+        for (var localityAgentInvoiceIndex in this.localityAgentInvoices){
+          this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceLocalityDateTime))/1000), this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceLocalityDateTime);
+          this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceShippingDateTime))/1000), this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceShippingDateTime);
+        }
+
       }, 1000);
     },
 
@@ -1351,7 +1801,7 @@ export default {
   mounted(){
     if (localStorage.getItem('agentType') == 'agent' || localStorage.getItem('agentType') == 'admin' || localStorage.getItem('agentType') == 'central'){
       this.agentType = 'central';
-      this.selectAllActiveWhatsappInvoice();
+      this.selectAllActiveWhatsappInvoice(true);
       this.selectAgentNames();
       this.runTimers();
 
@@ -1372,12 +1822,15 @@ export default {
         this.localityColor = 'height: 85vh; background-color: #e44f9c;';
       }   
 
-      this.selectAllActiveWhatsappInvoiceFromLocality();
+      this.selectAllActiveWhatsappInvoiceFromLocality(true);
       this.selectLocalityAgentNames();
+      this.runTimers();
 
     } else if (localStorage.getItem('agentType') == 'localityAgent'){
       this.agentType = 'localityAgent';
-      this.selectAllActiveWhatsappInvoiceFromLocalityAgent();
+      this.selectAllActiveWhatsappInvoiceFromLocalityAgent(true);
+      this.runTimers();
+
     }
 
     this.cartagoMap = constants.routes.cartagoMap;
@@ -1387,11 +1840,11 @@ export default {
 
     this.queryInterval = setInterval(() => {
       if (this.agentType == 'central'){
-        this.selectAllActiveWhatsappInvoice();
+        this.selectAllActiveWhatsappInvoice(false);
       } else if (this.agentType == 'locality'){
-        this.selectAllActiveWhatsappInvoiceFromLocality();
+        this.selectAllActiveWhatsappInvoiceFromLocality(false);
       } else if (this.agentType == 'localityAgent'){
-        this.selectAllActiveWhatsappInvoiceFromLocalityAgent();
+        this.selectAllActiveWhatsappInvoiceFromLocalityAgent(false);
       }
     }, 5000);
   },

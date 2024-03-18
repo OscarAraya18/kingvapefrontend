@@ -186,7 +186,7 @@
                 </div>
               </b-list-group-item>
 
-              <b-list-group-item v-else style="cursor: pointer; background-color: rgb(255, 184, 108);" @click="openConversation(notSelledConversation)" button>
+              <b-list-group-item v-else style="cursor: pointer; background-color: rgb(255, 184, 108);" v-b-modal.openConversationModal @click="openConversation(notSelledConversation)" button>
                 <div style="font-size: 15px;"> 
                   <strong>Nombre:</strong> {{notSelledConversation.whatsappConversationRecipientProfileName}}<br>
                   <strong>Número:</strong> {{formatNumber(notSelledConversation.whatsappConversationRecipientPhoneNumber)}}<br>
@@ -416,7 +416,7 @@ import ApexCharts from 'apexcharts'
 import router from "../../../router"; 
 
 const constants = require('@../../../src/constants.js'); 
-const webSocket = new WebSocket('wss:kingvapebackend2.onrender.com');
+const webSocket = new WebSocket('wss:telasmasbackend.onrender.com');
 
 
 export default {
