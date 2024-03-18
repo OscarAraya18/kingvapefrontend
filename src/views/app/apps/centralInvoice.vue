@@ -990,7 +990,7 @@ export default {
         var soundToPlay = new Audio(require('../../../assets/pageAssets/invoice.wav'));
       } else if (soundType == 'update'){
         var soundToPlay = new Audio(require('../../../assets/pageAssets/update.wav'));
-      } else if (soundTyle == 'screen'){
+      } else if (soundType == 'screen'){
         var soundToPlay = new Audio(require('../../../assets/pageAssets/screen.mp3'));
 
       }
