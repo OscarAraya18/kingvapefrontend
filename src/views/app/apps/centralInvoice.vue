@@ -465,7 +465,7 @@
             <div style="display: flex;">
               <h1 style="margin-top: auto; margin-bottom: auto;"><strong>ZAPOTE</strong></h1>
               <div style="margin-left: 30px;">
-                <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="danger">{{zapoteCentralWhatsappInvoiceAmount}}</b-badge
+                <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="danger">{{zapoteCentralWhatsappInvoiceAmount}}</b-badge>
                 <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="warning">{{zapoteLocalityWhatsappInvoiceAmount}}</b-badge>
                 <b-badge style="font-size: x-large;" pill variant="success">{{zapoteShippingWhatsappInvoiceAmount}}</b-badge>
               </div>
