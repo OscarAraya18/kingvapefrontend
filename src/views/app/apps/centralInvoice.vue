@@ -1171,7 +1171,7 @@ export default {
 
     goWithWaze(){
       const location = JSON.parse(this.updatedWhatsappInvoice.whatsappInvoiceClientLocation);
-      var url = 'https://www.waze.com/ul?ll=' + location.latitude + ',' + location.longitude;
+      var url = 'https://www.waze.com/ul?ll=' + location.latitude + ',' + location.longitude + '&navigate=yes';
       window.open(url, '_blank');
     },
 
