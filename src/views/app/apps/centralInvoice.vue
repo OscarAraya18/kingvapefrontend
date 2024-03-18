@@ -970,6 +970,7 @@ export default {
       assignedWhatsappInvoice: {},
 
       queryInterval: null,
+      soundInterval: null,
       agentType: 'central',
 
       shippingInvoice: null,
@@ -992,7 +993,6 @@ export default {
         var soundToPlay = new Audio(require('../../../assets/pageAssets/update.wav'));
       } else if (soundType == 'screen'){
         var soundToPlay = new Audio(require('../../../assets/pageAssets/screen.mp3'));
-
       }
       soundToPlay.play();
     },
@@ -1791,7 +1791,7 @@ export default {
 
     runTimers(){
       var intervalo = 0;
-      setInterval(() => {
+      this.soundInterval = setInterval(() => {
         var playInvoiceSound = false;
         for (var zapoteWhatsappInvoiceIndex in this.zapoteWhatsappInvoices){
           if (this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceState == 'C'){
@@ -1926,6 +1926,7 @@ export default {
 
   beforeDestroy(){
     clearInterval(this.queryInterval);
+    clearInterval(this.soundInterval);
   }
 };
 </script>
