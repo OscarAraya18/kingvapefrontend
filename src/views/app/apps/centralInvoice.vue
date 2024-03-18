@@ -1845,9 +1845,18 @@ export default {
           for (var whatsappInvoiceIndex in whatsappInvoices){
             const whatsappInvoice = whatsappInvoices[whatsappInvoiceIndex];
 
-            whatsappInvoice.whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceCentralDateTime))/1000), whatsappInvoice.whatsappInvoiceCentralDateTime);
-            whatsappInvoice.whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceLocalityDateTime))/1000), whatsappInvoice.whatsappInvoiceLocalityDateTime);
+            if (whatsappInvoice.whatsappInvoiceLocalityDateTime){
+              whatsappInvoice.whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date(whatsappInvoice.whatsappInvoiceLocalityDateTime) - new Date(whatsappInvoice.whatsappInvoiceCentralDateTime))/1000), whatsappInvoice.whatsappInvoiceCentralDateTime);
+            } else {
+              whatsappInvoice.whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceCentralDateTime))/1000), whatsappInvoice.whatsappInvoiceCentralDateTime);
+            }
+            if (whatsappInvoice.whatsappInvoiceShippingDateTime){
+              whatsappInvoice.whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date(whatsappInvoice.whatsappInvoiceShippingDateTime) - new Date(whatsappInvoice.whatsappInvoiceLocalityDateTime))/1000), whatsappInvoice.whatsappInvoiceLocalityDateTime);
+            } else {
+              whatsappInvoice.whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceLocalityDateTime))/1000), whatsappInvoice.whatsappInvoiceLocalityDateTime);
+            }
             whatsappInvoice.whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceShippingDateTime))/1000), whatsappInvoice.whatsappInvoiceShippingDateTime);
+
 
             if (whatsappInvoice.localityName == 'King Vape Zapote'){ 
               this.zapoteWhatsappInvoices.push(whatsappInvoice);
@@ -1930,9 +1939,20 @@ export default {
           const whatsappInvoices = response.data.result;
           for (var whatsappInvoiceIndex in whatsappInvoices){
             const whatsappInvoice = whatsappInvoices[whatsappInvoiceIndex];
-            whatsappInvoice.whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceCentralDateTime))/1000), whatsappInvoice.whatsappInvoiceCentralDateTime);
-            whatsappInvoice.whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceLocalityDateTime))/1000), whatsappInvoice.whatsappInvoiceLocalityDateTime);
+            
+            if (whatsappInvoice.whatsappInvoiceLocalityDateTime){
+              whatsappInvoice.whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date(whatsappInvoice.whatsappInvoiceLocalityDateTime) - new Date(whatsappInvoice.whatsappInvoiceCentralDateTime))/1000), whatsappInvoice.whatsappInvoiceCentralDateTime);
+            } else {
+              whatsappInvoice.whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceCentralDateTime))/1000), whatsappInvoice.whatsappInvoiceCentralDateTime);
+            }
+            if (whatsappInvoice.whatsappInvoiceShippingDateTime){
+              whatsappInvoice.whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date(whatsappInvoice.whatsappInvoiceShippingDateTime) - new Date(whatsappInvoice.whatsappInvoiceLocalityDateTime))/1000), whatsappInvoice.whatsappInvoiceLocalityDateTime);
+            } else {
+              whatsappInvoice.whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceLocalityDateTime))/1000), whatsappInvoice.whatsappInvoiceLocalityDateTime);
+            }
             whatsappInvoice.whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceShippingDateTime))/1000), whatsappInvoice.whatsappInvoiceShippingDateTime);
+            
+           
             this.localityWhatsappInvoices.push(whatsappInvoice);
             if (whatsappInvoice.whatsappInvoiceState == 'S'){
               this.localityWhatsappInvoiceAmount = this.localityWhatsappInvoiceAmount + 1;
@@ -1977,8 +1997,18 @@ export default {
           const whatsappInvoices = response.data.result;
           for (var whatsappInvoiceIndex in whatsappInvoices){
             const whatsappInvoice = whatsappInvoices[whatsappInvoiceIndex];
-            whatsappInvoice.whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceCentralDateTime))/1000), whatsappInvoice.whatsappInvoiceCentralDateTime);
-            whatsappInvoice.whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceLocalityDateTime))/1000), whatsappInvoice.whatsappInvoiceLocalityDateTime);
+           
+            if (whatsappInvoice.whatsappInvoiceLocalityDateTime){
+              whatsappInvoice.whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date(whatsappInvoice.whatsappInvoiceLocalityDateTime) - new Date(whatsappInvoice.whatsappInvoiceCentralDateTime))/1000), whatsappInvoice.whatsappInvoiceCentralDateTime);
+            } else {
+              whatsappInvoice.whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceCentralDateTime))/1000), whatsappInvoice.whatsappInvoiceCentralDateTime);
+            }
+            if (whatsappInvoice.whatsappInvoiceShippingDateTime){
+              whatsappInvoice.whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date(whatsappInvoice.whatsappInvoiceShippingDateTime) - new Date(whatsappInvoice.whatsappInvoiceLocalityDateTime))/1000), whatsappInvoice.whatsappInvoiceLocalityDateTime);
+            } else {
+              whatsappInvoice.whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceLocalityDateTime))/1000), whatsappInvoice.whatsappInvoiceLocalityDateTime);
+            }
+           
             whatsappInvoice.whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(whatsappInvoice.whatsappInvoiceShippingDateTime))/1000), whatsappInvoice.whatsappInvoiceShippingDateTime);
             this.localityAgentInvoices.push(whatsappInvoice);
             this.localityAgentInvoicesAmount = this.localityAgentInvoicesAmount + 1;
@@ -2063,49 +2093,86 @@ export default {
       var intervalo = 0;
       this.soundInterval = setInterval(() => {
         var playInvoiceSound = false;
-        for (var zapoteWhatsappInvoiceIndex in this.zapoteWhatsappInvoices){
-          if (this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceState == 'C'){
+
+        for (var index in this.zapoteWhatsappInvoices){
+          if (this.zapoteWhatsappInvoices[index].whatsappInvoiceState == 'C'){
             var playInvoiceSound = true;
           }
-          this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime))/1000), this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime);
-          this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime))/1000), this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime);
-          this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime))/1000), this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime);
+          if (this.zapoteWhatsappInvoices[index].whatsappInvoiceLocalityDateTime){
+            this.zapoteWhatsappInvoices[index].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date(this.zapoteWhatsappInvoices[index].whatsappInvoiceLocalityDateTime) - new Date(this.zapoteWhatsappInvoices[index].whatsappInvoiceCentralDateTime))/1000), this.zapoteWhatsappInvoices[index].whatsappInvoiceCentralDateTime);
+          } else {
+            this.zapoteWhatsappInvoices[index].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.zapoteWhatsappInvoices[index].whatsappInvoiceCentralDateTime))/1000), this.zapoteWhatsappInvoices[index].whatsappInvoiceCentralDateTime);
+          }
+          if (this.zapoteWhatsappInvoices[index].whatsappInvoiceShippingDateTime){
+            this.zapoteWhatsappInvoices[index].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date(this.zapoteWhatsappInvoices[index].whatsappInvoiceShippingDateTime) - new Date(this.zapoteWhatsappInvoices[index].whatsappInvoiceLocalityDateTime))/1000), this.zapoteWhatsappInvoices[index].whatsappInvoiceLocalityDateTime);
+          } else {
+            this.zapoteWhatsappInvoices[index].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.zapoteWhatsappInvoices[index].whatsappInvoiceLocalityDateTime))/1000), this.zapoteWhatsappInvoices[index].whatsappInvoiceLocalityDateTime);
+          }
+          this.zapoteWhatsappInvoices[index].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.zapoteWhatsappInvoices[index].whatsappInvoiceShippingDateTime))/1000), this.zapoteWhatsappInvoices[index].whatsappInvoiceShippingDateTime);
         }
 
-        for (var escazuWhatsappInvoiceIndex in this.escazuWhatsappInvoices){
-          if (this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceState == 'C'){
+        for (var index in this.escazuWhatsappInvoices){
+          if (this.escazuWhatsappInvoices[index].whatsappInvoiceState == 'C'){
             var playInvoiceSound = true;
           }
-          this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime))/1000), this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime);
-          this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime))/1000), this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime);
-          this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime))/1000), this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime);
+          if (this.escazuWhatsappInvoices[index].whatsappInvoiceLocalityDateTime){
+            this.escazuWhatsappInvoices[index].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date(this.escazuWhatsappInvoices[index].whatsappInvoiceLocalityDateTime) - new Date(this.escazuWhatsappInvoices[index].whatsappInvoiceCentralDateTime))/1000), this.escazuWhatsappInvoices[index].whatsappInvoiceCentralDateTime);
+          } else {
+            this.escazuWhatsappInvoices[index].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.escazuWhatsappInvoices[index].whatsappInvoiceCentralDateTime))/1000), this.escazuWhatsappInvoices[index].whatsappInvoiceCentralDateTime);
+          }
+          if (this.escazuWhatsappInvoices[index].whatsappInvoiceShippingDateTime){
+            this.escazuWhatsappInvoices[index].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date(this.escazuWhatsappInvoices[index].whatsappInvoiceShippingDateTime) - new Date(this.escazuWhatsappInvoices[index].whatsappInvoiceLocalityDateTime))/1000), this.escazuWhatsappInvoices[index].whatsappInvoiceLocalityDateTime);
+          } else {
+            this.escazuWhatsappInvoices[index].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.escazuWhatsappInvoices[index].whatsappInvoiceLocalityDateTime))/1000), this.escazuWhatsappInvoices[index].whatsappInvoiceLocalityDateTime);
+          }
+          this.escazuWhatsappInvoices[index].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.escazuWhatsappInvoices[index].whatsappInvoiceShippingDateTime))/1000), this.escazuWhatsappInvoices[index].whatsappInvoiceShippingDateTime);
         }
 
-        for (var herediaWhatsappInvoiceIndex in this.herediaWhatsappInvoices){
-          if (this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceState == 'C'){
+        for (var index in this.herediaWhatsappInvoices){
+          if (this.herediaWhatsappInvoices[index].whatsappInvoiceState == 'C'){
             var playInvoiceSound = true;
           }
-          this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime))/1000), this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime);
-          this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime))/1000), this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime);
-          this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime))/1000), this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime);
+          if (this.herediaWhatsappInvoices[index].whatsappInvoiceLocalityDateTime){
+            this.herediaWhatsappInvoices[index].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date(this.herediaWhatsappInvoices[index].whatsappInvoiceLocalityDateTime) - new Date(this.herediaWhatsappInvoices[index].whatsappInvoiceCentralDateTime))/1000), this.herediaWhatsappInvoices[index].whatsappInvoiceCentralDateTime);
+          } else {
+            this.herediaWhatsappInvoices[index].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.herediaWhatsappInvoices[index].whatsappInvoiceCentralDateTime))/1000), this.herediaWhatsappInvoices[index].whatsappInvoiceCentralDateTime);
+          }
+          if (this.herediaWhatsappInvoices[index].whatsappInvoiceShippingDateTime){
+            this.herediaWhatsappInvoices[index].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date(this.herediaWhatsappInvoices[index].whatsappInvoiceShippingDateTime) - new Date(this.herediaWhatsappInvoices[index].whatsappInvoiceLocalityDateTime))/1000), this.herediaWhatsappInvoices[index].whatsappInvoiceLocalityDateTime);
+          } else {
+            this.herediaWhatsappInvoices[index].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.herediaWhatsappInvoices[index].whatsappInvoiceLocalityDateTime))/1000), this.herediaWhatsappInvoices[index].whatsappInvoiceLocalityDateTime);
+          }
+          this.herediaWhatsappInvoices[index].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.herediaWhatsappInvoices[index].whatsappInvoiceShippingDateTime))/1000), this.herediaWhatsappInvoices[index].whatsappInvoiceShippingDateTime);
         }
 
-        for (var cartagoWhatsappInvoiceIndex in this.cartagoWhatsappInvoices){
-          if (this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceState == 'C'){
+        for (var index in this.cartagoWhatsappInvoices){
+          if (this.cartagoWhatsappInvoices[index].whatsappInvoiceState == 'C'){
             var playInvoiceSound = true;
           }
-          this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime))/1000), this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime);
-          this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime))/1000), this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime);
-          this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime))/1000), this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime);
+          if (this.cartagoWhatsappInvoices[index].whatsappInvoiceLocalityDateTime){
+            this.cartagoWhatsappInvoices[index].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date(this.cartagoWhatsappInvoices[index].whatsappInvoiceLocalityDateTime) - new Date(this.cartagoWhatsappInvoices[index].whatsappInvoiceCentralDateTime))/1000), this.cartagoWhatsappInvoices[index].whatsappInvoiceCentralDateTime);
+          } else {
+            this.cartagoWhatsappInvoices[index].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.cartagoWhatsappInvoices[index].whatsappInvoiceCentralDateTime))/1000), this.cartagoWhatsappInvoices[index].whatsappInvoiceCentralDateTime);
+          }
+          if (this.cartagoWhatsappInvoices[index].whatsappInvoiceShippingDateTime){
+            this.cartagoWhatsappInvoices[index].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date(this.cartagoWhatsappInvoices[index].whatsappInvoiceShippingDateTime) - new Date(this.cartagoWhatsappInvoices[index].whatsappInvoiceLocalityDateTime))/1000), this.cartagoWhatsappInvoices[index].whatsappInvoiceLocalityDateTime);
+          } else {
+            this.cartagoWhatsappInvoices[index].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.cartagoWhatsappInvoices[index].whatsappInvoiceLocalityDateTime))/1000), this.cartagoWhatsappInvoices[index].whatsappInvoiceLocalityDateTime);
+          }
+          this.cartagoWhatsappInvoices[index].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.cartagoWhatsappInvoices[index].whatsappInvoiceShippingDateTime))/1000), this.cartagoWhatsappInvoices[index].whatsappInvoiceShippingDateTime);
         }
 
-        for (var localityInvoiceIndex in this.localityWhatsappInvoices){
-          this.localityWhatsappInvoices[localityInvoiceIndex].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.localityWhatsappInvoices[localityInvoiceIndex].whatsappInvoiceLocalityDateTime))/1000), this.localityWhatsappInvoices[localityInvoiceIndex].whatsappInvoiceLocalityDateTime);
-          this.localityWhatsappInvoices[localityInvoiceIndex].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.localityWhatsappInvoices[localityInvoiceIndex].whatsappInvoiceShippingDateTime))/1000), this.localityWhatsappInvoices[localityInvoiceIndex].whatsappInvoiceShippingDateTime);
+        for (var index in this.localityWhatsappInvoices){
+          if (this.localityWhatsappInvoices[index].whatsappInvoiceShippingDateTime){
+            this.localityWhatsappInvoices[index].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date(this.localityWhatsappInvoices[index].whatsappInvoiceShippingDateTime) - new Date(this.localityWhatsappInvoices[index].whatsappInvoiceLocalityDateTime))/1000), this.localityWhatsappInvoices[index].whatsappInvoiceLocalityDateTime);
+          } else {
+            this.localityWhatsappInvoices[index].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.localityWhatsappInvoices[index].whatsappInvoiceLocalityDateTime))/1000), this.localityWhatsappInvoices[index].whatsappInvoiceLocalityDateTime);
+          }
+          this.localityWhatsappInvoices[index].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.localityWhatsappInvoices[index].whatsappInvoiceShippingDateTime))/1000), this.localityWhatsappInvoices[index].whatsappInvoiceShippingDateTime);
         }
 
         for (var localityAgentInvoiceIndex in this.localityAgentInvoices){
-          this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceLocalityDateTime))/1000), this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceLocalityDateTime);
+          this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date(this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceShippingDateTime) - new Date(this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceLocalityDateTime))/1000), this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceLocalityDateTime);
           this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceShippingDateTime))/1000), this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceShippingDateTime);
         }
 
