@@ -275,14 +275,14 @@
           <div style="width: 35%; margin-left: 1.5%;">
             <div style="display: flex; margin-bottom: 25px;">
               <b-card style="width: 50%; margin-right: 1.5%; background-color: #fed330;">
-                <p style="font-size: 25px; margin-top: 5px;"><strong>ZAPOTE:</strong></p>
+                <p style="font-size: 22px; margin-top: 5px;"><strong>ZAPOTE:</strong></p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('1', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{zapoteSelled + zapoteNotSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('1', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{zapoteSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('1', 2)"v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{zapoteNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{zapoteSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
               <b-card style="width: 50%; margin-left: 1.5%; background-color: #e44f9c;">
-                <p style="font-size: 25px; margin-top: 5px;"><strong>ESCAZÚ:</strong></p>
+                <p style="font-size: 22px; margin-top: 5px;"><strong>ESCAZÚ:</strong></p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('4', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{escazuSelled + escazuNotSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('4', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{escazuSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('4', 2)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{escazuNotSelled}}</p>
@@ -292,14 +292,14 @@
 
             <div style="display: flex; margin-top: 25px;">
               <b-card style="width: 50%; margin-right: 1.5%; background-color: #26a699;">
-                <p style="font-size: 25px; margin-top: 5px;"><strong>CARTAGO:</strong></p>
+                <p style="font-size: 22px; margin-top: 5px;"><strong>CARTAGO:</strong></p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('3', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{cartagoNotSelled + cartagoSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('3', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{cartagoSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('3', 2)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{cartagoNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
               <b-card style="width: 50%; margin-left: 1.5%; background-color: #9f7cd0;">
-                <p style="font-size: 25px; margin-top: 5px;"><strong>HEREDIA:</strong></p>
+                <p style="font-size: 22px; margin-top: 5px;"><strong>HEREDIA:</strong></p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('5', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{herediaSelled + herediaNotSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('5', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{herediaSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('5', 2)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{herediaNotSelled}}</p>

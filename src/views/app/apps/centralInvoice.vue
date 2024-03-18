@@ -77,6 +77,15 @@
     </b-modal>
 
     <b-modal id="whatsappInvoiceProductsModal" size="lg" centered hide-header hide-footer>
+      
+      <div v-if="updatedWhatsappInvoice">
+        <h4><strong>ID:</strong> {{ updatedWhatsappInvoice.whatsappInvoiceID }}</h4>
+        <h4><strong>Nombre:</strong> {{ updatedWhatsappInvoice.whatsappInvoiceClientName }}</h4>
+        <h4><strong>Número:</strong> {{ parsePhoneNumber(updatedWhatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h4>
+      </div>
+
+      <br><br>
+
       <vue-good-table
         :columns="whatsappInvoiceProductsColumns"
         :line-numbers="false"
@@ -229,6 +238,7 @@
       <h5><strong>Método de envío: </strong> {{ updatedWhatsappInvoice.whatsappInvoiceShippingMethod }}</h5>
       <h5><strong>Método de pago: </strong> {{updatedWhatsappInvoice.whatsappInvoicePaymentMethod}}</h5>
       <h5><strong>Estado de pago: </strong> {{ updatedWhatsappInvoice.whatsappInvoicePaymentState }}</h5>
+      <h5><strong>Hora de entrega: </strong> {{ parseHour(updatedWhatsappInvoice.whatsappInvoiceDeliveredDateTime) }}</h5>
 
       <br>
 
@@ -261,6 +271,8 @@
         </div>
         <br>
       </div>
+      
+      
       
       <h5><strong>Ubicación: </strong></h5>
       <GmapMap :center="getWhatsappInvoiceClientLocation()" :zoom="13" style="width: 100%; height: 300px" v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation">
@@ -982,6 +994,28 @@ export default {
       soundToPlay.play();
     },
 
+    parseHour(originalHour){
+      const parsingDate = new Date(originalHour);
+      const options = {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      };
+      var formattedDate = parsingDate.toLocaleString('en-GB', options);
+      if (formattedDate.slice(-2) == 'am'){
+        formattedDate = formattedDate.slice(0,-2) + 'AM'
+      } else if (formattedDate.slice(-2) == 'pm') {
+        formattedDate = formattedDate.slice(0,-2) + 'PM'
+      }
+      if (formattedDate.includes('00') && formattedDate.includes('PM')){
+        formattedDate = formattedDate.replace('00', '12');
+      }
+      return formattedDate;
+    },
+
     returnWhatsappConversation(){
       this.loaderReturned = true;
       axios.post(this.backendURL+'/returnWhatsappConversation', 
@@ -1484,6 +1518,7 @@ export default {
 
     openWhatsappInvoiceProducts(whatsappInvoice){
       this.whatsappInvoiceProducts = JSON.parse(whatsappInvoice.whatsappInvoiceProducts);
+      this.updatedWhatsappInvoice = whatsappInvoice;
     },
 
     openWhatsappInvoiceInformation(whatsappInvoice){
@@ -1753,25 +1788,38 @@ export default {
 
     runTimers(){
       setInterval(() => {
+        var playInvoiceSound = false;
         for (var zapoteWhatsappInvoiceIndex in this.zapoteWhatsappInvoices){
+          if (this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceState == 'C'){
+            var playInvoiceSound = true;
+          }
           this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime))/1000), this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime);
           this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime))/1000), this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime);
           this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime))/1000), this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime);
         }
 
         for (var escazuWhatsappInvoiceIndex in this.escazuWhatsappInvoices){
+          if (this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceState == 'C'){
+            var playInvoiceSound = true;
+          }
           this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime))/1000), this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime);
           this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime))/1000), this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime);
           this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime))/1000), this.escazuWhatsappInvoices[escazuWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime);
         }
 
         for (var herediaWhatsappInvoiceIndex in this.herediaWhatsappInvoices){
+          if (this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceState == 'C'){
+            var playInvoiceSound = true;
+          }
           this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime))/1000), this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime);
           this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime))/1000), this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime);
           this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime))/1000), this.herediaWhatsappInvoices[herediaWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime);
         }
 
         for (var cartagoWhatsappInvoiceIndex in this.cartagoWhatsappInvoices){
+          if (this.zapoteWhatsappInvoices[zapoteWhatsappInvoiceIndex].whatsappInvoiceState == 'C'){
+            var playInvoiceSound = true;
+          }
           this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceCentralDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime))/1000), this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceCentralDateTime);
           this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime))/1000), this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceLocalityDateTime);
           this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime))/1000), this.cartagoWhatsappInvoices[cartagoWhatsappInvoiceIndex].whatsappInvoiceShippingDateTime);
@@ -1785,6 +1833,10 @@ export default {
         for (var localityAgentInvoiceIndex in this.localityAgentInvoices){
           this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceLocalityDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceLocalityDateTime))/1000), this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceLocalityDateTime);
           this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceShippingDateTimeRepresentation = this.getTimerRepresentation(Math.round((new Date() - new Date(this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceShippingDateTime))/1000), this.localityAgentInvoices[localityAgentInvoiceIndex].whatsappInvoiceShippingDateTime);
+        }
+
+        if (playInvoiceSound){
+          this.playSound('invoice');
         }
 
       }, 1000);
