@@ -953,7 +953,9 @@ export default {
 
       deliveredInvoices: [],
       loaderDelivered: false,
-      loaderReturned: false
+      loaderReturned: false,
+
+      backendURL: 'https://telasmasbackend.onrender.com'
 
     };
   },
@@ -970,7 +972,7 @@ export default {
 
     returnWhatsappConversation(){
       this.loaderReturned = true;
-      axios.post(constants.routes.backendAPI+'/returnWhatsappConversation', 
+      axios.post(this.backendURL+'/returnWhatsappConversation', 
       {
         whatsappConversationRecipientPhoneNumber: this.updatedWhatsappInvoice.whatsappInvoiceClientPhoneNumber,
         whatsappConversationID: this.updatedWhatsappInvoice.whatsappInvoiceWhatsappConversationID,
@@ -1004,7 +1006,7 @@ export default {
 
     selectTodayInvoicesByLocalityAgent(){
       this.loaderDelivered = true;
-      axios.post(constants.routes.backendAPI+'/selectTodayInvoicesByLocalityAgent', 
+      axios.post(this.backendURL+'/selectTodayInvoicesByLocalityAgent', 
       {
         whatsappInvoiceLocalityID: localStorage.getItem('localityID')
       })
@@ -1025,7 +1027,7 @@ export default {
 
     selectTodayDeliveredInvoices(){
       this.loaderDelivered = true;
-      axios.post(constants.routes.backendAPI+'/selectTodayDeliveredInvoicesByLocality', 
+      axios.post(this.backendURL+'/selectTodayDeliveredInvoicesByLocality', 
       {
         whatsappInvoiceLocalityID: localStorage.getItem('localityID')
       })
@@ -1046,7 +1048,7 @@ export default {
 
     selectTodayCanceledInvoices(){
       this.loaderDelivered = true;
-      axios.post(constants.routes.backendAPI+'/selectTodayCanceledInvoicesByLocality', 
+      axios.post(this.backendURL+'/selectTodayCanceledInvoicesByLocality', 
       {
         whatsappInvoiceLocalityID: localStorage.getItem('localityID')
       })
@@ -1068,7 +1070,7 @@ export default {
     notShippedInvoice(){
       const regularExpressionChecker = /\S/;
       if (regularExpressionChecker.test(this.notShippedReason)){
-        axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceState', 
+        axios.post(this.backendURL+'/updateWhatsappInvoiceState', 
         {
           whatsappInvoiceID: this.shippingInvoice.whatsappInvoiceID,
           whatsappInvoiceState: 'NE',
@@ -1126,7 +1128,7 @@ export default {
 
     clickOnCentralInvoice(whatsappInvoice){
       if (this.agentType == 'central'){
-        axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceState', 
+        axios.post(this.backendURL+'/updateWhatsappInvoiceState', 
         {
           whatsappInvoiceID: whatsappInvoice.whatsappInvoiceID,
           whatsappInvoiceState: 'S',
@@ -1156,7 +1158,7 @@ export default {
     
     clickOnShippingInvoice(whatsappInvoice){
       if (this.agentType == 'localityAgent'){
-        axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceState', 
+        axios.post(this.backendURL+'/updateWhatsappInvoiceState', 
         {
           whatsappInvoiceID: whatsappInvoice.whatsappInvoiceID,
           whatsappInvoiceState: 'E'
@@ -1178,7 +1180,7 @@ export default {
 
     assignLocalityAgent(){
       if (this.assignedLocalityAgent != null){
-        axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceState', 
+        axios.post(this.backendURL+'/updateWhatsappInvoiceState', 
         {
           whatsappInvoiceID: this.assignedWhatsappInvoice.whatsappInvoiceID,
           whatsappInvoiceState: 'R',
@@ -1199,7 +1201,7 @@ export default {
     },
 
     updateWhatsappInvoiceClientName(){
-      axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceClientName', 
+      axios.post(this.backendURL+'/updateWhatsappInvoiceClientName', 
       {
         whatsappInvoiceID: this.updatedWhatsappInvoiceID,
         whatsappInvoiceClientName: this.updatedWhatsappInvoiceClientName
@@ -1217,7 +1219,7 @@ export default {
     },
 
     updateWhatsappInvoiceClientPhoneNumber(){
-      axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceClientPhoneNumber', 
+      axios.post(this.backendURL+'/updateWhatsappInvoiceClientPhoneNumber', 
       {
         whatsappInvoiceID: this.updatedWhatsappInvoiceID,
         whatsappInvoiceClientPhoneNumber: this.updatedWhatsappInvoiceClientPhoneNumber
@@ -1235,7 +1237,7 @@ export default {
     },
 
     updateWhatsappInvoiceAmount(){
-      axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceAmount', 
+      axios.post(this.backendURL+'/updateWhatsappInvoiceAmount', 
       {
         whatsappInvoiceID: this.updatedWhatsappInvoiceID,
         whatsappInvoiceAmount: this.updatedWhatsappInvoiceAmount
@@ -1253,7 +1255,7 @@ export default {
     },
 
     updateWhatsappInvoiceAgentID(){
-      axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceAgentID', 
+      axios.post(this.backendURL+'/updateWhatsappInvoiceAgentID', 
       {
         whatsappInvoiceID: this.updatedWhatsappInvoiceID,
         whatsappInvoiceAgentID: this.updatedWhatsappInvoiceAgentID
@@ -1271,7 +1273,7 @@ export default {
     },
 
     updateWhatsappInvoiceState(){
-      axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceState', 
+      axios.post(this.backendURL+'/updateWhatsappInvoiceState', 
       {
         whatsappInvoiceID: this.updatedWhatsappInvoice.whatsappInvoiceID,
         whatsappInvoiceState: this.updatedWhatsappInvoice.whatsappInvoiceState,
@@ -1291,7 +1293,7 @@ export default {
     },
 
     updateWhatsappInvoiceShippingMethod(){
-      axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceShippingMethod', 
+      axios.post(this.backendURL+'/updateWhatsappInvoiceShippingMethod', 
       {
         whatsappInvoiceID: this.updatedWhatsappInvoice.whatsappInvoiceID,
         whatsappInvoiceShippingMethod: this.updatedWhatsappInvoice.whatsappInvoiceShippingMethod
@@ -1309,7 +1311,7 @@ export default {
     },
 
     updateWhatsappInvoicePaymentMethod(){
-      axios.post(constants.routes.backendAPI+'/updateWhatsappInvoicePaymentMethod', 
+      axios.post(this.backendURL+'/updateWhatsappInvoicePaymentMethod', 
       {
         whatsappInvoiceID: this.updatedWhatsappInvoice.whatsappInvoiceID,
         whatsappInvoicePaymentMethod: this.updatedWhatsappInvoice.whatsappInvoicePaymentMethod
@@ -1327,7 +1329,7 @@ export default {
     },
 
     updateWhatsappInvoicePaymentState(){
-      axios.post(constants.routes.backendAPI+'/updateWhatsappInvoicePaymentState', 
+      axios.post(this.backendURL+'/updateWhatsappInvoicePaymentState', 
       {
         whatsappInvoiceID: this.updatedWhatsappInvoice.whatsappInvoiceID,
         whatsappInvoicePaymentState: this.updatedWhatsappInvoice.whatsappInvoicePaymentState
@@ -1345,7 +1347,7 @@ export default {
     },
 
     updateWhatsappInvoiceLocationNote(){
-      axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceLocationNote', 
+      axios.post(this.backendURL+'/updateWhatsappInvoiceLocationNote', 
       {
         whatsappInvoiceID: this.updatedWhatsappInvoice.whatsappInvoiceID,
         whatsappInvoiceLocationNote: this.updatedWhatsappInvoice.whatsappInvoiceLocationNote
@@ -1363,7 +1365,7 @@ export default {
     },
 
     updateWhatsappInvoiceShippingNote(){
-      axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceShippingNote', 
+      axios.post(this.backendURL+'/updateWhatsappInvoiceShippingNote', 
       {
         whatsappInvoiceID: this.updatedWhatsappInvoice.whatsappInvoiceID,
         whatsappInvoiceShippingNote: this.updatedWhatsappInvoice.whatsappInvoiceShippingNote
@@ -1381,7 +1383,7 @@ export default {
     },
 
     updateWhatsappInvoiceLocalityAgentID(){
-      axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceLocalityAgentID', 
+      axios.post(this.backendURL+'/updateWhatsappInvoiceLocalityAgentID', 
       {
         whatsappInvoiceID: this.updatedWhatsappInvoice.whatsappInvoiceID,
         whatsappInvoiceLocalityAgentID: this.updatedWhatsappInvoice.whatsappInvoiceLocalityAgentID
@@ -1411,7 +1413,7 @@ export default {
           }
         }
       }
-      axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceClientLocation', 
+      axios.post(this.backendURL+'/updateWhatsappInvoiceClientLocation', 
       {
         whatsappInvoiceID: this.updatedWhatsappInvoice.whatsappInvoiceID,
         whatsappInvoiceClientLocation: this.updatedWhatsappInvoice.whatsappInvoiceClientLocation,
@@ -1430,7 +1432,7 @@ export default {
     },
 
     updateWhatsappInvoiceClientLocationURL(){
-      axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceClientLocationURL', 
+      axios.post(this.backendURL+'/updateWhatsappInvoiceClientLocationURL', 
       {
         whatsappInvoiceID: this.updatedWhatsappInvoice.whatsappInvoiceID,
         whatsappInvoiceClientLocationURL: this.updatedWhatsappInvoice.whatsappInvoiceClientLocationURL
@@ -1495,7 +1497,7 @@ export default {
     },
 
     selectAllActiveWhatsappInvoice(onBoot){
-      axios.post(constants.routes.backendAPI+'/selectAllActiveWhatsappInvoice')
+      axios.post(this.backendURL+'/selectAllActiveWhatsappInvoice')
       .then((response) =>{
         if (response.data.success){
           const currentInvoicesAmount = this.zapoteWhatsappInvoices.length + this.escazuWhatsappInvoices.length + this.herediaWhatsappInvoices.length + this.cartagoWhatsappInvoices.length;
@@ -1592,7 +1594,7 @@ export default {
     },
 
     selectAllActiveWhatsappInvoiceFromLocality(onBoot){
-      axios.post(constants.routes.backendAPI+'/selectAllActiveWhatsappInvoiceFromLocality',
+      axios.post(this.backendURL+'/selectAllActiveWhatsappInvoiceFromLocality',
       {
         localityID: localStorage.getItem('localityID')
       })
@@ -1640,7 +1642,7 @@ export default {
     },
 
     selectAllActiveWhatsappInvoiceFromLocalityAgent(onBoot){
-      axios.post(constants.routes.backendAPI+'/selectAllActiveWhatsappInvoiceFromLocalityAgent', 
+      axios.post(this.backendURL+'/selectAllActiveWhatsappInvoiceFromLocalityAgent', 
       {
         localityAgentID: localStorage.getItem('localityAgentID')
       })
@@ -1699,7 +1701,7 @@ export default {
     },
 
     selectLocalityAgentNames(){
-      axios.post(constants.routes.backendAPI+'/selectLocalityAgentNames', 
+      axios.post(this.backendURL+'/selectLocalityAgentNames', 
       {
         localityAgentLocalityID: localStorage.getItem('localityID')
       }).then((response) =>{
@@ -1719,7 +1721,7 @@ export default {
     },
 
     selectWhatsappInvoiceLocations(){
-      axios.post(constants.routes.backendAPI+'/selectWhatsappInvoiceLocations')
+      axios.post(this.backendURL+'/selectWhatsappInvoiceLocations')
       .then((response) =>{
         if (response.data.success){
           this.updateWhatsappInvoiceLocationOptions = [{value: 'Ubicación original', text: 'Ubicación original'}];
