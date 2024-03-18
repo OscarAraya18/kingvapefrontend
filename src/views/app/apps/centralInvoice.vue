@@ -703,7 +703,10 @@
                 <h5 style="cursor: pointer;"><strong>Agente: </strong>{{ whatsappInvoice.agentName }}</h5>
               </div>
               <div style="width: 30%; margin-top: auto; margin-bottom: auto;">
-                <div style="display: flex; margin-top: 10px;"> 
+                <div style="display: flex; margin-top: 10px;">
+                  
+                  <b-form-checkbox value="1" unchecked-value="0" @input="updateWhatsappInvoiceHasBeenBilled(whatsappInvoice)" v-model="whatsappInvoice.whatsappInvoiceHasBeenBilled" style="position: relative; top: -20px;" size="lg"></b-form-checkbox>
+
                   <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(whatsappInvoice)" class="i-Shopping-Cart" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
                   <i v-b-modal.localityWhatsappInvoiceInformationModal @click="openWhatsappInvoiceInformation(whatsappInvoice)" class="i-Information text-info" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
                 </div>
@@ -1341,6 +1344,25 @@ export default {
       })
     },
 
+    updateWhatsappInvoiceHasBeenBilled(whatsappInvoice){
+      axios.post(this.backendURL+'/updateWhatsappInvoiceHasBeenBilled', 
+      {
+        whatsappInvoiceID: whatsappInvoice.whatsappInvoiceID,
+        whatsappInvoiceHasBeenBilled: whatsappInvoice.whatsappInvoiceHasBeenBilled
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.showNotification('success', 'Estado de la comanda modificada', 'Se ha modificado el estado de la comanda existosamente.');
+        } else {
+          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+
+    },
+
     updateWhatsappInvoiceShippingMethod(){
       axios.post(this.backendURL+'/updateWhatsappInvoiceShippingMethod', 
       {
@@ -1921,7 +1943,7 @@ export default {
       } else if (this.agentType == 'localityAgent'){
         this.selectAllActiveWhatsappInvoiceFromLocalityAgent(false);
       }
-    }, 5000);
+    }, 6000);
   },
 
   beforeDestroy(){

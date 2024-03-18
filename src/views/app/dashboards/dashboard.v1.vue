@@ -458,7 +458,7 @@
             v-if="view == 'closedConversations'"
           >
             <template slot="table-row" slot-scope="props">
-              <button v-b-modal.conversationModal  v-if="props.column.field == 'whatsappConversationOpenAction'" class="btn btn-outline-primary text-black btn-rounded" @click="whatsappConversationOpenAction(props.row.whatsappConversationID)">Abrir</button>
+              <button v-b-modal.conversationModal  v-if="props.column.field == 'whatsappConversationOpenAction'" class="btn btn-outline-primary text-black btn-rounded" @click="whatsappConversationOpenAction(props.row)">Abrir</button>
             </template>
           </vue-good-table>
 
