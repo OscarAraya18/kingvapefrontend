@@ -1790,6 +1790,7 @@ export default {
     },
 
     runTimers(){
+      var intervalo = 0;
       setInterval(() => {
         var playInvoiceSound = false;
         for (var zapoteWhatsappInvoiceIndex in this.zapoteWhatsappInvoices){
@@ -1839,8 +1840,13 @@ export default {
         }
 
         if (playInvoiceSound){
-          this.playSound('screen');
+          if (intervalo >= 5){
+            this.playSound('screen');
+            intervalo = 0;
+          }
         }
+
+        intervalo = intervalo + 1;
 
       }, 1000);
     },
