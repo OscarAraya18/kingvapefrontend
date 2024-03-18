@@ -209,15 +209,7 @@
         </div>
       </div>
 
-      <br><br>
-
-      <div style="text-align: center;">
-        <div v-if="loaderReturned" style="text-align: center;">
-          <br><span class="spinner-glow spinner-glow-primary"></span>
-        </div>
-        <b-button v-else @click="returnWhatsappConversation()" variant="info">Regresar al call center</b-button>
-
-      </div>
+      <br>
 
     </b-modal>
 
@@ -886,38 +878,86 @@
         </div>
         <br>
         
-        <div style="max-height: 75vh; overflow-y: auto; display: flex; gap: 10px; flex-wrap: wrap;  width: 100%;">
-          <div v-for="whatsappInvoice in localityWhatsappInvoices">
-            <div style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white; width: 100%;">
-              <div style="width: 70%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
-                <h4 style="color:red" v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated"><strong>COMANDA MODIFICADA</strong></h4>
-                <h4 style="color:red" v-if="whatsappInvoice.whatsappInvoiceState == 'NE'"><strong>NO SE HA PODIDO ENTREGAR</strong></h4>
+        <div style="display: flex; width: 100%;">
+          <div style="background-color: #faa250; border-radius: 15px; width: 50%; margin-right: 0.5%; max-height: 75vh; overflow-y: auto;">
+            <div style="padding: 20px;">
+              <div v-for="whatsappInvoice in localityWhatsappInvoices">
+                <div v-if="whatsappInvoice.whatsappInvoiceState != 'R'">
+                  <div style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white; width: 100%;">
+                    <div style="width: 70%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
+                      <h4 style="color:red" v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated"><strong>COMANDA MODIFICADA</strong></h4>
+                      <h4 style="color:red" v-if="whatsappInvoice.whatsappInvoiceState == 'NE'"><strong>NO SE HA PODIDO ENTREGAR</strong></h4>
 
-                <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
-                <h5 style="cursor: pointer;"><strong>Nombre: </strong>{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
-                <h5 style="cursor: pointer;"><strong>Número: </strong>{{ parsePhoneNumber(whatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h5>
-                <h5 style="cursor: pointer;"><strong>Monto: </strong>₡{{ parseInt(whatsappInvoice.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h5>
-                <h5 style="cursor: pointer;"><strong>Método de pago: </strong>{{ whatsappInvoice.whatsappInvoicePaymentMethod }}</h5>
+                      <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
+                      <h5 style="cursor: pointer;"><strong>Nombre: </strong>{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
+                      <h5 style="cursor: pointer;"><strong>Número: </strong>{{ parsePhoneNumber(whatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h5>
+                      <h5 style="cursor: pointer;"><strong>Monto: </strong>₡{{ parseInt(whatsappInvoice.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h5>
+                      <h5 style="cursor: pointer;"><strong>Método de pago: </strong>{{ whatsappInvoice.whatsappInvoicePaymentMethod }}</h5>
 
-                <h5 style="cursor: pointer;"><strong>Agente: </strong>{{ whatsappInvoice.agentName }}</h5>
+                      <h5 style="cursor: pointer;"><strong>Agente: </strong>{{ whatsappInvoice.agentName }}</h5>
+                    </div>
+                    <div style="width: 30%; margin-top: auto; margin-bottom: auto;">
+                      <div style="display: flex; margin-top: 10px;">
+                        
+                        <b-form-checkbox value="1" unchecked-value="0" @input="updateWhatsappInvoiceHasBeenBilled(whatsappInvoice)" v-model="whatsappInvoice.whatsappInvoiceHasBeenBilled" style="position: relative; top: -20px;" size="lg"></b-form-checkbox>
+
+                        <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(whatsappInvoice)" class="i-Shopping-Cart" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
+                        <i v-b-modal.localityWhatsappInvoiceInformationModal @click="openWhatsappInvoiceInformation(whatsappInvoice)" class="i-Information text-info" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
+                      </div>
+                      <div style="margin-top: 10px; margin-bottom: 10px; margin-right: 10px;">
+                        <b-badge style="font-size: larger; margin-bottom: 10px;" pill variant="warning">{{ whatsappInvoice.whatsappInvoiceLocalityDateTimeRepresentation }}</b-badge>
+                        <br>
+                        <b-badge style="font-size: larger;" pill variant="success">{{ whatsappInvoice.whatsappInvoiceShippingDateTimeRepresentation }}</b-badge>
+                      </div>
+                      <div style="text-align: end; margin-bottom: 10px;">
+                        <b-badge v-if="whatsappInvoice.whatsappInvoiceState == 'S'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="warning">S</b-badge>
+                        <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'R'" @click="clickOnShippingInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">R</b-badge>
+                        <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'NE'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">NE</b-badge>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div style="width: 30%; margin-top: auto; margin-bottom: auto;">
-                <div style="display: flex; margin-top: 10px;">
-                  
-                  <b-form-checkbox value="1" unchecked-value="0" @input="updateWhatsappInvoiceHasBeenBilled(whatsappInvoice)" v-model="whatsappInvoice.whatsappInvoiceHasBeenBilled" style="position: relative; top: -20px;" size="lg"></b-form-checkbox>
+            </div>
+          </div>
+          
+          <div style="background-color: #578f60; border-radius: 15px; width: 50%; margin-left: 0.5%; max-height: 75vh; overflow-y: auto;">
+            <div style="padding: 20px;">
+              <div v-for="whatsappInvoice in localityWhatsappInvoices">
+                <div v-if="whatsappInvoice.whatsappInvoiceState == 'R'">
+                  <div style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white; width: 100%;">
+                    <div style="width: 70%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
+                      <h4 style="color:red" v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated"><strong>COMANDA MODIFICADA</strong></h4>
+                      <h4 style="color:red" v-if="whatsappInvoice.whatsappInvoiceState == 'NE'"><strong>NO SE HA PODIDO ENTREGAR</strong></h4>
 
-                  <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(whatsappInvoice)" class="i-Shopping-Cart" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
-                  <i v-b-modal.localityWhatsappInvoiceInformationModal @click="openWhatsappInvoiceInformation(whatsappInvoice)" class="i-Information text-info" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
-                </div>
-                <div style="margin-top: 10px; margin-bottom: 10px; margin-right: 10px;">
-                  <b-badge style="font-size: larger; margin-bottom: 10px;" pill variant="warning">{{ whatsappInvoice.whatsappInvoiceLocalityDateTimeRepresentation }}</b-badge>
-                  <br>
-                  <b-badge style="font-size: larger;" pill variant="success">{{ whatsappInvoice.whatsappInvoiceShippingDateTimeRepresentation }}</b-badge>
-                </div>
-                <div style="text-align: end; margin-bottom: 10px;">
-                  <b-badge v-if="whatsappInvoice.whatsappInvoiceState == 'S'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="warning">S</b-badge>
-                  <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'R'" @click="clickOnShippingInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">R</b-badge>
-                  <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'NE'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">NE</b-badge>
+                      <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
+                      <h5 style="cursor: pointer;"><strong>Nombre: </strong>{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
+                      <h5 style="cursor: pointer;"><strong>Número: </strong>{{ parsePhoneNumber(whatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h5>
+                      <h5 style="cursor: pointer;"><strong>Monto: </strong>₡{{ parseInt(whatsappInvoice.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h5>
+                      <h5 style="cursor: pointer;"><strong>Método de pago: </strong>{{ whatsappInvoice.whatsappInvoicePaymentMethod }}</h5>
+
+                      <h5 style="cursor: pointer;"><strong>Agente: </strong>{{ whatsappInvoice.agentName }}</h5>
+                    </div>
+                    <div style="width: 30%; margin-top: auto; margin-bottom: auto;">
+                      <div style="display: flex; margin-top: 10px;">
+                        
+                        <b-form-checkbox value="1" unchecked-value="0" @input="updateWhatsappInvoiceHasBeenBilled(whatsappInvoice)" v-model="whatsappInvoice.whatsappInvoiceHasBeenBilled" style="position: relative; top: -20px;" size="lg"></b-form-checkbox>
+
+                        <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(whatsappInvoice)" class="i-Shopping-Cart" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
+                        <i v-b-modal.localityWhatsappInvoiceInformationModal @click="openWhatsappInvoiceInformation(whatsappInvoice)" class="i-Information text-info" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
+                      </div>
+                      <div style="margin-top: 10px; margin-bottom: 10px; margin-right: 10px;">
+                        <b-badge style="font-size: larger; margin-bottom: 10px;" pill variant="warning">{{ whatsappInvoice.whatsappInvoiceLocalityDateTimeRepresentation }}</b-badge>
+                        <br>
+                        <b-badge style="font-size: larger;" pill variant="success">{{ whatsappInvoice.whatsappInvoiceShippingDateTimeRepresentation }}</b-badge>
+                      </div>
+                      <div style="text-align: end; margin-bottom: 10px;">
+                        <b-badge v-if="whatsappInvoice.whatsappInvoiceState == 'S'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="warning">S</b-badge>
+                        <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'R'" @click="clickOnShippingInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">R</b-badge>
+                        <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'NE'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">NE</b-badge>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2107,7 +2147,6 @@ export default {
     if (localStorage.getItem('agentType') == 'agent' || localStorage.getItem('agentType') == 'admin' || localStorage.getItem('agentType') == 'central'){
       this.agentType = 'central';
       this.isAdmin = (localStorage.getItem('agentType') == 'admin');
-      alert(this.isAdmin);
       this.selectAllActiveWhatsappInvoice(true);
       this.selectAgentNames();
       this.runTimers();
