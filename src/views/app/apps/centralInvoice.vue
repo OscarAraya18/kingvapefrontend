@@ -29,13 +29,35 @@
       </div>
     </b-modal>
 
-    <b-modal id="localityAgentInvoicesModal" size="m" centered hide-header hide-footer>
-      <div v-if="loaderDelivered" style="text-align: center;">
-        <br><span class="spinner-glow spinner-glow-primary"></span>
-      </div>
-      <div v-else>
-        <h1>hola</h1>
-      </div>
+    <b-modal id="motosModal" size="m" centered hide-header hide-footer>
+      <vue-good-table
+        :columns="localityAgentTable"
+        :line-numbers="false"
+        styleClass="order-table vgt-table"
+        :rows="localityAgentOptions">
+        <template slot="table-row" slot-scope="props">  
+          <div v-if="props.column.field == 'text'">
+            <div style="display: flex;">
+              <p>{{ props.row.text }}</p>
+              <div class="flex-grow-1"></div>
+              <div>
+                <b-badge pill style="font-size: large;" variant="success">{{localityWhatsappInvoices.filter(invoice => invoice['whatsappInvoiceLocalityAgentID'] == props.row.value).length}}</b-badge>
+              </div>
+            </div>
+          </div>
+
+          <div v-else-if="props.column.field == 'value'">
+            <div style="display: flex;">
+              <div class="flex-grow-1"></div>
+              <div>
+                <i v-b-modal.updateWhatsappInvoiceInformation @click="openWhatsappInvoiceInformation()" class="i-Information" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
+              </div>
+            </div>
+          </div>
+          
+        </template>
+      </vue-good-table>
+
     </b-modal>
 
     <b-modal id="notShippedModal" size="sm" centered hide-header @ok="notShippedInvoice()">
@@ -107,6 +129,13 @@
     </b-modal>
 
     <b-modal id="localityWhatsappInvoiceInformationModal" size="lg" centered hide-header hide-footer>
+      <div v-if="updatedWhatsappInvoice">
+        <h4><strong>ID:</strong> {{ updatedWhatsappInvoice.whatsappInvoiceID }}</h4>
+        <h4><strong>Nombre:</strong> {{ updatedWhatsappInvoice.whatsappInvoiceClientName }}</h4>
+        <h4><strong>Número:</strong> {{ parsePhoneNumber(updatedWhatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h4>
+      </div>
+      <br><br>
+
       <div style="display: flex;">
         <div style="width: 50%; margin-right: 50px;">
           <h5><strong>Estado: </strong></h5>
@@ -285,6 +314,13 @@
 
 
     <b-modal id="mensajeroModal" size="lg" centered hide-footer title="Información del envío">
+      <div v-if="updatedWhatsappInvoice">
+        <h4><strong>ID:</strong> {{ updatedWhatsappInvoice.whatsappInvoiceID }}</h4>
+        <h4><strong>Nombre:</strong> {{ updatedWhatsappInvoice.whatsappInvoiceClientName }}</h4>
+        <h4><strong>Número:</strong> {{ parsePhoneNumber(updatedWhatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h4>
+      </div>
+      <br>
+
           <h5><strong>Estado: </strong> {{ updatedWhatsappInvoice.whatsappInvoiceState }}</h5>
           <h5><strong>Método de envío: </strong> {{ updatedWhatsappInvoice.whatsappInvoiceShippingMethod }}</h5>
           <h5><strong>Método de pago: </strong> {{updatedWhatsappInvoice.whatsappInvoicePaymentMethod}}</h5>
@@ -342,6 +378,13 @@
     </b-modal>
 
     <b-modal id="updateWhatsappInvoiceInformation" size="lg" centered hide-header hide-footer>
+      <div v-if="updatedWhatsappInvoice">
+        <h4><strong>ID:</strong> {{ updatedWhatsappInvoice.whatsappInvoiceID }}</h4>
+        <h4><strong>Nombre:</strong> {{ updatedWhatsappInvoice.whatsappInvoiceClientName }}</h4>
+        <h4><strong>Número:</strong> {{ parsePhoneNumber(updatedWhatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h4>
+      </div>
+      <br><br>
+      
       <div style="display: flex;">
         <div style="width: 50%; margin-right: 50px;">
           <h5><strong>Estado: </strong></h5>
@@ -823,7 +866,7 @@
             </div>
             <div style="display: flex; margin-left: 30px;">
               <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayDeliveredInvoices()" style="margin-right: 7px; cursor: pointer;">📦</h1>
-              <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayInvoicesByLocalityAgent()" style="margin-right: 7px; cursor: pointer;">🏍️</h1>
+              <h1 v-b-modal.motosModal style="margin-right: 7px; cursor: pointer;">🏍️</h1>
               <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayCanceledInvoices()" style="cursor: pointer;">❌</h1>
 
             </div>
@@ -1016,6 +1059,21 @@ export default {
   data() {
     return {
       isAdmin: false,
+
+      localityAgentTable: [
+        {
+          label: "Nombre del mensajero",
+          field: "text",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "",
+          field: "value",
+          thClass: "text-left",
+          tdClass: "text-left",
+        }
+      ],
 
       deliveredInvoicesTable: [
         {

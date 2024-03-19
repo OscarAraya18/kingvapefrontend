@@ -1759,6 +1759,8 @@ export default {
       websocketReconnectInterval: 3000,
       websocketPingInterval: null,
 
+      websocketAbort: false,
+
       invoiceLocationMessage: null,
       invoiceLocationName: ''
     };
@@ -1878,13 +1880,18 @@ export default {
       };
 
       this.websocketConnection.onclose = (event) => {
-        alert('Se ha cerrado el websocket por desconexion. Reconectando...');
-        this.websocketIsConnected = false;
-        this.websocketConnection = null;
-        clearInterval(this.websocketPingInterval);
-        setTimeout(() => {
-          this.manageWebsocketConnection();
-        }, this.websocketReconnectInterval);
+        if (this.websocketAbort == true) {
+          this.websocketIsConnected = false;
+          this.websocketConnection = null;
+        } else {
+          alert('Se ha cerrado el websocket por desconexion. Reconectando...');
+          this.websocketIsConnected = false;
+          this.websocketConnection = null;
+          clearInterval(this.websocketPingInterval);
+          setTimeout(() => {
+            this.manageWebsocketConnection();
+          }, this.websocketReconnectInterval);
+        }
       };
 
       this.websocketConnection.onerror = (error) => {
@@ -4081,7 +4088,7 @@ export default {
     await this.openIndexedDatabase();
   },
 
-  mounted(){
+  mounted(){    
     this.cartagoMap = constants.routes.cartagoMap;
     this.cartagoMapOptions = constants.routes.cartagoMapOptions;
     this.herediaMap = constants.routes.herediaMap;
@@ -4132,6 +4139,14 @@ export default {
 
     this.manageWebsocketConnection();
   }, 
+
+  beforeDestroy(){
+    clearInterval(this.websocketPingInterval);
+    this.websocketAbort = true;
+    if (this.websocketConnection) {
+      this.websocketConnection.close();
+    }
+  }
 
 };
 </script>
