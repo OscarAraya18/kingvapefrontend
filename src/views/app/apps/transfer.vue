@@ -293,7 +293,7 @@ export default {
             storeMessageStoreName = this.transferLocality;
           }
           
-          axios.post(this.backendURL+'/insertStoreMessage', {
+          axios.post(constants.routes.backendAPI+'/insertStoreMessage', {
             storeMessageStoreName: storeMessageStoreName,
             storeMessageRecipientPhoneNumber: this.transferPhoneNumber,
             storeMessageRecipientProfileName: this.transferName,
