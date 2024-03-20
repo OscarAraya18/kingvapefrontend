@@ -1266,7 +1266,7 @@ export default {
       })
       .catch(() =>{
         this.localityLoader = false;
-        feedback.whatsappFeedbackLoading = false;
+        this.whatsappFeedbackLoading = false;
         this.showNotification('danger', 'Error al consultar las conversaciones', 'Ha ocurrido un error inesperado al consultar las conversaciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
@@ -1287,9 +1287,9 @@ export default {
     },
 
     closeFeedback(feedback){
-      feedback.whatsappFeedbackLoading = true;
+      this.whatsappFeedbackLoading = true;
       axios.post(constants.routes.backendAPI+'/updateWhatsappFeedback', {'whatsappFeedbackID': feedback.whatsappFeedbackAction}).then((response) =>{ 
-        feedback.whatsappFeedbackLoading = false;
+        this.whatsappFeedbackLoading = false;
         if (response.data.success){
           this.selectNotResolvedWhatsappFeedbacks();
         } else {
@@ -1297,7 +1297,7 @@ export default {
         }
       })
       .catch(() =>{
-        feedback.whatsappFeedbackLoading = false;
+        this.whatsappFeedbackLoading = false;
         this.showNotification('danger', 'Error al recibir el feedback', 'Ha ocurrido un error inesperado al recibir el feedback. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
