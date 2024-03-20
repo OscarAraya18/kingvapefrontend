@@ -768,6 +768,8 @@ export default {
   
   data() {
     return {
+      queryInterval: null,
+      
       openedName: '',
       openedNumber: '',
 
@@ -1209,7 +1211,7 @@ export default {
     this.selectTransferableAgents();
     this.getInformation();
 
-    setInterval(() => {
+    this.queryInterval = setInterval(() => {
       this.getInformation();
     }, 30000);
     
@@ -1235,6 +1237,10 @@ export default {
       console.log(error);
     }
 
+  },
+
+  beforeDestroy(){
+    clearInterval(this.queryInterval);
   },
 
   methods: {
