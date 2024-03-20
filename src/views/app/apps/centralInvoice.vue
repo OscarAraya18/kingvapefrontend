@@ -512,8 +512,7 @@
               
               <div v-if="isAdmin==false" style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white;">
                 <div style="width: 60%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
-                  <h4 style="color:red" v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated"><strong>COMANDA MODIFICADA</strong></h4>
-                  <h4 style="color:red" v-if="whatsappInvoice.whatsappInvoiceState == 'NE'"><strong>NO SE HA PODIDO ENTREGAR</strong></h4>
+                 
 
                   <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
                   <h5 v-b-modal.updateWhatsappInvoiceClientNameModal style="cursor: pointer;" @click="openUpdateWhatsappInvoiceClientName(whatsappInvoice)"><strong>Nombre: </strong>{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
@@ -729,9 +728,7 @@
 
               <div v-else style="border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white;">
                 <div style="margin-right: 10px; margin-left: 10px;">
-                  <h4 style="color:red" v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated"><strong>COMANDA MODIFICADA</strong></h4>
-                  <h4 style="color:red" v-if="whatsappInvoice.whatsappInvoiceState == 'NE'"><strong>NO SE HA PODIDO ENTREGAR</strong></h4>
-
+                  
                   <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
                   <h5 v-b-modal.updateWhatsappInvoiceClientNameModal style="cursor: pointer;" @click="openUpdateWhatsappInvoiceClientName(whatsappInvoice)"><strong>Nombre: </strong>{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
                   <h5 v-b-modal.updateWhatsappInvoiceClientPhoneNumberModal style="cursor: pointer;" @click="openUpdateWhatsappInvoiceClientPhoneNumber(whatsappInvoice)"><strong>Número: </strong>{{ parsePhoneNumber(whatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h5>
@@ -756,6 +753,8 @@
                     <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'S'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="warning">S</b-badge>
                     <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'R'" @click="clickOnShippingInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">R</b-badge>
                     <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'NE'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">NE</b-badge>
+                    <img src="@/assets/pageAssets/alert.png" alt style="width: 35px; height: auto;"/>
+
                   </div>
                 </div>
                 <br>

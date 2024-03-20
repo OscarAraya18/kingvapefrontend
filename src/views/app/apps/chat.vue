@@ -1929,7 +1929,7 @@ export default {
             const localityID = response.data.result[localityIndex].localityID;
             const localityName = response.data.result[localityIndex].localityName;
             this.localityOptions.push({value: localityID, text: localityName});
-            this.closeLocalityOptions.push(localityName);
+            this.closeLocalityOptions.push({value: localityID, text: localityName});
           }
         } else {
           this.showNotification('danger', 'Error al consultar las localidades', 'Ha ocurrido un error inesperado al consultar las localidades. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
