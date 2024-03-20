@@ -176,6 +176,7 @@ export default {
           localStorage.setItem('localityAgentLocalityID', response.data.result['localityAgentLocalityID']);
           localStorage.setItem('localityAgentName', response.data.result['localityAgentName']);
           localStorage.setItem('localityAgentID', response.data.result['localityAgentID']);
+          localStorage.setItem('localityAgentColor', response.data.result['localityAgentColor']);
           router.push('/app/apps/centralInvoice');
         } else {
           this.loaderMensajero = false;

@@ -23,6 +23,11 @@
             <div v-else-if="props.column.field == 'whatsappInvoiceAmount'">
               ₡{{ parseInt(props.row.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}
             </div>
+
+            <div v-else-if="props.column.field == 'localityAgentName'" :style="getLocalityAgentTableStyle(props.row.whatsappInvoiceLocalityAgentID)">
+              {{ props.row.localityAgentName }}
+            </div>
+            
             
           </template>
         </vue-good-table>
@@ -30,34 +35,16 @@
     </b-modal>
 
     <b-modal id="motosModal" size="m" centered hide-header hide-footer>
-      <vue-good-table
-        :columns="localityAgentTable"
-        :line-numbers="false"
-        styleClass="order-table vgt-table"
-        :rows="localityAgentOptions">
-        <template slot="table-row" slot-scope="props">  
-          <div v-if="props.column.field == 'text'">
-            <div style="display: flex;">
-              <p>{{ props.row.text }}</p>
-              <div class="flex-grow-1"></div>
-              <div>
-                <b-badge pill style="font-size: large;" variant="success">{{localityWhatsappInvoices.filter(invoice => invoice['whatsappInvoiceLocalityAgentID'] == props.row.value).length}}</b-badge>
-              </div>
-            </div>
+      <div v-for="localityAgentOption in localityAgentOptions" :style="getLocalityAgentReportStyle(localityAgentOption.color)">
+        <div style="display: flex; padding: 15px;">
+          <h4 style="position: relative; top: 5px;"><strong>{{ localityAgentOption.text }}</strong></h4>
+          <div class="flex-grow-1"></div>
+          <div>
+            <b-badge pill style="font-size: large; margin-right: 20px; position: relative; top: -5px;" variant="success">{{localityWhatsappInvoices.filter(invoice => invoice['whatsappInvoiceLocalityAgentID'] == localityAgentOption.value).length}}</b-badge>
+            <i style="font-size: xx-large; margin-right: 10px; cursor: pointer; position: relative; top: 3px;" v-b-modal.updateWhatsappInvoiceInformation @click="openWhatsappInvoiceInformation()" class="i-Information"></i>
           </div>
-
-          <div v-else-if="props.column.field == 'value'">
-            <div style="display: flex;">
-              <div class="flex-grow-1"></div>
-              <div>
-                <i v-b-modal.updateWhatsappInvoiceInformation @click="openWhatsappInvoiceInformation()" class="i-Information" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
-              </div>
-            </div>
-          </div>
-          
-        </template>
-      </vue-good-table>
-
+        </div>
+      </div>
     </b-modal>
 
     <b-modal id="notShippedModal" size="sm" centered hide-header @ok="notShippedInvoice()">
@@ -236,7 +223,7 @@
           <br>
 
           <h5><strong>Ubicación: </strong></h5>
-          <GmapMap :center="getWhatsappInvoiceClientLocation()" :zoom="13" style="width: 100%; height: 460px" v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation">
+          <GmapMap :center="getWhatsappInvoiceClientLocation()" :zoom="13" style="width: 100%; height: 400px" v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation">
             <GmapMarker :position="getWhatsappInvoiceClientLocation()" :draggable="false"/>
             <GmapMarker id="zapoteTag" :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
             <GmapMarker id="escazuTag" :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
@@ -256,8 +243,6 @@
           </div>
         </div>
       </div>
-
-      <br>
 
     </b-modal>
 
@@ -1040,7 +1025,7 @@
         
         <div style="max-height: 75vh; overflow-y: auto; display: flex; gap: 10px; flex-wrap: wrap;  width: 100%;">
           <div v-for="whatsappInvoice in localityAgentInvoices">
-            <div style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white; width: 100%;">
+            <div :style="getLocalityAgentPhoneColor()">
               <div style="width: 70%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
                 <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
                 <h5 style="cursor: pointer;"><strong>Nombre: </strong>{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
@@ -1141,22 +1126,26 @@ export default {
 
   data() {
     return {
+      localityAgentColor: '',
+      
       errorCount: 0,
 
       isAdmin: false,
 
       localityAgentTable: [
         {
-          label: "Nombre del mensajero",
+          label: "",
           field: "text",
           thClass: "text-left",
           tdClass: "text-left",
+          sortable: false
         },
         {
           label: "",
           field: "value",
           thClass: "text-left",
           tdClass: "text-left",
+          sortable: false
         }
       ],
 
@@ -1342,6 +1331,10 @@ export default {
       return '';
     },
 
+    getLocalityAgentPhoneColor(){
+      return 'display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; width: 100%; background-color: ' + this.localityAgentColor;
+    },
+
     getLocalityAgentColor(whatsappInvoice){
       const whatsappInvoiceLocalityAgentID = whatsappInvoice.whatsappInvoiceLocalityAgentID;
       for (var localityAgentIndex in this.localityAgentOptions){
@@ -1350,11 +1343,26 @@ export default {
           return 'display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; width: 100%; background-color: ' + localityAgent.color; 
         }
       }
-      return 'display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; width: 100%; background-color: white;'
+      return 'display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; width: 100%; background-color: white;';
     },
 
     getLocalityAgentOptionColor(localityAgentOption){
       return 'background-color: ' + localityAgentOption.color;
+    },
+
+    getLocalityAgentReportStyle(localityAgentColor){
+      return 'width: 100%; background-color: ' + localityAgentColor;
+    },
+
+    getLocalityAgentTableStyle(localityAgentID){
+      console.log(localityAgentID);
+      for (var localityAgentIndex in this.localityAgentOptions){
+        const localityAgent = this.localityAgentOptions[localityAgentIndex];
+        if (localityAgent.value == localityAgentID){
+          return 'background-color: ' + localityAgent.color; 
+        }
+      }
+      return 'background-color: white'; 
     },
 
     getHeight(){
@@ -2401,6 +2409,7 @@ export default {
 
     } else if (localStorage.getItem('agentType') == 'localityAgent'){
       this.agentType = 'localityAgent';
+      this.localityAgentColor = localStorage.getItem('localityAgentColor');
       this.selectAllActiveWhatsappInvoiceFromLocalityAgent(true);
       this.runTimers();
 
