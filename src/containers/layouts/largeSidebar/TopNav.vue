@@ -433,7 +433,7 @@ export default {
       }, 1000);
 
       this.selectApplicationStatus();
-      this.selectAgentNotifications();
+      //this.selectAgentNotifications();
       this.agentName = localStorage.getItem('agentName');
       this.agentProfileImage = localStorage.getItem('agentProfileImage');
       this.agentUsername = localStorage.getItem('agentUsername');
