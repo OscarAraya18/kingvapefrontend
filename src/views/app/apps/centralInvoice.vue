@@ -1132,6 +1132,8 @@ export default {
 
   data() {
     return {
+      errorCount: 0,
+      
       isAdmin: false,
 
       localityAgentTable: [
@@ -1915,6 +1917,8 @@ export default {
       axios.post(this.backendURL+'/selectAllActiveWhatsappInvoice')
       .then((response) =>{
         if (response.data.success){
+          this.errorCount = 0;
+
           const currentInvoicesAmount = this.zapoteWhatsappInvoices.length + this.escazuWhatsappInvoices.length + this.herediaWhatsappInvoices.length + this.cartagoWhatsappInvoices.length;
           const currentUpdatedInvoicesAmount = [this.zapoteWhatsappInvoices, this.escazuWhatsappInvoices, this.herediaWhatsappInvoices, this.cartagoWhatsappInvoices].reduce((total, invoices) => total + invoices.filter(invoice => invoice.whatsappInvoiceHasBeenUpdated == true).length, 0);
 
@@ -2011,11 +2015,16 @@ export default {
     
 
         } else {
-          this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-        }
+          this.errorCount = this.errorCount + 1;
+          if (this.errorCount >= 3){
+            this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }        }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.errorCount = this.errorCount + 1;
+        if (this.errorCount >= 3){
+          this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
       })
     },
 
@@ -2026,6 +2035,8 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
+          this.errorCount = 0;
+
           const currentInvoicesAmount = this.localityWhatsappInvoices.length;
           const currentUpdatedInvoicesAmount = this.localityWhatsappInvoices.filter(invoice => invoice.whatsappInvoiceHasBeenUpdated == true).length;
 
@@ -2070,11 +2081,17 @@ export default {
             }
           }   
         } else {
-          this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.errorCount = this.errorCount + 1;
+          if (this.errorCount >= 3){
+            this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }        
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.errorCount = this.errorCount + 1;
+        if (this.errorCount >= 3){
+          this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }  
       })
     },
 
@@ -2085,6 +2102,8 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
+          this.errorCount = 0;
+
           const currentInvoicesAmount = this.localityAgentInvoices.length;
           const currentUpdatedInvoicesAmount = this.localityAgentInvoices.filter(invoice => invoice.whatsappInvoiceHasBeenUpdated == true).length;
 
@@ -2123,11 +2142,17 @@ export default {
             }
           }
         } else {
-          this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.errorCount = this.errorCount + 1;
+          if (this.errorCount >= 3){
+            this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }  
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.errorCount = this.errorCount + 1;
+        if (this.errorCount >= 3){
+          this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }      
       })
     },
 
