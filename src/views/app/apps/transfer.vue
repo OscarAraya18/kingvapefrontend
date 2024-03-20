@@ -162,7 +162,10 @@ export default {
         }
       ],
 
-      queryInterval: null
+      queryInterval: null,
+
+      backendURL: 'https://telasmasbackend.onrender.com',
+      errorCount: 0
 
     };
 
@@ -239,18 +242,25 @@ export default {
         }
       }
       
-      axios.post(constants.routes.backendAPI+'/selectStoreMessageByStoreMessageStoreName', {
+      axios.post(this.backendURL+'/selectStoreMessageByStoreMessageStoreName', {
         storeMessageStoreName: storeMessageStoreName
       }).then((response) =>{
 
         if (response.data.success){
+          this.errorCount = 0;
           this.transferRows = response.data.result;
         } else {
-          this.showNotification('danger', 'Error al consultar los mensajes', 'Ha ocurrido un error inesperado al consultar los mensajes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          this.errorCount = this.errorCount + 1;
+          if (this.errorCount >= 3){
+            this.showNotification('danger', 'Error al consultar los mensajes', 'Ha ocurrido un error inesperado al consultar los mensajes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          }
         }
       })
       .catch((e) => {
-        this.showNotification('danger', 'Error al consultar los mensajes', 'Ha ocurrido un error inesperado al consultar los mensajes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        this.errorCount = this.errorCount + 1;
+        if (this.errorCount >= 3){
+          this.showNotification('danger', 'Error al consultar los mensajes', 'Ha ocurrido un error inesperado al consultar los mensajes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
       })
     },
 
@@ -283,7 +293,7 @@ export default {
             storeMessageStoreName = this.transferLocality;
           }
           
-          axios.post(constants.routes.backendAPI+'/insertStoreMessage', {
+          axios.post(this.backendURL+'/insertStoreMessage', {
             storeMessageStoreName: storeMessageStoreName,
             storeMessageRecipientPhoneNumber: this.transferPhoneNumber,
             storeMessageRecipientProfileName: this.transferName,
