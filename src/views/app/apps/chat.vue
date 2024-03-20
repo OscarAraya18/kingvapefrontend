@@ -2756,7 +2756,7 @@ export default {
             descuento = descuento + ((this.currentActiveConversation.whatsappConversationProducts[productIndex].descuento/100)*((this.currentActiveConversation.whatsappConversationProducts[productIndex].precio)*this.currentActiveConversation.whatsappConversationProducts[productIndex].cantidad));
           }
           var amount = subTotal - descuento;
-          amount = Math.round(amount);
+          amount = Math.round(amount / 5) * 5;
 
           axios.post(constants.routes.backendAPI+'/insertWhatsappInvoice',
           {
