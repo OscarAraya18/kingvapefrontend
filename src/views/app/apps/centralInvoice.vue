@@ -1292,7 +1292,7 @@ export default {
       loaderDelivered: false,
       loaderReturned: false,
 
-      backendURL: 'https://beb6-186-5-163-74.ngrok-free.app'
+      backendURL: 'https://telasmasbackend.onrender.com'
 
     };
   },
