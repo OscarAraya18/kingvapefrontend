@@ -876,6 +876,7 @@ export default {
       this.isAdmin = false;
     }
     
+    /*
     this.selectNotUsedTransactions();
     this.selectUsedTransactions();
     setInterval(() => {
@@ -885,6 +886,7 @@ export default {
       }
     }, 10000);
     this.startTimer();
+    */
   },
 
   created: function() {}

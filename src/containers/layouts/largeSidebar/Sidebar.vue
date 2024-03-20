@@ -80,7 +80,7 @@
           >
             <router-link tag="a" class="nav-item-hold" to="/app/apps/centralInvoice">
               <i class="nav-icon i-Board"></i>
-              <span class="nav-text"><strong>COMANDAS</strong></span>
+              <span class="nav-text"><strong>ÓRDENES</strong></span>
             </router-link>
             <div class="triangle"></div>
           </li>

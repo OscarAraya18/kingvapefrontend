@@ -160,7 +160,9 @@ export default {
           thClass: "text-left",
           tdClass: "text-left",
         }
-      ]
+      ],
+
+      queryInterval: null
 
     };
 
@@ -176,9 +178,9 @@ export default {
       this.isAdmin = true;
     }
     this.selectStoreMessageByStoreMessageStoreName();
-    setInterval(() => {
+    this.queryInterval = setInterval(() => {
       this.selectStoreMessageByStoreMessageStoreName();
-    }, 5000);
+    }, 7000);
   },
 
   methods: {
@@ -188,10 +190,6 @@ export default {
         variant: notificationType,
         solid: true
       });
-    },
-
-    selectContact(){
-      alert('hola')
     },
 
     parseHour(originalHour){
@@ -319,8 +317,12 @@ export default {
         this.showNotification('danger', 'Error al transferir la conversación', 'Complete todos los espacios requeridos e intente de nuevo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       }
     }
-
   },
+
+  beforeDestroy(){
+    clearInterval(this.queryInterval);
+  }
+
 };
 </script>
 
