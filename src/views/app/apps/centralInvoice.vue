@@ -78,7 +78,16 @@
     </b-modal>
 
     <b-modal id="assignLocalityAgentModal" size="sm" centered hide-header @ok="assignLocalityAgent()">
-      <b-form-select v-model="assignedLocalityAgent" :options="localityAgentOptions"></b-form-select>
+      <b-form-select v-model="assignedLocalityAgent">
+        <b-form-select-option
+         v-for="(localityAgentOption, localityAgentOptionIndex) in localityAgentOptions"
+         :key="localityAgentOptionIndex"
+         :value="localityAgentOption.value"
+         :title="localityAgentOption.title"
+         :style="getLocalityAgentOptionColor(localityAgentOption)"> 
+          <p>{{localityAgentOption.text}}</p>
+        </b-form-select-option>
+      </b-form-select>
     </b-modal>
 
     
@@ -980,7 +989,7 @@
             <div style="padding: 20px;">
               <div v-for="whatsappInvoice in localityWhatsappInvoices">
                 <div v-if="whatsappInvoice.whatsappInvoiceState == 'R'">
-                  <div style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white; width: 100%;">
+                  <div :style="getLocalityAgentColor(whatsappInvoice)">
                     <div style="width: 70%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
 
                       <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
@@ -1133,7 +1142,7 @@ export default {
   data() {
     return {
       errorCount: 0,
-      
+
       isAdmin: false,
 
       localityAgentTable: [
@@ -1175,6 +1184,12 @@ export default {
           field: "whatsappInvoiceAmount",
           thClass: "text-left",
           tdClass: "text-left",
+        },
+        {
+          label: "Mensajero",
+          field: "localityAgentName",
+          thClass: "text-left",
+          tdClass: "text-left"
         }
       ],
 
@@ -1325,6 +1340,21 @@ export default {
         }
       } 
       return '';
+    },
+
+    getLocalityAgentColor(whatsappInvoice){
+      const whatsappInvoiceLocalityAgentID = whatsappInvoice.whatsappInvoiceLocalityAgentID;
+      for (var localityAgentIndex in this.localityAgentOptions){
+        const localityAgent = this.localityAgentOptions[localityAgentIndex];
+        if (localityAgent.value == whatsappInvoiceLocalityAgentID){
+          return 'display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; width: 100%; background-color: ' + localityAgent.color; 
+        }
+      }
+      return 'display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; width: 100%; background-color: white;'
+    },
+
+    getLocalityAgentOptionColor(localityAgentOption){
+      return 'background-color: ' + localityAgentOption.color;
     },
 
     getHeight(){
@@ -2181,7 +2211,7 @@ export default {
           this.localityAgentOptions = [];
           const localityAgents = response.data.result;
           for (var localityAgentIndex in response.data.result){
-            this.localityAgentOptions.push({value: localityAgents[localityAgentIndex].localityAgentID, text: localityAgents[localityAgentIndex].localityAgentName});
+            this.localityAgentOptions.push({value: localityAgents[localityAgentIndex].localityAgentID, text: localityAgents[localityAgentIndex].localityAgentName, color: localityAgents[localityAgentIndex].localityAgentColor});
           }
         } else {
           this.showNotification('danger', 'Error al solicitar la lista de agentes', 'Ha ocurrido un error inesperado al solicitar la lista de agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
