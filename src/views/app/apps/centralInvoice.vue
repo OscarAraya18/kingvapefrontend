@@ -910,8 +910,9 @@
 
     <div v-if="agentType == 'locality'">
       <b-card>
-        <div style="justify-content: center; display: flex;">
-          <div style="display: flex;">
+        
+        <div style="position: absolute; top: -90px; z-index: 500; left: 50%; transform: translateX(-50%);">
+          <div style="display: flex; justify-content: center;">
             <h1 style="margin-top: auto; margin-bottom: auto;"><strong>{{ localityName }}</strong></h1>
             <div style="margin-left: 30px;">
               <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="warning">{{localityWhatsappInvoiceAmount}}</b-badge>
@@ -925,7 +926,6 @@
             </div>
           </div>
         </div>
-        <br>
         
         <div style="display: flex; width: 100%;">
           <div style="background-color: #faa250; border-radius: 15px; width: 50%; margin-right: 0.5%; max-height: 75vh; overflow-y: auto;">
