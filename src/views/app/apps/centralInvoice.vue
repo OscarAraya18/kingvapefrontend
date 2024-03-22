@@ -535,7 +535,7 @@
         <b-card style="height: 90vh; background-color: #fed330;">
           
           <div style="justify-content: center; width: 100%;">
-            <div v-if="(zapoteCentralWhatsappInvoiceAmount + zapoteLocalityWhatsappInvoiceAmount + zapoteShippingWhatsappInvoiceAmount) >= 15" style="position: absolute; justify-content: center; top: -75px; z-index: 500; left: 50%; transform: translateX(-50%);">
+            <div v-if="(zapoteCentralWhatsappInvoiceAmount + zapoteLocalityWhatsappInvoiceAmount + zapoteShippingWhatsappInvoiceAmount) >= 20" style="position: absolute; justify-content: center; top: -75px; z-index: 500; left: 50%; transform: translateX(-50%);">
               <img class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 120px; height: auto;"/>
             </div>
 
@@ -637,7 +637,7 @@
       <div style="width: 25%; margin-right: 1%;">
         <b-card style="height: 90vh; background-color: #e44f9c;">
           <div style="justify-content: center; width: 100%;">
-            <div v-if="(escazuCentralWhatsappInvoiceAmount + escazuLocalityWhatsappInvoiceAmount + escazuShippingWhatsappInvoiceAmount) >= 15" style="position: absolute; justify-content: center; top: -75px; z-index: 500; left: 50%; transform: translateX(-50%);">
+            <div v-if="(escazuCentralWhatsappInvoiceAmount + escazuLocalityWhatsappInvoiceAmount + escazuShippingWhatsappInvoiceAmount) >= 20" style="position: absolute; justify-content: center; top: -75px; z-index: 500; left: 50%; transform: translateX(-50%);">
               <img class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 120px; height: auto;"/>
             </div>
 
@@ -736,7 +736,7 @@
       <div style="width: 25%; margin-right: 1%;">
         <b-card style="height: 90vh; background-color: #9f7cd0;">
           <div style="justify-content: center; width: 100%;">
-            <div v-if="(herediaCentralWhatsappInvoiceAmount + herediaLocalityWhatsappInvoiceAmount + herediaShippingWhatsappInvoiceAmount) >= 15" style="position: absolute; justify-content: center; top: -75px; z-index: 500; left: 50%; transform: translateX(-50%);">
+            <div v-if="(herediaCentralWhatsappInvoiceAmount + herediaLocalityWhatsappInvoiceAmount + herediaShippingWhatsappInvoiceAmount) >= 20" style="position: absolute; justify-content: center; top: -75px; z-index: 500; left: 50%; transform: translateX(-50%);">
               <img class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 120px; height: auto;"/>
             </div>
 
@@ -834,7 +834,7 @@
       <div style="width: 25%; margin-right: 1%;">
         <b-card style="height: 90vh; background-color: #26a699;">
           <div style="justify-content: center; width: 100%;">
-            <div v-if="(cartagoCentralWhatsappInvoiceAmount + cartagoLocalityWhatsappInvoiceAmount + cartagoShippingWhatsappInvoiceAmount) >= 15" style="position: absolute; justify-content: center; top: -75px; z-index: 500; left: 50%; transform: translateX(-50%);">
+            <div v-if="(cartagoCentralWhatsappInvoiceAmount + cartagoLocalityWhatsappInvoiceAmount + cartagoShippingWhatsappInvoiceAmount) >= 20" style="position: absolute; justify-content: center; top: -75px; z-index: 500; left: 50%; transform: translateX(-50%);">
               <img class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 120px; height: auto;"/>
             </div>
 
@@ -935,7 +935,7 @@
         <div style="position: absolute; top: -90px; z-index: 500; left: 50%; transform: translateX(-50%);">
           <div style="display: flex; justify-content: center;">
             
-            <img v-if="(localityWhatsappInvoiceAmount + shippingWhatsappInvoiceAmount) >= 15" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px; margin-right: 30px;"/>
+            <img v-if="(localityWhatsappInvoiceAmount + shippingWhatsappInvoiceAmount) >= 20" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px; margin-right: 30px;"/>
             <h1 style="margin-top: auto; margin-bottom: auto;"><strong>{{ localityName }}</strong></h1>
             <div style="margin-left: 30px;">
               <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="warning">{{localityWhatsappInvoiceAmount}}</b-badge>

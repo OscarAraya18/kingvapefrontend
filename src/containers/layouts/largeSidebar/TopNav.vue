@@ -65,7 +65,7 @@
     <div class="header-part-right">
       <button @click="updateApplicationStatus()" :class="getApplicationStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="(ranking == false) && (agentType == 'admin')"><strong>{{ applicationStatus }}</strong></button>
 
-      <button @click="updateAgentStatus()" :class="getAgentStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="ranking == false && agentStatus!=''"><strong>{{ agentStatus }}</strong></button>
+      <button @click="updateAgentStatus()" :class="getAgentStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="ranking == false && agentStatus!='' && agentName != 'Pantalla'"><strong>{{ agentStatus }}</strong></button>
       
 
       <div style="width: 50px; height: 50px; border-radius: 100%; margin-right: 15px;" v-if="ranking == false">
@@ -390,7 +390,6 @@ export default {
 
 
     this.agentType = localStorage.getItem('agentType');
-
 
     if (localStorage.getItem('ranking') != 'yes' && (localStorage.getItem('locality') != 'yes') && (localStorage.getItem('agentType') != 'localityAgent')){
 
