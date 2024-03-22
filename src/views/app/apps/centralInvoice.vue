@@ -417,6 +417,14 @@
       
       <div style="display: flex;">
         <div style="width: 50%; margin-right: 50px;">
+          <h5><strong>Localidad: </strong></h5>
+          <div style="display: flex;">
+            <b-form-select v-model="updatedWhatsappInvoice.whatsappInvoiceLocalityID" :options="updateWhatsappInvoiceLocalityOptions"></b-form-select>
+            <div class="flex-grow-1"></div>
+            <i @click="updateWhatsappInvoiceLocalityID()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
+          </div>
+          <br>
+
           <h5><strong>Estado: </strong></h5>
           <div style="display: flex;">
             <b-form-select v-model="updatedWhatsappInvoice.whatsappInvoiceState" :options="updateWhatsappInvoiceStateOptions"></b-form-select>
@@ -1314,6 +1322,8 @@ export default {
 
       updatedWhatsappInvoice: {},
 
+      updateWhatsappInvoiceLocalityOptions: [{value: 1, text: 'King Vape Zapote'}, , {value: 4, text: 'King Vape Escazú'}, {value: 5, text: 'King Vape Heredia'}, {value: 3, text: 'King Vape Cartago'}],
+
       updateWhatsappInvoiceStateOptions: [{value: 'C', text: 'Central'}, , {value: 'S', text: 'Sucursal'}, {value: 'E', text: 'Entregado'}, {value: 'X', text: 'Cancelado'}],
       updateWhatsappInvoiceShippingMethodOptions: [{value: 'Envío por motorizado', text: 'Envío por motorizado'}, {value: 'Retiro en sucursal', text: 'Retiro en sucursal'}, {value: 'Correos de CR', text: 'Correos de CR'}, {value: 'Encomienda', text: 'Encomienda'}, {value: 'Uber Flash', text: 'Uber Flash'}],
       updateWhatsappInvoicePaymentMethodOptions: [{value: 'Efectivo', text: 'Efectivo'}, {value: 'Tarjeta', text: 'Tarjeta'}, {value: 'SINPE (confirmado)', text: 'SINPE (confirmado)'}, {value: 'SINPE (contra entrega)', text: 'SINPE (contra entrega)'}, {value: 'Transferencia', text: 'Transferencia'}, {value: 'Pago mixto', text: 'Pago mixto'}],
@@ -1767,7 +1777,24 @@ export default {
       .catch(() => {
         this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
+    },
 
+    updateWhatsappInvoiceLocalityID(){
+      axios.post(this.backendURL+'/updateWhatsappInvoiceLocalityID', 
+      {
+        whatsappInvoiceID: this.updatedWhatsappInvoice.whatsappInvoiceID,
+        whatsappInvoiceLocalityID: this.updatedWhatsappInvoice.whatsappInvoiceLocalityID
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.showNotification('success', 'Localidad modificada', 'Se ha modificado la localidad de la comanda existosamente.');
+        } else {
+          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
     },
 
     updateWhatsappInvoiceShippingMethod(){

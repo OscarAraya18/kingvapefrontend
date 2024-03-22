@@ -278,7 +278,7 @@
                 <div style="display: flex;">
                   <p style="font-size: 22px; margin-top: 5px;"><strong>ZAPOTE:</strong></p>
                     <div class="flex-grow-1"></div>
-                    <img v-if="(zapoteSelled) >= 50" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
+                    <img v-if="(zapoteSelled) >= 60" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
                 </div>
                 <p @click="selectTodayConversationsByLocalityNameAndType('1', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{zapoteSelled + zapoteNotSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('1', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{zapoteSelled}}</p>
@@ -289,7 +289,7 @@
                 <div style="display: flex;">
                   <p style="font-size: 22px; margin-top: 5px;"><strong>ESCAZÚ:</strong></p>
                     <div class="flex-grow-1"></div>
-                    <img v-if="(escazuSelled) >= 50" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
+                    <img v-if="(escazuSelled) >= 60" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
                 </div>
                 <p @click="selectTodayConversationsByLocalityNameAndType('4', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{escazuSelled + escazuNotSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('4', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{escazuSelled}}</p>
@@ -303,7 +303,7 @@
                 <div style="display: flex;">
                   <p style="font-size: 22px; margin-top: 5px;"><strong>CARTAGO:</strong></p>
                     <div class="flex-grow-1"></div>
-                    <img v-if="(cartagoSelled) >= 50" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
+                    <img v-if="(cartagoSelled) >= 60" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
                 </div>
                 <p @click="selectTodayConversationsByLocalityNameAndType('3', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{cartagoNotSelled + cartagoSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('3', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{cartagoSelled}}</p>
@@ -314,7 +314,7 @@
                 <div style="display: flex;">
                   <p style="font-size: 22px; margin-top: 5px;"><strong>HEREDIA:</strong></p>
                     <div class="flex-grow-1"></div>
-                    <img v-if="(herediaSelled) >= 50" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
+                    <img v-if="(herediaSelled) >= 60" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
                 </div>
                 <p @click="selectTodayConversationsByLocalityNameAndType('5', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{herediaSelled + herediaNotSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('5', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{herediaSelled}}</p>
