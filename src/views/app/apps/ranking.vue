@@ -137,7 +137,7 @@ export default {
         'Diana Jimenez': '#ffa8b8',
         'Stef Ponce': '#b5dcf9',
         'Sergio Barrot': '#060f73',
-        'Jose Daniel Estrada': '#004a1c',
+        'Jose Estrada': '#004a1c',
         'Franco Chacon': '#000000'
       };
       for (var agentIndex in agentNames){
