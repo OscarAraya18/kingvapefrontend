@@ -3517,6 +3517,7 @@ export default {
           this.whatsappInvoiceClientLocationName = 'Ubicación de envío';
           this.latitud = 0;
           this.longitud = 0;
+          this.whatsappInvoiceClientLocationURL = '';
         }
         this.scrollDown();
     },
