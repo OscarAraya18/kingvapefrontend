@@ -2415,8 +2415,10 @@ export default {
               'localityAgentLocationLongitude': localityAgentLocationLongitude
             })
             .then((response) =>{
+              alert('error 4')
             })
             .catch(() => {
+              alert('error 3')
             })
           },
           error => {
