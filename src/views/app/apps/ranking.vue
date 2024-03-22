@@ -136,9 +136,9 @@ export default {
         'Nicole Badilla': '#a2edce',
         'Diana Jimenez': '#ffa8b8',
         'Stef Ponce': '#b5dcf9',
-        'Sergio Barrot': '#060f73',
-        'Jose Estrada': '#004a1c',
-        'Franco Chacon': '#000000'
+        'Sergio Barrot': '#424880',
+        'Jose Estrada': '#3e5c47',
+        'Franco Chacon': '#8a8a8a'
       };
       for (var agentIndex in agentNames){
         const agentName = agentNames[agentIndex];
