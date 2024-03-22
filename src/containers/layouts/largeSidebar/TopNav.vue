@@ -1,6 +1,5 @@
 <template>
   <div class="main-header">
-
     <b-modal id="generalMapModal" size="lg" centered hide-header hide-footer>
       <GmapMap :center="{lat: 9.9242503, lng: -84.0585289}" :zoom="10" style="width: 100%; height: 600px">
         <GmapMarker :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
