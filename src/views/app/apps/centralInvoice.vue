@@ -1339,7 +1339,7 @@ export default {
       loaderDelivered: false,
       loaderReturned: false,
 
-      backendURL: 'https://telasmasbackend.onrender.com'
+      backendURL: 'https://6451-186-177-187-189.ngrok-free.app'
 
     };
   },
