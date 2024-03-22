@@ -6,6 +6,10 @@
         <br><span class="spinner-glow spinner-glow-primary"></span>
       </div>
       <div v-else>
+
+        <h3><strong>Total de paquetes: </strong>{{deliveredInvoices.length}}</h3>
+        <br><br>
+
         <vue-good-table
           :columns="deliveredInvoicesTable"
           :rows="deliveredInvoices"
@@ -529,8 +533,13 @@
       
       <div style="width: 25%; margin-right: 1%;">
         <b-card style="height: 90vh; background-color: #fed330;">
-          <div style="justify-content: center; display: flex;">
-            <div style="display: flex;">
+          
+          <div style="justify-content: center; width: 100%;">
+            <div v-if="(zapoteCentralWhatsappInvoiceAmount + zapoteLocalityWhatsappInvoiceAmount + zapoteShippingWhatsappInvoiceAmount) >= 15" style="position: absolute; justify-content: center; top: -75px; z-index: 500; left: 50%; transform: translateX(-50%);">
+              <img class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 120px; height: auto;"/>
+            </div>
+
+            <div style="display: flex; justify-content: center;">
               <h1 style="margin-top: auto; margin-bottom: auto;"><strong>ZAPOTE</strong></h1>
               <div style="margin-left: 30px;">
                 <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="danger">{{zapoteCentralWhatsappInvoiceAmount}}</b-badge>
@@ -627,8 +636,12 @@
 
       <div style="width: 25%; margin-right: 1%;">
         <b-card style="height: 90vh; background-color: #e44f9c;">
-          <div style="justify-content: center; display: flex;">
-            <div style="display: flex;">
+          <div style="justify-content: center; width: 100%;">
+            <div v-if="(escazuCentralWhatsappInvoiceAmount + escazuLocalityWhatsappInvoiceAmount + escazuShippingWhatsappInvoiceAmount) >= 15" style="position: absolute; justify-content: center; top: -75px; z-index: 500; left: 50%; transform: translateX(-50%);">
+              <img class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 120px; height: auto;"/>
+            </div>
+
+            <div style="display: flex; justify-content: center;">
               <h1 style="margin-top: auto; margin-bottom: auto;"><strong>ESCAZÚ</strong></h1>
               <div style="margin-left: 30px;">
                 <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="danger">{{escazuCentralWhatsappInvoiceAmount}}</b-badge>
@@ -722,8 +735,12 @@
 
       <div style="width: 25%; margin-right: 1%;">
         <b-card style="height: 90vh; background-color: #9f7cd0;">
-          <div style="justify-content: center; display: flex;">
-            <div style="display: flex;">
+          <div style="justify-content: center; width: 100%;">
+            <div v-if="(herediaCentralWhatsappInvoiceAmount + herediaLocalityWhatsappInvoiceAmount + herediaShippingWhatsappInvoiceAmount) >= 15" style="position: absolute; justify-content: center; top: -75px; z-index: 500; left: 50%; transform: translateX(-50%);">
+              <img class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 120px; height: auto;"/>
+            </div>
+
+            <div style="display: flex; justify-content: center;">
               <h1 style="margin-top: auto; margin-bottom: auto;"><strong>HEREDIA</strong></h1>
               <div style="margin-left: 30px;">
                 <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="danger">{{herediaCentralWhatsappInvoiceAmount}}</b-badge>
@@ -816,8 +833,12 @@
 
       <div style="width: 25%; margin-right: 1%;">
         <b-card style="height: 90vh; background-color: #26a699;">
-          <div style="justify-content: center; display: flex;">
-            <div style="display: flex;">
+          <div style="justify-content: center; width: 100%;">
+            <div v-if="(cartagoCentralWhatsappInvoiceAmount + cartagoLocalityWhatsappInvoiceAmount + cartagoShippingWhatsappInvoiceAmount) >= 15" style="position: absolute; justify-content: center; top: -75px; z-index: 500; left: 50%; transform: translateX(-50%);">
+              <img class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 120px; height: auto;"/>
+            </div>
+
+            <div style="display: flex; justify-content: center;">
               <h1 style="margin-top: auto; margin-bottom: auto;"><strong>CARTAGO</strong></h1>
               <div style="margin-left: 30px;">
                 <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="danger">{{cartagoCentralWhatsappInvoiceAmount}}</b-badge>
@@ -913,6 +934,8 @@
         
         <div style="position: absolute; top: -90px; z-index: 500; left: 50%; transform: translateX(-50%);">
           <div style="display: flex; justify-content: center;">
+            
+            <img v-if="(localityWhatsappInvoiceAmount + shippingWhatsappInvoiceAmount) >= 15" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px; margin-right: 30px;"/>
             <h1 style="margin-top: auto; margin-bottom: auto;"><strong>{{ localityName }}</strong></h1>
             <div style="margin-left: 30px;">
               <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="warning">{{localityWhatsappInvoiceAmount}}</b-badge>
@@ -1306,6 +1329,7 @@ export default {
 
       queryInterval: null,
       soundInterval: null,
+      locationInterval: null,
       agentType: 'central',
 
       shippingInvoice: null,
@@ -2375,6 +2399,33 @@ export default {
 
     changeWhatsappInvoiceLocation(){
       this.updatedWhatsappInvoice.whatsappInvoiceClientLocation = this.updatedWhatsappInvoiceLocation;
+    },
+
+
+    insertLocalityAgentLocation(){
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            const localityAgentLocationLatitude = position.coords.latitude;
+            const localityAgentLocationLongitude = position.coords.longitude;
+            axios.post(this.backendURL+'/insertLocalityAgentLocation', 
+            {
+              'localityAgentLocationLocalityAgentID': localStorage.getItem('localityAgentID'),
+              'localityAgentLocationLatitude': localityAgentLocationLatitude,
+              'localityAgentLocationLongitude': localityAgentLocationLongitude
+            })
+            .then((response) =>{
+            })
+            .catch(() => {
+            })
+          },
+          error => {
+            alert('error 2');
+          }
+        );
+      } else {
+        alert('error');
+      }
     }
   },
 
@@ -2429,11 +2480,19 @@ export default {
         this.selectAllActiveWhatsappInvoiceFromLocalityAgent(false);
       }
     }, 6000);
+
+    if (this.agentType == 'localityAgent'){
+      this.locationInterval = setInterval(() => {
+        this.insertLocalityAgentLocation();
+      }, 5000);
+    }
+
   },
 
   beforeDestroy(){
     clearInterval(this.queryInterval);
     clearInterval(this.soundInterval);
+    clearInterval(this.locationInterval);
   }
 };
 </script>

@@ -1,19 +1,18 @@
 <template>
   <div class="main-header">
 
-    <b-modal scrollable size="lg" centered id="mapModal" hide-header hide-footer>
+    <b-modal id="generalMapModal" size="lg" centered hide-header hide-footer>
       <GmapMap :center="{lat: 9.9242503, lng: -84.0585289}" :zoom="10" style="width: 100%; height: 600px">
-        <GmapMarker id="zapoteTag" :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-        <GmapMarker id="escazuTag" :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-        <GmapMarker id="cartagoTag" :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-        <GmapMarker id="herediaTag" :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
+        <GmapMarker :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
+        <GmapMarker :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
+        <GmapMarker :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
+        <GmapMarker :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
         <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
         <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
         <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
         <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
       </GmapMap>
     </b-modal>
-
 
     <b-modal scrollable size="m" centered id="notificationModal" hide-header hide-footer no-close-on-backdrop>
       <div v-if="incomingNotification != null">
@@ -183,7 +182,7 @@
     </b-modal>
 
     <div style="position: fixed; bottom: 200px; right: 18px;" v-if="(ranking == false) && (locality == false) && (localityAgent == false)">
-      <img v-b-modal.mapModal  class="hoverAnimationTranslator" style="cursor: pointer; width: 40px; height: 40px; position: relative; top: 10px;" src="@/assets/pageAssets/map.png">
+      <img v-b-modal.generalMapModal  class="hoverAnimationTranslator" style="cursor: pointer; width: 40px; height: 40px; position: relative; top: 10px;" src="@/assets/pageAssets/map.png">
     </div>
 
 
