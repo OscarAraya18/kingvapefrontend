@@ -135,7 +135,10 @@ export default {
         'Daniela Vega': '#dcd9f8',
         'Nicole Badilla': '#a2edce',
         'Diana Jimenez': '#ffa8b8',
-        'Stef Ponce': '#b5dcf9'
+        'Stef Ponce': '#b5dcf9',
+        'Sergio Barrot': '#060f73',
+        'Jose Daniel Estrada': '#004a1c',
+        'Franco Chacon': '#000000'
       };
       for (var agentIndex in agentNames){
         const agentName = agentNames[agentIndex];
