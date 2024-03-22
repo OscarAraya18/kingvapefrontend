@@ -1339,7 +1339,7 @@ export default {
       loaderDelivered: false,
       loaderReturned: false,
 
-      backendURL: 'https://6451-186-177-187-189.ngrok-free.app'
+      backendURL: 'https://telasmasbackend.onrender.com'
 
     };
   },
@@ -2482,12 +2482,6 @@ export default {
         this.selectAllActiveWhatsappInvoiceFromLocalityAgent(false);
       }
     }, 6000);
-
-    if (this.agentType == 'localityAgent'){
-      this.locationInterval = setInterval(() => {
-        this.insertLocalityAgentLocation();
-      }, 5000);
-    }
 
   },
 
