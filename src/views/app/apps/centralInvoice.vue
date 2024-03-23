@@ -1349,7 +1349,8 @@ export default {
       loaderDelivered: false,
       loaderReturned: false,
 
-      backendURL: 'https://telasmasbackend.onrender.com'
+
+      backendURL: 'https://payitcr.com'
 
     };
   },

@@ -84,6 +84,10 @@
       </div>
     </b-modal>
 
+    <b-modal scrollable size="m" centered id="commentsModal" hide-footer hide-header>
+      <h1>HOLA</h1>
+    </b-modal>
+
 
     <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
       <img style="width: 1000px;" :src="bigImageSource">
@@ -463,6 +467,8 @@
               <div v-else-if="props.column.field == 'whatsappConversationRecipientPhoneNumber'">
                 {{parseNumber(props.row.whatsappConversationRecipientPhoneNumber)}}
               </div>
+              <button v-b-modal.commentsModal v-else-if="props.column.field == 'whatsappConversationComments'" class="btn btn-outline-warning text-black btn-rounded">Comentarios</button>
+
             </template>
           </vue-good-table>
 
@@ -792,7 +798,7 @@ import StarRating from 'vue-star-rating'
 
 const constants = require('@../../../src/constants.js'); 
 
-const webSocket = new WebSocket('wss:kingvapebackend2.onrender.com');
+const webSocket = new WebSocket('wss:payitcr.com');
 
 
 export default {
@@ -1098,6 +1104,13 @@ export default {
         {
           label: "Conversación",
           field: "whatsappConversationOpenAction",
+          html: true,
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Comentarios",
+          field: "whatsappConversationComments",
           html: true,
           thClass: "text-left",
           tdClass: "text-left",
@@ -1656,7 +1669,8 @@ export default {
               whatsappConversationElapsedTime: this.getWhatsappConversationElapsedTime(Math.round((new Date() - new Date(this.activeConversations[activeConversationIndex].whatsappConversationStartDateTime))/1000)),
               whatsappConversationOpenAction: '',
               whatsappConversationTransferAction: '',
-              whatsappConversationCloseAction: ''
+              whatsappConversationCloseAction: '',
+              whatsappConversationComments: ''
             });
             this.activeConversationsRows.sort((a, b) => a.whatsappConversationState.localeCompare(b.whatsappConversationState));
 

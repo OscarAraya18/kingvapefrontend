@@ -1,6 +1,6 @@
 const state = {
-  backendURL: 'https://kingvapebackend2.onrender.com',
-  websocketURL: 'wss:kingvapebackend2.onrender.com',
+  backendURL: 'https://payitcr.com',
+  websocketURL: 'wss:payitcr.com',
 };
 
 const getters = {

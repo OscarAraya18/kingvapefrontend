@@ -79,7 +79,7 @@
 <script>
 import axios from 'axios';
 const constants = require('@../../../src/constants.js'); 
-const webSocket = new WebSocket('wss:kingvapebackend2.onrender.com');
+const webSocket = new WebSocket('wss:payitcr.com');
 
 
 export default {
@@ -164,7 +164,7 @@ export default {
 
       queryInterval: null,
 
-      backendURL: 'https://telasmasbackend.onrender.com',
+      backendURL: 'https://payitcr.com',
       errorCount: 0
 
     };

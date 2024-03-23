@@ -264,7 +264,7 @@ import { mixin as clickaway } from "vue-clickaway";
 import router from "../../../router";
 import axios from 'axios';
 const constants = require('@../../../src/constants.js'); 
-const webSocket = new WebSocket('wss:kingvapebackend2.onrender.com');
+const webSocket = new WebSocket('wss:payitcr.com');
 
 export default {
   mixins: [clickaway],
@@ -499,7 +499,7 @@ export default {
 
   methods: {
     getTodayInvoices(){
-      axios.post('https://telasmasbackend.onrender.com/selectTodayLocalityAgentShippedInvoices',
+      axios.post('https://payitcr.com/selectTodayLocalityAgentShippedInvoices',
       {
         whatsappInvoiceLocalityAgentID: localStorage.getItem('localityAgentID')
       })
