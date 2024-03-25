@@ -151,6 +151,31 @@ export default {
       return agentColors;
     },
 
+    getAgentLabels(agentInformation){
+      var agentLabels = [];
+      var max = {'amount': 0, 'name': ''};
+      var min = {'amount': 100000000000000000000000, 'name': ''};
+
+      for (var agentIndex in agentInformation){
+        agentLabels.push(agentIndex);
+        if (agentInformation[agentIndex] >= max['amount']){
+          max = {'amount': agentInformation[agentIndex], 'name': agentIndex};
+        }
+        if (agentInformation[agentIndex] <= min['amount']){
+          min = {'amount': agentInformation[agentIndex], 'name': agentIndex};
+        }
+      }
+      for (var agentIndex in agentLabels){
+        if (agentLabels[agentIndex] == max['name']){
+          agentLabels[agentIndex] = agentLabels[agentIndex] + ' 🔥';
+        }
+        if (agentLabels[agentIndex] == min['name']){
+          agentLabels[agentIndex] = agentLabels[agentIndex] + ' ❄️';
+        }
+      }
+      return agentLabels;
+    },
+
 
     getInformation(){
 
@@ -164,10 +189,10 @@ export default {
         {
           chart: {width: 850, type: 'pie', fontSize: 40}, 
           tooltip: {enabled: false}, 
-          labels: Object.keys(response.data),
+          labels: this.getAgentLabels(response.data),
           legend: {fontSize: '30px'},
           colors: this.getAgentColors(Object.keys(response.data)),
-          dataLabels: {enabled: true}
+          dataLabels: {enabled: false}
         };
       });
 
