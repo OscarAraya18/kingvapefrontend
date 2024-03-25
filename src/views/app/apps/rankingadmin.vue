@@ -534,6 +534,31 @@ export default {
       return agentColors;
     },
 
+    getAgentLabels(agentInformation){
+      var agentLabels = [];
+      var max = {'amount': 0, 'name': ''};
+      var min = {'amount': 100000000000000000000000, 'name': ''};
+
+      for (var agentIndex in agentInformation){
+        agentLabels.push(agentIndex);
+        if (agentInformation[agentIndex] >= max['amount']){
+          max = {'amount': agentInformation[agentIndex], 'name': agentIndex};
+        }
+        if (agentInformation[agentIndex] <= min['amount']){
+          min = {'amount': agentInformation[agentIndex], 'name': agentIndex};
+        }
+      }
+      for (var agentIndex in agentLabels){
+        if (agentLabels[agentIndex] == max['name']){
+          agentLabels[agentIndex] = agentLabels[agentIndex] + ' 🔥';
+        }
+        if (agentLabels[agentIndex] == min['name']){
+          agentLabels[agentIndex] = agentLabels[agentIndex] + ' ❄️';
+        }
+      }
+      return agentLabels;
+    },
+
 
     getHistoryMessage(whatsappGeneralMessageID){
       this.historyMessageLoader = true;
@@ -683,7 +708,7 @@ export default {
         {
           chart: {width: 700, type: 'pie', fontSize: 20}, 
           tooltip: {enabled: false}, 
-          labels: Object.keys(response.data),
+          labels: this.getAgentLabels(response.data),
           legend: {fontSize: '20px'},
           colors: this.getAgentColors(Object.keys(response.data))
         };
@@ -754,7 +779,7 @@ export default {
         {
           chart: {width: 700, type: 'pie', fontSize: 20}, 
           tooltip: {enabled: true}, 
-          labels: Object.keys(response.data),
+          labels: this.getAgentLabels(response.data),
           legend: {fontSize: '20px'},
           colors: this.getAgentColors(Object.keys(response.data))
         };
