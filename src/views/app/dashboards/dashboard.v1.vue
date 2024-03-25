@@ -84,134 +84,144 @@
       </div>
     </b-modal>
 
-    <b-modal scrollable size="m" centered id="commentsModal" hide-footer hide-header>
+    <b-modal scrollable size="lg" centered id="commentsModal" hide-footer hide-header>
       <div v-if="commentLoader" style="text-align: center;">
         <br><span class="spinner-glow spinner-glow-primary"></span>
       </div>
       <div v-else>
-        <h5><strong>Tipo de comentario: </strong></h5>
-        <b-form-select v-model="commentSelectedOption" :options="commentOptions"></b-form-select>
-        <br><br>
-
-        <div v-if="commentSelectedOption == 'Texto'">
-          <b-form-textarea rows="3" class="form-control" placeholder="Coloque un comentario de texto" v-model="textComment"/>
-          <br>
-          <button class="btn btn-icon btn-success mr-2" @click="insertWhatsappConversationTextComment()">
-            Comentar
-          </button>  
+        <div style="margin-bottom: 20px;">
+          <h3><strong>{{openedName}}</strong></h3>
+          <h3>{{parseNumber(openedNumber)}}</h3>
         </div>
+        <br>
 
-        <div v-else-if="commentSelectedOption == 'Audio'">
-          <div style="display: flex;">
-            <button id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()"><i :class="getAudioClass()"></i></button>
-            <div v-if="recorded"><audio controls :src="recordedAudioFile" style="width:270px; position: relative; top: 5px;"></audio><br></div>
-            <div v-if="isRecording" style="position: relative; top: 10px; margin-left: 10px;"><h5>{{recordedTime}}</h5></div>
-          </div>
-          <br>
-          <button v-if="recorded" class="btn btn-icon btn-success mr-2" @click="insertWhatsappConversationAudioComment()">
-            Comentar
-          </button>
-        </div>
+        <b-card>
+          <h5><strong>Tipo de comentario: </strong></h5>
+          <b-form-select v-model="commentSelectedOption" :options="commentOptions"></b-form-select>
+          <br><br>
 
-        <div v-else-if="commentSelectedOption == 'Producto'">
-          <b-form-input @keyup.enter="selectProductos()" v-model="searchedProduct" id="buscador" placeholder="Coloca el nombre del producto"></b-form-input>   
-          <div v-if="loaderProductos == true" style="text-align: center;">
-            <br><br>
-            <span class="spinner-glow spinner-glow-primary"></span>
-          </div>
-          
-          <div class="ul-widget__body" v-else style="max-height: 400px; overflow-y: auto;">
+          <div v-if="commentSelectedOption == 'Texto'">
+            <b-form-textarea rows="3" class="form-control" placeholder="Coloque un comentario de texto" v-model="textComment"/>
             <br>
-            <div class="ul-widget1" v-for="producto in productos" :key="producto.codigoProducto">
-              <div class="ul-widget__item ul-widget4__users">
-                <div class="ul-widget4__img">
-                  <div style="display: flex;">
-                    <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Extra Ice')" :src="iceLogoSRC"/>
-                    <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('ICE')" :src="iceLogoSRC"/>
-                    <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Postre')" :src="postreLogoSRC"/>
-                    <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Tabaco')" :src="tabacoLogoSRC"/>
-                    <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Wax')" :src="waxLogoSRC"/>
-                    <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Hierba')" :src="hierbaLogoSRC"/>
-                  </div>
-                  <img style="cursor: pointer;" :src="producto.localizacion" alt="N/A"/>
-                </div>
-                <div class="ul-widget2__info ul-widget4__users-info">
-                  <a href="#" variant="info" v-if="producto.productosAsociados.length==0" class="ul-widget2__title">{{ producto.descripcion }}</a>
-                  <a href="#" variant="info" v-if="producto.productosAsociados.length!=0" style="cursor: default;" class="ul-widget2__title">{{ producto.descripcion }}</a>
+            <button class="btn btn-icon btn-success mr-2" @click="insertWhatsappConversationTextComment()">
+              Comentar
+            </button>  
+          </div>
 
-                  <span class="ul-widget2__username">{{ producto.codigoProducto }}</span>
-                  <span style="font-size:8px" class="ul-widget2__username">{{ producto.subFamilia }}</span>
-                  <span class="ul-widget4__number text-success">₡{{ producto.precioVenta }}</span>
-                  
-                  <div v-if="producto.productosAsociados.length != 0">
-                    <div v-for="nivelNicotina in producto.productosAsociados" :key="producto.codigoAsoiado" style="display: inline;"> 
-                      <b-badge variant="dark" style="margin: 3px;">{{nivelNicotina.nicotina}} MG</b-badge>
+          <div v-else-if="commentSelectedOption == 'Audio'">
+            <div style="display: flex;">
+              <button id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()"><i :class="getAudioClass()"></i></button>
+              <div v-if="recorded"><audio controls :src="recordedAudioFile" style="width:270px; position: relative; top: 5px;"></audio><br></div>
+              <div v-if="isRecording" style="position: relative; top: 10px; margin-left: 10px;"><h5>{{recordedTime}}</h5></div>
+            </div>
+            <br>
+            <button v-if="recorded" class="btn btn-icon btn-success mr-2" @click="insertWhatsappConversationAudioComment()">
+              Comentar
+            </button>
+          </div>
+
+          <div v-else-if="commentSelectedOption == 'Producto'">
+            <b-form-input @keyup.enter="selectProductos()" v-model="searchedProduct" id="buscador" placeholder="Coloca el nombre del producto"></b-form-input>   
+            <div v-if="loaderProductos == true" style="text-align: center;">
+              <br><br>
+              <span class="spinner-glow spinner-glow-primary"></span>
+            </div>
+            
+            <div class="ul-widget__body" v-else style="max-height: 400px; overflow-y: auto;">
+              <br>
+              <div class="ul-widget1" v-for="producto in productos" :key="producto.codigoProducto">
+                <div class="ul-widget__item ul-widget4__users">
+                  <div class="ul-widget4__img">
+                    <div style="display: flex;">
+                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Extra Ice')" :src="iceLogoSRC"/>
+                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('ICE')" :src="iceLogoSRC"/>
+                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Postre')" :src="postreLogoSRC"/>
+                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Tabaco')" :src="tabacoLogoSRC"/>
+                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Wax')" :src="waxLogoSRC"/>
+                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Hierba')" :src="hierbaLogoSRC"/>
                     </div>
+                    <img style="cursor: pointer;" :src="producto.localizacion" alt="N/A"/>
                   </div>
+                  <div class="ul-widget2__info ul-widget4__users-info">
+                    <a href="#" variant="info" v-if="producto.productosAsociados.length==0" class="ul-widget2__title">{{ producto.descripcion }}</a>
+                    <a href="#" variant="info" v-if="producto.productosAsociados.length!=0" style="cursor: default;" class="ul-widget2__title">{{ producto.descripcion }}</a>
 
-                  <div style="display: flex">
-                    <button v-b-modal.stockModal v-if="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistencia(producto.codigoProducto)">
-                      Stock
-                    </button>
+                    <span class="ul-widget2__username">{{ producto.codigoProducto }}</span>
+                    <span style="font-size:8px" class="ul-widget2__username">{{ producto.subFamilia }}</span>
+                    <span class="ul-widget4__number text-success">₡{{ producto.precioVenta }}</span>
+                    
+                    <div v-if="producto.productosAsociados.length != 0">
+                      <div v-for="nivelNicotina in producto.productosAsociados" :key="producto.codigoAsoiado" style="display: inline;"> 
+                        <b-badge variant="dark" style="margin: 3px;">{{nivelNicotina.nicotina}} MG</b-badge>
+                      </div>
+                    </div>
 
-                    <button v-b-modal.stockModal  v-else="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistenciaNicotina(producto.productosAsociados)">
-                      Stock
-                    </button>
+                    <div style="display: flex">
+                      <button v-b-modal.stockModal v-if="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistencia(producto.codigoProducto)">
+                        Stock
+                      </button>
 
-                    <button class="btn btn-icon btn-success mr-2" @click="insertWhatsappConversationProductComment(producto)">
-                      Recomendar
-                    </button>
+                      <button v-b-modal.stockModal  v-else="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistenciaNicotina(producto.productosAsociados)">
+                        Stock
+                      </button>
 
-                  </div> 
+                      <button class="btn btn-icon btn-success mr-2" @click="insertWhatsappConversationProductComment(producto)">
+                        Recomendar
+                      </button>
+
+                    </div> 
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-
-
-          
-        </div>
+        </b-card>
 
         <div v-if="whatsappConversationComments.length > 0">
           <br><br>
-          <h5><strong>Comentarios previos: </strong></h5>
         </div>
-        <div style="max-height: 300px; overflow-y: auto;" v-if="whatsappConversationComments.length > 0">
-          <b-list-group> 
-            <b-list-group-item v-for="openedComment in whatsappConversationComments" button>
-              <div v-if="openedComment.whatsappConversationTextCommentBody != null">
-                <strong>Enviado el: </strong>{{parseHour(openedComment.whatsappConversationCommentSentDateTime)}}<br>
-                <div v-if="openedComment.whatsappConversationCommentSeenDateTime != null">
-                  <strong>Recibido el: </strong>{{parseHour(openedComment.whatsappConversationCommentSeenDateTime)}}
-                  <br>
-                </div>
-                <br>
 
-                <strong>Comentario:</strong> {{openedComment.whatsappConversationTextCommentBody}}<br>
-              </div>
-              <div v-else-if="openedComment.whatsappConversationAudioCommentFile != null">
-                <strong>Enviado el: </strong>{{parseHour(openedComment.whatsappConversationCommentSentDateTime)}}<br>
-                <div v-if="openedComment.whatsappConversationCommentSeenDateTime != null">
-                  <strong>Recibido el: </strong>{{parseHour(openedComment.whatsappConversationCommentSeenDateTime)}}
+        <b-card v-if="whatsappConversationComments.length > 0">
+          <div v-if="whatsappConversationComments.length > 0">
+            <h5><strong>Comentarios previos: </strong></h5>
+          </div>
+          <div style="max-height: 300px; overflow-y: auto;" v-if="whatsappConversationComments.length > 0">
+            <b-list-group> 
+              <b-list-group-item v-for="openedComment in whatsappConversationComments" button>
+                <div v-if="openedComment.whatsappConversationTextCommentBody != null">
+                  <strong>Enviado el: </strong>{{parseHour(openedComment.whatsappConversationCommentSentDateTime)}}<br>
+                  <div v-if="openedComment.whatsappConversationCommentSeenDateTime != null">
+                    <strong>Recibido el: </strong>{{parseHour(openedComment.whatsappConversationCommentSeenDateTime)}}
+                    <br>
+                  </div>
                   <br>
+
+                  <strong>Comentario:</strong> {{openedComment.whatsappConversationTextCommentBody}}<br>
                 </div>
-                <br>
-                <audio controls :src="`data:audio/webm;base64,${openedComment.whatsappConversationAudioCommentFile}`"></audio>
-              </div>
-              <div v-else-if="openedComment.whatsappConversationProductCommentName != null">      
-                <strong>Enviado el: </strong>{{parseHour(openedComment.whatsappConversationCommentSentDateTime)}}<br>
-                <div v-if="openedComment.whatsappConversationCommentSeenDateTime != null">
-                  <strong>Recibido el: </strong>{{parseHour(openedComment.whatsappConversationCommentSeenDateTime)}}
+                <div v-else-if="openedComment.whatsappConversationAudioCommentFile != null">
+                  <strong>Enviado el: </strong>{{parseHour(openedComment.whatsappConversationCommentSentDateTime)}}<br>
+                  <div v-if="openedComment.whatsappConversationCommentSeenDateTime != null">
+                    <strong>Recibido el: </strong>{{parseHour(openedComment.whatsappConversationCommentSeenDateTime)}}
+                    <br>
+                  </div>
                   <br>
+                  <audio controls :src="`data:audio/webm;base64,${openedComment.whatsappConversationAudioCommentFile}`"></audio>
                 </div>
-                <br>
-                <strong>Nombre:</strong> {{openedComment.whatsappConversationProductCommentName}}<br>
-                <strong>Código:</strong> {{openedComment.whatsappConversationProductCommentSKU}}<br>
-              </div>
-            </b-list-group-item>
-          </b-list-group>
-        </div>
-        
+                <div v-else-if="openedComment.whatsappConversationProductCommentName != null">      
+                  <strong>Enviado el: </strong>{{parseHour(openedComment.whatsappConversationCommentSentDateTime)}}<br>
+                  <div v-if="openedComment.whatsappConversationCommentSeenDateTime != null">
+                    <strong>Recibido el: </strong>{{parseHour(openedComment.whatsappConversationCommentSeenDateTime)}}
+                    <br>
+                  </div>
+                  <br>
+                  <strong>Nombre:</strong> {{openedComment.whatsappConversationProductCommentName}}<br>
+                  <strong>Código:</strong> {{openedComment.whatsappConversationProductCommentSKU}}<br>
+                </div>
+              </b-list-group-item>
+            </b-list-group>
+          </div>
+        </b-card>
+
       </div>
     </b-modal>
 
@@ -607,7 +617,7 @@
               <div v-else-if="props.column.field == 'whatsappConversationRecipientPhoneNumber'">
                 {{parseNumber(props.row.whatsappConversationRecipientPhoneNumber)}}
               </div>
-              <button @click="selectWhatsappConversationComments(props.row.whatsappConversationID)" v-b-modal.commentsModal v-else-if="props.column.field == 'whatsappConversationComments'" class="btn btn-outline-warning text-black btn-rounded">Comentarios</button>
+              <button @click="selectWhatsappConversationComments(props.row)" v-b-modal.commentsModal v-else-if="props.column.field == 'whatsappConversationComments'" class="btn btn-outline-warning text-black btn-rounded">Comentarios</button>
 
             </template>
           </vue-good-table>
@@ -1691,17 +1701,20 @@ export default {
       return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
     },
 
-    selectWhatsappConversationComments(whatsappConversationID){
+    selectWhatsappConversationComments(whatsappConversation){
+      this.openedName = whatsappConversation.whatsappConversationRecipientProfileName;
+      this.openedNumber = whatsappConversation.whatsappConversationRecipientPhoneNumber;
+
       this.recorded = false;
       this.searchedProduct = '';
       this.textComment = '';
       this.commentSelectedOption = 'Texto';
       this.productos = [];
-      this.commentedWhatsappConversationID = whatsappConversationID;
+      this.commentedWhatsappConversationID = whatsappConversation.whatsappConversationID;
       this.commentLoader = true;
       axios.post(constants.routes.backendAPI+'/selectWhatsappConversationComments', 
       {
-        'whatsappConversationID': whatsappConversationID
+        'whatsappConversationID': this.commentedWhatsappConversationID
       }).then((response) =>{
         this.commentLoader = false; 
         if (response.data.success){
