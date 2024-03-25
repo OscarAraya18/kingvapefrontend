@@ -25,7 +25,7 @@
                     <div v-if="openedComment.whatsappConversationTextCommentBody != null">
                       <strong>{{parseHour(openedComment.whatsappConversationCommentSentDateTime)}}</strong><br>
                       <div style="display: flex;">
-                        <strong>Comentario: </strong> {{openedComment.whatsappConversationTextCommentBody}}<br>
+                        <strong>Comentario:</strong> {{openedComment.whatsappConversationTextCommentBody}}<br>
                         <div class="flex-grow-1"></div>
                         <button v-if="openedComment.whatsappConversationCommentSeenDateTime == null" @click="updateWhatsappConversationCommentSeenDateTime(openedComment.whatsappConversationCommentID)" class="btn btn-success mr-1 ml-1">Recibir</button>
                         <button v-else class="btn btn-info mr-1 ml-1">Recibido</button>
@@ -44,12 +44,11 @@
                       <strong>{{parseHour(openedComment.whatsappConversationCommentSentDateTime)}}</strong><br>   
                       <div style="display: flex;">
                         <div>               
-                          <strong>Nombre: </strong> {{openedComment.whatsappConversationProductCommentName}}<br>
-                          <strong>Código: </strong> {{openedComment.whatsappConversationProductCommentSKU}}<br>
+                          <strong>Nombre:</strong> {{openedComment.whatsappConversationProductCommentName}}<br>
+                          <strong>Código:</strong> {{openedComment.whatsappConversationProductCommentSKU}}<br>
                         </div>
                         <div class="flex-grow-1"></div>
                         <button v-if="openedComment.whatsappConversationCommentSeenDateTime == null" @click="updateWhatsappConversationCommentSeenDateTime(openedComment.whatsappConversationCommentID)" class="btn btn-success mr-1 ml-1">Recibir</button>
-                        <button v-else class="btn btn-info mr-1 ml-1">Recibido</button>
                       </div>
                     </div>
                   </b-list-group-item>
