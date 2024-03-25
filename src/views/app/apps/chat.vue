@@ -81,8 +81,8 @@
                   <div style="position: relative; left: -10px;" v-if="conversationComments[activeConversationID]">
                     
                     <div v-if="conversationComments[activeConversationID].length > 0">
-                      <img v-if="conversationComments[activeConversationID].filter(item => item.whatsappConversationCommentSeenDateTime == null).length > 0" v-b-modal.commentsModal @click="openCommentsModal(conversationComments[activeConversationID])" class="newMessageAnimation" src="@/assets/pageAssets/commentRed.png" alt style="width: 30px; height: 15px;"/>
-                      <img v-else v-b-modal.commentsModal @click="openCommentsModal(conversationComments[activeConversationID])" src="@/assets/pageAssets/comment.png" alt style="width: 30px; height: 15px;"/>
+                      <img v-if="conversationComments[activeConversationID].filter(item => item.whatsappConversationCommentSeenDateTime == null).length > 0" v-b-modal.commentsModal @click="openCommentsModal(conversationComments[activeConversationID])" class="newMessageAnimation" src="@/assets/pageAssets/commentRed.png" alt style="width: 15px; height: auto;"/>
+                      <img v-else v-b-modal.commentsModal @click="openCommentsModal(conversationComments[activeConversationID])" src="@/assets/pageAssets/comment.png" alt style="width: 15px; height: auto;"/>
 
                     </div>
                   </div>
@@ -3824,10 +3824,8 @@ export default {
         whatsappConversationIsActive: true
       })
       .then((response) =>{
-        this.loaders.activeConversations = false;
         if (response.data.success){
           this.conversationComments = response.data.result;
-          this.loaders.activeConversations = false;
         } else {
           this.showNotification('danger', 'Error al consultar los comentarios', 'Ha ocurrido un error inesperado al consultar los comentarios. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
