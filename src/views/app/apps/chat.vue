@@ -81,8 +81,8 @@
                   <div style="position: relative; left: -10px;" v-if="conversationComments[activeConversationID]">
                     
                     <div v-if="conversationComments[activeConversationID].length > 0">
-                      <img v-if="conversationComments[activeConversationID].filter(item => item.whatsappConversationCommentSeenDateTime == null).length > 0" v-b-modal.commentsModal @click="openCommentsModal(conversationComments[activeConversationID])" class="newMessageAnimation" src="@/assets/pageAssets/commentRed.png" alt style="width: 15px; height: auto;"/>
-                      <img v-else v-b-modal.commentsModal @click="openCommentsModal(conversationComments[activeConversationID])" src="@/assets/pageAssets/comment.png" alt style="width: 15px; height: auto;"/>
+                      <img v-if="conversationComments[activeConversationID].filter(item => item.whatsappConversationCommentSeenDateTime == null).length > 0" v-b-modal.commentsModal @click="openCommentsModal(conversationComments[activeConversationID])" class="newMessageAnimation" src="@/assets/pageAssets/commentRed.png" alt style="width: 25px; height: auto;"/>
+                      <img v-else v-b-modal.commentsModal @click="openCommentsModal(conversationComments[activeConversationID])" src="@/assets/pageAssets/comment.png" alt style="width: 25px; height: auto;"/>
 
                     </div>
                   </div>
@@ -2392,7 +2392,19 @@ export default {
     },
 
     getConversationStyle(whatsappConversationID){
-      if (whatsappConversationID == this.currentActiveConversationID){
+      var comments = this.conversationComments[whatsappConversationID];
+      var alert = false;
+      for (var index in comments){
+        if (comments[index].whatsappConversationCommentSeenDateTime == null){
+          var elapsedSeconds = Math.floor((new Date() - new Date(comments[index].whatsappConversationCommentSentDateTime))/1000);
+          if (elapsedSeconds >= 60){
+            alert = true;
+          }
+        }        
+      }
+      if (alert){
+        return 'cursor: pointer; animation: commentAnimation 2s infinite;';
+      } else if (whatsappConversationID == this.currentActiveConversationID){
         return 'cursor: pointer; background-color: #f7f3a6;';
       }
       return 'cursor: pointer;';
@@ -4347,6 +4359,18 @@ export default {
       100% {
           background-position: 50px 50px;
       }
+  }
+
+  @keyframes commentAnimation {
+    0% {
+      background-color: white;
+    }
+    50% {
+      background-color: rgb(255, 85, 85);
+    }
+    100% {
+      background-color: white;
+    }
   }
 
   .description-content .btn {

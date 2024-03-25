@@ -617,8 +617,11 @@
               <div v-else-if="props.column.field == 'whatsappConversationRecipientPhoneNumber'">
                 {{parseNumber(props.row.whatsappConversationRecipientPhoneNumber)}}
               </div>
-              <button @click="selectWhatsappConversationComments(props.row)" v-b-modal.commentsModal v-else-if="props.column.field == 'whatsappConversationComments'" class="btn btn-outline-warning text-black btn-rounded">Comentarios</button>
 
+              <div v-else-if="props.column.field == 'whatsappConversationComments'">
+                <button @click="selectWhatsappConversationComments(props.row)" v-b-modal.commentsModal :class="getCommentButtonClass(props.row)">{{getCommentButtonContent(props.row)}}</button>
+
+              </div>
             </template>
           </vue-good-table>
 
@@ -1439,6 +1442,10 @@ export default {
     if (localStorage.getItem('agentID') == null){
       router.push("/app/sessions/signIn");
     }
+
+    if (localStorage.getItem('whatsappConversationComments') == null){
+      localStorage.setItem('whatsappConversationComments', JSON.stringify({}));
+    }
     
     this.selectNotResolvedWhatsappFeedbacks();
 
@@ -1492,6 +1499,25 @@ export default {
       }, 1);
     },
 
+    getCommentButtonClass(conversation){
+      const whatsappConversationID = conversation.whatsappConversationID;
+      const whatsappConversationCommentsLocalStorage = JSON.parse(localStorage.getItem('whatsappConversationComments'));
+      if (whatsappConversationCommentsLocalStorage[whatsappConversationID]){
+        return 'btn btn-warning text-white btn-rounded';
+      }
+      return 'btn btn-outline-warning text-black btn-rounded';
+    },
+
+    getCommentButtonContent(conversation){
+      const whatsappConversationID = conversation.whatsappConversationID;
+
+      const whatsappConversationCommentsLocalStorage = JSON.parse(localStorage.getItem('whatsappConversationComments'));
+      if (whatsappConversationCommentsLocalStorage[whatsappConversationID]){
+        return 'Comentarios (' + whatsappConversationCommentsLocalStorage[whatsappConversationID] + ')';
+      }
+      return 'Comentarios';
+    },
+
     insertWhatsappConversationTextComment(){
       axios.post(constants.routes.backendAPI+'/insertWhatsappConversationTextComment', 
       {
@@ -1501,6 +1527,15 @@ export default {
         this.$root.$emit('bv::hide::modal', 'commentsModal');
         if (response.data.success){
           this.showNotification('success', 'Comentario generado', 'Comentario generado exitosamente');
+
+          const whatsappConversationCommentsLocalStorage = JSON.parse(localStorage.getItem('whatsappConversationComments'));
+          if (whatsappConversationCommentsLocalStorage[this.commentedWhatsappConversationID]){
+            whatsappConversationCommentsLocalStorage[this.commentedWhatsappConversationID] = whatsappConversationCommentsLocalStorage[this.commentedWhatsappConversationID] + 1;
+          } else {
+            whatsappConversationCommentsLocalStorage[this.commentedWhatsappConversationID] = 1;
+          }
+          localStorage.setItem('whatsappConversationComments', JSON.stringify(whatsappConversationCommentsLocalStorage));
+
         } else {
           this.showNotification('danger', 'Error al generar el comentario', 'Ha ocurrido un error inesperado al generar el comentario. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
@@ -1520,6 +1555,15 @@ export default {
         this.$root.$emit('bv::hide::modal', 'commentsModal');
         if (response.data.success){
           this.showNotification('success', 'Comentario generado', 'Comentario generado exitosamente');
+
+          const whatsappConversationCommentsLocalStorage = JSON.parse(localStorage.getItem('whatsappConversationComments'));
+          if (whatsappConversationCommentsLocalStorage[this.commentedWhatsappConversationID]){
+            whatsappConversationCommentsLocalStorage[this.commentedWhatsappConversationID] = whatsappConversationCommentsLocalStorage[this.commentedWhatsappConversationID] + 1;
+          } else {
+            whatsappConversationCommentsLocalStorage[this.commentedWhatsappConversationID] = 1;
+          }
+          localStorage.setItem('whatsappConversationComments', JSON.stringify(whatsappConversationCommentsLocalStorage));
+
         } else {
           this.showNotification('danger', 'Error al generar el comentario', 'Ha ocurrido un error inesperado al generar el comentario. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
@@ -1541,6 +1585,15 @@ export default {
         this.$root.$emit('bv::hide::modal', 'commentsModal');
         if (response.data.success){
           this.showNotification('success', 'Comentario generado', 'Comentario generado exitosamente');
+
+          const whatsappConversationCommentsLocalStorage = JSON.parse(localStorage.getItem('whatsappConversationComments'));
+          if (whatsappConversationCommentsLocalStorage[this.commentedWhatsappConversationID]){
+            whatsappConversationCommentsLocalStorage[this.commentedWhatsappConversationID] = whatsappConversationCommentsLocalStorage[this.commentedWhatsappConversationID] + 1;
+          } else {
+            whatsappConversationCommentsLocalStorage[this.commentedWhatsappConversationID] = 1;
+          }
+          localStorage.setItem('whatsappConversationComments', JSON.stringify(whatsappConversationCommentsLocalStorage));
+
         } else {
           this.showNotification('danger', 'Error al generar el comentario', 'Ha ocurrido un error inesperado al generar el comentario. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
