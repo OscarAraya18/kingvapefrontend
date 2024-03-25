@@ -1024,10 +1024,8 @@ export default {
       var updatedAgentStatus = '';
       if (this.agentStatus == 'ONLINE'){
         updatedAgentStatus = 'offline';
-        this.agentStatus = 'OFFLINE';
       } else {
         updatedAgentStatus = 'online';
-        this.agentStatus = 'ONLINE';
       }
       axios.post(constants.routes.backendAPI+'/agent/update/agentStatus',{
         agentID: parseInt(localStorage.getItem('agentID')),
@@ -1036,6 +1034,12 @@ export default {
       })
       .then((response) => {
         if (response.data.success){
+          var updatedAgentStatus = '';
+          if (this.agentStatus == 'ONLINE'){
+            this.agentStatus = 'OFFLINE';
+          } else {
+            this.agentStatus = 'ONLINE';
+          }
         } else {
           this.$bvToast.toast('Ha ocurrido un error inesperado al modificar el estado del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
             title: 'Error al modificar el estado del agente',

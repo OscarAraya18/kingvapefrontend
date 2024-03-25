@@ -135,6 +135,12 @@
             <span @click="updateAgentStatus(props.row.button, props.row.status)" style="cursor:pointer;" v-if="props.row.status == 'ONLINE'" class="badge badge-success">ONLINE</span>
             <span @click="updateAgentStatus(props.row.button, props.row.status)" style="cursor:pointer;" v-else class="badge badge-danger">OFFLINE</span>
           </span>
+
+          <span v-else-if="props.column.field == 'working'">
+            <span @click="updateAgentWorkingStatus(props.row.button, props.row.working)" style="cursor:pointer;" v-if="props.row.working == 'ON'" class="badge badge-success">ON</span>
+            <span @click="updateAgentWorkingStatus(props.row.button, props.row.working)" style="cursor:pointer;" v-else class="badge badge-danger">OFF</span>
+          </span>
+
           <span v-else-if="props.column.field == 'name'">
             <div class="ul-widget-app__profile-pic">
               <img
@@ -202,6 +208,11 @@ export default {
           label: "Estado",
           field: "status",
           html: true,
+        },
+        {
+          label: "Activo",
+          field: "working",
+          html: true
         },
         {
           label: "Button",
@@ -279,6 +290,53 @@ export default {
           for (var agentIndex in this.agents){
             if (this.agents[agentIndex].id == agentID){
               this.agents[agentIndex].status = aux;
+            }
+          }
+          this.$bvToast.toast("Se ha modificado el estado del agente con la cédula '" + agentID + "'.", {
+            title: "Estado del agente modificado",
+            variant: "success",
+            solid: true
+          });
+        } else {
+          this.$bvToast.toast("Ha ocurrido un error inesperado al modificar el estado del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+            title: "Error al modificar el estado del agente",
+            variant: "danger",
+            solid: true
+          });
+        }
+      })
+      .catch(error =>{
+        this.$bvToast.toast("Ha ocurrido un error inesperado al modificar el estado del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+          title: "Error al modificar el estado del agente",
+          variant: "danger",
+          solid: true
+        });
+      });
+
+    },
+
+
+    updateAgentWorkingStatus(agentID, agentCurrentStatus){
+      var temp = '';
+      var aux = '';
+      if (agentCurrentStatus == 'ON'){
+        temp = false;
+        aux = 'OFF';
+      } else {
+        temp = true;
+        aux = 'ON';
+      }
+      axios.post(constants.routes.backendAPI+'/agent/update/agentIsWorking',
+      {
+        agentID: agentID,
+        agentName: this.allAgentsInformation[agentID].agentName,
+        agentIsWorking: temp 
+      })
+      .then((response) =>{
+        if (response.data.success){
+          for (var agentIndex in this.agents){
+            if (this.agents[agentIndex].id == agentID){
+              this.agents[agentIndex].working = aux;
             }
           }
           this.$bvToast.toast("Se ha modificado el estado del agente con la cédula '" + agentID + "'.", {
@@ -449,6 +507,12 @@ export default {
           } else {
             status = 'OFFLINE';
           }
+          var working = '';
+          if (agentsInformation[agentIndex].agentIsWorking == true){
+            working = 'ON';
+          } else {
+            working = 'OFF';
+          }
           this.agents.push(
           { 
             avatar: agentsInformation[agentIndex].agentProfileImage,
@@ -456,6 +520,7 @@ export default {
             id: agentsInformation[agentIndex].agentID,
             username: agentsInformation[agentIndex].agentUsername,
             status: status,
+            working: working,
             button: agentsInformation[agentIndex].agentID,
           });
           this.allAgentsInformation[agentsInformation[agentIndex].agentID] = {agentName: agentsInformation[agentIndex].agentName, agentUsername: agentsInformation[agentIndex].agentUsername, agentPassword: agentsInformation[agentIndex].agentPassword};
