@@ -18,6 +18,45 @@
               <b-form-input v-model="invoiceLocationName" type="text" placeholder="Coloque un nombre para la ubicación"></b-form-input>
             </b-modal>
 
+            <b-modal scrollable size="m" centered id="commentsModal" hide-header hide-footer>
+              <div style="max-height: 800px; overflow-y: auto;">
+                <b-list-group>
+                  <b-list-group-item v-for="openedComment in openedComments" button>
+                    <div v-if="openedComment.whatsappConversationTextCommentBody != null">
+                      <strong>{{parseHour(openedComment.whatsappConversationCommentSentDateTime)}}</strong><br>
+                      <div style="display: flex;">
+                        <strong>Comentario: </strong> {{openedComment.whatsappConversationTextCommentBody}}<br>
+                        <div class="flex-grow-1"></div>
+                        <button v-if="openedComment.whatsappConversationCommentSeenDateTime == null" @click="updateWhatsappConversationCommentSeenDateTime(openedComment.whatsappConversationCommentID)" class="btn btn-success mr-1 ml-1">Recibir</button>
+                        <button v-else class="btn btn-info mr-1 ml-1">Recibido</button>
+                      </div>
+                    </div>
+                    <div v-else-if="openedComment.whatsappConversationAudioCommentFile != null">
+                      <strong>{{parseHour(openedComment.whatsappConversationCommentSentDateTime)}}</strong><br><br>
+                      <div style="display: flex;">
+                        <audio controls :src="`data:audio/webm;base64,${openedComment.whatsappConversationAudioCommentFile}`"></audio>
+                        <div class="flex-grow-1"></div>
+                        <button v-if="openedComment.whatsappConversationCommentSeenDateTime == null" @click="updateWhatsappConversationCommentSeenDateTime(openedComment.whatsappConversationCommentID)" class="btn btn-success mr-1 ml-1">Recibir</button>
+                        <button v-else class="btn btn-info mr-1 ml-1">Recibido</button>
+                      </div>
+                    </div>
+                    <div v-else-if="openedComment.whatsappConversationProductCommentName != null">
+                      <strong>{{parseHour(openedComment.whatsappConversationCommentSentDateTime)}}</strong><br>   
+                      <div style="display: flex;">
+                        <div>               
+                          <strong>Nombre: </strong> {{openedComment.whatsappConversationProductCommentName}}<br>
+                          <strong>Código: </strong> {{openedComment.whatsappConversationProductCommentSKU}}<br>
+                        </div>
+                        <div class="flex-grow-1"></div>
+                        <button v-if="openedComment.whatsappConversationCommentSeenDateTime == null" @click="updateWhatsappConversationCommentSeenDateTime(openedComment.whatsappConversationCommentID)" class="btn btn-success mr-1 ml-1">Recibir</button>
+                        <button v-else class="btn btn-info mr-1 ml-1">Recibido</button>
+                      </div>
+                    </div>
+                  </b-list-group-item>
+                </b-list-group>
+              </div>
+            </b-modal>
+
             <div class="border-right" style="height: 100%;">
               <vue-perfect-scrollbar :settings="{ suppressScrollX: true}" class="contacts-scrollable perfect-scrollbar rtl-ps-none ps scroll">   
                 <div v-if="loaders.activeConversations == true" style="text-align: center;">
@@ -38,7 +77,16 @@
                     {{ parseHour(activeConversationsAsJSON[activeConversationID].whatsappConversationMessages[activeConversationsAsJSON[activeConversationID].whatsappConversationMessages.length-1].whatsappGeneralMessageCreationDateTime) }}
                   </h6>
                   <div class="flex-grow-1"></div>
-                  <div style="top: -13px; position: relative;"><b-form-checkbox v-model="activeConversationsAsJSON[activeConversationID].selected"></b-form-checkbox></div>
+
+                  <div style="position: relative; left: -10px;" v-if="conversationComments[activeConversationID]">
+                    
+                    <div v-if="conversationComments[activeConversationID].length > 0">
+                      <img v-if="conversationComments[activeConversationID].filter(item => item.whatsappConversationCommentSeenDateTime == null).length > 0" v-b-modal.commentsModal @click="openCommentsModal(conversationComments[activeConversationID])" class="newMessageAnimation" src="@/assets/pageAssets/commentRed.png" alt style="width: 30px; height: 15px;"/>
+                      <img v-else v-b-modal.commentsModal @click="openCommentsModal(conversationComments[activeConversationID])" src="@/assets/pageAssets/comment.png" alt style="width: 30px; height: 15px;"/>
+
+                    </div>
+                  </div>
+
                   <div class="newMessageAnimation" v-if="activeConversationsAsJSON[activeConversationID].whatsappConversationMessages[activeConversationsAsJSON[activeConversationID].whatsappConversationMessages.length-1].whatsappGeneralMessageOwnerPhoneNumber != null" style="min-height: 15px; min-width: 15px; background-color: rgb(255, 111, 111); border-radius: 100px; display: flex; align-items: center; justify-content: center;">
                     <p style="margin: 0; font-size: 10px;">
                       <strong>{{getIncomingMessagesAmount(activeConversationsAsJSON[activeConversationID].whatsappConversationMessages)}}</strong>
@@ -1765,13 +1813,42 @@ export default {
       websocketAbort: false,
 
       invoiceLocationMessage: null,
-      invoiceLocationName: ''
+      invoiceLocationName: '',
+
+
+      conversationComments: [],
+      openedComments: [],
+
+      openedCommentsTable: []
     };
   },
 
   methods: {
-    searchedCatalogue(){
-      console.log(this.searchedCatalogue);
+    openCommentsModal(openedComments){
+      this.openedComments = openedComments;
+    }, 
+
+    updateWhatsappConversationCommentSeenDateTime(whatsappConversationCommentID){
+      axios.post(constants.routes.backendAPI+'/updateWhatsappConversationCommentSeenDateTime',
+      {
+        'whatsappConversationCommentID': whatsappConversationCommentID
+      })
+      .then((response) =>{
+        if (response.data.success){
+          for (var index in this.openedComments){
+            if (this.openedComments[index].whatsappConversationCommentID == whatsappConversationCommentID){
+              this.openedComments[index].whatsappConversationCommentSeenDateTime = 'Recibido';
+            }
+          }
+          this.showNotification('success', 'Comentario recibido', 'Se ha recibido el comentario exitosamente.');
+        } else {
+          this.showNotification('danger', 'Error al recibir el comentario', 'Ha ocurrido un error inesperado al recibir el comentario. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al recibir el comentario', 'Ha ocurrido un error inesperado al recibir el comentario. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+      
     },
 
     scrollToBottomHistory(){
@@ -1841,10 +1918,21 @@ export default {
     },
 
     fixTotal(){
-      console.log(this.currentActiveConversation.whatsappConversationProducts);
       this.calcularSubTotal;
       this.calcularDescuento;
       this.calcularTotal;
+    },
+
+    receiveWhatsappConversationComment(whatsappConversationComment){
+      const whatsappConversationID = whatsappConversationComment.whatsappConversationID;
+      if (whatsappConversationID in this.activeConversationsAsJSON){
+        if (whatsappConversationID in this.conversationComments){
+          this.conversationComments[whatsappConversationID].push(whatsappConversationComment)
+        } else {
+          this.conversationComments[whatsappConversationID] = [whatsappConversationComment];
+        }
+        this.playSound('alert');
+      }
     },
 
     manageWebsocketConnection() {
@@ -1880,6 +1968,8 @@ export default {
             this.receiveAcceptTransferWhatsappConversation(websocketMessageContent);
           } else if (websocketMessageID == '/receiveWhatsappMessageStatusUpdate'){
             this.receiveWhatsappMessageStatusUpdate(websocketMessageJSON.websocketMessageContent);
+          } else if (websocketMessageID == '/dashboardComment'){
+            this.receiveWhatsappConversationComment(websocketMessageJSON.websocketMessageContent);
           }
         } catch (error) {
           console.log(error);
@@ -3688,6 +3778,7 @@ export default {
         whatsappConversationIsActive: true
       })
       .then((response) =>{
+        
         if (response.data.success){
           
           const respondedActiveConversations = response.data.result;
@@ -3715,6 +3806,27 @@ export default {
       })
       .catch((error) =>{
         this.showNotification('danger', 'Error al consultar las conversaciones activas', 'Ha ocurrido un error inesperado al consultar las conversaciones pendientes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+    selectAgentComments(){
+      this.loaders.activeConversations = true;
+      axios.post(constants.routes.backendAPI+'/selectAgentComments',
+      {
+        whatsappConversationAssignedAgentID: parseInt(localStorage.getItem('agentID')),
+        whatsappConversationIsActive: true
+      })
+      .then((response) =>{
+        this.loaders.activeConversations = false;
+        if (response.data.success){
+          this.conversationComments = response.data.result;
+          this.loaders.activeConversations = false;
+        } else {
+          this.showNotification('danger', 'Error al consultar los comentarios', 'Ha ocurrido un error inesperado al consultar los comentarios. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) =>{
+        this.showNotification('danger', 'Error al consultar los comentarios', 'Ha ocurrido un error inesperado al consultar los comentarios. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
 
@@ -3944,6 +4056,9 @@ export default {
         var soundToPlay = new Audio(require('../../../assets/pageAssets/inbox.mp3'));
       } else if (soundType == 'grabConversation'){
         var soundToPlay = new Audio(require('../../../assets/pageAssets/grab.mp3'));
+      } else if (soundType == 'alert'){
+        var soundToPlay = new Audio(require('../../../assets/pageAssets/comment.mp3'));
+
       }
       soundToPlay.play();
     },
@@ -4144,6 +4259,7 @@ export default {
     this.selectAllAgentStatus();
     this.selectAllStoreMessage();
     this.selectAgentConversations();
+    this.selectAgentComments();
     this.selectAllPendingConversation();
     this.selectLocalities();
     this.openImageModal();

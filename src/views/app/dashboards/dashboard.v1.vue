@@ -85,7 +85,147 @@
     </b-modal>
 
     <b-modal scrollable size="m" centered id="commentsModal" hide-footer hide-header>
-      <h1>HOLA</h1>
+      <div v-if="commentLoader" style="text-align: center;">
+        <br><span class="spinner-glow spinner-glow-primary"></span>
+      </div>
+      <div v-else>
+        <h5><strong>Tipo de comentario: </strong></h5>
+        <b-form-select v-model="commentSelectedOption" :options="commentOptions"></b-form-select>
+        <br><br>
+
+        <div v-if="commentSelectedOption == 'Texto'">
+          <b-form-textarea rows="3" class="form-control" placeholder="Coloque un comentario de texto" v-model="textComment"/>
+          <br>
+          <button class="btn btn-icon btn-success mr-2" @click="insertWhatsappConversationTextComment()">
+            Comentar
+          </button>  
+        </div>
+
+        <div v-else-if="commentSelectedOption == 'Audio'">
+          <div style="display: flex;">
+            <button id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()"><i :class="getAudioClass()"></i></button>
+            <div v-if="recorded"><audio controls :src="recordedAudioFile" style="width:270px; position: relative; top: 5px;"></audio><br></div>
+            <div v-if="isRecording" style="position: relative; top: 10px; margin-left: 10px;"><h5>{{recordedTime}}</h5></div>
+          </div>
+          <br>
+          <button v-if="recorded" class="btn btn-icon btn-success mr-2" @click="insertWhatsappConversationAudioComment()">
+            Comentar
+          </button>
+        </div>
+
+        <div v-else-if="commentSelectedOption == 'Producto'">
+          <b-form-input @keyup.enter="selectProductos()" v-model="searchedProduct" id="buscador" placeholder="Coloca el nombre del producto"></b-form-input>   
+          <div v-if="loaderProductos == true" style="text-align: center;">
+            <br><br>
+            <span class="spinner-glow spinner-glow-primary"></span>
+          </div>
+          
+          <div class="ul-widget__body" v-else style="max-height: 400px; overflow-y: auto;">
+            <br>
+            <div class="ul-widget1" v-for="producto in productos" :key="producto.codigoProducto">
+              <div class="ul-widget__item ul-widget4__users">
+                <div class="ul-widget4__img">
+                  <div style="display: flex;">
+                    <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Extra Ice')" :src="iceLogoSRC"/>
+                    <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('ICE')" :src="iceLogoSRC"/>
+                    <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Postre')" :src="postreLogoSRC"/>
+                    <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Tabaco')" :src="tabacoLogoSRC"/>
+                    <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Wax')" :src="waxLogoSRC"/>
+                    <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Hierba')" :src="hierbaLogoSRC"/>
+                  </div>
+                  <img style="cursor: pointer;" :src="producto.localizacion" alt="N/A"/>
+                </div>
+                <div class="ul-widget2__info ul-widget4__users-info">
+                  <a href="#" variant="info" v-if="producto.productosAsociados.length==0" class="ul-widget2__title">{{ producto.descripcion }}</a>
+                  <a href="#" variant="info" v-if="producto.productosAsociados.length!=0" style="cursor: default;" class="ul-widget2__title">{{ producto.descripcion }}</a>
+
+                  <span class="ul-widget2__username">{{ producto.codigoProducto }}</span>
+                  <span style="font-size:8px" class="ul-widget2__username">{{ producto.subFamilia }}</span>
+                  <span class="ul-widget4__number text-success">₡{{ producto.precioVenta }}</span>
+                  
+                  <div v-if="producto.productosAsociados.length != 0">
+                    <div v-for="nivelNicotina in producto.productosAsociados" :key="producto.codigoAsoiado" style="display: inline;"> 
+                      <b-badge variant="dark" style="margin: 3px;">{{nivelNicotina.nicotina}} MG</b-badge>
+                    </div>
+                  </div>
+
+                  <div style="display: flex">
+                    <button v-b-modal.stockModal v-if="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistencia(producto.codigoProducto)">
+                      Stock
+                    </button>
+
+                    <button v-b-modal.stockModal  v-else="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistenciaNicotina(producto.productosAsociados)">
+                      Stock
+                    </button>
+
+                    <button class="btn btn-icon btn-success mr-2" @click="insertWhatsappConversationProductComment(producto)">
+                      Recomendar
+                    </button>
+
+                  </div> 
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          
+        </div>
+
+        <div v-if="whatsappConversationComments.length > 0">
+          <br><br>
+          <h5><strong>Comentarios previos: </strong></h5>
+        </div>
+        <div style="max-height: 300px; overflow-y: auto;" v-if="whatsappConversationComments.length > 0">
+          <b-list-group> 
+            <b-list-group-item v-for="openedComment in whatsappConversationComments" button>
+              <div v-if="openedComment.whatsappConversationTextCommentBody != null">
+                <strong>Enviado el: </strong>{{parseHour(openedComment.whatsappConversationCommentSentDateTime)}}<br>
+                <div v-if="openedComment.whatsappConversationCommentSeenDateTime != null">
+                  <strong>Recibido el: </strong>{{parseHour(openedComment.whatsappConversationCommentSeenDateTime)}}
+                  <br>
+                </div>
+                <br>
+
+                <strong>Comentario:</strong> {{openedComment.whatsappConversationTextCommentBody}}<br>
+              </div>
+              <div v-else-if="openedComment.whatsappConversationAudioCommentFile != null">
+                <strong>Enviado el: </strong>{{parseHour(openedComment.whatsappConversationCommentSentDateTime)}}<br>
+                <div v-if="openedComment.whatsappConversationCommentSeenDateTime != null">
+                  <strong>Recibido el: </strong>{{parseHour(openedComment.whatsappConversationCommentSeenDateTime)}}
+                  <br>
+                </div>
+                <br>
+                <audio controls :src="`data:audio/webm;base64,${openedComment.whatsappConversationAudioCommentFile}`"></audio>
+              </div>
+              <div v-else-if="openedComment.whatsappConversationProductCommentName != null">      
+                <strong>Enviado el: </strong>{{parseHour(openedComment.whatsappConversationCommentSentDateTime)}}<br>
+                <div v-if="openedComment.whatsappConversationCommentSeenDateTime != null">
+                  <strong>Recibido el: </strong>{{parseHour(openedComment.whatsappConversationCommentSeenDateTime)}}
+                  <br>
+                </div>
+                <br>
+                <strong>Nombre:</strong> {{openedComment.whatsappConversationProductCommentName}}<br>
+                <strong>Código:</strong> {{openedComment.whatsappConversationProductCommentSKU}}<br>
+              </div>
+            </b-list-group-item>
+          </b-list-group>
+        </div>
+        
+      </div>
+    </b-modal>
+
+
+    <b-modal scrollable size="sm" centered hide-header hide-footer id="stockModal">
+      <div>
+        <div v-if="stockLoader == true" style="text-align: center;">
+          <br>
+          <span class="spinner-glow spinner-glow-primary"></span>
+        </div>
+        <div v-else>
+          <p class="m-0" style="white-space: pre-line; font-size: medium;">{{stockContent}}</p>
+        </div>
+      </div>
     </b-modal>
 
 
@@ -467,7 +607,7 @@
               <div v-else-if="props.column.field == 'whatsappConversationRecipientPhoneNumber'">
                 {{parseNumber(props.row.whatsappConversationRecipientPhoneNumber)}}
               </div>
-              <button v-b-modal.commentsModal v-else-if="props.column.field == 'whatsappConversationComments'" class="btn btn-outline-warning text-black btn-rounded">Comentarios</button>
+              <button @click="selectWhatsappConversationComments(props.row.whatsappConversationID)" v-b-modal.commentsModal v-else-if="props.column.field == 'whatsappConversationComments'" class="btn btn-outline-warning text-black btn-rounded">Comentarios</button>
 
             </template>
           </vue-good-table>
@@ -1241,7 +1381,38 @@ export default {
       numberSearched: '',
 
       conversationsByLocalityNameAndType: [],
-      localityLoader: false
+      localityLoader: false,
+
+
+      commentedWhatsappConversationID: '',
+      commentLoader: false,
+      commentOptions: ['Texto', 'Audio', 'Producto'],
+      commentSelectedOption: 'Texto',
+      whatsappConversationComments: [],
+
+      textComment: '',
+
+      isRecording: false,
+      recordedTime: '0:00',
+      mediaRecorder: null,
+      recordedAudioFile: null,
+      startTime: '',
+      chunks: [],
+      file: null,
+      recorded: false,
+
+
+      loaderProductos: false,
+      productos: [],
+      searchedProduct: '',
+      iceLogoSRC: '',
+      postreLogoSRC: '',
+      tabacoLogoSRC: '',
+      waxLogoSRC: '',
+      hierbaLogoSRC: '',
+      stockLoader: false,
+      stockContent: '',
+
     };
   },
 
@@ -1250,6 +1421,10 @@ export default {
     this.herediaMap = constants.routes.herediaMap;
     this.zapoteMap = constants.routes.zapoteMap;
     this.escazuMap = constants.routes.escazuMap;
+    this.iceLogoSRC = constants.routes.iceLogoSRC;
+    this.postreLogoSRC = constants.routes.postreLogoSRC;
+    this.tabacoLogoSRC = constants.routes.tabacoLogoSRC;
+    this.waxLogoSRC = constants.routes.waxLogoSRC;
 
     if (localStorage.getItem('agentID') == null){
       router.push("/app/sessions/signIn");
@@ -1305,6 +1480,240 @@ export default {
           }
         });
       }, 1);
+    },
+
+    insertWhatsappConversationTextComment(){
+      axios.post(constants.routes.backendAPI+'/insertWhatsappConversationTextComment', 
+      {
+        'whatsappConversationTextCommentWhatsappConversationID': this.commentedWhatsappConversationID,
+        'whatsappConversationTextCommentBody': this.textComment
+      }).then((response) =>{
+        this.$root.$emit('bv::hide::modal', 'commentsModal');
+        if (response.data.success){
+          this.showNotification('success', 'Comentario generado', 'Comentario generado exitosamente');
+        } else {
+          this.showNotification('danger', 'Error al generar el comentario', 'Ha ocurrido un error inesperado al generar el comentario. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch(() =>{
+        this.$root.$emit('bv::hide::modal', 'commentsModal');
+        this.showNotification('danger', 'Error al generar el comentario', 'Ha ocurrido un error inesperado al generar el comentario. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+    },
+
+    insertWhatsappConversationAudioComment(){
+      axios.post(constants.routes.backendAPI+'/insertWhatsappConversationAudioComment', 
+      {
+        'whatsappConversationAudioCommentWhatsappConversationID': this.commentedWhatsappConversationID,
+        'whatsappConversationAudioCommentFile': this.recordedAudioFile
+      }).then((response) =>{
+        this.$root.$emit('bv::hide::modal', 'commentsModal');
+        if (response.data.success){
+          this.showNotification('success', 'Comentario generado', 'Comentario generado exitosamente');
+        } else {
+          this.showNotification('danger', 'Error al generar el comentario', 'Ha ocurrido un error inesperado al generar el comentario. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch(() =>{
+        this.$root.$emit('bv::hide::modal', 'commentsModal');
+        this.showNotification('danger', 'Error al generar el comentario', 'Ha ocurrido un error inesperado al generar el comentario. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+    },
+
+    insertWhatsappConversationProductComment(product){      
+      axios.post(constants.routes.backendAPI+'/insertWhatsappConversationProductComment', 
+      {
+        'whatsappConversationProductCommentWhatsappConversationID': this.commentedWhatsappConversationID,
+        'whatsappConversationProductCommentName': product.descripcion,
+        'whatsappConversationProductCommentSKU': product.codigoProducto,
+        'whatsappConversationProductCommentImageURL': product.localizacion
+      }).then((response) =>{
+        this.$root.$emit('bv::hide::modal', 'commentsModal');
+        if (response.data.success){
+          this.showNotification('success', 'Comentario generado', 'Comentario generado exitosamente');
+        } else {
+          this.showNotification('danger', 'Error al generar el comentario', 'Ha ocurrido un error inesperado al generar el comentario. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch(() =>{
+        this.$root.$emit('bv::hide::modal', 'commentsModal');
+        this.showNotification('danger', 'Error al generar el comentario', 'Ha ocurrido un error inesperado al generar el comentario. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+      
+    },
+
+    getAudioClass(){
+      if (this.isRecording){
+        return 'i-Pause';
+      } else {
+        return 'i-Microphone-3';
+      }
+    },
+
+    cargarTesting(codigo){
+      return new Promise((cargarTestingPromiseResolve) => {
+        var me = this;
+        axios.get('https://noah.cr/BackendKingVape/api/ProductosWebs/'+codigo).then(function(response){
+          var textoExistencia = '';
+          for (var indice in response.data){
+            if (textoExistencia == ''){
+              textoExistencia = response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
+            } else {
+              textoExistencia = textoExistencia + '\n' + response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
+            }
+          }
+          cargarTestingPromiseResolve(textoExistencia + '\n\n');
+        }).catch(function(error){
+          alert('Producto no encontrado');
+        });
+      });
+    },
+
+    async cargarExistenciaNicotina(productosPorNicotina){
+      this.stockLoader = true;
+      var texto = '';
+      for (var indiceProducto in productosPorNicotina){
+        var codigoProducto = productosPorNicotina[indiceProducto].codigoAsoiado;
+        var a = await this.cargarTesting(codigoProducto);
+        texto = texto + productosPorNicotina[indiceProducto].nicotina + 'MG:\n' + a;
+      }
+      this.stockLoader = false;
+      this.stockContent = texto;
+      console.log(this.stockContent)
+    },
+
+    cargarExistencia(codigoProducto){
+      this.stockLoader = true;
+      let me = this;
+      axios.get('https://noah.cr/BackendKingVape/api/ProductosWebs/'+codigoProducto).then(function(response){
+        var textoExistencia = '';
+        for (var indice in response.data){
+          if (textoExistencia == ''){
+            textoExistencia = response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
+          } else {
+            textoExistencia = textoExistencia + '\n' + response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
+          }
+        }
+        me.stockLoader = false;
+        me.stockContent = textoExistencia;
+        console.log(me.stockContent);
+      }).catch(function(error){
+        me.$bvToast.toast("Ha ocurrido un error inesperado al consultar el stock. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+          title: "Error al consultar stock",
+          variant: "danger",
+          solid: true
+        });
+      });
+    },
+
+    selectProductos(){
+      let me=this;
+      let Objeto = [];
+      this.loaderProductos = true;
+      axios.get('https://bakend2king.kingvape.cr/api/Productos/BuscadorEnter5/King Vape/'+this.searchedProduct).then((response) => {
+        me.productos = [];
+        Objeto = response.data
+          Objeto.map(function(x){
+            me.productos.push({descripcion:x.descripcion,
+              codigoProducto:x.codigoProducto,
+              consignacion:x.consignacion,
+              precioVenta:x.precioVenta,
+              localizacion:x.localizacion,
+              datosAdicionales:x.subFamilia,
+              ubicacion:x.ubicacion,
+              id: me.productos.length + 2,
+              productosAsociados: x.productosAsociados
+            });
+          });
+          me.loaderProductos = false;
+        }).catch( error => { 
+          this.loaderProductos = false;
+          this.productos = [];
+        } );
+      
+    },
+
+    async startRecording() {
+      if (this.isRecording == false){
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        this.mediaRecorder = new MediaRecorder(stream);
+        this.chunks = [];
+        this.startTime = new Date();
+
+        this.mediaRecorder.ondataavailable = event => {
+          if (event.data.size > 0) {
+            this.chunks.push(event.data);
+          }
+        };
+
+        this.mediaRecorder.onstop = () => {
+          const blob = new Blob(this.chunks, { type: 'audio/webm' });
+          const reader = new FileReader();
+          reader.onload = () => {
+              this.recordedAudioFile = reader.result;
+          };
+          reader.readAsDataURL(blob);
+          
+        };
+
+        this.mediaRecorder.start();
+        this.isRecording = true;
+        this.recorded = false;
+        this.updateRecordedTime();
+      } else {
+        this.pauseAudioRecording();
+      }
+      
+    },
+
+    pauseAudioRecording(){
+      if (this.mediaRecorder && this.isRecording) {
+        this.mediaRecorder.stop();
+        this.isRecording = false;
+        this.recorded = true;
+      }
+    },
+
+    updateRecordedTime() {
+      setInterval(() => {
+        if ((this.startTime !== null) && (this.isRecording == true)) {
+          const currentTime = new Date();
+          const elapsedTime = currentTime - this.startTime;
+          this.recordedTime = this.formatTime(elapsedTime);
+        }
+      }, 10);
+    },
+
+    formatTime(ms) {
+      const minutes = Math.floor(ms / 60000);
+      const seconds = ((ms % 60000) / 1000).toFixed(0);
+
+      return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    },
+
+    selectWhatsappConversationComments(whatsappConversationID){
+      this.recorded = false;
+      this.searchedProduct = '';
+      this.textComment = '';
+      this.commentSelectedOption = 'Texto';
+      this.productos = [];
+      this.commentedWhatsappConversationID = whatsappConversationID;
+      this.commentLoader = true;
+      axios.post(constants.routes.backendAPI+'/selectWhatsappConversationComments', 
+      {
+        'whatsappConversationID': whatsappConversationID
+      }).then((response) =>{
+        this.commentLoader = false; 
+        if (response.data.success){
+          this.whatsappConversationComments = response.data.result;
+        } else {
+          this.showNotification('danger', 'Error al consultar los comentarios de la conversación', 'Ha ocurrido un error inesperado al consultar los comentarios de la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch(() =>{
+        this.commentLoader = false;
+        this.showNotification('danger', 'Error al consultar los comentarios de la conversación', 'Ha ocurrido un error inesperado al consultar los comentarios de la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
     },
 
     selectTodayConversationsByLocalityNameAndType(whatsappConversationLocalityName, whatsappConversationType){
