@@ -1838,13 +1838,13 @@ export default {
           for (var index in this.conversationComments){
             for (var index2 in this.conversationComments[index]){
               if (this.conversationComments[index][index2].whatsappConversationCommentID == whatsappConversationCommentID){
-                this.conversationComments[index][index2].whatsappConversationCommentSeenDateTime = 'Recibido';
+                Vue.set(this.conversationComments[index][index2], 'whatsappConversationCommentSeenDateTime', 'Recibido');
               }
             }
           }
           for (var index in this.openedComments){
             if (this.openedComments[index].whatsappConversationCommentID == whatsappConversationCommentID){
-              this.openedComments[index].whatsappConversationCommentSeenDateTime = 'Recibido';
+              Vue.set(this.openedComments[index], 'whatsappConversationCommentSeenDateTime', 'Recibido');
             }
           }
           this.showNotification('success', 'Comentario recibido', 'Se ha recibido el comentario exitosamente.');
