@@ -65,7 +65,9 @@
       </div>
 
       <div v-else>
-        <div style="height: 85vh; overflow-y: auto;">
+        <h3><strong>TOTAL: </strong> {{conversationsByLocalityNameAndType.length}}</h3>
+        <br><br>
+        <div style="max-height: 600px; overflow-y: auto;">
           <vue-good-table
             :columns="localityConversationColumns"
             :line-numbers="false"
@@ -461,7 +463,7 @@
                 </div>
                 <p @click="selectTodayConversationsByLocalityNameAndType('3', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{cartagoNotSelled + cartagoSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('3', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{cartagoSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('5', 2)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{cartagoNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('3', 2)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{cartagoNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
               <b-card style="width: 50%; margin-left: 1.5%; background-color: #9f7cd0;">
