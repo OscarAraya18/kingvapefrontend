@@ -899,6 +899,7 @@
                   <div style="background-color: rgb(255, 238, 252); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
                     <div>
                       <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Respondiendo a:</strong></p>
+                      {{repliedMessage.whatsappGeneralMessageID}}
                       <i class="i-Close-Window text-25 text-danger" style="float: right; position: relative; top:-25px; cursor: pointer;" @click="cancelReply()"></i>
                     </div><br>
                     
@@ -3131,7 +3132,7 @@ export default {
       this.sendingMessageDisable = true;
       var repliedMessageID = '';
       if (this.repliedMessage != null){
-        repliedMessageID = this.repliedMessage.whatsappGeneralMessageID
+        repliedMessageID = this.repliedMessage.whatsappGeneralMessageID;
       }
       axios.post(constants.routes.backendAPI+'/sendWhatsappTextMessage',
       {
@@ -3313,26 +3314,30 @@ export default {
         repliedMessageID = this.repliedMessage.messageID
       }
       if (this.currentActiveConversation.whatsappConversationRecipientLocations[locationName]){
-        axios.post(constants.routes.backendAPI+'/sendWhatsappLocationMessage',{
-          whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
-          whatsappGeneralMessageRepliedMessageID: repliedMessageID,
-          whatsappLocationMessageLatitude: this.currentActiveConversation.whatsappConversationRecipientLocations[locationName].latitude,
-          whatsappLocationMessageLongitude: this.currentActiveConversation.whatsappConversationRecipientLocations[locationName].longitude,
-        })
-        .then((response) =>{
-          if (response.data.success){
-            this.repliedMessage = null;
-            const whatsappConversationID = response.data.result.whatsappConversationID;
-            this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);          
-            this.scrollDown();
-            this.sortConversations();
-          } else {
+        if (this.currentActiveConversation.whatsappConversationRecipientLocations[locationName].latitude != '0'){
+          axios.post(constants.routes.backendAPI+'/sendWhatsappLocationMessage',{
+            whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+            whatsappGeneralMessageRepliedMessageID: repliedMessageID,
+            whatsappLocationMessageLatitude: this.currentActiveConversation.whatsappConversationRecipientLocations[locationName].latitude,
+            whatsappLocationMessageLongitude: this.currentActiveConversation.whatsappConversationRecipientLocations[locationName].longitude,
+          })
+          .then((response) =>{
+            if (response.data.success){
+              this.repliedMessage = null;
+              const whatsappConversationID = response.data.result.whatsappConversationID;
+              this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);          
+              this.scrollDown();
+              this.sortConversations();
+            } else {
+              this.showNotification('danger', 'Error al enviar la ubicación', 'Ha ocurrido un error inesperado al enviar la ubicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+            }
+          })
+          .catch((error) =>{
             this.showNotification('danger', 'Error al enviar la ubicación', 'Ha ocurrido un error inesperado al enviar la ubicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-          }
-        })
-        .catch((error) =>{
-          this.showNotification('danger', 'Error al enviar la ubicación', 'Ha ocurrido un error inesperado al enviar la ubicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        })
+          })
+        } else {
+          this.showNotification('danger', 'Error al enviar la ubicación', 'El cliente no cuenta con una ubicación asignada. Por favor complete la información e intentelo nuevamente.')
+        }
       } else {
         this.showNotification('danger', 'Error al enviar la ubicación', 'El cliente no cuenta con una ubicación asignada. Por favor complete la información e intentelo nuevamente.')
       }
