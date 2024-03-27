@@ -1381,9 +1381,11 @@
                             
                             <p style="font-size: medium;">Información del envío</p>
                             <b-form-group style="width:100%">
-                              <b-form-select v-model="selectedLocality" :options="localityOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceLocalityName', selectedLocality)" style="margin-bottom: 10px;"/>
-                              
-                              <b-form-select v-model="whatsappInvoiceShippingMethod" :options="whatsappInvoiceShippingMethodOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceShippingMethod', whatsappInvoiceShippingMethod)" style="margin-bottom: 10px;"/>
+                              <div :style="getLocalityOptionsColor()">
+                                <b-form-select  v-model="selectedLocality" :options="localityOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceLocalityName', selectedLocality)"/>
+                              </div>
+
+                              <b-form-select v-model="whatsappInvoiceShippingMethod" :options="whatsappInvoiceShippingMethodOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceShippingMethod', whatsappInvoiceShippingMethod)" style="margin-bottom: 10px; margin-top: 10px;"/>
                               
                               <div style="display: flex;">
                                 <b-form-select v-model="whatsappInvoicePaymentMethod" :options="whatsappInvoicePaymentMethodOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoicePaymentMethod', whatsappInvoicePaymentMethod)" :style="getWhatsappInvoicePaymentMethodStyle()"></b-form-select>
@@ -1603,6 +1605,7 @@ export default {
       selectedLocality: null,
       selectedCloseLocality: 'Seleccione una localidad',
       closeLocalityOptions: [],
+      localityColors: {},
       
       currentTransactions: null,
       stickerName: '',
@@ -1824,6 +1827,11 @@ export default {
   },
 
   methods: {
+    getLocalityOptionsColor(){
+      var localityColor = this.localityColors[this.selectedLocality] || '#dedede';
+      return 'background-color: ' + localityColor + '; padding: 10px;';
+    },
+
     openCommentsModal(openedComments){
       this.openedComments = openedComments;
     }, 
@@ -2032,8 +2040,10 @@ export default {
           for (var localityIndex in response.data.result){
             const localityID = response.data.result[localityIndex].localityID;
             const localityName = response.data.result[localityIndex].localityName;
+            const localityColor = response.data.result[localityIndex].localityColor;
             this.localityOptions.push({value: localityID, text: localityName});
             this.closeLocalityOptions.push({value: localityID, text: localityName});
+            this.localityColors[localityID] = localityColor;
           }
         } else {
           this.showNotification('danger', 'Error al consultar las localidades', 'Ha ocurrido un error inesperado al consultar las localidades. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
