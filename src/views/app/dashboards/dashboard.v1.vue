@@ -79,6 +79,9 @@
               <div v-else-if="props.column.field == 'whatsappConversationRecipientPhoneNumber'">{{ parseNumber(props.row.whatsappConversationRecipientPhoneNumber) }}</div>
               <div v-else-if="props.column.field == 'whatsappConversationStartDateTime'">{{ parseHour(props.row.whatsappConversationStartDateTime) }}</div>
               <div v-else-if="props.column.field == 'whatsappConversationAmount'">₡{{props.row.whatsappConversationAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</div>
+              <div v-else-if="props.column.field == 'agentName'" :style="getAgentColor(props.row)">
+                {{props.row.agentName}}
+              </div>
 
             </template>
           </vue-good-table>
@@ -622,8 +625,12 @@
 
               <div v-else-if="props.column.field == 'whatsappConversationComments'">
                 <button @click="selectWhatsappConversationComments(props.row)" v-b-modal.commentsModal :class="getCommentButtonClass(props.row)">{{getCommentButtonContent(props.row)}}</button>
-
               </div>
+
+              <div v-else-if="props.column.field == 'agentName'" :style="getAgentColor(props.row)">
+                {{props.row.agentName}}
+              </div>
+
             </template>
           </vue-good-table>
 
@@ -1214,25 +1221,25 @@ export default {
 
       activeConversationsColumns: [
         {
-          label: "ID de la conversación",
+          label: "ID",
           field: "whatsappConversationID",
           thClass: "text-left pl-3",
           tdClass: "text-left pl-3",
         },
         {
-          label: "Número del cliente",
+          label: "Número",
           field: "whatsappConversationRecipientPhoneNumber",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
-          label: "Nombre del cliente",
+          label: "Nombre",
           field: "whatsappConversationRecipientProfileName",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
-          label: "Nombre del agente",
+          label: "Agente",
           field: "agentName",
           thClass: "text-left",
           tdClass: "text-left",
@@ -1306,6 +1313,12 @@ export default {
         {
           label: "Nombre del cliente",
           field: "whatsappConversationRecipientProfileName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Nombre del agente",
+          field: "agentName",
           thClass: "text-left",
           tdClass: "text-left",
         },
@@ -1499,6 +1512,14 @@ export default {
           }
         });
       }, 1);
+    },
+
+    getAgentColor(agent){
+      if (agent.agentColor){
+        return 'background-color: ' + agent.agentColor + '; color: ' + agent.agentFontColor + '; border-radius: 10px; text-align: center;';
+      } else {
+        return 'background-color: black; color: white; border-radius: 10px; text-align: center;';
+      }
     },
 
     getCommentButtonClass(conversation){
@@ -1798,7 +1819,7 @@ export default {
           this.showNotification('danger', 'Error al consultar las conversaciones', 'Ha ocurrido un error inesperado al consultar las conversaciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
-      .catch(() =>{
+      .catch((error) =>{
         this.localityLoader = false;
         this.whatsappFeedbackLoading = false;
         this.showNotification('danger', 'Error al consultar las conversaciones', 'Ha ocurrido un error inesperado al consultar las conversaciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
@@ -2138,6 +2159,8 @@ export default {
               whatsappConversationRecipientPhoneNumber: this.activeConversations[activeConversationIndex].whatsappConversationRecipientPhoneNumber,
               whatsappConversationRecipientProfileName: this.activeConversations[activeConversationIndex].whatsappConversationRecipientProfileName,
               agentName: this.activeConversations[activeConversationIndex].agentName || 'Sin asignar',
+              agentColor: this.activeConversations[activeConversationIndex].agentColor || 'black',
+              agentFontColor: this.activeConversations[activeConversationIndex].agentFontColor || 'white',
               agentID: this.activeConversations[activeConversationIndex].agentID,
               whatsappGeneralMessageCreationDateTime: this.activeConversations[activeConversationIndex].whatsappGeneralMessageCreationDateTime,
               whatsappGeneralMessageOwnerPhoneNumber: this.activeConversations[activeConversationIndex].whatsappGeneralMessageOwnerPhoneNumber,

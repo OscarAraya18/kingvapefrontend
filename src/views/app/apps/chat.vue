@@ -991,7 +991,9 @@
                   </b-modal>
                   <b-dropdown dropup variant="primary" text="Transferir">
                     <template v-for="agent in agents">
-                      <b-dropdown-item style="z-index: 2000; overflow-y: auto;" @click="requestTransferWhatsappConversation(agent)">{{agent.agentName}}</b-dropdown-item>
+                      <b-dropdown-item :style="getAgentColor(agent)" @click="requestTransferWhatsappConversation(agent)">
+                        {{agent.agentName}}
+                      </b-dropdown-item>
                     </template>
                     <b-dropdown-item style="z-index: 2000; overflow-y: auto;" v-if="agents.length == 0">No hay agentes disponibles</b-dropdown-item>
                   </b-dropdown>
@@ -1237,7 +1239,9 @@
                     </b-modal>
                     <b-dropdown dropup variant="primary" text="Transferir">
                       <template v-for="agent in agents">
-                        <b-dropdown-item style="z-index: 2000; overflow-y: auto;" @click="requestTransferWhatsappConversation(agent)">{{agent.agentName}}</b-dropdown-item>
+                        <b-dropdown-item :style="getAgentColor(agent)" @click="requestTransferWhatsappConversation(agent)">
+                          {{agent.agentName}}
+                        </b-dropdown-item>
                       </template>
                       <b-dropdown-item style="z-index: 2000; overflow-y: auto;" v-if="agents.length == 0">No hay agentes disponibles</b-dropdown-item>
                     </b-dropdown>
@@ -1832,6 +1836,10 @@ export default {
   },
 
   methods: {
+    getAgentColor(agent){
+      return 'background-color: ' + agent.agentColor + '; font-color: ' + agent.agentFontColor + '; z-index: 2000; overflow-y: auto;';
+    },
+
     getLocalityOptionsColor(){
       var localityColor = this.localityColors[this.selectedLocality] || '#dedede';
       return 'background-color: ' + localityColor + '; padding: 10px;';
@@ -3947,7 +3955,7 @@ export default {
           this.agents = [];
           for (var agentIndex in agentStatusInformation){
             if ((agentStatusInformation[agentIndex].agentStatus == 'online') && (agentStatusInformation[agentIndex].agentID != localStorage.getItem('agentID'))){
-              const newAgent = {'agentID': agentStatusInformation[agentIndex].agentID, 'agentName': agentStatusInformation[agentIndex].agentName};
+              const newAgent = {'agentID': agentStatusInformation[agentIndex].agentID, 'agentName': agentStatusInformation[agentIndex].agentName, 'agentColor': agentStatusInformation[agentIndex].agentColor, 'agentFontColor': agentStatusInformation[agentIndex].agentFontColor};
               this.agents.push(newAgent);
             }
           }
