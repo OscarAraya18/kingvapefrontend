@@ -1369,108 +1369,113 @@
 
                             <br>
 
-                            <p style="font-size: medium;">Información personal</p>
-                            <b-form-group style="width:100%;">
-                              <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientProfileName" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientName', currentActiveConversation.whatsappConversationRecipientProfileName)" placeholder='Nombre del cliente' style='margin-bottom: 10px;'></b-form-input>
-                              <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientPhoneNumber" placeholder="Número de teléfono del cliente" style="margin-bottom: 10px;"></b-form-input>
-                              <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientID" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientID', currentActiveConversation.whatsappConversationRecipientID)" placeholder='Cédula del cliente' style='margin-bottom: 10px;'></b-form-input>
-                              <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientEmail" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientEmail', currentActiveConversation.whatsappConversationRecipientEmail)" placeholder="Correo electrónico del cliente"></b-form-input> 
-                            </b-form-group>
-                            
+                            <b-card>
+                              <p style="font-size: medium;"><strong>Información personal:</strong></p>
+                              <b-form-group style="width:100%;">
+                                <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientProfileName" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientName', currentActiveConversation.whatsappConversationRecipientProfileName)" placeholder='Nombre del cliente' style='margin-bottom: 10px;'></b-form-input>
+                                <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientPhoneNumber" placeholder="Número de teléfono del cliente" style="margin-bottom: 10px;"></b-form-input>
+                                <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientID" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientID', currentActiveConversation.whatsappConversationRecipientID)" placeholder='Cédula del cliente' style='margin-bottom: 10px;'></b-form-input>
+                                <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientEmail" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientEmail', currentActiveConversation.whatsappConversationRecipientEmail)" placeholder="Correo electrónico del cliente"></b-form-input> 
+                              </b-form-group>
+                            </b-card>
+
                             <br>
                             
-                            <p style="font-size: medium;">Información del envío</p>
-                            <b-form-group style="width:100%">
-                              <div :style="getLocalityOptionsColor()">
-                                <b-form-select  v-model="selectedLocality" :options="localityOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceLocalityName', selectedLocality)"/>
-                              </div>
+                            <b-card>
+                              <p style="font-size: medium;"><strong>Información del envío:</strong></p>
 
-                              <b-form-select v-model="whatsappInvoiceShippingMethod" :options="whatsappInvoiceShippingMethodOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceShippingMethod', whatsappInvoiceShippingMethod)" style="margin-bottom: 10px; margin-top: 10px;"/>
-                              
-                              <div style="display: flex;">
-                                <b-form-select v-model="whatsappInvoicePaymentMethod" :options="whatsappInvoicePaymentMethodOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoicePaymentMethod', whatsappInvoicePaymentMethod)" :style="getWhatsappInvoicePaymentMethodStyle()"></b-form-select>
-                                <b-button v-if="getWhatsappInvoicePaymentMethodIsSINPE()" v-b-modal.paymentMethodValidatorModal style="margin-bottom: 15px; margin-left: 10px; width: 30%" @click="validatePaymentMethod()" variant="info">Validar</b-button>
+                              <b-form-group style="width:100%">
+                                <div :style="getLocalityOptionsColor()">
+                                  <b-form-select  v-model="selectedLocality" :options="localityOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceLocalityName', selectedLocality)"/>
+                                </div>
+
+                                <b-form-select v-model="whatsappInvoiceShippingMethod" :options="whatsappInvoiceShippingMethodOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceShippingMethod', whatsappInvoiceShippingMethod)" style="margin-bottom: 10px; margin-top: 10px;"/>
+                                
+                                <div style="display: flex;">
+                                  <b-form-select v-model="whatsappInvoicePaymentMethod" :options="whatsappInvoicePaymentMethodOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoicePaymentMethod', whatsappInvoicePaymentMethod)" :style="getWhatsappInvoicePaymentMethodStyle()"></b-form-select>
+                                  <b-button v-if="getWhatsappInvoicePaymentMethodIsSINPE()" v-b-modal.paymentMethodValidatorModal style="margin-bottom: 15px; margin-left: 10px; width: 30%" @click="validatePaymentMethod()" variant="info">Validar</b-button>
 
 
-                                <b-modal scrollable size="m" centered hide-header hide-footer id="paymentMethodValidatorModal">
-                                  <div>
-                                    <div v-if="currentTransactions != null">
-                                      <h4><strong>Transacciones disponibles:</strong></h4><br>
-                                      <b-list-group>
-                                        <b-list-group-item v-if="currentTransactions.length == 0">No hay transacciones por asociar</b-list-group-item>
-                                        <b-list-group-item v-b-modal.syncTransactionModal @click="openSyncTransactionModal(currentTransaction)" v-for="currentTransaction in currentTransactions" button style="cursor: pointer;">
-                                          <strong>ID:</strong> {{currentTransaction.transactionID}}<br>
-                                          <strong>Detalle:</strong> {{currentTransaction.transactionNote}}<br>
-                                          <strong>Monto:</strong> ₡{{currentTransaction.transactionAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}<br>
-                                          <strong>Fecha:</strong> {{parseHour(currentTransaction.transactionDate)}}
-                                        </b-list-group-item>
-                                      </b-list-group>
+                                  <b-modal scrollable size="m" centered hide-header hide-footer id="paymentMethodValidatorModal">
+                                    <div>
+                                      <div v-if="currentTransactions != null">
+                                        <h4><strong>Transacciones disponibles:</strong></h4><br>
+                                        <b-list-group>
+                                          <b-list-group-item v-if="currentTransactions.length == 0">No hay transacciones por asociar</b-list-group-item>
+                                          <b-list-group-item v-b-modal.syncTransactionModal @click="openSyncTransactionModal(currentTransaction)" v-for="currentTransaction in currentTransactions" button style="cursor: pointer;">
+                                            <strong>ID:</strong> {{currentTransaction.transactionID}}<br>
+                                            <strong>Detalle:</strong> {{currentTransaction.transactionNote}}<br>
+                                            <strong>Monto:</strong> ₡{{currentTransaction.transactionAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}<br>
+                                            <strong>Fecha:</strong> {{parseHour(currentTransaction.transactionDate)}}
+                                          </b-list-group-item>
+                                        </b-list-group>
+                                      </div>
+                                      <div v-else style="text-align: center;">
+                                        <br>
+                                        <span class="spinner-glow spinner-glow-primary"></span>
+                                      </div>
                                     </div>
-                                    <div v-else style="text-align: center;">
-                                      <br>
-                                      <span class="spinner-glow spinner-glow-primary"></span>
-                                    </div>
-                                  </div>
-                                </b-modal>
+                                  </b-modal>
 
-                                <b-modal size="lg" @ok="syncTransactionToMessage()" hide-header centered id="syncTransactionModal">
-                                  <div v-if="currentTransaction != null">
-                                    <h4><strong>Mensaje relacionado:</strong></h4><br>
-                                    <div style="height: 500px; overflow-y: scroll; border: 1px solid gray;">
-                                      <div v-for="currentActiveConversationMessage in currentActiveConversation.whatsappConversationMessages">
-                                        <div @click="selectTransactionMessage(currentActiveConversationMessage.whatsappGeneralMessageID)" style="cursor: pointer;" class="d-flex mb-30" v-if="(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber != null) && ((currentActiveConversationMessage.whatsappGeneralMessageType == 'text') || (currentActiveConversationMessage.whatsappGeneralMessageType == 'image') || (currentActiveConversationMessage.whatsappGeneralMessageType == 'document'))" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
-                                          <div :style="getMessageOwnerColorTransaction(currentActiveConversationMessage.selected)" class="message flex-grow-1">
-                                            <div class="d-flex">
-                                              <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber != null">
-                                                <span style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
-                                                <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>                            
-                                                <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
-                                                  <img style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
-                                                  <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
-                                                </div>                                     
-                                                <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='document'" class="m-0">
-                                                  <a style="color: black;" :href="`data:${currentActiveConversationMessage.whatsappDocumentMessageMimeType};base64,${currentActiveConversationMessage.whatsappDocumentMessageFile}`" :download="currentActiveConversationMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{currentActiveConversationMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                                  <b-modal size="lg" @ok="syncTransactionToMessage()" hide-header centered id="syncTransactionModal">
+                                    <div v-if="currentTransaction != null">
+                                      <h4><strong>Mensaje relacionado:</strong></h4><br>
+                                      <div style="height: 500px; overflow-y: scroll; border: 1px solid gray;">
+                                        <div v-for="currentActiveConversationMessage in currentActiveConversation.whatsappConversationMessages">
+                                          <div @click="selectTransactionMessage(currentActiveConversationMessage.whatsappGeneralMessageID)" style="cursor: pointer;" class="d-flex mb-30" v-if="(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber != null) && ((currentActiveConversationMessage.whatsappGeneralMessageType == 'text') || (currentActiveConversationMessage.whatsappGeneralMessageType == 'image') || (currentActiveConversationMessage.whatsappGeneralMessageType == 'document'))" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
+                                            <div :style="getMessageOwnerColorTransaction(currentActiveConversationMessage.selected)" class="message flex-grow-1">
+                                              <div class="d-flex">
+                                                <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber != null">
+                                                  <span style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
+                                                  <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>                            
+                                                  <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
+                                                    <img style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                                                    <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
+                                                  </div>                                     
+                                                  <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                                                    <a style="color: black;" :href="`data:${currentActiveConversationMessage.whatsappDocumentMessageMimeType};base64,${currentActiveConversationMessage.whatsappDocumentMessageFile}`" :download="currentActiveConversationMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{currentActiveConversationMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                                                  </div>
                                                 </div>
                                               </div>
                                             </div>
                                           </div>
                                         </div>
                                       </div>
+                                      <br><br>
+
+                                      <h4><strong>Sucursal relacionada:</strong></h4>
+                                      <b-form-select v-model="selectedLocality" :options="localityOptions"></b-form-select>
+                                      <br><br>
+                                      
                                     </div>
-                                    <br><br>
+                                  </b-modal>
+                                </div>
+                                
+                                <b-form-select v-model="whatsappInvoicePaymentState" :options="whatsappInvoicePaymentStateOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoicePaymentState', whatsappInvoicePaymentState)" style="margin-bottom: 10px;"></b-form-select>
+                                
+                                <b-form-select v-model="whatsappInvoiceClientLocationName" :options="whatsappInvoiceClientLocationOptions" style="margin-bottom: 10px;" @change="changeLocalStorageWhatsappInvoiceLocationInformation()"></b-form-select>
+                                <b-form-input v-model="latitud" placeholder="Latitud" style="margin-bottom: 10px;"></b-form-input>
+                                <b-form-input v-model="longitud" placeholder="Longitud" style="margin-bottom: 10px;"></b-form-input>
 
-                                    <h4><strong>Sucursal relacionada:</strong></h4>
-                                    <b-form-select v-model="selectedLocality" :options="localityOptions"></b-form-select>
-                                    <br><br>
-                                    
-                                  </div>
-                                </b-modal>
-                              </div>
-                              
-                              <b-form-select v-model="whatsappInvoicePaymentState" :options="whatsappInvoicePaymentStateOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoicePaymentState', whatsappInvoicePaymentState)" style="margin-bottom: 10px;"></b-form-select>
-                              
-                              <b-form-select v-model="whatsappInvoiceClientLocationName" :options="whatsappInvoiceClientLocationOptions" style="margin-bottom: 10px;" @change="changeLocalStorageWhatsappInvoiceLocationInformation()"></b-form-select>
-                              <b-form-input v-model="latitud" placeholder="Latitud" style="margin-bottom: 10px;"></b-form-input>
-                              <b-form-input v-model="longitud" placeholder="Longitud" style="margin-bottom: 10px;"></b-form-input>
+                                <b-form-input v-model="whatsappInvoiceClientLocationURL" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientLocationURL', whatsappInvoiceClientLocationURL)" placeholder="Enlace de ubicación" style="margin-bottom: 10px;"></b-form-input>
 
-                              <b-form-input v-model="whatsappInvoiceClientLocationURL" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientLocationURL', whatsappInvoiceClientLocationURL)" placeholder="Enlace de ubicación" style="margin-bottom: 10px;"></b-form-input>
-
-                        
-                              <b-form-textarea v-model="currentActiveConversation.whatsappConversationRecipientLocationDetails" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceShippingNote', currentActiveConversation.whatsappConversationRecipientLocationDetails)" placeholder="Nota de la dirección" rows="3" style="margin-bottom: 10px;"></b-form-textarea>
-                              <b-form-textarea v-model="currentActiveConversation.whatsappConversationRecipientNote" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceLocationNote', currentActiveConversation.whatsappConversationRecipientNote)" placeholder="Nota del envío" rows="3" style="margin-bottom: 10px;"></b-form-textarea>
-                            </b-form-group>
+                          
+                                <b-form-textarea v-model="currentActiveConversation.whatsappConversationRecipientLocationDetails" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceShippingNote', currentActiveConversation.whatsappConversationRecipientLocationDetails)" placeholder="Nota de la dirección" rows="3" style="margin-bottom: 10px;"></b-form-textarea>
+                                <b-form-textarea v-model="currentActiveConversation.whatsappConversationRecipientNote" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceLocationNote', currentActiveConversation.whatsappConversationRecipientNote)" placeholder="Nota del envío" rows="3" style="margin-bottom: 10px;"></b-form-textarea>
+                              </b-form-group>
+                            </b-card>
 
 
                             <div style="text-align: center;" v-if="loaderOrdenEnviada == false">
                               <br>
-                              <b-button @click="insertWhatsappInvoice()" variant="primary"
-                                >Enviar orden a la central</b-button
-                              >
-                              <br><br>
-                              <b-button @click="sendWhatsappOrderTextMessage()" variant="warning">Compartir orden con el cliente</b-button>
-                              <br><br>
-                              <b-button @click="saveContact()" variant="info">Guardar contacto</b-button>
-                              <br><br>
+                              
+                              <b-card>
+                                <b-button @click="insertWhatsappInvoice()" variant="primary">Finalizar venta</b-button>
+                                <br><br>
+                                <b-button @click="sendWhatsappOrderTextMessage()" variant="warning">Compartir carrito</b-button>
+                                <br><br>
+                                <b-button @click="saveContact()" variant="info">Guardar contacto</b-button>
+                              </b-card>
                             </div>
 
                             <div v-else style="text-align: center;">
