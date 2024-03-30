@@ -108,7 +108,7 @@
                 <b-dropdown-item style="background-color: #26a699" href="#" v-b-modal.cartagoConversationsModal>Cartago ({{cartagoConversations.length}})</b-dropdown-item>
                 <b-dropdown-item style="background-color: #e44f9c" href="#" v-b-modal.escazuConversationsModal>Escazú ({{escazuConversations.length}})</b-dropdown-item>
                 <b-dropdown-item style="background-color: #9f7cd0" href="#" v-b-modal.herediaConversationsModal>Heredia ({{herediaConversations.length}})</b-dropdown-item>
-                <b-dropdown-item style="background-color: #d4d4d4" href="#" v-b-modal.pendingConversationsModal>Pendientes ({{pendingConversations.length}})</b-dropdown-item>
+                <b-dropdown-item style="background-color: #dedede" href="#" v-b-modal.pendingConversationsModal>Pendientes ({{pendingConversations.length}})</b-dropdown-item>
               </b-dropdown>
             </div>
           </div>
@@ -621,7 +621,7 @@
 
             
             
-            <div style="background-image: url('https://res.cloudinary.com/dfionqbqe/image/upload/v1705012178/fondo.jpg');">
+            <div style="background-image: url('https://res.cloudinary.com/dgb3rge3m/image/upload/v1711808378/fondo_jwprd6.jpg');">
               <vue-perfect-scrollbar ref="scrollRef" :settings="{ suppressScrollX: true, wheelPropagation: false }" class="chat-content perfect-scrollbar rtl-ps-none ps scroll" style="padding-bottom: 30px;">
                 <div v-for="currentActiveConversationMessage in currentActiveConversation.whatsappConversationMessages" @contextmenu.prevent="replyMessageRightClick(currentActiveConversationMessage)">
                   <div class="d-flex mb-30 appearMessageAnimation" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
