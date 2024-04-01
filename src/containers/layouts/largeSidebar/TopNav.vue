@@ -77,6 +77,11 @@
           <div class="dropdown-menu-right" aria-labelledby="userDropdown">
             <a class="dropdown-item" href="#" v-if="locality == false && localityAgent == false" v-b-modal.updateProfileModal style="font-size: medium;">Modificar perfil</a>
             <a class="dropdown-item" href="#" @click.prevent="logoutUser" style="font-size: medium;">Cerrar sesión</a>
+            
+            <div style="display: flex; margin-right: 10px; margin-top: 10px;">
+              <div class="flex-grow-1"></div>
+              <h6>v {{ applicationVersion }}</h6>
+            </div>
           </div>
         </b-dropdown>
       </div>
@@ -375,7 +380,9 @@ export default {
       tokenAPI: '',
 
 
-      todayInvoices: 0
+      todayInvoices: 0,
+
+      applicationVersion: 0
 
     };
   },
@@ -387,6 +394,7 @@ export default {
     this.backendURLInput = this.$store.getters.getBackendURL;
     this.websocketURLInput = this.$store.getters.getWebsocketURL;
 
+    this.applicationVersion = this.$store.getters.getApplicationVersion;
 
     this.agentType = localStorage.getItem('agentType');
 
