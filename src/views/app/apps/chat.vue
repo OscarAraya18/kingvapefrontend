@@ -2897,6 +2897,8 @@ export default {
           var amount = subTotal - descuento;
           amount = Math.round(amount / 5) * 5;
 
+          this.saveContact();
+
           axios.post(constants.routes.backendAPI+'/insertWhatsappInvoice',
           {
             whatsappInvoiceWhatsappConversationID: this.currentActiveConversationID,
@@ -2946,25 +2948,7 @@ export default {
                   this.loading = false;
                   this.loaderOrdenEnviada = false;
 
-                  axios.post(constants.routes.backendAPI+'/insertOrUpdateContact',
-                  {
-                    'contactName': this.currentActiveConversation.whatsappConversationRecipientProfileName,
-                    'contactPhoneNumber': this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
-                    'contactID': this.currentActiveConversation.whatsappConversationRecipientID,
-                    'contactEmail': this.currentActiveConversation.whatsappConversationRecipientEmail,
-                    'contactLocations': this.currentActiveConversation.whatsappConversationRecipientLocations,
-                    'contactLocationDetails': this.currentActiveConversation.whatsappConversationRecipientLocationDetails,
-                    'contactNote': this.currentActiveConversation.whatsappConversationRecipientNote
-                  }).then((response) =>{
-                    if (response.data.success){
-                      this.currentActiveConversation = null;
-                    } else {
-                      this.showNotification('danger', 'Error al actualizar el contacto', 'Ha ocurrido un error inesperado al actualizar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-                    }
-                  })
-                  .catch((error) =>{
-                    this.showNotification('danger', 'Error al actualizar el contacto', 'Ha ocurrido un error inesperado al actualizar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-                  })
+                  
                 } else {
                   this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
                 }

@@ -51,6 +51,10 @@
       </div>
     </b-modal>
 
+    <h3><strong>Cantidad de contactos:</strong> {{contactAmount}}</h3>
+    <br><br>
+
+
     <b-form-select v-model="contactLetter" class="mb-3" :options="contactLettersOptions" @change="getContacts">
     </b-form-select>
     <br><br>
@@ -554,6 +558,8 @@ export default {
   },
   data() {
     return {
+      contactAmount: 0,
+
       historyMessageLoader: false,
       historyMessage: null,
 
@@ -643,12 +649,26 @@ export default {
     if (localStorage.getItem('agentID') == null){
       router.push("/app/sessions/signIn");
     }
-
+    this.getContactAmount();
     this.sendingMessage = localStorage.getItem('agentStartMessage');
     this.agentType = localStorage.getItem('agentType');
   },
 
   methods: {
+    getContactAmount(){
+      axios.get(constants.routes.backendAPI+'/selectContactAmount')
+      .then((response) => {
+        if (response.data.success){
+          this.contactAmount = response.data.result[0].contactAmount;
+        } else {
+          this.showNotification('danger', 'Error al consultar la cantidad de contactos', 'Ha ocurrido un error inesperado al consultar la cantidad de contactos. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        this.showNotification('danger', 'Error al consultar la cantidad de contactos', 'Ha ocurrido un error inesperado al consultar la cantidad de contactos. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
     getHistoryMessage(whatsappGeneralMessageID){
       this.historyMessageLoader = true;
       axios.post(constants.routes.backendAPI+'/selectWhatsappGeneralMessage', 
