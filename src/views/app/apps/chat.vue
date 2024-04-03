@@ -2943,12 +2943,12 @@ export default {
               .then((response) =>{ 
                 if (response.data.success){
                   this.showNotification('success', 'Conversación finalizada', 'Ha finalizado la conversación exitosamente.')
+                  
                   delete this.activeConversationsAsJSON[response.data.result];
                   this.sortConversations();
                   this.loading = false;
                   this.loaderOrdenEnviada = false;
-
-                  
+                  this.currentActiveConversation = null;
                 } else {
                   this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
                 }
