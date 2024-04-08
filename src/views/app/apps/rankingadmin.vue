@@ -537,7 +537,7 @@ export default {
     getAgentLabels(agentInformation){
       var agentLabels = [];
       var max = {'amount': 0, 'name': ''};
-      var min = {'amount': 100000000000000000000000, 'name': ''};
+      var min = {'amount': 100000000, 'name': ''};
 
       for (var agentIndex in agentInformation){
         agentLabels.push(agentIndex);

@@ -51,6 +51,8 @@ Vue.use(GullKit);
 
 Vue.config.productionTip = false;
 
+
+
 new Vue({
   store,
   router,

@@ -281,7 +281,6 @@
           <i class="i-Tag-3"></i>
           <div class="content">
             <p class="text-muted mt-2 mb-0">Hoy</p>
-            <p class="text-primary text-24 line-height-1 mb-2">{{activeConversationsRows.length}}</p>
           </div>
         </b-card>
       </b-col>

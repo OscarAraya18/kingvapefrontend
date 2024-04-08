@@ -38,16 +38,9 @@
       </div>
     </b-modal>
 
-    <b-modal id="motosModal" size="m" centered hide-header hide-footer>
-      <div v-for="localityAgentOption in localityAgentOptions" :style="getLocalityAgentReportStyle(localityAgentOption.color)">
-        <div style="display: flex; padding: 15px;">
-          <h4 style="position: relative; top: 5px;"><strong>{{ localityAgentOption.text }}</strong></h4>
-          <div class="flex-grow-1"></div>
-          <div>
-            <b-badge pill style="font-size: large; margin-right: 20px; position: relative; top: -5px;" variant="success">{{localityWhatsappInvoices.filter(invoice => invoice['whatsappInvoiceLocalityAgentID'] == localityAgentOption.value).length}}</b-badge>
-            <i style="font-size: xx-large; margin-right: 10px; cursor: pointer; position: relative; top: 3px;" v-b-modal.updateWhatsappInvoiceInformation @click="openWhatsappInvoiceInformation()" class="i-Information"></i>
-          </div>
-        </div>
+    <b-modal id="motosModal" size="lg" centered hide-header hide-footer>
+      <div style="width: 700px;">
+        <apexchart type="pie" width="600" :options="opcionesGraficoCircular" :series="datosGraficoCircular"></apexchart>
       </div>
     </b-modal>
 
@@ -69,6 +62,8 @@
     </b-modal>
 
     <b-modal id="assignLocalityAgentModal" size="sm" centered hide-header @ok="assignLocalityAgent()">
+
+      <h5><strong>Seleccione un mensajero: </strong></h5>
       <b-form-select v-model="assignedLocalityAgent">
         <b-form-select-option
          v-for="(localityAgentOption, localityAgentOptionIndex) in localityAgentOptions"
@@ -79,6 +74,21 @@
           <p>{{localityAgentOption.text}}</p>
         </b-form-select-option>
       </b-form-select>
+
+      <br><br>
+
+      <h5><strong>Seleccione un facturador: </strong></h5>
+      <b-form-select v-model="assignedLocalityAgentBiller">
+        <b-form-select-option
+         v-for="(localityAgentOption, localityAgentOptionIndex) in localityAgentBillerOptions"
+         :key="localityAgentOptionIndex"
+         :value="localityAgentOption.value"
+         :title="localityAgentOption.title"
+         :style="getLocalityAgentOptionColor(localityAgentOption)"> 
+          <p>{{localityAgentOption.text}}</p>
+        </b-form-select-option>
+      </b-form-select>
+
     </b-modal>
 
     
@@ -951,7 +961,7 @@
             </div>
             <div style="display: flex; margin-left: 30px;">
               <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayDeliveredInvoices()" style="margin-right: 7px; cursor: pointer;">📦</h1>
-              <h1 v-b-modal.motosModal style="margin-right: 7px; cursor: pointer;">🏍️</h1>
+              <h1 v-b-modal.motosModal @click="openMotosModal()" style="margin-right: 7px; cursor: pointer;">🏍️</h1>
               <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayCanceledInvoices()" style="cursor: pointer;">❌</h1>
 
             </div>
@@ -1337,6 +1347,9 @@ export default {
       assignedLocalityAgent: 0,
       assignedWhatsappInvoice: {},
 
+      localityAgentBillerOptions: [],
+      assignedLocalityAgentBiller: 0,
+
       queryInterval: null,
       soundInterval: null,
       locationInterval: null,
@@ -1350,12 +1363,62 @@ export default {
       loaderReturned: false,
 
 
-      backendURL: 'https://payitcr.com'
+      backendURL: 'https://payitcr.com',
+
+      opcionesGraficoCircular: {},
+      datosGraficoCircular: []
 
     };
   },
   
   methods: {
+    getLocalityAgentLabels(names, amounts){
+      var agentLabels = [];
+      var max = {'amount': 0, 'name': ''};
+      var min = {'amount': 100000000, 'name': ''};
+
+      for (var agentIndex in names){
+        agentLabels.push(names[agentIndex].text);
+        if (amounts[agentIndex] >= max['amount']){
+          max = {'amount': amounts[agentIndex], 'name': names[agentIndex].text};
+        }
+        if (amounts[agentIndex] <= min['amount']){
+          min = {'amount': amounts[agentIndex], 'name': names[agentIndex].text};
+        }
+      }
+      for (var agentIndex in agentLabels){
+        if (agentLabels[agentIndex] == max['name']){
+          agentLabels[agentIndex] = agentLabels[agentIndex] + ' 🔥';
+        }
+        if (agentLabels[agentIndex] == min['name']){
+          agentLabels[agentIndex] = agentLabels[agentIndex] + ' ❄️';
+        }
+      }
+      return agentLabels;
+    },
+
+
+
+    openMotosModal(){
+      var aux1 = [];
+      for (var agentIndex in this.localityAgentOptions){
+        var amount = this.localityWhatsappInvoices.filter(invoice => invoice['whatsappInvoiceLocalityAgentID'] == this.localityAgentOptions[agentIndex].value).length;
+        aux1.push(amount);
+      }
+      this.datosGraficoCircular = aux1;
+
+      this.opcionesGraficoCircular = 
+      {
+        chart: {width: 850, type: 'pie', fontSize: 40}, 
+        tooltip: {enabled: true}, 
+        labels: this.getLocalityAgentLabels(this.localityAgentOptions, aux1),
+        legend: {fontSize: '20px'},
+        colors: this.localityAgentOptions.map(obj => obj.color)
+      };
+      
+    },
+
+
     getAlertAnimation(whatsappInvoice){
       if (whatsappInvoice.whatsappInvoiceState == 'C'){
         const elapsedSeconds = Math.floor((new Date() - new Date(whatsappInvoice.whatsappInvoiceCentralDateTime))/1000);
@@ -1390,7 +1453,6 @@ export default {
     },
 
     getLocalityAgentTableStyle(localityAgentID){
-      console.log(localityAgentID);
       for (var localityAgentIndex in this.localityAgentOptions){
         const localityAgent = this.localityAgentOptions[localityAgentIndex];
         if (localityAgent.value == localityAgentID){
@@ -1623,6 +1685,7 @@ export default {
         this.$root.$emit('bv::show::modal', 'assignLocalityAgentModal');
         this.assignedWhatsappInvoice = whatsappInvoice;
         this.assignedLocalityAgent = null;
+        this.assignedLocalityAgentBiller = null;
       }
     },
     
@@ -1649,13 +1712,14 @@ export default {
 
 
     assignLocalityAgent(){
-      if (this.assignedLocalityAgent != null){
+      if ((this.assignedLocalityAgent != null) && (this.assignedLocalityAgentBiller != null)){        
         axios.post(this.backendURL+'/updateWhatsappInvoiceState', 
         {
           whatsappInvoiceID: this.assignedWhatsappInvoice.whatsappInvoiceID,
           whatsappInvoiceState: 'R',
           whatsappInvoiceLocalityID: this.assignedWhatsappInvoice.whatsappInvoiceLocalityID,
-          whatsappInvoiceLocalityAgentID: this.assignedLocalityAgent
+          whatsappInvoiceLocalityAgentID: this.assignedLocalityAgent,
+          whatsappInvoiceLocalityAgentBillerID: this.assignedLocalityAgentBiller
         })
         .then((response) =>{
           if (response.data.success){
@@ -1667,6 +1731,8 @@ export default {
         .catch(() => {
           this.showNotification('danger', 'Error al asignar la comanda', 'Ha ocurrido un error inesperado al asignar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         })
+      } else {
+        this.showNotification('danger', 'Error al asignar la comanda', 'Complete el mensajero asignado y el facturador e intente nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       }
     },
 
@@ -2269,9 +2335,14 @@ export default {
       }).then((response) =>{
         if (response.data.success){
           this.localityAgentOptions = [];
+          this.localityAgentBillerOptions = [];
           const localityAgents = response.data.result;
-          for (var localityAgentIndex in response.data.result){
-            this.localityAgentOptions.push({value: localityAgents[localityAgentIndex].localityAgentID, text: localityAgents[localityAgentIndex].localityAgentName, color: localityAgents[localityAgentIndex].localityAgentColor});
+          for (var localityAgentIndex in localityAgents){
+            if (localityAgents[localityAgentIndex].localityAgentType == 'Mensajero'){
+              this.localityAgentOptions.push({value: localityAgents[localityAgentIndex].localityAgentID, text: localityAgents[localityAgentIndex].localityAgentName, color: localityAgents[localityAgentIndex].localityAgentColor});
+            } else {
+              this.localityAgentBillerOptions.push({value: localityAgents[localityAgentIndex].localityAgentID, text: localityAgents[localityAgentIndex].localityAgentName, color: localityAgents[localityAgentIndex].localityAgentColor});
+            }
           }
         } else {
           this.showNotification('danger', 'Error al solicitar la lista de agentes', 'Ha ocurrido un error inesperado al solicitar la lista de agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
