@@ -2535,18 +2535,22 @@ export default {
               'localityAgentLocationLongitude': localityAgentLocationLongitude
             })
             .then((response) =>{
-              alert('error 4')
+              if (response.data.success){
+                console.log(response.data);
+              } else {
+                console.log('error 4')
+              }
             })
             .catch(() => {
-              alert('error 3')
+              console.log('error 3')
             })
           },
           error => {
-            alert('error 2');
+            console.log('error 2');
           }
         );
       } else {
-        alert('error');
+        console.log('error');
       }
     }
   },
@@ -2600,6 +2604,7 @@ export default {
         this.selectAllActiveWhatsappInvoiceFromLocality(false);
       } else if (this.agentType == 'localityAgent'){
         this.selectAllActiveWhatsappInvoiceFromLocalityAgent(false);
+        this.insertLocalityAgentLocation();
       }
     }, 6000);
 
