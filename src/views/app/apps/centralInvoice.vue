@@ -1400,21 +1400,42 @@ export default {
 
 
     openMotosModal(){
-      var aux1 = [];
-      for (var agentIndex in this.localityAgentOptions){
-        var amount = this.localityWhatsappInvoices.filter(invoice => invoice['whatsappInvoiceLocalityAgentID'] == this.localityAgentOptions[agentIndex].value).length;
-        aux1.push(amount);
-      }
-      this.datosGraficoCircular = aux1;
-
-      this.opcionesGraficoCircular = 
+      axios.post(this.backendURL+'/selectTodayDeliveredInvoicesByLocality', 
       {
-        chart: {width: 850, type: 'pie', fontSize: 40}, 
-        tooltip: {enabled: true}, 
-        labels: this.getLocalityAgentLabels(this.localityAgentOptions, aux1),
-        legend: {fontSize: '20px'},
-        colors: this.localityAgentOptions.map(obj => obj.color)
-      };
+        whatsappInvoiceLocalityID: localStorage.getItem('localityID')
+      })
+      .then((response) =>{
+        if (response.data.success){
+          
+          this.deliveredInvoices = response.data.result;
+
+          var aux1 = [];
+          for (var agentIndex in this.localityAgentOptions){
+            
+            var amount = this.deliveredInvoices.filter(invoice => invoice['whatsappInvoiceLocalityAgentID'] == this.localityAgentOptions[agentIndex].value).length;
+            aux1.push(amount);
+          }
+          this.datosGraficoCircular = aux1;
+
+          
+          this.opcionesGraficoCircular = 
+          {
+            chart: {width: 750, type: 'pie', fontSize: 40}, 
+            tooltip: {enabled: true}, 
+            labels: this.getLocalityAgentLabels(this.localityAgentOptions, aux1),
+            legend: {fontSize: '20px'},
+            colors: this.localityAgentOptions.map(obj => obj.color)
+          };
+
+        } else {
+          this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.loaderDelivered = false;
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.loaderDelivered = false;
+      })
       
     },
 
