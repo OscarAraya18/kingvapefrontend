@@ -2556,6 +2556,7 @@ export default {
   },
 
   mounted(){
+
     if (localStorage.getItem('agentType') == 'agent' || localStorage.getItem('agentType') == 'admin' || localStorage.getItem('agentType') == 'central'){
       this.agentType = 'central';
       this.isAdmin = (localStorage.getItem('agentType') == 'admin');
@@ -2604,7 +2605,7 @@ export default {
         this.selectAllActiveWhatsappInvoiceFromLocality(false);
       } else if (this.agentType == 'localityAgent'){
         this.selectAllActiveWhatsappInvoiceFromLocalityAgent(false);
-        this.insertLocalityAgentLocation();
+        //this.insertLocalityAgentLocation();
       }
     }, 6000);
 
