@@ -2841,7 +2841,10 @@ export default {
     validateInvoiceInformation(){
       const regularExpressionChecker = /\S/;
 
-      if (regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientProfileName) == false){
+      if (this.currentActiveConversation.whatsappConversationProducts == 0){
+        this.showNotification('danger', 'Carrito vacío', 'Por favor, agregue al menos un producto al carrito para generar la orden, e intentelo nuevamente');
+        return false;
+      } else if (regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientProfileName) == false){
         this.showNotification('danger', 'Nombre incompleto', 'Por favor, agregue el nombre del cliente para generar la orden, e intentelo nuevamente');
         return false;
       } else if (regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientPhoneNumber) == false){
