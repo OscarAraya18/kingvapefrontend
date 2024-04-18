@@ -65,6 +65,7 @@
       </div>
 
       <div v-else>
+
         <h3><strong>TOTAL: </strong> {{conversationsByLocalityNameAndType.length}}</h3>
         <br><br>
         <div style="max-height: 600px; overflow-y: auto;">
@@ -400,6 +401,27 @@
       <div v-if="view == 'activeConversations'">
         <br>
         
+        <b-card style="background-color: rgb(214, 214, 214);">
+          <div style="display: flex">
+            <div style="width: 40%">
+              <h4><strong>Filtro por fecha inicial:</strong></h4>
+              <b-form-datepicker v-model="todayInitialDate"></b-form-datepicker>
+            </div>
+            <div style="width: 40%; margin-left: 100px;">
+              <h4><strong>Filtro por fecha final:</strong></h4>
+              <b-form-datepicker v-model="todayEndDate"></b-form-datepicker>
+            </div>
+            <div style="width: 20%;"> 
+              <div v-if="todayLoader" style="text-align: center;">
+                <br><span style="top: 10px; position: relative;" class="spinner-glow spinner-glow-primary"></span>
+              </div>
+              <button v-else class="btn btn-icon" style="top: 20px; position: relative; width: 75%; margin-left: 50px; background-color: rgb(255, 184, 32);" @click="returnForToday()"><i class="i-Calendar"></i>Mostrar hoy</button>
+            </div>
+          </div>
+        </b-card>
+
+        <br><br>
+
         <div style="display: flex;">
           <b-card style="width: 65%; margin-right: 1.5%; background-color: rgb(214, 214, 214);">
             <br>
@@ -436,22 +458,22 @@
                 <div style="display: flex;">
                   <p style="font-size: 22px; margin-top: 5px;"><strong>ZAPOTE:</strong></p>
                     <div class="flex-grow-1"></div>
-                    <img v-if="(zapoteSelled) >= 60" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
+                    <img v-if="(zapoteSelled) >= 60 && todayInitialDate == null && todayEndDate == null && todayLoader == false" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
                 </div>
-                <p @click="selectTodayConversationsByLocalityNameAndType('1', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{zapoteSelled + zapoteNotSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('1', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{zapoteSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('1', 2)"v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{zapoteNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('1', 3)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{zapoteSelled + zapoteNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('1', 1)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{zapoteSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('1', 2)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{zapoteNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{zapoteSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
               <b-card style="width: 50%; margin-left: 1.5%; background-color: #e44f9c;">
                 <div style="display: flex;">
                   <p style="font-size: 22px; margin-top: 5px;"><strong>ESCAZÚ:</strong></p>
                     <div class="flex-grow-1"></div>
-                    <img v-if="(escazuSelled) >= 60" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
+                    <img v-if="(escazuSelled) >= 60 && todayInitialDate == null && todayEndDate == null && todayLoader == false" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
                 </div>
-                <p @click="selectTodayConversationsByLocalityNameAndType('4', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{escazuSelled + escazuNotSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('4', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{escazuSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('4', 2)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{escazuNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('4', 3)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{escazuSelled + escazuNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('4', 1)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{escazuSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('4', 2)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{escazuNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{escazuSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
             </div>
@@ -461,22 +483,22 @@
                 <div style="display: flex;">
                   <p style="font-size: 22px; margin-top: 5px;"><strong>CARTAGO:</strong></p>
                     <div class="flex-grow-1"></div>
-                    <img v-if="(cartagoSelled) >= 60" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
+                    <img v-if="(cartagoSelled) >= 60 && todayInitialDate == null && todayEndDate == null && todayLoader == false" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
                 </div>
-                <p @click="selectTodayConversationsByLocalityNameAndType('3', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{cartagoNotSelled + cartagoSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('3', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{cartagoSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('3', 2)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{cartagoNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('3', 3)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{cartagoNotSelled + cartagoSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('3', 1)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{cartagoSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('3', 2)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{cartagoNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
               <b-card style="width: 50%; margin-left: 1.5%; background-color: #9f7cd0;">
                 <div style="display: flex;">
                   <p style="font-size: 22px; margin-top: 5px;"><strong>HEREDIA:</strong></p>
                     <div class="flex-grow-1"></div>
-                    <img v-if="(herediaSelled) >= 60" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
+                    <img v-if="(herediaSelled) >= 60 && todayInitialDate == null && todayEndDate == null && todayLoader == false" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
                 </div>
-                <p @click="selectTodayConversationsByLocalityNameAndType('5', 3)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{herediaSelled + herediaNotSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('5', 1)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{herediaSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('5', 2)" v-b-modal.conversationListModal style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{herediaNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('5', 3)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{herediaSelled + herediaNotSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('5', 1)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{herediaSelled}}</p>
+                <p @click="selectTodayConversationsByLocalityNameAndType('5', 2)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{herediaNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{herediaSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
             </div>
@@ -1439,8 +1461,21 @@ export default {
       hierbaLogoSRC: '',
       stockLoader: false,
       stockContent: '',
-
+      
+      todayInitialDate: null,
+      todayEndDate: null,
+      todayLoader: false
     };
+  },
+
+  watch: {
+    todayInitialDate(){
+      this.getInformation();
+    },
+
+    todayEndDate(){
+      this.getInformation();
+    }
   },
 
   mounted(){
@@ -1469,7 +1504,9 @@ export default {
     this.getInformation();
 
     this.queryInterval = setInterval(() => {
-      this.getInformation();
+      if (this.todayInitialDate == null && this.todayEndDate == null){
+        this.getInformation();
+      }
     }, 30000);
     
     try {
@@ -1538,6 +1575,11 @@ export default {
         return 'Comentarios (' + whatsappConversationCommentsLocalStorage[whatsappConversationID] + ')';
       }
       return 'Comentarios';
+    },
+
+    returnForToday(){
+      this.todayInitialDate = null;
+      this.todayEndDate = null;
     },
 
     insertWhatsappConversationTextComment(){
@@ -1806,23 +1848,29 @@ export default {
 
     selectTodayConversationsByLocalityNameAndType(whatsappConversationLocalityName, whatsappConversationType){
       this.localityLoader = true;
-      axios.post(constants.routes.backendAPI+'/selectTodayConversationsByLocalityNameAndType', 
-      {
-        'whatsappConversationLocalityName': whatsappConversationLocalityName,
-        'whatsappConversationType': whatsappConversationType
-      }).then((response) =>{
-        this.localityLoader = false; 
-        if (response.data.success){
-          this.conversationsByLocalityNameAndType = response.data.result;
-        } else {
+      if (this.todayInitialDate == null && this.todayEndDate == null){
+        this.$root.$emit('bv::show::modal', 'conversationListModal');
+        axios.post(constants.routes.backendAPI+'/selectTodayConversationsByLocalityNameAndType', 
+        {
+          'whatsappConversationLocalityName': whatsappConversationLocalityName,
+          'whatsappConversationType': whatsappConversationType
+        }).then((response) =>{
+          this.localityLoader = false; 
+          if (response.data.success){
+            this.conversationsByLocalityNameAndType = response.data.result;
+          } else {
+            this.showNotification('danger', 'Error al consultar las conversaciones', 'Ha ocurrido un error inesperado al consultar las conversaciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }
+        })
+        .catch((error) =>{
+          this.localityLoader = false;
+          this.whatsappFeedbackLoading = false;
           this.showNotification('danger', 'Error al consultar las conversaciones', 'Ha ocurrido un error inesperado al consultar las conversaciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-        }
-      })
-      .catch((error) =>{
-        this.localityLoader = false;
-        this.whatsappFeedbackLoading = false;
-        this.showNotification('danger', 'Error al consultar las conversaciones', 'Ha ocurrido un error inesperado al consultar las conversaciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-      })
+        })
+      } else {
+        this.showNotification('info', 'Error al consultar las conversaciones', 'Para consultar conversaciones de días anteriores, dirigase al apartado de "Reportes".');
+
+      }
     },
 
     cleanAgentFilter(){
@@ -2029,10 +2077,20 @@ export default {
     },
 
     getInformation(){
-      axios.get(constants.routes.backendAPI+'/selectTodayInformation').then((response) =>{
-        this.conversacionesTotales = response.data.result.total.whatsappTotalConversations;
-        this.conversacionesVendidas = response.data.result.total.whatsappSelledConversations;
-        this.conversacionesNoVendidas = response.data.result.total.whatsappNotSelledConversations;
+      this.todayLoader = true;
+      axios.post(constants.routes.backendAPI+'/selectTodayInformation',
+      {
+        initialDate: this.todayInitialDate,
+        endDate: this.todayEndDate
+      }).then((response) =>{
+        this.todayLoader = false;
+
+        if (this.todayInitialDate != null || this.todayEndDate != null){
+          this.whatsappTotalConversations = response.data.result.total.whatsappTotalConversations;
+          this.whatsappSelledConversations = response.data.result.total.whatsappSelledConversations;
+          this.whatsappNotSelledConversations = response.data.result.total.whatsappNotSelledConversations;
+          this.whatsappTotalSells = response.data.result.total.whatsappTotalSells.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
+        }
 
         if (response.data.result.localities['1']){
           this.zapoteSelled = response.data.result.localities['1'].whatsappSelledConversations;

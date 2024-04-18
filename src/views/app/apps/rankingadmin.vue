@@ -498,11 +498,11 @@ export default {
   },
 
   watch: {
-    rankingInitialDate(rankingInitialDate){
+    rankingInitialDate(){
       this.getInformationByDate();
     },
 
-    rankingEndDate(rankingEndDate){
+    rankingEndDate(){
       this.getInformationByDate();
     }
   },
