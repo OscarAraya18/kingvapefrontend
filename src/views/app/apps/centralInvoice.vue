@@ -1,6 +1,42 @@
 <template>
   <div>
 
+    <!--
+    <b-modal id="mapModal" size="lg" centered hide-header hide-footer>
+      <GmapMap :center="mapCenter" :zoom="12" style="width: 100%; height: 600px">
+        <GmapMarker :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
+        <GmapMarker :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
+        <GmapMarker :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
+        <GmapMarker :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
+        <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
+        <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
+        <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
+        <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
+        <GmapMarker :icon="getMapIcon(location)" v-for="location in locations" :position="{lat: location.whatsappInvoiceClientLocation.latitude, lng: location.whatsappInvoiceClientLocation.longitude}" :draggable="false" :clickable="true" @click="openMarker(location)">
+          <gmap-info-window
+            :opened="location.opened"
+            :closeclick="true"
+            @closeclick="openMarker(location)"
+            :options="{maxWidth: 300}">
+            <div class="location-details">
+              <p><strong>Nombre :</strong> {{location.whatsappInvoiceClientName}}</p>
+              <p><strong>Teléfono: </strong> {{parsePhoneNumber(location.whatsappInvoiceClientPhoneNumber)}}</p>
+              <p><strong>Monto: </strong> ₡{{parseInt(location.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
+              <p><strong>Método de pago: </strong> {{location.whatsappInvoicePaymentMethod}}</p>
+              <p><strong>Estado de pago: </strong> {{location.whatsappInvoicePaymentState}}</p>
+              <p><strong>Nota de la dirección: </strong> {{location.whatsappInvoiceLocationNote}}</p>
+              <p><strong>Nota del envío: </strong> {{location.whatsappInvoiceShippingNote}}</p>
+              <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(location)" class="i-Shopping-Cart" style="font-size: xx-large; cursor: pointer;"></i>
+               
+              <b-badge v-if="location.whatsappInvoiceState == 'S'" @click="clickOnLocalityInvoice(location)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="warning">S</b-badge>
+
+            </div>
+          </gmap-info-window>
+        </GmapMarker>
+      </GmapMap>
+    </b-modal>
+    -->
+
     <b-modal id="deliveredInvoicesModal" size="lg" centered hide-header hide-footer>
       <div v-if="loaderDelivered" style="text-align: center;">
         <br><span class="spinner-glow spinner-glow-primary"></span>
@@ -962,7 +998,9 @@
             <div style="display: flex; margin-left: 30px;">
               <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayDeliveredInvoices()" style="margin-right: 7px; cursor: pointer;">📦</h1>
               <h1 v-b-modal.motosModal @click="openMotosModal()" style="margin-right: 7px; cursor: pointer;">🏍️</h1>
-              <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayCanceledInvoices()" style="cursor: pointer;">❌</h1>
+              <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayCanceledInvoices()" style="margin-right: 7px; cursor: pointer;">❌</h1>
+              <h1 v-b-modal.mapModal style="cursor: pointer;">🌎</h1>
+
 
             </div>
           </div>
@@ -1366,12 +1404,61 @@ export default {
       backendURL: 'https://payitcr.com',
 
       opcionesGraficoCircular: {},
-      datosGraficoCircular: []
-
+      datosGraficoCircular: [],
+      
+      mapCenter: null,
+      locations: [],
+      locationIDS: []
     };
+  },
+
+  watch: {
+
   },
   
   methods: {
+    openMarker(location){
+      location.opened = !location.opened;
+    },
+
+    getMapIcon(location){
+      if (location.whatsappInvoiceState == 'S'){
+        return {url: require('../../../assets/pageAssets/smarker.png')};
+      }
+    },
+    
+    appendLocation(whatsappInvoice){
+      if (whatsappInvoice.whatsappInvoiceClientLocation){
+        const whatsappInvoiceClientLocation = JSON.parse(whatsappInvoice.whatsappInvoiceClientLocation)  
+        if (whatsappInvoiceClientLocation.latitude != 0 && whatsappInvoiceClientLocation.latitude != 0){
+          if (whatsappInvoiceClientLocation.latitude != '' && whatsappInvoiceClientLocation.latitude != ''){
+            if (!(whatsappInvoiceClientLocation.whatsappInvoiceID in this.locations.map(obj => obj.whatsappInvoiceID))){
+              this.locations.push
+              ({
+                'whatsappInvoiceClientLocation': whatsappInvoiceClientLocation,
+                'whatsappInvoiceID': whatsappInvoice.whatsappInvoiceID,
+                'whatsappInvoiceClientName': whatsappInvoice.whatsappInvoiceClientName,
+                'whatsappInvoiceClientPhoneNumber': whatsappInvoice.whatsappInvoiceClientPhoneNumber,
+                'whatsappInvoiceAmount': whatsappInvoice.whatsappInvoiceAmount,
+                'whatsappInvoicePaymentMethod': whatsappInvoice.whatsappInvoicePaymentMethod,
+                'whatsappInvoicePaymentState': whatsappInvoice.whatsappInvoicePaymentState,
+                'whatsappInvoiceLocationNote': whatsappInvoice.whatsappInvoiceLocationNote,
+                'whatsappInvoiceShippingNote': whatsappInvoice.whatsappInvoiceShippingNote,
+                'whatsappInvoiceProducts': whatsappInvoice.whatsappInvoiceProducts,
+                'whatsappInvoiceState': whatsappInvoice.whatsappInvoiceState,
+                'localityAgentColor': whatsappInvoice.localityAgentColor,
+                'opened': false
+              });
+            }
+          }
+        }
+      }
+    },
+
+    deleteLocations(){
+      this.locations = this.locations.filter(obj => this.localityWhatsappInvoices.map(obj1 => obj1.whatsappInvoiceID).includes(obj.whatsappInvoiceID));
+    },
+
     getLocalityAgentLabels(names, amounts){
       var agentLabels = [];
       var max = {'amount': 0, 'name': ''};
@@ -2064,8 +2151,14 @@ export default {
     },
 
     openWhatsappInvoiceProducts(whatsappInvoice){
-      this.whatsappInvoiceProducts = JSON.parse(whatsappInvoice.whatsappInvoiceProducts);
-      this.updatedWhatsappInvoice = whatsappInvoice;
+      try {
+        this.updatedWhatsappInvoice = whatsappInvoice;
+        this.whatsappInvoiceProducts = JSON.parse(whatsappInvoice.whatsappInvoiceProducts)
+      } catch {
+        this.whatsappInvoiceProducts = [];
+        this.updatedWhatsappInvoice = null;
+      }
+      
     },
 
     openWhatsappInvoiceInformation(whatsappInvoice){
@@ -2244,8 +2337,10 @@ export default {
             } else if (whatsappInvoice.whatsappInvoiceState == 'R'){
               this.shippingWhatsappInvoiceAmount = this.shippingWhatsappInvoiceAmount + 1;
             }
+            
+            this.appendLocation(whatsappInvoice);
           }
-
+          this.deleteLocations();
           const newInvoicesAmount = this.localityWhatsappInvoices.length;
           const newUpdatedInvoicesAmount = this.localityWhatsappInvoices.filter(invoice => invoice.whatsappInvoiceHasBeenUpdated == true).length;
 
@@ -2513,8 +2608,13 @@ export default {
     },
 
     getWhatsappInvoiceClientLocation(){
-      const whatsappInvoiceClientLocation = JSON.parse(this.updatedWhatsappInvoice.whatsappInvoiceClientLocation);
-      return {lat: whatsappInvoiceClientLocation.latitude, lng: whatsappInvoiceClientLocation.longitude};
+      try {
+        const whatsappInvoiceClientLocation = JSON.parse(this.updatedWhatsappInvoice.whatsappInvoiceClientLocation);
+        return {lat: whatsappInvoiceClientLocation.latitude, lng: whatsappInvoiceClientLocation.longitude};
+      } catch {
+
+      }
+      
     },
 
     changeWhatsappInvoiceLocation(){
@@ -2570,14 +2670,18 @@ export default {
       if (localStorage.getItem('localityID') == '1'){
         this.localityName = 'ZAPOTE';
         this.localityColor = 'height: 85vh; background-color: #fed330;';
+        this.mapCenter = {lat: 9.920173, lng: -84.051987};
       } else if (localStorage.getItem('localityID') == '3'){
         this.localityName = 'CARTAGO';
+        this.mapCenter = {lat: 9.864751, lng: -83.925354};
         this.localityColor = 'height: 85vh; background-color: #26a699;';
       } else if (localStorage.getItem('localityID') == '4'){
         this.localityName = 'ESCAZÚ';
+        this.mapCenter = {lat: 9.949093, lng: -84.163117};
         this.localityColor = 'height: 85vh; background-color: #e44f9c;';
       } else {
         this.localityName = 'HEREDIA';
+        this.mapCenter = {lat: 9.99168, lng: -84.135};
         this.localityColor = 'height: 85vh; background-color: #e44f9c;';
       }   
 

@@ -221,7 +221,11 @@ export default {
         ];
       });
 
-      axios.get(constants.routes.backendAPI+'/selectTodayInformation').then((response) =>{
+      axios.post(constants.routes.backendAPI+'/selectTodayInformation', 
+      {
+        todayInitialDate: null,
+        todayEndDate: null
+      }).then((response) =>{
         this.conversacionesTotales = response.data.result.total.whatsappTotalConversations;
         this.conversacionesVendidas = response.data.result.total.whatsappSelledConversations;
         this.conversacionesNoVendidas = response.data.result.total.whatsappNotSelledConversations;

@@ -1,5 +1,6 @@
 <template>
   <div class="main-content">
+    
     <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
       <img style="width: 1000px;" :src="bigImageSource">
     </b-modal>
@@ -821,7 +822,11 @@ export default {
         console.log(response.data.result.map(agent => agent.agentName));
       });
 
-      axios.get(constants.routes.backendAPI+'/selectTodayInformation').then((response) =>{
+      axios.post(constants.routes.backendAPI+'/selectTodayInformation', 
+      {
+        initialDate: null,
+        endDate: null
+      }).then((response) =>{
         this.conversacionesTotales = response.data.result.total.whatsappTotalConversations;
         this.conversacionesVendidas = response.data.result.total.whatsappSelledConversations;
         this.conversacionesNoVendidas = response.data.result.total.whatsappNotSelledConversations;

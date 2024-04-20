@@ -1,5 +1,31 @@
 <template>
   <div class="main-content">
+    <b-modal id="mapModal" size="lg" centered hide-header hide-footer>
+      <GmapMap :center="{lat: 9.9242503, lng: -84.0585289}" :zoom="10" style="width: 100%; height: 600px">
+        <GmapMarker :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
+        <GmapMarker :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
+        <GmapMarker :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
+        <GmapMarker :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
+        <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
+        <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
+        <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
+        <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
+        <GmapMarker :label='location.char' v-for="location in locations" :position="{lat: location.latitude, lng: location.longitude}" :draggable="false" :clickable="true" @click="openMarker(location)">
+          <gmap-info-window
+            :opened="location.opened"
+            :closeclick="true"
+            @closeclick="openMarker(location)"
+            :options="{maxWidth: 300}">
+            <div class="location-details">
+              <p><strong>Nombre:</strong> {{location.whatsappConversationRecipientProfileName}}</p>
+              <p><strong>Teléfono:</strong> {{location.whatsappConversationRecipientPhoneNumber}}</p>
+              <p><strong>Monto:</strong>₡ {{location.amount}}</p>
+              <button v-b-modal.conversationModal class="btn btn-outline-primary text-black btn-rounded" @click="whatsappConversationOpenAction(location)">Abrir</button>
+            </div>
+          </gmap-info-window>
+        </GmapMarker>
+      </GmapMap>
+    </b-modal>
 
     <b-modal scrollable size="m" centered hide-footer id="historyMessageModal" hide-header>
       <div v-if="historyMessageLoader == false && historyMessage != null">
@@ -317,7 +343,7 @@
     
     <div v-if="view == 'closedConversations'">
       <br>
-      <b-card>
+      <b-card style="background-color: rgb(214, 214, 214);">
         <h4><strong>Filtro por fecha inicial:</strong></h4>
         <b-form-datepicker v-model="initialDateFiltered"></b-form-datepicker>
         <br>
@@ -335,8 +361,15 @@
         <h4><strong>Filtro por conversión:</strong></h4>
         <b-form-select v-model="conversionFiltered" class="mb-3" :options="conversionOptions"></b-form-select>
         <br><br>
-        <button class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="filter()"><i class="i-Search-People"></i>Aplicar filtro</button>
-        <button class="btn btn-icon" style="background-color: rgb(255, 184, 32); font-size: 15px; margin-left: 30px;" @click="cleanFilter()"><i class="i-Folder-Trash"></i>Limpiar filtros</button>
+        <button v-if="loaderFilter == false" class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="filter()"><i class="i-Search-People"></i>Aplicar filtro</button>
+        <div v-else style="text-align: center;">
+          <span class="spinner-glow spinner-glow-primary"></span>
+        </div>
+        
+        <button v-if="loaderFilter == false" class="btn btn-icon" style="background-color: rgb(255, 184, 32); font-size: 15px; margin-left: 30px;" @click="cleanFilter()"><i class="i-Folder-Trash"></i>Limpiar filtros</button>
+        
+        <button v-b-modal.mapModal v-if="loaderFilter == false && closedConversationsRows.length != 0" class="btn btn-icon btn-success" style="font-size: 15px; margin-left: 30px;"><i class="i-Map"></i>Mapa de entregas</button>
+
       </b-card>
       <br><br><br><br>
     </div>
@@ -381,6 +414,9 @@
           </div>
 
           <button class="btn btn-icon" style="background-color: rgb(255, 184, 32); font-size: 15px; margin-left: 30px;" @click="cleanPlotFilter()"><i class="i-Folder-Trash"></i>Limpiar filtros</button>
+
+          
+
         </div>
       </b-card>
       
@@ -651,7 +687,6 @@
               <div v-else-if="props.column.field == 'agentName'" :style="getAgentColor(props.row)">
                 {{props.row.agentName}}
               </div>
-
             </template>
           </vue-good-table>
 
@@ -663,7 +698,27 @@
             v-if="view == 'closedConversations'"
           >
             <template slot="table-row" slot-scope="props">
-              <button v-b-modal.conversationModal  v-if="props.column.field == 'whatsappConversationOpenAction'" class="btn btn-outline-primary text-black btn-rounded" @click="whatsappConversationOpenAction(props.row)">Abrir</button>
+              <button v-b-modal.conversationModal v-if="props.column.field == 'whatsappConversationOpenAction'" class="btn btn-outline-primary text-black btn-rounded" @click="whatsappConversationOpenAction(props.row)">Abrir</button>
+              
+              <div v-else-if="props.column.field == 'localityName'" :style="getLocalityColor(props.row)">
+                <p v-if="props.row.localityName">{{props.row.localityName}}</p>
+                <p v-else>King Vape Center</p>
+              </div>
+
+              <button v-else-if="props.column.field == 'location'" class="btn btn-outline-success text-black btn-rounded">Ubicación</button>
+
+              <div v-else-if="props.column.field == 'agentName'" :style="getAgentColor(props.row)">
+                {{props.row.agentName}}
+              </div>
+
+              <div v-else-if="props.column.field == 'agentName'" :style="getAgentColor(props.row)">
+                {{props.row.agentName}}
+              </div>
+
+              <div v-else-if="props.column.field == 'whatsappConversationCloseComment'" :style="getResultColor(props.row)">
+                {{props.row.whatsappConversationCloseComment}}
+              </div>
+
             </template>
           </vue-good-table>
 
@@ -1041,7 +1096,7 @@ export default {
       datosGraficoDinero: [],
 
       selectedCloseLocality: null,
-      closeLocalityOptions: ["King Vape Escazu", "King Vape Zapote","King Vape Cartago", "King Vape Heredia", "King Vape Center"],
+      closeLocalityOptions: [{value:'1', text:'King Vape Zapote'}, {value:'4', text:'King Vape Escazú'}, {value:'5', text:'King Vape Heredia'}, {value:'3', text:'King Vape Cartago'}, {value:'King Vape Center', text:'King Vape Center'}],
 
       zapoteSelled: 0,
       zapoteNotSelled: 0,
@@ -1083,7 +1138,7 @@ export default {
       agentArrayOption: [],
       transferAgentOptions: [],
 
-      storeOptionsMultiple: [{value:'Escazu', text:'Escazú', selected: false}, {value:'Zapote', text:'Zapote', selected: false}, {value:'Cartago', text:'Cartago', selected: false}, {value:'Heredia', text:'Heredia', selected: false}],
+      storeOptionsMultiple: [{value:'1', text:'King Vape Zapote', selected: false}, {value:'4', text:'King Vape Escazú', selected: false}, {value:'5', text:'King Vape Heredia', selected: false}, {value:'3', text:'King Vape Cartago', selected: false}],
       storeArrayOption: [],
 
       conversacionesTotales: 0,
@@ -1128,7 +1183,7 @@ export default {
 
       agentToTransfer: null,
 
-      storeOptions: [{value:null, text:''}, {value:'Escazú', text:'Escazú'}, {value:'Zapote', text:'Zapote'}, {value:'Cartago', text:'Cartago'}, {value:'Heredia', text:'Heredia'}],
+      storeOptions: [{value:null, text:''}, {value:'1', text:'King Vape Zapote'}, {value:'4', text:'King Vape Escazú'}, {value:'5', text:'King Vape Heredia'}, {value:'3', text:'King Vape Cartago'}, {value:'King Vape Center', text:'King Vape Center'}],
       storeFiltered: '',
 
       conversionOptions: [{value:null, text:''}, {value:'Vendido', text:'Vendido'}, {value:'No vendido', text:'No vendido'}],
@@ -1366,44 +1421,45 @@ export default {
 
       closedConversationsColumns: [
         {
-          label: "Estado",
-          field: "whatsappConversationIsActive",
-          thClass: "text-left pl-3",
-          tdClass: "text-left pl-3",
-        },
-        {
           label: "ID",
           field: "whatsappConversationID",
           thClass: "text-left pl-3",
           tdClass: "text-left pl-3",
         },
         {
-          label: "Número del cliente",
+          label: "Localidad",
+          field: "localityName",
+          thClass: "text-left",
+          tdClass: "text-left",
+          width: '180px'
+        },
+        {
+          label: "Número",
           field: "whatsappConversationRecipientPhoneNumber",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
-          label: "Nombre del cliente",
+          label: "Nombre",
           field: "whatsappConversationRecipientProfileName",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
-          label: "Nombre del agente",
+          label: "Agente",
           field: "agentName",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
-          label: "Cantidad",
+          label: "Monto",
           field: "whatsappConversationAmount",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
-          label: "Fecha de inicio",
-          field: "whatsappConversationStartDateTime",
+          label: "Fecha de finalización",
+          field: "whatsappConversationEndDateTime",
           thClass: "text-left",
           tdClass: "text-left",
         },
@@ -1417,6 +1473,12 @@ export default {
           label: "Conversación",
           field: "whatsappConversationOpenAction",
           html: true,
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Ubicación",
+          field: "location",
           thClass: "text-left",
           tdClass: "text-left",
         }
@@ -1464,7 +1526,11 @@ export default {
       
       todayInitialDate: null,
       todayEndDate: null,
-      todayLoader: false
+      todayLoader: false,
+
+      loaderFilter: false,
+
+      locations: []
     };
   },
 
@@ -1538,6 +1604,10 @@ export default {
   },
 
   methods: {
+    openMarker(location){
+      location.opened = !location.opened;
+    },
+
     scrollToBottom(){
       let scrollInterval = setInterval(() => {
         this.$nextTick(() => {
@@ -1550,11 +1620,27 @@ export default {
       }, 1);
     },
 
+    getLocalityColor(locality){
+      if (locality.localityColor){
+        return 'background-color: ' + locality.localityColor + '; border-radius: 10px; text-align: center;';
+      } else {
+        return 'background-color: black; color: white; border-radius: 10px; text-align: center;';
+      }
+    },
+
     getAgentColor(agent){
       if (agent.agentColor){
         return 'background-color: ' + agent.agentColor + '; color: ' + agent.agentFontColor + '; border-radius: 10px; text-align: center;';
       } else {
         return 'background-color: black; color: white; border-radius: 10px; text-align: center;';
+      }
+    },
+
+    getResultColor(conversation){
+      if (conversation.whatsappConversationCloseComment == 'Venta'){
+        return 'background-color: green; color: white; border-radius: 10px; text-align: center;';
+      } else {
+        return 'background-color: red; color: white; border-radius: 10px; text-align: center;';
       }
     },
 
@@ -1930,7 +2016,7 @@ export default {
             whatsappConversationAmount: 0,
             whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
             whatsappConversationProducts: [],
-            whatsappConversationLocalityName: this.selectedLocality,
+            whatsappConversationLocalityName: this.selectedCloseLocality,
             sendAgentEndMessage: this.sendEndMessage
           })
           .then((response) =>{ 
@@ -2294,8 +2380,36 @@ export default {
       }
       return formattedDate;
     },
+
+    appendLocation(id, location, name, number, amount, char){
+      var latitudes = [];
+      var longitudes = [];
+      if (location != null){
+        if (location.latitude != 0 && location.longitude != 0){
+          if (location.latitude != '' && location.longitude != ''){        
+            if (!(location.latitude in latitudes) && !(location.longitude in longitudes)){
+              console.log(char.split('King Vape')[1][1]);
+              this.locations.push
+              ({
+                'latitude': location.latitude,
+                'longitude': location.longitude,
+                'whatsappConversationRecipientProfileName': name,
+                'whatsappConversationRecipientPhoneNumber': number,
+                'whatsappConversationID': id,
+                'amount': amount,
+                'opened': false,
+                'char': char.split('King Vape')[1][1]
+              })
+              latitudes.push(location.latitude);
+              longitudes.push(location.longitude);
+            }
+          }
+        }
+      }
+    },
     
     filter(){
+      this.loaderFilter = true;
       axios.post(constants.routes.backendAPI+'/selectFilteredConversations', 
       {
         initialDateFiltered: this.initialDateFiltered,
@@ -2309,32 +2423,44 @@ export default {
         if (response.data.success){
           this.closedConversations = response.data.result;
           this.closedConversationsRows = [];
+          this.locations = [];
           for (var closedConversationIndex in this.closedConversations){
-            var temp = '' 
-            if (this.closedConversations[closedConversationIndex].whatsappConversationIsActive){
-              temp = '🟢'
-            } else {
-              temp = '🔴'
-            }
             this.closedConversationsRows.push
             ({
               whatsappConversationID: this.closedConversations[closedConversationIndex].whatsappConversationID,
               whatsappConversationRecipientPhoneNumber: this.parseNumber(this.closedConversations[closedConversationIndex].whatsappConversationRecipientPhoneNumber),
               whatsappConversationRecipientProfileName: this.closedConversations[closedConversationIndex].whatsappConversationRecipientProfileName,
-              whatsappConversationAmount: this.closedConversations[closedConversationIndex].whatsappConversationAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}),
+              whatsappConversationAmount: '₡ ' + this.closedConversations[closedConversationIndex].whatsappConversationAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}),
               agentName: this.closedConversations[closedConversationIndex].agentName || 'Sin asignar',
-              whatsappConversationStartDateTime: this.parseHour(this.closedConversations[closedConversationIndex].whatsappConversationStartDateTime),
+              whatsappConversationEndDateTime: this.parseHour(this.closedConversations[closedConversationIndex].whatsappConversationEndDateTime),
               whatsappConversationCloseComment: this.closedConversations[closedConversationIndex].whatsappConversationCloseComment,
-              whatsappConversationIsActive: temp,
-              whatsappConversationOpenAction: ''
+              whatsappConversationOpenAction: '',
+              localityColor: this.closedConversations[closedConversationIndex].localityColor,
+              localityName: this.closedConversations[closedConversationIndex].localityName,
+              location: JSON.parse(this.closedConversations[closedConversationIndex].location),
+              clientName: this.closedConversations[closedConversationIndex].clientName,
+              agentColor: this.closedConversations[closedConversationIndex].agentColor,
+              agentFontColor: this.closedConversations[closedConversationIndex].agentFontColor
+
             });
+
+            this.appendLocation(
+              this.closedConversations[closedConversationIndex].whatsappConversationID,
+              JSON.parse(this.closedConversations[closedConversationIndex].location), 
+              this.closedConversations[closedConversationIndex].clientName, 
+              this.parseNumber(this.closedConversations[closedConversationIndex].whatsappConversationRecipientPhoneNumber), 
+              this.closedConversations[closedConversationIndex].whatsappConversationAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}),
+              this.closedConversations[closedConversationIndex].localityName
+            );
           }
         } else {
           this.showNotification('danger', 'Error al abrir la conversación', 'Ha ocurrido un error inesperado al abrir la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
+        this.loaderFilter = false;
       })
-      .catch((error) => {
-        
+      .catch((e) => {
+        console.log(e);
+        this.loaderFilter = false;
         this.showNotification('danger', 'Error al abrir la conversación', 'Ha ocurrido un error inesperado al abrir la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
