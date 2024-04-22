@@ -6,10 +6,18 @@
         <GmapMarker :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
         <GmapMarker :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
         <GmapMarker :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
-        <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
-        <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
-        <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
-        <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
+        
+        <GmapPolygon @paths_changed="updateEdited($event)" :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
+        <GmapPolygon @paths_changed="updateEdited($event)" :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
+        <GmapPolygon @paths_changed="updateEdited($event)" :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
+        <GmapPolygon @paths_changed="updateEdited($event)" :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
+
+        <GmapPolygon @paths_changed="updateEdited($event)" :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
+        <GmapMarker :position="{lat: 9.9619982, lng: -84.1453169}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
+        <GmapMarker :position="{lat: 9.9588093, lng: -84.0996049}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
+        <GmapMarker :position="{lat: 9.9091783, lng: -84.0996579}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
+        <GmapMarker :position="{lat: 9.9622643, lng: -84.0123009}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
+
       </GmapMap>
     </b-modal>
 
@@ -316,6 +324,9 @@ export default {
         fillOpacity: 0.4,
       },
 
+      redMap: [],
+      redMapOptions: {},
+
       agentStatus: '',
       applicationStatus: '',
 
@@ -386,11 +397,17 @@ export default {
 
     };
   },
+
   mounted() {
     this.cartagoMap = constants.routes.cartagoMap;
     this.herediaMap = constants.routes.herediaMap;
     this.zapoteMap = constants.routes.zapoteMap;
     this.escazuMap = constants.routes.escazuMap;
+
+    this.redMap = constants.routes.redMap;
+    this.redMapOptions = constants.routes.redMapOptions;
+
+
     this.backendURLInput = this.$store.getters.getBackendURL;
     this.websocketURLInput = this.$store.getters.getWebsocketURL;
 
@@ -506,6 +523,20 @@ export default {
   },
 
   methods: {
+    updateEdited(mvcArray) {
+      let paths = [];
+      for (let i=0; i<mvcArray.getLength(); i++) {
+        let path = [];
+        for (let j=0; j<mvcArray.getAt(i).getLength(); j++) {
+          let point = mvcArray.getAt(i).getAt(j);
+          path.push({lat: point.lat(), lng: point.lng()});
+        }
+        paths.push(path);
+      }
+      console.log(paths);
+    },
+
+
     getTodayInvoices(){
       axios.post('https://payitcr.com/selectTodayLocalityAgentShippedInvoices',
       {

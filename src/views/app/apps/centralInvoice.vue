@@ -648,7 +648,7 @@
               </div>
 
 
-              <div v-else style="border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white;">
+              <div v-else style="border: 1px solid gray; border-radius: 10px; margin-bottom: 10px;" :class="getAlertAnimation(whatsappInvoice)">
                 <div style="margin-right: 10px; margin-left: 10px;">
                   
 
