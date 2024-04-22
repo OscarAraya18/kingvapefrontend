@@ -77,12 +77,14 @@
                   </h6>
                   <div class="flex-grow-1"></div>
 
-                  <div style="position: relative; left: -10px;" v-if="conversationComments[activeConversationID]">
-                    
+                  <div style="position: relative; left: -6px; top: -12px;">  
+                    <b-form-checkbox @input="changeLocalStorageWhatsappInvoiceInformation('whatsappConversationPin', activeConversationsAsJSON[activeConversationID].whatsappConversationPin)" v-model="activeConversationsAsJSON[activeConversationID].whatsappConversationPin"></b-form-checkbox>
+                  </div>
+
+                  <div style="position: relative; left: -7px;" v-if="conversationComments[activeConversationID]">  
                     <div v-if="conversationComments[activeConversationID].length > 0">
                       <img v-if="conversationComments[activeConversationID].filter(item => item.whatsappConversationCommentSeenDateTime == null).length > 0" v-b-modal.commentsModal @click="openCommentsModal(conversationComments[activeConversationID])" class="newMessageAnimation" src="@/assets/pageAssets/commentRed.png" alt style="width: 25px; height: auto;"/>
                       <img v-else v-b-modal.commentsModal @click="openCommentsModal(conversationComments[activeConversationID])" src="@/assets/pageAssets/comment.png" alt style="width: 25px; height: auto;"/>
-
                     </div>
                   </div>
 
@@ -3590,7 +3592,12 @@ export default {
 
         const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
         if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsForToday'] == false || datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsForToday'] == true){
+            this.currentActiveConversation.whatsappConversationIsForToday = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsForToday'];
+          }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappConversationPin'] == false || datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappConversationPin'] == true){
+            this.currentActiveConversation.whatsappConversationPin = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappConversationPin'];
+          }
           if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientName']){
             this.currentActiveConversation.whatsappConversationRecipientProfileName = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientName'];
           }
@@ -3644,9 +3651,7 @@ export default {
           if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocationNote']){
             currentActiveConversation.whatsappConversationRecipientNote = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocationNote'];
           }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsForToday']){
-            currentActiveConversation.whatsappConversationRecipientNote = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsForToday'];
-          }
+          
         } else {
           this.selectedLocality = null;
           this.whatsappInvoiceShippingMethod = 'Método de envío';
@@ -3822,12 +3827,23 @@ export default {
           
           const respondedActiveConversations = response.data.result;
           const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
+          const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+
           if (ordenesActualesLocalStorage){
             for (var activeConversationID in respondedActiveConversations){
               var activeConversation = respondedActiveConversations[activeConversationID];
               var activeConversationRecipientPhoneNumber = activeConversation.whatsappConversationRecipientPhoneNumber;
               if (ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber]){
                 activeConversation['whatsappConversationProducts'] = ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber];
+              }
+              if (datosActuales[activeConversationRecipientPhoneNumber]){
+                if (datosActuales[activeConversationRecipientPhoneNumber]['whatsappConversationPin'] == false || datosActuales[activeConversationRecipientPhoneNumber]['whatsappConversationPin'] == true){
+                  activeConversation['whatsappConversationPin'] = datosActuales[activeConversationRecipientPhoneNumber]['whatsappConversationPin'];
+                } else {
+                  activeConversation['whatsappConversationPin'] = false;
+                }
+              } else {
+                activeConversation['whatsappConversationPin'] = false;
               }
               respondedActiveConversations[activeConversationID]['textoEnviar'] = '';
               respondedActiveConversations[activeConversationID]['latitude'] = 0;
@@ -3877,12 +3893,23 @@ export default {
         if (response.data.success){
           const respondedActiveConversations = response.data.result;
           const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
+          const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+
           if (ordenesActualesLocalStorage){
             for (var activeConversationID in respondedActiveConversations){
               var activeConversation = respondedActiveConversations[activeConversationID];
               var activeConversationRecipientPhoneNumber = activeConversation.whatsappConversationRecipientPhoneNumber;
               if (ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber]){
                 activeConversation['whatsappConversationProducts'] = ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber];
+              }
+              if (datosActuales[activeConversationRecipientPhoneNumber]){
+                if (datosActuales[activeConversationRecipientPhoneNumber]['whatsappConversationPin'] == false || datosActuales[activeConversationRecipientPhoneNumber]['whatsappConversationPin'] == true){
+                  activeConversation['whatsappConversationPin'] = datosActuales[activeConversationRecipientPhoneNumber]['whatsappConversationPin'];
+                } else {
+                  activeConversation['whatsappConversationPin'] = false;
+                }
+              } else {
+                activeConversation['whatsappConversationPin'] = false;
               }
               activeConversation['textoEnviar'] = '';
               activeConversation['latitude'] = 0;
