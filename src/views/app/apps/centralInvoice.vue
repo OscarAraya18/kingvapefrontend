@@ -26,9 +26,12 @@
               <p><strong>Estado de pago: </strong> {{location.whatsappInvoicePaymentState}}</p>
               <p><strong>Nota de la dirección: </strong> {{location.whatsappInvoiceLocationNote}}</p>
               <p><strong>Nota del envío: </strong> {{location.whatsappInvoiceShippingNote}}</p>
+              <p v-if="location.whatsappInvoiceState == 'R'" :style="getMapLocalityAgentColor(location.localityAgentColor)"><strong>Mensajero: </strong> {{location.localityAgentName}}</p>
+
+
               <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(location)" class="i-Shopping-Cart" style="font-size: xx-large; cursor: pointer;"></i>
-               
-              <b-badge v-if="location.whatsappInvoiceState == 'S'" @click="clickOnLocalityInvoice(location)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="warning">S</b-badge>
+ 
+              <b-badge v-if="location.whatsappInvoiceState == 'S'" @click="clickOnLocalityInvoice(location)" style="cursor: pointer; margin-left:10px; position: relative; top: -7px; font-size: x-large;" pill variant="warning">S</b-badge>
 
             </div>
           </gmap-info-window>
@@ -1427,9 +1430,21 @@ export default {
       location.opened = !location.opened;
     },
 
+    getMapLocalityAgentColor(color){
+      return 'background-color:' + color;
+    },
+
     getMapIcon(location){
       if (location.whatsappInvoiceState == 'S'){
         return {url: require('../../../assets/pageAssets/smarker.png')};
+      } else if (location.whatsappInvoiceState == 'R'){
+        try {
+          return {url: require(`../../../assets/pageAssets/${location.localityAgentColor}.png`)};
+        } catch {
+          return {url: require('../../../assets/pageAssets/lmarker.png')};
+        }
+      } else {
+        return {url: require('../../../assets/pageAssets/lmarker.png')};
       }
     },
     
@@ -1449,12 +1464,18 @@ export default {
                 'whatsappInvoicePaymentMethod': whatsappInvoice.whatsappInvoicePaymentMethod,
                 'whatsappInvoicePaymentState': whatsappInvoice.whatsappInvoicePaymentState,
                 'whatsappInvoiceLocationNote': whatsappInvoice.whatsappInvoiceLocationNote,
+                'whatsappInvoiceShippingMethod': whatsappInvoice.whatsappInvoiceShippingMethod,
+                'whatsappInvoiceClientLocationURL': whatsappInvoice.whatsappInvoiceClientLocationURL,
                 'whatsappInvoiceShippingNote': whatsappInvoice.whatsappInvoiceShippingNote,
                 'whatsappInvoiceProducts': whatsappInvoice.whatsappInvoiceProducts,
                 'whatsappInvoiceState': whatsappInvoice.whatsappInvoiceState,
                 'localityAgentColor': whatsappInvoice.localityAgentColor,
+                'localityAgentName': whatsappInvoice.localityAgentName,
                 'opened': false
               });
+
+              console.log(whatsappInvoice);
+
             }
           }
         }
