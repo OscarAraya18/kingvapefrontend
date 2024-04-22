@@ -1430,8 +1430,10 @@
 
                             <br>
 
-                            <b-card>
-                              <p style="font-size: medium;"><strong>Información personal:</strong></p>
+                            <b-card style="background-color: #e8e8e8">
+                              <div style="text-align: center">
+                                <p style="font-size: medium;"><strong>INFORMACIÓN PERSONAL:</strong></p>
+                              </div>
                               <b-form-group style="width:100%;">
                                 <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientProfileName" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientName', currentActiveConversation.whatsappConversationRecipientProfileName)" placeholder='Nombre del cliente' style='margin-bottom: 10px;'></b-form-input>
                                 <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientPhoneNumber" placeholder="Número de teléfono del cliente" style="margin-bottom: 10px;"></b-form-input>
@@ -1442,8 +1444,10 @@
 
                             <br>
                             
-                            <b-card>
-                              <p style="font-size: medium;"><strong>Información del envío:</strong></p>
+                            <b-card style="background-color: #e8e8e8">
+                              <div style="text-align: center">
+                                <p style="font-size: medium;"><strong>INFORMACIÓN DEL ENVÍO:</strong></p>
+                              </div>
 
                               <b-form-group style="width:100%">
                                 <div :style="getLocalityOptionsColor()">
@@ -1534,12 +1538,12 @@
                             <div style="text-align: center;" v-if="loaderOrdenEnviada == false">
                               <br>
                               
-                              <b-card>
-                                <b-button @click="insertWhatsappInvoice()" variant="primary">Finalizar venta</b-button>
-                                <br><br>
-                                <b-button @click="sendWhatsappOrderTextMessage()" variant="warning">Compartir carrito</b-button>
-                                <br><br>
-                                <b-button @click="saveContact()" variant="info">Guardar contacto</b-button>
+                              <b-card style="background-color: #e8e8e8">
+                                <b-button block @click="insertWhatsappInvoice()" variant="primary">Finalizar venta</b-button>
+                                <br>
+                                <b-button block @click="sendWhatsappOrderTextMessage()" variant="warning">Compartir carrito</b-button>
+                                <br>
+                                <b-button block @click="saveContact()" variant="info">Guardar contacto</b-button>
                               </b-card>
                             </div>
 
@@ -1904,7 +1908,7 @@ export default {
     },
 
     getLocalityOptionsColor(){
-      var localityColor = this.localityColors[this.selectedLocality] || '#dedede';
+      var localityColor = this.localityColors[this.selectedLocality] || '#787878';
       return 'background-color: ' + localityColor + '; padding: 10px;';
     },
 
