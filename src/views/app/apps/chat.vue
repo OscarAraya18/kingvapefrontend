@@ -1466,7 +1466,10 @@
                           
                                 <b-form-textarea v-model="currentActiveConversation.whatsappConversationRecipientLocationDetails" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceShippingNote', currentActiveConversation.whatsappConversationRecipientLocationDetails)" placeholder="Nota de la dirección" rows="3" style="margin-bottom: 10px;"></b-form-textarea>
                                 <b-form-textarea v-model="currentActiveConversation.whatsappConversationRecipientNote" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceLocationNote', currentActiveConversation.whatsappConversationRecipientNote)" placeholder="Nota del envío" rows="3" style="margin-bottom: 10px;"></b-form-textarea>
-                                                            
+                              
+                                <br>
+                                <b-form-checkbox @input="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceIsForToday', currentActiveConversation.whatsappConversationIsForToday)" v-model="currentActiveConversation.whatsappConversationIsForToday">Pedido para hoy</b-form-checkbox>
+                              
                               </b-form-group>
                             </b-card>
 
@@ -2917,6 +2920,7 @@ export default {
             whatsappInvoiceLocationNote: this.currentActiveConversation.whatsappConversationRecipientLocationDetails,
             whatsappInvoiceShippingNote: this.currentActiveConversation.whatsappConversationRecipientNote,
             whatsappInvoiceProducts: this.currentActiveConversation.whatsappConversationProducts,
+            whatsappInvoiceIsForToday: this.currentActiveConversation.whatsappConversationIsForToday
           })
           .then((response) =>{ 
             if (response.data.success){
@@ -3640,6 +3644,9 @@ export default {
           if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocationNote']){
             currentActiveConversation.whatsappConversationRecipientNote = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocationNote'];
           }
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsForToday']){
+            currentActiveConversation.whatsappConversationRecipientNote = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsForToday'];
+          }
         } else {
           this.selectedLocality = null;
           this.whatsappInvoiceShippingMethod = 'Método de envío';
@@ -3649,6 +3656,7 @@ export default {
           this.latitud = 0;
           this.longitud = 0;
           this.whatsappInvoiceClientLocationURL = '';
+          this.whatsappInvoiceIsForToday = true;
         }
         this.scrollDown();
     },
@@ -3824,7 +3832,7 @@ export default {
               respondedActiveConversations[activeConversationID]['textoEnviar'] = '';
               respondedActiveConversations[activeConversationID]['latitude'] = 0;
               respondedActiveConversations[activeConversationID]['longitude'] = 0;
-
+              respondedActiveConversations[activeConversationID]['whatsappConversationIsForToday'] = true;
             }    
           }
           this.activeConversationsAsJSON = {};
@@ -3879,6 +3887,8 @@ export default {
               activeConversation['textoEnviar'] = '';
               activeConversation['latitude'] = 0;
               activeConversation['longitude'] = 0;
+              activeConversation['whatsappConversationIsForToday'] = true;
+
             }    
           }
           const selectAgentConversationResult = response.data.result[whatsappConversationID]; 
@@ -4010,6 +4020,7 @@ export default {
         const whatsappConversationID = websocketMessageContent.whatsappConversationID;
         this.$set(this.activeConversationsAsJSON, whatsappConversationID, websocketMessageContent);
         this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationProducts = [];
+        this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationIsForToday = true;
         this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationRecipientLocations = JSON.parse(this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationRecipientLocations);
 
         this.playSound('receiveWhatsappMessage');
