@@ -606,7 +606,7 @@
           <div :style="getHeight()">
             <div v-for="whatsappInvoice in zapoteWhatsappInvoices">
               
-              <div v-if="isAdmin==false" style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white;" :class="getAlertAnimation(whatsappInvoice)">
+              <div v-if="isAdmin==false" style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px;" :class="getAlertAnimation(whatsappInvoice)">
                 <div style="width: 60%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
                  
 
@@ -708,7 +708,7 @@
           <div :style="getHeight()">
             <div v-for="whatsappInvoice in escazuWhatsappInvoices">
               
-              <div v-if="isAdmin==false" style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white;" :class="getAlertAnimation(whatsappInvoice)">
+              <div v-if="isAdmin==false" style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px;" :class="getAlertAnimation(whatsappInvoice)">
                 <div style="width: 60%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
         
                   <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
@@ -747,10 +747,9 @@
               </div>
 
 
-              <div v-else style="border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white;" :class="getAlertAnimation(whatsappInvoice)">
+              <div v-else style="border: 1px solid gray; border-radius: 10px; margin-bottom: 10px;" :class="getAlertAnimation(whatsappInvoice)">
                 <div style="margin-right: 10px; margin-left: 10px;">
                   
-
                   <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
                   <h5 v-b-modal.updateWhatsappInvoiceClientNameModal style="cursor: pointer;" @click="openUpdateWhatsappInvoiceClientName(whatsappInvoice)"><strong>Nombre: </strong>{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
                   <h5 v-b-modal.updateWhatsappInvoiceClientPhoneNumberModal style="cursor: pointer;" @click="openUpdateWhatsappInvoiceClientPhoneNumber(whatsappInvoice)"><strong>Número: </strong>{{ parsePhoneNumber(whatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h5>
@@ -806,7 +805,7 @@
           <br>
           <div :style="getHeight()">
             <div v-for="whatsappInvoice in herediaWhatsappInvoices">
-              <div v-if="isAdmin==false" style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white;" :class="getAlertAnimation(whatsappInvoice)">
+              <div v-if="isAdmin==false" style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px;" :class="getAlertAnimation(whatsappInvoice)">
                 <div style="width: 60%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
                   
 
@@ -846,7 +845,7 @@
               </div>
 
 
-              <div v-else style="border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white;" :class="getAlertAnimation(whatsappInvoice)">
+              <div v-else style="border: 1px solid gray; border-radius: 10px; margin-bottom: 10px;" :class="getAlertAnimation(whatsappInvoice)">
                 <div style="margin-right: 10px; margin-left: 10px;">
                   
                   <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
@@ -904,7 +903,7 @@
           <br>
           <div :style="getHeight()">
             <div v-for="whatsappInvoice in cartagoWhatsappInvoices">
-              <div v-if="isAdmin==false" style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white;" :class="getAlertAnimation(whatsappInvoice)">
+              <div v-if="isAdmin==false" style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px;" :class="getAlertAnimation(whatsappInvoice)">
                 <div style="width: 60%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
                   
                   <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
@@ -942,7 +941,7 @@
               </div>
 
 
-              <div v-else style="border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white;" :class="getAlertAnimation(whatsappInvoice)">
+              <div v-else style="border: 1px solid gray; border-radius: 10px; margin-bottom: 10px;" :class="getAlertAnimation(whatsappInvoice)">
                 <div style="margin-right: 10px; margin-left: 10px;">
                   
 
@@ -1011,7 +1010,7 @@
             <div style="padding: 20px;">
               <div v-for="whatsappInvoice in localityWhatsappInvoices">
                 <div v-if="whatsappInvoice.whatsappInvoiceState != 'R'">
-                  <div style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; background-color: white; width: 100%;">
+                  <div style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; width: 100%;" :class="getAlertAnimation(whatsappInvoice)">
                     <div style="width: 70%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
 
                       <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
@@ -1189,6 +1188,13 @@
     animation: invoiceAlertAnimate 2.5s infinite;
   }
 
+  .notForToday{
+    background-color: #a8a8a8;
+  }
+
+  .forToday{
+    background-color: white;  
+  }
 
 
 </style>
@@ -1533,8 +1539,10 @@ export default {
         if (elapsedSeconds >= 30){
           return 'invoiceAlertAnimation';
         }
+      } else if (whatsappInvoice.whatsappInvoiceIsForToday == 0){
+        return 'notForToday';
       } 
-      return '';
+      return 'forToday';
     },
 
     getLocalityAgentPhoneColor(){
