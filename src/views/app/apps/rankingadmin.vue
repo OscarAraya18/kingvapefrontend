@@ -522,7 +522,8 @@ export default {
         'Stef Ponce': '#b5dcf9',
         'Sergio Barrot': '#424880',
         'Jose Estrada': '#3e5c47',
-        'Franco Chacon': '#8a8a8a'
+        'Franco Chacon': '#8a8a8a',
+        'Ricardo Chacon': '#cf5300'
       };
       for (var agentIndex in agentNames){
         const agentName = agentNames[agentIndex];
