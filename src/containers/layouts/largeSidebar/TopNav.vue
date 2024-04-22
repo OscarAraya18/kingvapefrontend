@@ -1107,7 +1107,7 @@ export default {
           })
         }
       } else {
-        localStorage.clear();
+        //localStorage.clear();
         router.push("/app/sessions/signIn");
       }
       
