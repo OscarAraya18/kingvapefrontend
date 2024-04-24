@@ -70,6 +70,8 @@
 
 
     <div class="header-part-right">
+      <button @click="updateApplicationNotification()" :class="getApplicationNotificationClass()" style="position:relative; left: -100px; font-size: medium;" v-if="(ranking == false) && (agentType == 'admin')"><strong>{{ applicationNotification }}</strong></button>
+
       <button @click="updateApplicationStatus()" :class="getApplicationStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="(ranking == false) && (agentType == 'admin')"><strong>{{ applicationStatus }}</strong></button>
 
       <button @click="updateAgentStatus()" :class="getAgentStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="ranking == false && agentStatus!='' && agentName != 'Pantalla'"><strong>{{ agentStatus }}</strong></button>
@@ -288,6 +290,9 @@ export default {
 
   data() {
     return {
+      applicationNotification: '',
+
+
       cartagoMap: [],
       cartagoMapOptions: {
         strokeColor: "#26a699",
@@ -329,6 +334,9 @@ export default {
 
       agentStatus: '',
       applicationStatus: '',
+
+
+
 
       loaderPerfil: false,
 
@@ -454,7 +462,11 @@ export default {
         }
       }, 1000);
 
+      if (this.agentType == 'admin'){
+        this.selectApplicationNotification();
+      }
       this.selectApplicationStatus();
+
       //this.selectAgentNotifications();
       this.agentName = localStorage.getItem('agentName');
       this.agentProfileImage = localStorage.getItem('agentProfileImage');
@@ -965,6 +977,33 @@ export default {
       });
     },
 
+
+    selectApplicationNotification(){
+      axios.post(constants.routes.backendAPI+'/selectApplicationNotification')
+      .then((response) =>{ 
+        if (response.data.success){
+          if (response.data.result){
+            this.applicationNotification = 'ALLOW NOTIFICATIONS';
+          } else {
+            this.applicationNotification = 'DECLINE NOTIFICATIONS';
+          }
+        } else {
+          this.$bvToast.toast("Ha ocurrido un error inesperado al consultar el estado de las notificaciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+            title: "Error al consultar el estado de las notificaciones",
+            variant: "danger",
+            solid: true
+          });
+        }
+      })
+      .catch((error) =>{
+        this.$bvToast.toast("Ha ocurrido un error inesperado al consultar el estado de las notificaciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+          title: "Error al consultar el estado de las notificaciones",
+          variant: "danger",
+          solid: true
+        });
+      });
+    },
+
     selectApplicationStatus(){
       axios.post(constants.routes.backendAPI+'/selectApplicationStatus')
       .then((response) =>{ 
@@ -1030,6 +1069,13 @@ export default {
       return 'btn btn-icon btn-rounded btn-danger mr-2';
     },
 
+    getApplicationNotificationClass(){
+      if (this.applicationNotification == 'ALLOW NOTIFICATIONS'){
+        return 'btn btn-icon btn-rounded btn-info mr-2';
+      }
+      return 'btn btn-icon btn-rounded btn-warning mr-2';
+    },
+
     updateApplicationStatus(){
       axios.post(constants.routes.backendAPI+'/updateApplicationStatus',
       {
@@ -1058,6 +1104,37 @@ export default {
         });
       })
     },
+
+
+    updateApplicationNotification(){
+      axios.post(constants.routes.backendAPI+'/updateApplicationNotification',
+      {
+        notification: this.applicationNotification 
+      })
+      .then((response) =>{ 
+        if (response.data.success){
+          if (this.applicationNotification == 'ALLOW NOTIFICATIONS'){
+            this.applicationNotification = 'DECLINE NOTIFICATIONS';
+          } else {
+            this.applicationNotification = 'ALLOW NOTIFICATIONS';
+          }
+        } else {
+          this.$bvToast.toast('Ha ocurrido un error inesperado al modificar el estado de las notificaciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+            title: 'Error al modificar el estado de las notificaciones',
+            variant: 'danger',
+            solid: true
+          });
+        }
+      })
+      .catch((error) =>{
+        this.$bvToast.toast('Ha ocurrido un error inesperado al modificar el estado de las notificaciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+          title: 'Error al modificar el estado de la notificaciones',
+          variant: 'danger',
+          solid: true
+        });
+      })
+    },
+
 
     updateAgentStatus(){
       var updatedAgentStatus = '';

@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <!--
+    
     <b-modal id="mapModal" size="lg" centered hide-header hide-footer>
       <GmapMap :center="mapCenter" :zoom="12" style="width: 100%; height: 600px">
         <GmapMarker :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
@@ -44,7 +44,7 @@
         <GmapMarker :position="{lat: 9.9622643, lng: -84.0123009}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
       </GmapMap>
     </b-modal>
-    -->
+    
 
     <b-modal id="deliveredInvoicesModal" size="lg" centered hide-header hide-footer>
       <div v-if="loaderDelivered" style="text-align: center;">
@@ -1029,7 +1029,7 @@
               <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayDeliveredInvoices()" style="margin-right: 7px; cursor: pointer;">📦</h1>
               <h1 v-b-modal.motosModal @click="openMotosModal()" style="margin-right: 7px; cursor: pointer;">🏍️</h1>
               <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayCanceledInvoices()" style="margin-right: 7px; cursor: pointer;">❌</h1>
-              <!--<h1 v-b-modal.mapModal style="cursor: pointer;">🌎</h1>-->
+              <h1 @click="openMapModal()" style="cursor: pointer;">🌎</h1>
 
 
             </div>
@@ -1448,7 +1448,6 @@ export default {
       
       mapCenter: null,
       locations: [],
-      locationIDS: []
     };
   },
 
@@ -1457,6 +1456,15 @@ export default {
   },
   
   methods: {
+    openMapModal(){
+      this.locations = [];
+      for (var invoice in this.localityWhatsappInvoices){
+        this.appendLocation(this.localityWhatsappInvoices[invoice]);
+      }
+      this.$root.$emit('bv::show::modal', 'mapModal');
+    },
+
+
     openMarker(location){
       location.opened = !location.opened;
     },
@@ -1479,43 +1487,35 @@ export default {
       }
     },
     
-    /*
+    
     appendLocation(whatsappInvoice){
       if (whatsappInvoice.whatsappInvoiceClientLocation){
         const whatsappInvoiceClientLocation = JSON.parse(whatsappInvoice.whatsappInvoiceClientLocation)  
         if (whatsappInvoiceClientLocation.latitude != 0 && whatsappInvoiceClientLocation.latitude != 0){
           if (whatsappInvoiceClientLocation.latitude != '' && whatsappInvoiceClientLocation.latitude != ''){
-            if (!(whatsappInvoiceClientLocation.whatsappInvoiceID in this.locations.map(obj => obj.whatsappInvoiceID))){
-              this.locations.push
-              ({
-                'whatsappInvoiceClientLocation': whatsappInvoiceClientLocation,
-                'whatsappInvoiceID': whatsappInvoice.whatsappInvoiceID,
-                'whatsappInvoiceClientName': whatsappInvoice.whatsappInvoiceClientName,
-                'whatsappInvoiceClientPhoneNumber': whatsappInvoice.whatsappInvoiceClientPhoneNumber,
-                'whatsappInvoiceAmount': whatsappInvoice.whatsappInvoiceAmount,
-                'whatsappInvoicePaymentMethod': whatsappInvoice.whatsappInvoicePaymentMethod,
-                'whatsappInvoicePaymentState': whatsappInvoice.whatsappInvoicePaymentState,
-                'whatsappInvoiceLocationNote': whatsappInvoice.whatsappInvoiceLocationNote,
-                'whatsappInvoiceShippingMethod': whatsappInvoice.whatsappInvoiceShippingMethod,
-                'whatsappInvoiceClientLocationURL': whatsappInvoice.whatsappInvoiceClientLocationURL,
-                'whatsappInvoiceShippingNote': whatsappInvoice.whatsappInvoiceShippingNote,
-                'whatsappInvoiceProducts': whatsappInvoice.whatsappInvoiceProducts,
-                'whatsappInvoiceState': whatsappInvoice.whatsappInvoiceState,
-                'localityAgentColor': whatsappInvoice.localityAgentColor,
-                'localityAgentName': whatsappInvoice.localityAgentName,
-                'opened': false
-              });
-            }
+            this.locations.push
+            ({
+              'whatsappInvoiceClientLocation': whatsappInvoiceClientLocation,
+              'whatsappInvoiceID': whatsappInvoice.whatsappInvoiceID,
+              'whatsappInvoiceClientName': whatsappInvoice.whatsappInvoiceClientName,
+              'whatsappInvoiceClientPhoneNumber': whatsappInvoice.whatsappInvoiceClientPhoneNumber,
+              'whatsappInvoiceAmount': whatsappInvoice.whatsappInvoiceAmount,
+              'whatsappInvoicePaymentMethod': whatsappInvoice.whatsappInvoicePaymentMethod,
+              'whatsappInvoicePaymentState': whatsappInvoice.whatsappInvoicePaymentState,
+              'whatsappInvoiceLocationNote': whatsappInvoice.whatsappInvoiceLocationNote,
+              'whatsappInvoiceShippingMethod': whatsappInvoice.whatsappInvoiceShippingMethod,
+              'whatsappInvoiceClientLocationURL': whatsappInvoice.whatsappInvoiceClientLocationURL,
+              'whatsappInvoiceShippingNote': whatsappInvoice.whatsappInvoiceShippingNote,
+              'whatsappInvoiceProducts': whatsappInvoice.whatsappInvoiceProducts,
+              'whatsappInvoiceState': whatsappInvoice.whatsappInvoiceState,
+              'localityAgentColor': whatsappInvoice.localityAgentColor,
+              'localityAgentName': whatsappInvoice.localityAgentName,
+              'opened': false
+            });
           }
         }
       }
     },
-
-    deleteLocations(){
-      this.locations = this.locations.filter(obj => this.localityWhatsappInvoices.map(obj1 => obj1.whatsappInvoiceID).includes(obj.whatsappInvoiceID));
-    },
-
-    */
 
     getLocalityAgentLabels(names, amounts){
       var agentLabels = [];
@@ -2398,9 +2398,7 @@ export default {
               this.shippingWhatsappInvoiceAmount = this.shippingWhatsappInvoiceAmount + 1;
             }
             
-            //this.appendLocation(whatsappInvoice);
           }
-          //this.deleteLocations();
           const newInvoicesAmount = this.localityWhatsappInvoices.length;
           const newUpdatedInvoicesAmount = this.localityWhatsappInvoices.filter(invoice => invoice.whatsappInvoiceHasBeenUpdated == true).length;
 
