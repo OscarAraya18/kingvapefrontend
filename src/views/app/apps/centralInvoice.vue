@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    
+    <!--
     <b-modal id="mapModal" size="lg" centered hide-header hide-footer>
       <GmapMap :center="mapCenter" :zoom="12" style="width: 100%; height: 600px">
         <GmapMarker :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
@@ -44,7 +44,7 @@
         <GmapMarker :position="{lat: 9.9622643, lng: -84.0123009}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
       </GmapMap>
     </b-modal>
-    
+    -->
 
     <b-modal id="deliveredInvoicesModal" size="lg" centered hide-header hide-footer>
       <div v-if="loaderDelivered" style="text-align: center;">
@@ -1029,7 +1029,7 @@
               <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayDeliveredInvoices()" style="margin-right: 7px; cursor: pointer;">📦</h1>
               <h1 v-b-modal.motosModal @click="openMotosModal()" style="margin-right: 7px; cursor: pointer;">🏍️</h1>
               <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayCanceledInvoices()" style="margin-right: 7px; cursor: pointer;">❌</h1>
-              <h1 v-b-modal.mapModal style="cursor: pointer;">🌎</h1>
+              <!--<h1 v-b-modal.mapModal style="cursor: pointer;">🌎</h1>-->
 
 
             </div>
@@ -1479,6 +1479,7 @@ export default {
       }
     },
     
+    /*
     appendLocation(whatsappInvoice){
       if (whatsappInvoice.whatsappInvoiceClientLocation){
         const whatsappInvoiceClientLocation = JSON.parse(whatsappInvoice.whatsappInvoiceClientLocation)  
@@ -1504,9 +1505,6 @@ export default {
                 'localityAgentName': whatsappInvoice.localityAgentName,
                 'opened': false
               });
-
-              console.log(whatsappInvoice);
-
             }
           }
         }
@@ -1516,6 +1514,8 @@ export default {
     deleteLocations(){
       this.locations = this.locations.filter(obj => this.localityWhatsappInvoices.map(obj1 => obj1.whatsappInvoiceID).includes(obj.whatsappInvoiceID));
     },
+
+    */
 
     getLocalityAgentLabels(names, amounts){
       var agentLabels = [];
@@ -2398,9 +2398,9 @@ export default {
               this.shippingWhatsappInvoiceAmount = this.shippingWhatsappInvoiceAmount + 1;
             }
             
-            this.appendLocation(whatsappInvoice);
+            //this.appendLocation(whatsappInvoice);
           }
-          this.deleteLocations();
+          //this.deleteLocations();
           const newInvoicesAmount = this.localityWhatsappInvoices.length;
           const newUpdatedInvoicesAmount = this.localityWhatsappInvoices.filter(invoice => invoice.whatsappInvoiceHasBeenUpdated == true).length;
 
