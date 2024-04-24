@@ -1706,6 +1706,7 @@ export default {
     },
 
     returnForToday(){
+      this.selectTodayInformation();
       this.todayInitialDate = null;
       this.todayEndDate = null;
     },
