@@ -2345,7 +2345,7 @@ export default {
               whatsappConversationRecipientPhoneNumber: this.activeConversations[activeConversationIndex].whatsappConversationRecipientPhoneNumber,
               whatsappConversationRecipientProfileName: this.activeConversations[activeConversationIndex].whatsappConversationRecipientProfileName,
               agentName: this.activeConversations[activeConversationIndex].agentName || 'Sin asignar',
-              agentColor: this.activeConversations[activeConversationIndex].agentColor || 'black',
+              agentColor: this.activeConversations[activeConversationIndex].agentColor || '#058ff2',
               agentFontColor: this.activeConversations[activeConversationIndex].agentFontColor || 'white',
               agentID: this.activeConversations[activeConversationIndex].agentID,
               whatsappGeneralMessageCreationDateTime: this.activeConversations[activeConversationIndex].whatsappGeneralMessageCreationDateTime,
