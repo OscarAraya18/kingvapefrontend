@@ -3006,7 +3006,7 @@ export default {
                 whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
                 whatsappConversationProducts: this.currentActiveConversation.whatsappConversationProducts,
                 whatsappConversationLocalityName: this.selectedLocality,
-                sendAgentEndMessage: this.sendEndMessage
+                sendAgentEndMessage: true
               })
               .then((response) =>{ 
                 if (response.data.success){
