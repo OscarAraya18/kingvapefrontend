@@ -3251,7 +3251,6 @@ export default {
       }) 
       .then((response) =>{ 
         if (response.data.success){
-          this.$refs.textoEnviar.focus();
           this.currentActiveConversation['textoEnviar'] = '';
           this.sendingMessageDisable = false;
           this.repliedMessage = null;
@@ -3260,6 +3259,18 @@ export default {
           this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);          
           this.scrollDown();
           this.sortConversations();
+          const intervalId = setInterval(() => {
+            if (this.$refs.textoEnviar){
+              if (document.activeElement !== this.$refs.textoEnviar) {
+                this.$refs.textoEnviar.focus();
+                clearInterval(intervalId);
+              } else {
+                clearInterval(intervalId);
+              }
+            } else {
+              clearInterval(intervalId);
+            }
+          }, 1);
         } else {
           this.sendingMessageDisable = false;
           this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
@@ -3759,6 +3770,19 @@ export default {
           this.whatsappInvoiceIsForToday = true;
         }
         this.scrollDown();
+
+        const intervalId = setInterval(() => {
+          if (this.$refs.textoEnviar){
+            if (document.activeElement !== this.$refs.textoEnviar) {
+              this.$refs.textoEnviar.focus();
+              clearInterval(intervalId);
+            } else {
+              clearInterval(intervalId);
+            }
+          } else {
+            clearInterval(intervalId);
+          }
+        }, 1);
     },
 
     closeWhatsappConversation(){
