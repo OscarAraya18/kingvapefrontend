@@ -2,6 +2,20 @@
   <div class="no-gutters">
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 
+    <div style="position: absolute; top: 5px; left: 30px; display: flex;">
+      <div style="min-height: 25px; min-width: 25px; background-color: rgb(0, 177, 0); border-radius: 100px; display: flex; align-items: center; justify-content: center;">
+        <p style="margin: 0; font-size: 15px;">
+          <strong>{{getCurrentRespondedConversationsAmount()}}</strong>
+        </p>
+      </div>
+
+      <div style="min-height: 25px; min-width: 25px; background-color: rgb(255, 111, 111); border-radius: 100px; display: flex; align-items: center; justify-content: center; margin-left: 5px;">
+        <p style="margin: 0; font-size: 15px;">
+          <strong>{{getCurrentNotRespondedConversationsAmount()}}</strong>
+        </p>
+      </div>
+    </div>
+
     <div class="row no-gutters">
       <div class="col-md-9" style="padding-right: 25px;">
         <div class="card chat-sidebar-container sidebar-container" style="z-index: 1000;">
@@ -1903,6 +1917,26 @@ export default {
   },
 
   methods: {
+    getCurrentRespondedConversationsAmount(){
+      var amount = 0;
+      for (var whatsappConversationID in this.activeConversationsAsJSON){
+        if (this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages[this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.length - 1].whatsappGeneralMessageOwnerPhoneNumber == null){
+          amount = amount + 1;
+        }
+      }
+      return amount;
+    },
+
+    getCurrentNotRespondedConversationsAmount(){
+      var amount = 0;
+      for (var whatsappConversationID in this.activeConversationsAsJSON){
+        if (this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages[this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.length - 1].whatsappGeneralMessageOwnerPhoneNumber != null){
+          amount = amount + 1;
+        }
+      }
+      return amount;
+    },
+
     getAgentColor(agent){
       return 'background-color: ' + agent.agentColor + '; font-color: ' + agent.agentFontColor + '; z-index: 2000; overflow-y: auto;';
     },
