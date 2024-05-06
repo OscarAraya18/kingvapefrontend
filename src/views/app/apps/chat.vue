@@ -2837,6 +2837,22 @@ export default {
   
     saveLocation(locationName, whatsappGeneralMessage){
       this.currentActiveConversation.whatsappConversationRecipientLocations[locationName] = {latitude: whatsappGeneralMessage.whatsappLocationMessageLatitude, longitude: whatsappGeneralMessage.whatsappLocationMessageLongitude};
+      
+      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationName'] = locationName;
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLatitude'] = whatsappGeneralMessage.whatsappLocationMessageLatitude;
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLongitude'] = whatsappGeneralMessage.whatsappLocationMessageLongitude;
+      } else {
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
+        {
+          'whatsappInvoiceClientLocationName': locationName,
+          'whatsappInvoiceClientLocationLatitude': whatsappGeneralMessage.whatsappLocationMessageLatitude,
+          'whatsappInvoiceClientLocationLongitude': whatsappGeneralMessage.whatsappLocationMessageLongitude
+        }
+      }
+      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
+
       this.showNotification('success', 'Ubicación registrada', "Ha registrado la ubicación '"+locationName+"' al cliente exitosamente.");
     },
 
@@ -3738,6 +3754,19 @@ export default {
           } else {
             this.whatsappInvoiceClientLocationName = 'Ubicación de envío';
           }
+
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLatitude']){
+            this.latitud = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLatitude'];
+          } else {
+            this.latitud = 0;
+          }
+
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLongitude']){
+            this.longitud = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLongitude'];
+          } else {
+            this.longitud = 0;
+          }
+
           if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLatitude']){
             this.latitud = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLatitude'];
           } else {
