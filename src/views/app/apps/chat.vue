@@ -4208,7 +4208,7 @@ export default {
         if (websocketMessageContent.agentStatus == 'offline'){
           this.agents = this.agents.filter(remainingAgent => remainingAgent.agentID != websocketMessageContent.agentID);
         } else {
-          this.agents.push({'agentID': websocketMessageContent.agentID, 'agentName': websocketMessageContent.agentName});
+          this.agents.push({'agentID': websocketMessageContent.agentID, 'agentName': websocketMessageContent.agentName, 'agentColor:': websocketMessageContent.agentColor, 'agentFontColor': websocketMessageContent.agentFontColor});
         }
       }
     },
