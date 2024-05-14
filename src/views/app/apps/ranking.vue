@@ -140,7 +140,7 @@ export default {
         'Jose Estrada': '#3e5c47',
         'Franco Chacon': '#8a8a8a',
         'Ricardo Chacon': '#e86800',
-        'Emma Garcia': '#b6f2fa'
+        'Emma Garcia': '#b570fa'
       };
       for (var agentIndex in agentNames){
         const agentName = agentNames[agentIndex];
