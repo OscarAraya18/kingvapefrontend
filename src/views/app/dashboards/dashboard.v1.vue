@@ -630,7 +630,7 @@
                   <div v-if="props.row.whatsappFeedbackSix == ''">
                     Sin comentario
                   </div>
-                  <div v-else>
+                  <div v-else style="width: 700px;">
                     {{props.row.whatsappFeedbackSix}}
                   </div>      
                 </div>
@@ -1321,6 +1321,7 @@ export default {
           field: "whatsappFeedbackSix",
           thClass: "text-left",
           tdClass: "text-left",
+          width: '300px'
         },
         {
           label: "",
