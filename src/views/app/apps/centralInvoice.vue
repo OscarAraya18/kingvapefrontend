@@ -616,8 +616,8 @@
     <div v-if="agentType == 'central'">
       <div style="position: absolute; top: -65px; z-index: 500; left: 50%; transform: translateX(-50%);">
         <div style="display: flex; justify-content: center;">
-          <img v-if="live" class="liveLogo" src="../../../assets/pageAssets/live.jpg">
-          <img v-else class="noliveLogo" src="../../../assets/pageAssets/nolive.jpg">
+          <img v-if="live" class="liveLogo" src="../../../assets/pageAssets/live.png">
+          <img v-else class="noliveLogo" src="../../../assets/pageAssets/nolive.png">
         </div>
       </div>
 
@@ -1023,18 +1023,12 @@
 
     <div v-if="agentType == 'locality'">
 
-      <div style="width: 100%; text-align: center;">
-        <img @click="updateApplicationLive()" v-if="live" class="liveLogo" src="../../../assets/pageAssets/live.jpg">
-        <img @click="updateApplicationLive()" v-else class="noliveLogo" src="../../../assets/pageAssets/nolive.jpg">
-      </div>
-      <br>
-
       <b-card>
-        <div style="position: absolute; top: -160px; z-index: 500; left: 50%; transform: translateX(-50%);">
+        <div style="position: absolute; top: -90px; z-index: 500; left: 50%; transform: translateX(-50%);">
           <div style="display: flex; justify-content: center;">
             
             <img v-if="(localityWhatsappInvoiceAmount + shippingWhatsappInvoiceAmount) >= 20" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px; margin-right: 30px;"/>
-            <h1 style="margin-top: auto; margin-bottom: auto;"><strong>{{ localityName }}</strong></h1>
+            <h1 style="margin-top: auto; margin-bottom: auto; position: relative; top: -5px;"><strong>{{ localityName }}</strong></h1>
             <div style="margin-left: 30px;">
               <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="warning">{{localityWhatsappInvoiceAmount}}</b-badge>
               <b-badge style="font-size: x-large;" pill variant="success">{{shippingWhatsappInvoiceAmount}}</b-badge>
@@ -1044,8 +1038,10 @@
               <h1 v-b-modal.motosModal @click="openMotosModal()" style="margin-right: 7px; cursor: pointer;">🏍️</h1>
               <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayCanceledInvoices()" style="margin-right: 7px; cursor: pointer;">❌</h1>
               <h1 @click="openMapModal()" style="cursor: pointer;">🌎</h1>
-
-
+            </div>
+            <div style="position: relative; left: 400px; top: -8px">
+              <img v-if="live" class="liveLogo" src="../../../assets/pageAssets/live.png">
+              <img v-else class="noliveLogo" src="../../../assets/pageAssets/nolive.png">
             </div>
           </div>
         </div>
@@ -1184,13 +1180,13 @@
 
 <style>
 .noliveLogo {
-    width: 160px; 
-    height: 50px; 
+    width: 90px; 
+    height: 55px; 
   }
 
   .liveLogo {
-    width: 160px; 
-    height: 50px; 
+    width: 90px; 
+    height: 55px; 
     animation: liveLogoAnimation 3s infinite;
   }
 

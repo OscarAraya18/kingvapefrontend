@@ -309,12 +309,15 @@
       <b-form-checkbox id="checkbox-1" v-model="sendEndMessage">Enviar mensaje de despedida</b-form-checkbox>
     </b-modal>
 
-    <div style="width: 100%; text-align: center;">
-      <img @click="updateApplicationLive()" v-if="live" class="liveLogo" src="../../../assets/pageAssets/live.jpg">
-      <img @click="updateApplicationLive()" v-else class="noliveLogo" src="../../../assets/pageAssets/nolive.jpg">
-    </div>
   
-    <br><br>
+    <div style="position: absolute; top: -70px; z-index: 500; left: 76%; transform: translateX(-50%);">
+      <div style="display: flex; justify-content: center;">
+        <img @click="updateApplicationLive()" v-if="live" class="liveLogo" src="../../../assets/pageAssets/live.png">
+      <img @click="updateApplicationLive()" v-else class="noliveLogo" src="../../../assets/pageAssets/nolive.png">
+      </div>
+    </div>
+    
+    <br>
     <b-row>
 
       <b-col lg="4" md="4" sm="12">
@@ -1042,14 +1045,14 @@
 <style scoped>
   .noliveLogo {
     cursor: pointer; 
-    width: 250px; 
-    height: 80px; 
+    width: 90px; 
+    height: 55px; 
   }
 
   .liveLogo {
     cursor: pointer; 
-    width: 250px; 
-    height: 80px; 
+    width: 90px; 
+    height: 55px; 
     animation: liveLogoAnimation 3s infinite;
   }
 
