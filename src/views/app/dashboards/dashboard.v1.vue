@@ -309,7 +309,12 @@
       <b-form-checkbox id="checkbox-1" v-model="sendEndMessage">Enviar mensaje de despedida</b-form-checkbox>
     </b-modal>
 
-    <br>
+    <div style="width: 100%; text-align: center;">
+      <img @click="updateApplicationLive()" v-if="live" class="liveLogo" src="../../../assets/pageAssets/live.jpg">
+      <img @click="updateApplicationLive()" v-else class="noliveLogo" src="../../../assets/pageAssets/nolive.jpg">
+    </div>
+  
+    <br><br>
     <b-row>
 
       <b-col lg="4" md="4" sm="12">
@@ -1035,6 +1040,31 @@
 </template>
 
 <style scoped>
+  .noliveLogo {
+    cursor: pointer; 
+    width: 250px; 
+    height: 80px; 
+  }
+
+  .liveLogo {
+    cursor: pointer; 
+    width: 250px; 
+    height: 80px; 
+    animation: liveLogoAnimation 3s infinite;
+  }
+
+  @keyframes liveLogoAnimation {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.15);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
    @keyframes alertAnimationAnimate {
     0% {
       transform: scale(1);
@@ -1084,6 +1114,8 @@ export default {
   
   data() {
     return {
+      live: null,
+
       queryInterval: null,
 
       openedName: '',
@@ -1606,7 +1638,7 @@ export default {
     }
     
     this.selectNotResolvedWhatsappFeedbacks();
-
+    this.selectApplicationLive();
     this.selectTodayInformation();
     this.selectAgentNames();
     this.selectTransferableAgents();
@@ -1647,6 +1679,7 @@ export default {
   },
 
   methods: {
+
     openMarker(location){
       location.opened = !location.opened;
     },
@@ -1710,6 +1743,20 @@ export default {
       this.selectTodayInformation();
       this.todayInitialDate = null;
       this.todayEndDate = null;
+    },
+
+    updateApplicationLive(){
+      axios.post(constants.routes.backendAPI+'/updateApplicationLive', {'live': !this.live}).then((response) =>{
+        if (response.data.success){
+          this.live = !this.live;
+          this.showNotification('success', 'Estado del call center modificado', 'Se ha modificado el estado del call center exitosamente.');
+        } else {
+          this.showNotification('danger', 'Error al modificar el estado del call center', 'Ha ocurrido un error inesperado al modificar el estado del call center. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch(() =>{
+        this.showNotification('danger', 'Error al modificar el estado del call center', 'Ha ocurrido un error inesperado al modificar el estado del call center. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
     },
 
     insertWhatsappConversationTextComment(){
@@ -2044,6 +2091,19 @@ export default {
       })
       .catch(() =>{
         this.showNotification('danger', 'Error al consultar el feedback', 'Ha ocurrido un error inesperado al consultar el feedback. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+    },
+
+    selectApplicationLive(){
+      axios.post(constants.routes.backendAPI+'/selectApplicationLive').then((response) =>{ 
+        if (response.data.success){
+          this.live = response.data.result;
+        } else {
+          this.showNotification('danger', 'Error al consultar el estado del call center', 'Ha ocurrido un error inesperado al consultar el estado del call center. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch(() =>{
+        this.showNotification('danger', 'Error al consultar el estado del call center', 'Ha ocurrido un error inesperado al consultar el estado del call center. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 

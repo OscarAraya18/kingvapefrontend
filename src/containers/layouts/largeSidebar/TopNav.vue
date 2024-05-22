@@ -70,10 +70,12 @@
 
 
     <div class="header-part-right">
+      <!--
       <button @click="updateApplicationNotification()" :class="getApplicationNotificationClass()" style="position:relative; left: -100px; font-size: medium;" v-if="(ranking == false) && (agentType == 'admin')"><strong>{{ applicationNotification }}</strong></button>
+      -->
 
       <button @click="updateApplicationStatus()" :class="getApplicationStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="(ranking == false) && (agentType == 'admin')"><strong>{{ applicationStatus }}</strong></button>
-
+      
       <button @click="updateAgentStatus()" :class="getAgentStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="ranking == false && agentStatus!='' && agentName != 'Pantalla'"><strong>{{ agentStatus }}</strong></button>
       
 
