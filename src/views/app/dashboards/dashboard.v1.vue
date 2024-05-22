@@ -310,7 +310,7 @@
     </b-modal>
 
   
-    <div style="position: absolute; top: -70px; z-index: 500; left: 76%; transform: translateX(-50%);">
+    <div style="position: absolute; top: -70px; z-index: 500; right: 300px; transform: translateX(-50%);">
       <div style="display: flex; justify-content: center;">
         <img @click="updateApplicationLive()" v-if="live" class="liveLogo" src="../../../assets/pageAssets/live.png">
       <img @click="updateApplicationLive()" v-else class="noliveLogo" src="../../../assets/pageAssets/nolive.png">
