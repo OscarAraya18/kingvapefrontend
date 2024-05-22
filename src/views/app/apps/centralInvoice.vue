@@ -1039,7 +1039,7 @@
               <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayCanceledInvoices()" style="margin-right: 7px; cursor: pointer;">❌</h1>
               <h1 @click="openMapModal()" style="cursor: pointer;">🌎</h1>
             </div>
-            <div style="position: relative; left: 400px; top: -8px">
+            <div style="position: absolute; right: -270px; top: -8px">
               <img v-if="live" class="liveLogo" src="../../../assets/pageAssets/live.png">
               <img v-else class="noliveLogo" src="../../../assets/pageAssets/nolive.png">
             </div>
