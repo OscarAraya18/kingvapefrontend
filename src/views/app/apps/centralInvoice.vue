@@ -616,8 +616,8 @@
     <div v-if="agentType == 'central'">
       <div style="position: absolute; top: -65px; z-index: 500; left: 50%; transform: translateX(-50%);">
         <div style="display: flex; justify-content: center;">
-          <img @click="updateApplicationLive()" v-if="live" class="liveLogo" src="../../../assets/pageAssets/live.jpg">
-          <img @click="updateApplicationLive()" v-else class="noliveLogo" src="../../../assets/pageAssets/nolive.jpg">
+          <img v-if="live" class="liveLogo" src="../../../assets/pageAssets/live.jpg">
+          <img v-else class="noliveLogo" src="../../../assets/pageAssets/nolive.jpg">
         </div>
       </div>
 
@@ -1184,13 +1184,11 @@
 
 <style>
 .noliveLogo {
-    cursor: pointer; 
     width: 160px; 
     height: 50px; 
   }
 
   .liveLogo {
-    cursor: pointer; 
     width: 160px; 
     height: 50px; 
     animation: liveLogoAnimation 3s infinite;
