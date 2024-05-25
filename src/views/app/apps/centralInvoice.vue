@@ -1839,7 +1839,7 @@ export default {
       const agentName = localStorage.getItem('localityAgentName');
       const whatsappInvoiceID = this.updatedWhatsappInvoice.whatsappInvoiceID;
 
-      const texto = '¡Hola! Mi nombre es ' + agentName + ', soy el mensajero de King Vape. El día de hoy estaré entregando tu pedido con el número de órden ' + whatsappInvoiceID + '. Estaré lo más pronto posible en tu ubicación. ¡Muchas gracias por tu espera! 🏍️🔥';
+      const texto = '*NÚMERO DE ÓRDEN*: ' + whatsappInvoiceID + ' ¡Hola! Mi nombre es ' + agentName + ', soy el mensajero de King Vape. El día de hoy estoy a cargo de la tu pedido. Estaré lo más pronto posible en tu ubicación. ¡Muchas gracias por tu espera! 🏍️🔥';
       var url = 'https://api.whatsapp.com/send?phone=' + whatsappNumber + '&text=' + texto
       window.open(url, '_blank');
 
