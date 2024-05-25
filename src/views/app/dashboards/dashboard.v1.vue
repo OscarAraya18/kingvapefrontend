@@ -732,8 +732,13 @@
                 {{props.row.agentName}}
               </div>
 
-              <div v-else-if="props.column.field == 'agentName'" :style="getAgentColor(props.row)">
-                {{props.row.agentName}}
+              <div v-else-if="props.column.field == 'localityAgentName'" :style="getLocalityAgentColor(props.row)">
+                <div v-if="props.row.localityAgentName">
+                  {{props.row.localityAgentName}}
+                </div>
+                <div v-else>
+                  Sin mensajero asignado
+                </div>
               </div>
 
               <div v-else-if="props.column.field == 'whatsappConversationCloseComment'" :style="getResultColor(props.row)">
@@ -1100,6 +1105,7 @@ import axios from 'axios';
 import ApexCharts from 'apexcharts'
 import router from "../../../router"; 
 import StarRating from 'vue-star-rating'
+import { props } from "vue-barcode";
 
 const constants = require('@../../../src/constants.js'); 
 
@@ -1259,7 +1265,7 @@ export default {
       storeFiltered: '',
 
       conversionOptions: [{value:null, text:''}, {value:'Vendido', text:'Vendido'}, {value:'No vendido', text:'No vendido'}],
-      conversionFiltered: '',
+      conversionFiltered: 'Vendido',
 
       
 
@@ -1525,6 +1531,12 @@ export default {
           tdClass: "text-left",
         },
         {
+          label: "Motorizado",
+          field: "localityAgentName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
           label: "Monto",
           field: "whatsappConversationAmount",
           thClass: "text-left",
@@ -1552,6 +1564,7 @@ export default {
         {
           label: "Ubicación",
           field: "location",
+          html: true,
           thClass: "text-left",
           tdClass: "text-left",
         }
@@ -1710,6 +1723,14 @@ export default {
     getAgentColor(agent){
       if (agent.agentColor){
         return 'background-color: ' + agent.agentColor + '; color: ' + agent.agentFontColor + '; border-radius: 10px; text-align: center;';
+      } else {
+        return 'background-color: black; color: white; border-radius: 10px; text-align: center;';
+      }
+    },
+    
+    getLocalityAgentColor(agent){
+      if (agent.localityAgentColor){
+        return 'background-color: ' + agent.localityAgentColor + '; border-radius: 10px; text-align: center;';
       } else {
         return 'background-color: black; color: white; border-radius: 10px; text-align: center;';
       }
@@ -2547,10 +2568,10 @@ export default {
               location: JSON.parse(this.closedConversations[closedConversationIndex].location),
               clientName: this.closedConversations[closedConversationIndex].clientName,
               agentColor: this.closedConversations[closedConversationIndex].agentColor,
-              agentFontColor: this.closedConversations[closedConversationIndex].agentFontColor
-
+              agentFontColor: this.closedConversations[closedConversationIndex].agentFontColor,
+              localityAgentName: this.closedConversations[closedConversationIndex].localityAgentName,
+              localityAgentColor: this.closedConversations[closedConversationIndex].localityAgentColor,
             });
-
             this.appendLocation(
               this.closedConversations[closedConversationIndex].whatsappConversationID,
               JSON.parse(this.closedConversations[closedConversationIndex].location), 
@@ -2580,7 +2601,7 @@ export default {
       this.agentFiltered = '';
       this.numberFiltered = '';
       this.storeFiltered = '';
-      this.conversionFiltered = '';
+      this.conversionFiltered = 'Vendido';
     },
 
     cleanPlotFilter(){

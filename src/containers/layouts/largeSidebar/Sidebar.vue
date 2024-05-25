@@ -69,7 +69,6 @@
             </router-link>
             <div class="triangle"></div>
           </li>
-
           
           <li
             @mouseenter="toggleSubMenu"
