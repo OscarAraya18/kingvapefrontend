@@ -124,6 +124,8 @@
                 <b-dropdown-item style="background-color: #26a699" href="#" v-b-modal.cartagoConversationsModal>Cartago ({{cartagoConversations.length}})</b-dropdown-item>
                 <b-dropdown-item style="background-color: #e44f9c" href="#" v-b-modal.escazuConversationsModal>Escazú ({{escazuConversations.length}})</b-dropdown-item>
                 <b-dropdown-item style="background-color: #9f7cd0" href="#" v-b-modal.herediaConversationsModal>Heredia ({{herediaConversations.length}})</b-dropdown-item>
+                <b-dropdown-item style="background-color: #8fd2ff" href="#" v-b-modal.planetVapeConversationsModal>Planet Vape ({{planetVapeConversations.length}})</b-dropdown-item>
+
                 <b-dropdown-item style="background-color: #dedede" href="#" v-b-modal.pendingConversationsModal>Pendientes ({{pendingConversations.length}})</b-dropdown-item>
               </b-dropdown>
             </div>
@@ -204,6 +206,25 @@
                   <div style="margin-left: 3px;" v-else>❌</div>
                 </div>
                 <strong>Fecha:</strong> {{parseHour(herediaConversation.storeMessageStartDateTime)}}
+              </b-list-group-item>
+            </b-list-group>
+            <div v-else style="text-align: center;">
+              <br><span class="spinner-glow spinner-glow-primary"></span>
+            </div>
+          </b-modal>
+          <b-modal scrollable size="m" centered hide-footer id="planetVapeConversationsModal" title="Conversaciones pendientes de Planet Vape">
+            <b-list-group v-if="loaders.grabConversation == false">
+              <b-list-group-item v-if="planetVapeConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
+              <b-list-group-item @contextmenu.prevent="openDeleteStoreMessageModal(planetVapeConversation)" v-for="planetVapeConversation in planetVapeConversations" @click="grabStoreConversation(planetVapeConversation)" button style="cursor: pointer;">
+                <strong>Nombre:</strong> {{planetVapeConversation.storeMessageRecipientProfileName}}<br>
+                <strong>Número:</strong> {{parsePhone(planetVapeConversation.storeMessageRecipientPhoneNumber)}}<br>
+                <strong>Pedido:</strong> {{planetVapeConversation.storeMessageRecipientOrder}}<br>
+                <div style="display: flex;">
+                  <strong>Cédula:</strong>
+                  <div style="margin-left: 3px;" v-if="planetVapeConversation.storeMessageRecipientID == 'S'">✔️</div>
+                  <div style="margin-left: 3px;" v-else>❌</div>
+                </div>
+                <strong>Fecha:</strong> {{parseHour(planetVapeConversation.storeMessageStartDateTime)}}
               </b-list-group-item>
             </b-list-group>
             <div v-else style="text-align: center;">
@@ -1690,6 +1711,7 @@ export default {
       escazuConversations: [],
       cartagoConversations: [],
       herediaConversations: [],
+      planetVapeConversations: [],
 
       localityOptions: [],
       selectedLocality: null,
@@ -2264,6 +2286,7 @@ export default {
       this.$root.$emit('bv::hide::modal', 'zapoteConversationsModal');
       this.$root.$emit('bv::hide::modal', 'cartagoConversationsModal');
       this.$root.$emit('bv::hide::modal', 'herediaConversationsModal');
+      this.$root.$emit('bv::hide::modal', 'planetVapeConversationsModal');
       this.$root.$emit('bv::show::modal', 'deleteStoreConversationModal');
     },
 
@@ -3886,6 +3909,9 @@ export default {
           } else if (storeMessage.storeMessageStoreName == 'Heredia'){
             referenciaSucursales[storeMessage.storeMessageRecipientPhoneNumber] = 'H';
             this.herediaConversations = this.herediaConversations.filter(herediaConversation => herediaConversation.storeMessageID != storeMessage.storeMessageID);
+          } else if (storeMessage.storeMessageStoreName == 'Planet Vape'){
+            referenciaSucursales[storeMessage.storeMessageRecipientPhoneNumber] = 'P';
+            this.planetVapeConversations = this.planetVapeConversations.filter(planetVapeConversation => planetVapeConversation.storeMessageID != storeMessage.storeMessageID);
           }
           localStorage.setItem('referenciaSucursales', JSON.stringify(referenciaSucursales));
 
@@ -4079,6 +4105,8 @@ export default {
         this.zapoteConversations = [];
         this.escazuConversations = [];
         this.cartagoConversations = [];
+        this.herediaConversations = [];
+        this.planetVapeConversations = [];
         if (response.data.success){
           const selectAllStoreMessageResult = response.data.result;
           for (var storeMessageIndex in selectAllStoreMessageResult){
@@ -4101,6 +4129,8 @@ export default {
               this.cartagoConversations.push(newStoreMessageInformation);
             } else if (selectAllStoreMessageResult[storeMessageIndex].storeMessageStoreName == 'Heredia'){
               this.herediaConversations.push(newStoreMessageInformation);
+            } else if (selectAllStoreMessageResult[storeMessageIndex].storeMessageStoreName == 'Planet Vape'){
+              this.planetVapeConversations.push(newStoreMessageInformation);
             }
           }
         } else {
@@ -4164,6 +4194,11 @@ export default {
         this.herediaConversations = [];
         newHerediaConversations.push(newWhatsappStoreMessageInformation);
         this.herediaConversations = newHerediaConversations;
+      } else if (websocketMessageContent.storeMessageStoreName == 'Planet Vape'){
+        var newPlanetVapeConversations = this.planetVapeConversations;
+        this.planetVapeConversations = [];
+        newPlanetVapeConversations.push(newWhatsappStoreMessageInformation);
+        this.planetVapeConversations = newPlanetVapeConversations;
       }
       this.playSound('receiveWhatsappStoreMessage');
     },
@@ -4228,6 +4263,8 @@ export default {
         this.cartagoConversations = this.cartagoConversations.filter(cartagoConversation => cartagoConversation.storeMessageID != storeMessageID);
       } else if (storeMessageStoreName == 'Heredia'){
         this.herediaConversations = this.herediaConversations.filter(herediaConversation => herediaConversation.storeMessageID != storeMessageID);
+      } else if (storeMessageStoreName == 'Planet Vape'){
+        this.planetVapeConversations = this.planetVapeConversations.filter(planetVapeConversation => planetVapeConversation.storeMessageID != storeMessageID);
       }
     },
 
@@ -4394,7 +4431,7 @@ export default {
 		},
 
     textoSucursalesCalcular: function(){
-      const total = this.escazuConversations.length + this.zapoteConversations.length + this.cartagoConversations.length + this.herediaConversations.length + this.pendingConversations.length;
+      const total = this.escazuConversations.length + this.zapoteConversations.length + this.cartagoConversations.length + this.herediaConversations.length + this.planetVapeConversations.length + this.pendingConversations.length;
       return this.textoSucursales + '(' + total + ')'
     }
 

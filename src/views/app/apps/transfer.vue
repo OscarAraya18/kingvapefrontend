@@ -91,7 +91,7 @@ export default {
 
 
       transferIDOptions: [{value: 'S', text: '✔️'}, {value: 'N', text: '❌'}],
-      transferLocalityOptions: [{value: 'Escazu', text: 'King Vape Escazú'}, {value: 'Cartago', text: 'King Vape Cartago'}, {value: 'Zapote', text: 'King Vape Zapote'}, {value: 'Heredia', text: 'King Vape Heredia'}],
+      transferLocalityOptions: [{value: 'Escazu', text: 'King Vape Escazú'}, {value: 'Cartago', text: 'King Vape Cartago'}, {value: 'Zapote', text: 'King Vape Zapote'}, {value: 'Heredia', text: 'King Vape Heredia'}, {value: 'Planet Vape', text: 'Planet Vape'}],
 
       transferZapoteLocalityOptions: [{value: 'Zapote', text: 'King Vape Zapote'}, {value: 'Heredia', text: 'King Vape Heredia'}],
 
@@ -239,7 +239,7 @@ export default {
           storeMessageStoreName = 'Zapote';
         } else if (localStorage.getItem('localityName') == 'King Vape Heredia'){
           storeMessageStoreName = 'Heredia';
-        }
+        } 
       }
       
       axios.post(this.backendURL+'/selectStoreMessageByStoreMessageStoreName', {

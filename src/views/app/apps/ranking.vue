@@ -131,11 +131,9 @@ export default {
       const colorByAgent = 
       {
         'Sharon Espinoza': '#fae187',
-        'Sofia Hernandez': '#a0d995',
-        'Daniela Vega': '#dcd9f8',
         'Nicole Badilla': '#a2edce',
-        'Diana Jimenez': '#ffa8b8',
-        'Stef Ponce': '#b5dcf9',
+        'Mariana Mesen': '#ffa8b8',
+        'Daniela Murillo': '#fcac60',
         'Sergio Barrot': '#424880',
         'Jose Estrada': '#3e5c47',
         'Franco Chacon': '#8a8a8a',
