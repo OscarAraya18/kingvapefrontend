@@ -688,7 +688,7 @@
 
             
             
-            <div style="background-image: url('https://res.cloudinary.com/dgb3rge3m/image/upload/v1711808378/fondo_jwprd6.jpg');">
+            <div style="background-image: url('https://i.postimg.cc/HkJhz3Sz/qwd83nc4xxf41.jpg');">
               <vue-perfect-scrollbar ref="scrollRef" :settings="{ suppressScrollX: true, wheelPropagation: false }" class="chat-content perfect-scrollbar rtl-ps-none ps scroll" style="padding-bottom: 30px;">
                 <div v-for="currentActiveConversationMessage in currentActiveConversation.whatsappConversationMessages" @contextmenu.prevent="replyMessageRightClick(currentActiveConversationMessage)">
                   <div class="d-flex mb-30 appearMessageAnimation" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
@@ -1051,7 +1051,6 @@
                 </div>
                 <div class="form-group" style="display: flex; align-items: center;" v-if="availableConversation == true">
                   <b-form-textarea ref="textoEnviar" :disabled='sendingMessageDisable' class="form-control" placeholder="Escribe un mensaje" @keyup.enter="sendWhatsappTextMessage()" v-model="currentActiveConversation.textoEnviar" style="margin-bottom: 20px; width: 100%" no-resize rows="3"/>
-                  <button v-b-modal.emojiModal style="height: 40px; margin-bottom: 20px; margin-left: 10px;" class="btn btn-icon btn-rounded btn-primary i-Eyeglasses-Smiley" type="button"></button>
                   <b-modal scrollable centered id="emojiModal" hide-footer hide-header>
                     <div style="display: flex; justify-content: center;">
                       <emoji-picker class="light" @emoji-click="handleEmojiClick"></emoji-picker>
@@ -1105,25 +1104,22 @@
                   </b-dropdown>
                   <button v-if="availableConversation == true" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="uploadImage()" id="sendFiles"><i class="i-Folder-With-Document"></i></button>
                   <input v-if="availableConversation == true" type="file" accept="image/png, image/jpeg, application/pdf" @change="sendWhatsappImageMessage()" ref="imageFile" style="display: none;" id="imageUploader">
-                  <b-tooltip target="sendFiles">Enviar imágenes de la computadora</b-tooltip>
-                  <button v-if="availableConversation == true" id="sendFavoriteImages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal @click="deselectImages()"><i class="i-Folder"></i></button>
-                  <b-tooltip target="sendFavoriteImages">Enviar imágenes del catálogo</b-tooltip>
+                  <b-tooltip target="sendFiles">Archivos de la computadora</b-tooltip>
+                  
+                  <button v-if="availableConversation == true" id="sendDisposables" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.disposablesModal @click="deselectImages()">
+                    <i class="i-Shopping-Bag"></i>
+                  </button>
+                  <b-tooltip target="sendDisposables">Desechables</b-tooltip>
                   <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
                     <img style="width: 1000px;" :src="bigImageSource">
                   </b-modal>
-                  <b-modal @ok="sendWhatsappFavoriteImageMessage()" scrollable title="Catálogo de desechables" size="m" centered id="imageModal">
-                    
+                  <b-modal @ok="sendWhatsappFavoriteImageMessage()" scrollable title="Catálogo de desechables" size="m" centered id="disposablesModal">
                     <b-nav tabs justified>
                       <b-nav-item :active="getActiveNavItem('Nicotina')" @click="changeActiveNavItem('Nicotina')">Nicotina</b-nav-item>
                       <b-nav-item :active="getActiveNavItem('Zero')" @click="changeActiveNavItem('Zero')">Zero</b-nav-item>
-
                     </b-nav>
-
                     <br>
-
                     <div v-if="currentNavItem == 'Nicotina'">
-                      
-                      
                       <b-list-group style="height: 400px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
                         <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
@@ -1136,8 +1132,7 @@
                         </b-list-group-item>
                       </b-list-group>
                     </div>
-
-                    <div v-else-if="currentNavItem == 'Zero'">
+                    <div v-else>
                       <b-list-group style="height: 400px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
                         <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages2" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
@@ -1150,16 +1145,53 @@
                         </b-list-group-item>
                       </b-list-group>
                     </div>
-
-                    <div v-else>
-                      <div style="text-align: center">
-                        <p>El catálogo está siendo actualizado...</p>
-                      </div>
-                    </div>
-
                   </b-modal>
+
+                  <button v-if="availableConversation == true" id="sendLiquids" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.liquidsModal @click="deselectImages()">
+                    <i class="i-Drop"></i>
+                  </button>
+                  <b-tooltip target="sendLiquids">Líquidos</b-tooltip>
+                  <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
+                    <img style="width: 1000px;" :src="bigImageSource">
+                  </b-modal>
+                  <b-modal @ok="sendWhatsappFavoriteImageMessageLiquid()" scrollable title="Catálogo de líquidos" size="m" centered id="liquidsModal">
+                    <b-nav tabs justified>
+                      <b-nav-item :active="getActiveNavItemLiquid('Ice')" @click="changeActiveNavItemLiquid('Ice')">Ice</b-nav-item>
+                      <b-nav-item :active="getActiveNavItemLiquid('noIce')" @click="changeActiveNavItemLiquid('noIce')">No Ice</b-nav-item>
+                    </b-nav>
+                    <br>
+                    <div v-if="currentNavItemLiquid == 'Ice'">
+                      <b-list-group style="height: 400px; overflow-y: auto;">
+                        <b-list-group-item :variant="getAllFavoriteVariantLiquid()" style="cursor: pointer;" @click="selectAllFavoriteImageLiquid()">Seleccionar todo el catálogo</b-list-group-item>
+                        <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in liquids1" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImageLiquid(index)">
+                          <div style="display:flex; ">
+                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
+                            <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
+                              <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
+                            </div>
+                          </div>
+                        </b-list-group-item>
+                      </b-list-group>
+                    </div>
+                    <div v-else>
+                      <b-list-group style="height: 400px; overflow-y: auto;">
+                        <b-list-group-item :variant="getAllFavoriteVariantLiquid()" style="cursor: pointer;" @click="selectAllFavoriteImageLiquid()">Seleccionar todo el catálogo</b-list-group-item>
+                        <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in liquids2" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImageLiquid(index)">
+                          <div style="display:flex; ">
+                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
+                            <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
+                              <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
+                            </div>
+                          </div>
+                        </b-list-group-item>
+                      </b-list-group>
+                    </div>
+                  </b-modal>
+
+
+
                   <button v-if="availableConversation == true" id="sendFavoriteMessages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.favoriteModal @click="openAgentFavoriteMessagesModal()"><i class="i-Love"></i></button>
-                  <b-tooltip target="sendFavoriteMessages">Enviar mensajes favoritos</b-tooltip>
+                  <b-tooltip target="sendFavoriteMessages">Mensajes favoritos</b-tooltip>
                   
                   <b-modal scrollable title="Mensajes favoritos" size="m" centered hide-footer id="favoriteModal">
                     
@@ -1186,10 +1218,10 @@
                   </b-modal>
 
                   <button v-if="availableConversation == true" id="sendSticker" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="openSendStickerModal()" v-b-modal.sendStickerModal><i class="i-Teddy-Bear"></i></button>
-                  <b-tooltip target="sendSticker">Enviar sticker</b-tooltip>
+                  <b-tooltip target="sendSticker">Stickers</b-tooltip>
 
                   <button v-if="availableConversation == true" id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>
-                  <b-tooltip target="sendAudio">Enviar audio</b-tooltip>
+                  <b-tooltip target="sendAudio">Audio</b-tooltip>
                   <b-modal id="recordAudioModal" hide-footer hide-header size="sm" centered>
                     <div v-if="(!isRecording) && (loaderAudio == false)"><audio controls :src="recordedAudioFile" style="width:270px;"></audio><br></div>
                     <div v-if="isRecording" style="text-align: center;"><h2>{{recordedTime}}</h2></div>
@@ -1207,24 +1239,19 @@
 
                 <div v-if="agentType == 'admin'"> 
                   
-                  <button v-if="availableConversation == true" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="uploadImage()" id="sendFiles"><i class="i-Folder-With-Document"></i></button>
-                  <input v-if="availableConversation == true" type="file" accept="image/png, image/jpeg, application/pdf" @change="sendWhatsappImageMessage()" ref="imageFile" style="display: none;" id="imageUploader">
-                  <b-tooltip target="sendFiles">Enviar imágenes de la computadora</b-tooltip>
-                  <button v-if="availableConversation == true" id="sendFavoriteImages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.imageModal @click="deselectImages()"><i class="i-Folder"></i></button>
-                  <b-tooltip target="sendFavoriteImages">Enviar imágenes del catálogo</b-tooltip>
+                  <button v-if="availableConversation == true" id="sendDisposables" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.disposablesModal @click="deselectImages()">
+                    <i class="i-Shopping-Bag"></i>
+                  </button>
+                  <b-tooltip target="sendDisposables">Desechables</b-tooltip>
                   <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
                     <img style="width: 1000px;" :src="bigImageSource">
                   </b-modal>
-                  
-                  <b-modal @ok="sendWhatsappFavoriteImageMessage()" scrollable title="Catálogo de desechables" size="m" centered id="imageModal">
-                    
+                  <b-modal @ok="sendWhatsappFavoriteImageMessage()" scrollable title="Catálogo de desechables" size="m" centered id="disposablesModal">
                     <b-nav tabs justified>
                       <b-nav-item :active="getActiveNavItem('Nicotina')" @click="changeActiveNavItem('Nicotina')">Nicotina</b-nav-item>
                       <b-nav-item :active="getActiveNavItem('Zero')" @click="changeActiveNavItem('Zero')">Zero</b-nav-item>
                     </b-nav>
-
                     <br>
-
                     <div v-if="currentNavItem == 'Nicotina'">
                       <b-list-group style="height: 400px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
@@ -1238,11 +1265,10 @@
                         </b-list-group-item>
                       </b-list-group>
                     </div>
-
-                    <div v-else-if="currentNavItem == 'Zero'">
+                    <div v-else>
                       <b-list-group style="height: 400px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
-                        <b-list-group-item :style="getImageStyle(agentFavoriteImage)" v-for="(agentFavoriteImage, index) in agentFavoriteImages2" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
+                        <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages2" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
                           <div style="display:flex; ">
                             <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
                             <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
@@ -1252,13 +1278,47 @@
                         </b-list-group-item>
                       </b-list-group>
                     </div>
+                  </b-modal>
 
-                    <div v-else>
-                      <div style="text-align: center">
-                        <p>El catálogo está siendo actualizado...</p>
-                      </div>
+                  <button v-if="availableConversation == true" id="sendLiquids" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.liquidsModal @click="deselectImages()">
+                    <i class="i-Drop"></i>
+                  </button>
+                  <b-tooltip target="sendLiquids">Líquidos</b-tooltip>
+                  <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
+                    <img style="width: 1000px;" :src="bigImageSource">
+                  </b-modal>
+                  <b-modal @ok="sendWhatsappFavoriteImageMessageLiquid()" scrollable title="Catálogo de líquidos" size="m" centered id="liquidsModal">
+                    <b-nav tabs justified>
+                      <b-nav-item :active="getActiveNavItemLiquid('Ice')" @click="changeActiveNavItemLiquid('Ice')">Ice</b-nav-item>
+                      <b-nav-item :active="getActiveNavItemLiquid('noIce')" @click="changeActiveNavItemLiquid('noIce')">No Ice</b-nav-item>
+                    </b-nav>
+                    <br>
+                    <div v-if="currentNavItemLiquid == 'Ice'">
+                      <b-list-group style="height: 400px; overflow-y: auto;">
+                        <b-list-group-item :variant="getAllFavoriteVariantLiquid()" style="cursor: pointer;" @click="selectAllFavoriteImageLiquid()">Seleccionar todo el catálogo</b-list-group-item>
+                        <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in liquids1" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImageLiquid(index)">
+                          <div style="display:flex; ">
+                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
+                            <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
+                              <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
+                            </div>
+                          </div>
+                        </b-list-group-item>
+                      </b-list-group>
                     </div>
-
+                    <div v-else>
+                      <b-list-group style="height: 400px; overflow-y: auto;">
+                        <b-list-group-item :variant="getAllFavoriteVariantLiquid()" style="cursor: pointer;" @click="selectAllFavoriteImageLiquid()">Seleccionar todo el catálogo</b-list-group-item>
+                        <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in liquids2" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImageLiquid(index)">
+                          <div style="display:flex; ">
+                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
+                            <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
+                              <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
+                            </div>
+                          </div>
+                        </b-list-group-item>
+                      </b-list-group>
+                    </div>
                   </b-modal>
 
                   <button v-if="availableConversation == true" id="sendFavoriteMessages" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.favoriteModal @click="openAgentFavoriteMessagesModal()"><i class="i-Love"></i></button>
@@ -1762,6 +1822,7 @@ export default {
       loaderAudio: false,
 
       allImageSelected: false,
+      allImageSelectedLiquid: false,
 
       availableConversation: true,
       
@@ -1884,6 +1945,8 @@ export default {
       agentFavoriteImages: [],
       agentFavoriteImages2: [],
       agentFavoriteImages3: [],
+      liquids1: [],
+      liquids2: [],
 
       recordAudioDialog: false,
       isRecording: false,
@@ -1900,6 +1963,7 @@ export default {
       currentActiveConversationID: null,
 
       currentNavItem: 'Nicotina',
+      currentNavItemLiquid: 'Ice',
       currentStickerItem: 'Mis stickers',
 
       paymentMethodValidatorPhoneNumber: '',
@@ -2483,38 +2547,21 @@ export default {
       return false;
     },
 
+    getActiveNavItemLiquid(navItem){
+      if (this.currentNavItemLiquid == navItem){
+        return true;
+      }
+      return false;
+    },
+
+    changeActiveNavItemLiquid(navItem){
+      this.currentNavItemLiquid = navItem;
+      this.deselectImages();
+    },
+
     changeActiveNavItem(navItem){
       this.currentNavItem = navItem;
       this.deselectImages();
-
-      if (navItem == 'Actualizar'){
-        axios.post(constants.routes.backendAPI+'/selectAgentFavoriteMessages',{
-          agentID: parseInt(localStorage.getItem('agentID'))
-        })
-        .then(response =>{ 
-          if (response.data.success == true){
-            localStorage.setItem('agentFavoriteMessages', JSON.stringify(response.data.result));
-            this.$bvToast.toast("Se ha actualizado el catálogo según la última versión disponible.", {
-              title: "Catálogo actualizado",
-              variant: "info",
-              solid: true
-            });
-          } else {
-            this.$bvToast.toast("Ha ocurrido un error al consultar las imágenes del catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-              title: "Error al consultar las imágenes del catálogo",
-              variant: "danger",
-              solid: true
-            });
-          }
-        })
-        .catch(() =>{
-          this.$bvToast.toast("Ha ocurrido un error al consultar las imágenes del catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-            title: "Error al consultar las imágenes del catálogo",
-            variant: "danger",
-            solid: true
-          });
-        })
-      }
     },
 
     getIncomingMessagesAmount(messages){
@@ -2712,6 +2759,10 @@ export default {
                 this.agentFavoriteImages2.push(response.data.result[agentFavoriteImageIndex]);
               } else if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'message'){
                 this.agentFavoriteImages3.push(response.data.result[agentFavoriteImageIndex]);
+              } else if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'ice'){
+                this.liquids1.push(response.data.result[agentFavoriteImageIndex]);
+              } else if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'noIce'){
+                this.liquids2.push(response.data.result[agentFavoriteImageIndex]);
               }
             }
             for (var agentFavoriteImageIndex in this.agentFavoriteImages){
@@ -2719,6 +2770,12 @@ export default {
             }
             for (var agentFavoriteImageIndex in this.agentFavoriteImages2){
               this.agentFavoriteImages2[agentFavoriteImageIndex]['selected'] = false;
+            }
+            for (var agentFavoriteImageIndex in this.liquids1){
+              this.liquids1[agentFavoriteImageIndex]['selected'] = false;
+            }
+            for (var agentFavoriteImageIndex in this.liquids2){
+              this.liquids2[agentFavoriteImageIndex]['selected'] = false;
             }
           } else {
             this.showNotification('danger', 'Error al consultar las imágenes del catálogo', 'Ha ocurrido un error inesperado al consultar las imágenes del catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
@@ -2735,6 +2792,12 @@ export default {
       }
       for (var agentFavoriteImageIndex in this.agentFavoriteImages2){
         this.agentFavoriteImages2[agentFavoriteImageIndex]['selected'] = false;
+      }
+      for (var agentFavoriteImageIndex in this.liquids1){
+        this.liquids1[agentFavoriteImageIndex]['selected'] = false;
+      }
+      for (var agentFavoriteImageIndex in this.liquids2){
+        this.liquids2[agentFavoriteImageIndex]['selected'] = false;
       }
     },
 
@@ -2911,11 +2974,38 @@ export default {
       }
     },
 
+    getAllFavoriteVariantLiquid(){
+      var variant = 'success';
+      if (this.currentNavItemLiquid == 'Ice'){
+        for(var imageIndex in this.liquids1){
+          if (this.liquids1[imageIndex].selected == false){
+            return 'default';
+          };
+        } 
+        return variant;
+      } else {
+        for(var imageIndex in this.liquids2){
+          if (this.liquids2[imageIndex].selected == false){
+            return 'default';
+          };
+        }
+        return variant;
+      }
+    },
+
     selectFavoriteImage(image){
       if (this.currentNavItem == 'Nicotina'){
         this.$set(this.agentFavoriteImages, image, { ...this.agentFavoriteImages[image], selected: !this.agentFavoriteImages[image].selected });
       } else {
         this.$set(this.agentFavoriteImages2, image, { ...this.agentFavoriteImages2[image], selected: !this.agentFavoriteImages2[image].selected });
+      }
+    },
+
+    selectFavoriteImageLiquid(image){
+      if (this.currentNavItemLiquid == 'Ice'){
+        this.$set(this.liquids1, image, { ...this.liquids1[image], selected: !this.liquids1[image].selected });
+      } else {
+        this.$set(this.liquids2, image, { ...this.liquids2[image], selected: !this.liquids2[image].selected });
       }
     },
 
@@ -2942,6 +3032,31 @@ export default {
         }
       }
       this.allImageSelected = !this.allImageSelected;
+    },
+
+    selectAllFavoriteImageLiquid(){
+      if (this.currentNavItemLiquid == 'Ice'){
+        if (this.allImageSelectedLiquid == false){
+          for (var imageIndex in this.liquids1) {
+            this.$set(this.liquids1, imageIndex, { ...this.liquids1[imageIndex], selected: true });
+          }
+        } else {
+          for (var imageIndex in this.liquids1) {
+            this.$set(this.liquids1, imageIndex, { ...this.liquids1[imageIndex], selected: false });
+          }
+        }
+      } else {
+        if (this.allImageSelected == false){
+          for (var imageIndex in this.liquids2) {
+            this.$set(this.liquids2, imageIndex, { ...this.liquids2[imageIndex], selected: true });
+          }
+        } else {
+          for (var imageIndex in this.liquids2) {
+            this.$set(this.liquids2, imageIndex, { ...this.liquids2[imageIndex], selected: false });
+          }
+        }
+      }
+      this.allImageSelectedLiquid = !this.allImageSelectedLiquid;
     },
 
     
@@ -3600,7 +3715,63 @@ export default {
           }
         }
       }
+      this.sortConversations();
+    },
+
+    async sendWhatsappFavoriteImageMessageLiquid(){
+      const currentConversation = this.currentActiveConversation;
       
+      if (this.currentNavItemLiquid == 'Ice'){
+        for (var image in this.liquids1){
+          if (this.liquids1[image].selected){       
+            await axios.post(constants.routes.backendAPI+'/sendWhatsappFavoriteImageMessage', 
+            {
+              whatsappConversationRecipientPhoneNumber: currentConversation.whatsappConversationRecipientPhoneNumber,
+              whatsappFavoriteImageMessageContent: this.liquids1[image],
+              whatsappFavoriteImageMessageCaption: null
+            })
+            .then((response) => {
+              if (response.data.success){
+                this.liquids1[image].selected = false;
+                this.repliedMessage = null;
+                const whatsappConversationID = response.data.result.whatsappConversationID;
+                this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
+                this.scrollDown();
+              } else {
+                this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+              }
+            })
+            .catch((error) =>{
+              this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+            })
+          }
+        }
+      } else {
+        for (var image in this.liquids2){
+          if (this.liquids2[image].selected){       
+            await axios.post(constants.routes.backendAPI+'/sendWhatsappFavoriteImageMessage', 
+            {
+              whatsappConversationRecipientPhoneNumber: currentConversation.whatsappConversationRecipientPhoneNumber,
+              whatsappFavoriteImageMessageContent: this.liquids2[image],
+              whatsappFavoriteImageMessageCaption: null
+            })
+            .then((response) => {
+              if (response.data.success){
+                this.liquids2[image].selected = false;
+                this.repliedMessage = null;
+                const whatsappConversationID = response.data.result.whatsappConversationID;
+                this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
+                this.scrollDown();
+              } else {
+                this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+              }
+            })
+            .catch((error) =>{
+              this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+            })
+          }
+        }
+      }
       this.sortConversations();
     },
 
