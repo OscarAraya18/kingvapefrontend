@@ -2457,18 +2457,7 @@ export default {
             
           }, 1000);
 
-          axios.get(constants.routes.backendAPI+'/selectTodayDashboardInformation').then((response) =>{
-            this.whatsappTotalConversations = response.data.result.whatsappTotalConversations;
-            this.whatsappSelledConversations = response.data.result.whatsappSelledConversations;
-            this.whatsappNotSelledConversations = response.data.result.whatsappNotSelledConversations;
-            this.whatsappPendingConversations = response.data.result.whatsappPendingConversations;
-            this.whatsappTotalSells = response.data.result.whatsappTotalSells.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
-            this.whatsappSendedMessages = response.data.result.whatsappSendedMessages;
-            this.whatsappReceivedMessages = response.data.result.whatsappReceivedMessages;
-          })
-          .catch((error) =>{
-            console.log(error);
-          })
+          
         } else {
           
         }
