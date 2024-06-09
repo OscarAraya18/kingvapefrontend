@@ -7,7 +7,7 @@
         <GmapMarker :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
         <GmapMarker :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
         
-        <GmapPolygon @paths_changed="updateEdited($event)" :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
+        <GmapPolygon @paths_changed="updateEdited($event)" :paths="cartagoMap" :options="cartagoMapOptions" :editable="true"></GmapPolygon>
         <GmapPolygon @paths_changed="updateEdited($event)" :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
         <GmapPolygon @paths_changed="updateEdited($event)" :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
         <GmapPolygon @paths_changed="updateEdited($event)" :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
