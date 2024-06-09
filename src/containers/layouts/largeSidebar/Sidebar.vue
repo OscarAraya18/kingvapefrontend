@@ -105,7 +105,7 @@
             data-item="transfer"
             :class="{ active: selectedParentMenu == 'transfer' }"
             :data-submenu="false"
-            v-if="isAdmin == true || locality == true"
+            v-if="isAdmin == true || agentName == 'Diana Jimenez' || locality == true"
           >
             <router-link tag="a" class="nav-item-hold" to="/app/apps/transfer">
               <i class="nav-icon i-Arrow-Right-2"></i>
@@ -892,6 +892,7 @@ export default {
       selectedParentMenu: "",
       isMobile,
       isAdmin: '',
+      agentName: '',
       ranking: false,
 
       locality: false,
@@ -913,7 +914,7 @@ export default {
     window.addEventListener("resize", this.handleWindowResize);
     document.addEventListener("click", this.returnSelectedParentMenu);
     this.handleWindowResize();
-
+    this.agentName = localStorage.getItem('agentName');
     if (localStorage.getItem('agentType') == 'admin'){
       this.isAdmin = true;
     } else {
