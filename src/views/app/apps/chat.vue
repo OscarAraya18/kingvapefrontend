@@ -1078,6 +1078,9 @@
                     </b-dropdown><br><br>
                     <b-form-textarea no-resize rows="5" disabled="true" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
                     <br>
+                    <b-form-textarea v-if="closeConversationReason == 'Reclamo o garantía'" no-resize rows="3" class="form-control" placeholder="Productos relacionados al reclamo" v-model="wrongProducts"/>   
+
+                    <br>
                     <b-form-checkbox id="checkbox-1" v-model="sendEndMessage">Enviar mensaje de despedida</b-form-checkbox>
                   </b-modal>
                   <b-dropdown dropup variant="primary" text="Transferir">
@@ -1385,7 +1388,10 @@
                         <b-dropdown-item @click="addCloseConversationReason('Menor de edad')">Menor de edad</b-dropdown-item>
                         <b-dropdown-item @click="addCloseConversationReason('Error')">Error</b-dropdown-item>
                       </b-dropdown><br><br>
-                      <b-form-textarea no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
+                      <b-form-textarea no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/> 
+                      <br>
+                      <b-form-textarea v-if="closeConversationReason == 'Reclamo o garantía'" no-resize rows="3" class="form-control" placeholder="Productos relacionados al reclamo" v-model="wrongProducts"/>   
+   
                       <br>
                       <b-form-checkbox id="checkbox-1" v-model="sendEndMessage">Enviar mensaje de despedida</b-form-checkbox>
                     </b-modal>
@@ -1838,6 +1844,7 @@ export default {
       textoSucursales: 'Sucursales ',
 
       closeConversationReason: '', 
+      wrongProducts: '',
       transferRequestName: '',
       transferFromAgentID: '',
       transferConversationID: '',
@@ -2130,6 +2137,7 @@ export default {
     openEndConversationModal(){
       this.selectedCloseLocality = 'Seleccione una localidad';
       this.closeConversationReason = '';
+      this.wrongProducts = '';
     },
 
     fixTotal(){
@@ -4011,7 +4019,7 @@ export default {
           axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
           {
             whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
-            whatsappConversationCloseComment: this.closeConversationReason,
+            whatsappConversationCloseComment: this.closeConversationReason + ' ' + this.wrongProducts,
             whatsappConversationAmount: 0,
             whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
             whatsappConversationProducts: [],

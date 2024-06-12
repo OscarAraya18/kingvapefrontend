@@ -1,6 +1,8 @@
 <template>
   
   <div class="main-content">
+    <b-form-input v-model="conversationID" @keyup.enter="openHistoryConversationFromConversationID()" placeholder='ID de la conversación' style='margin-bottom: 10px;'></b-form-input>
+    <br>
     <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
       <img style="width: 1000px;" :src="bigImageSource">
     </b-modal>
@@ -652,6 +654,8 @@ export default {
   },
   data() {
     return {
+      conversationID: '',
+
       cartagoMap: [],
       cartagoMapOptions: {},
       herediaMap: [],
@@ -881,6 +885,27 @@ export default {
         if (response.data.success){
           this.$root.$emit('bv::hide::modal','historyConversationsModal');
           this.currentHistoryConversation = response.data.result[historyConversation.whatsappConversationID];
+          this.openHistoryLoader = false;
+        } else {
+          this.showNotification('danger', 'Error al abrir la conversación del historial', 'Ha ocurrido un error inesperado al abrir la conversación del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        this.showNotification('danger', 'Error al abrir la conversación del historial', 'Ha ocurrido un error inesperado al abrir la conversación del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+    openHistoryConversationFromConversationID(){
+      this.openHistoryLoader = true;
+      this.currentHistoryConversation = {};
+      axios.post(constants.routes.backendAPI+'/selectAgentConversation', 
+      {
+        whatsappConversationID: this.conversationID
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.$root.$emit('bv::show::modal','historyOpenModal');
+          this.currentHistoryConversation = response.data.result[this.conversationID];
           this.openHistoryLoader = false;
         } else {
           this.showNotification('danger', 'Error al abrir la conversación del historial', 'Ha ocurrido un error inesperado al abrir la conversación del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
