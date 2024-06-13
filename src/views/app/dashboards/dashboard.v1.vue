@@ -1631,6 +1631,13 @@ export default {
   },
 
   mounted(){
+    let todayInitialDate = new Date();
+    todayInitialDate.setHours(0, 0, 0, 0);
+    this.todayInitialDate = todayInitialDate;
+    let todayEndDate = new Date();
+    todayEndDate.setHours(23, 59, 59, 999);
+    this.todayEndDate = todayEndDate;
+  
     this.cartagoMap = constants.routes.cartagoMap;
     this.herediaMap = constants.routes.herediaMap;
     this.zapoteMap = constants.routes.zapoteMap;
@@ -2049,7 +2056,6 @@ export default {
 
     selectTodayConversationsByLocalityNameAndType(whatsappConversationLocalityName, whatsappConversationType){
       this.localityLoader = true;
-      if (this.todayInitialDate == null && this.todayEndDate == null){
         this.$root.$emit('bv::show::modal', 'conversationListModal');
         axios.post(constants.routes.backendAPI+'/selectTodayConversationsByLocalityNameAndType', 
         {
@@ -2068,10 +2074,7 @@ export default {
           this.whatsappFeedbackLoading = false;
           this.showNotification('danger', 'Error al consultar las conversaciones', 'Ha ocurrido un error inesperado al consultar las conversaciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         })
-      } else {
-        this.showNotification('info', 'Error al consultar las conversaciones', 'Para consultar conversaciones de días anteriores, dirigase al apartado de "Reportes".');
-
-      }
+      
     },
 
     cleanAgentFilter(){
