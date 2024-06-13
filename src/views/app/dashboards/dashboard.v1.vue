@@ -1771,9 +1771,14 @@ export default {
     },
 
     returnForToday(){
+      let todayInitialDate = new Date();
+      todayInitialDate.setHours(0, 0, 0, 0);
+      this.todayInitialDate = todayInitialDate;
+      let todayEndDate = new Date();
+      todayEndDate.setHours(23, 59, 59, 999);
+      this.todayEndDate = todayEndDate;
       this.selectTodayInformation();
-      this.todayInitialDate = null;
-      this.todayEndDate = null;
+      
     },
 
     updateApplicationLive(){
