@@ -7,16 +7,13 @@
         <GmapMarker :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
         <GmapMarker :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
         
-        <GmapPolygon @paths_changed="updateEdited($event)" :paths="cartagoMap" :options="cartagoMapOptions" :editable="true"></GmapPolygon>
+        <GmapPolygon @paths_changed="updateEdited($event)" :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
         <GmapPolygon @paths_changed="updateEdited($event)" :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
         <GmapPolygon @paths_changed="updateEdited($event)" :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
         <GmapPolygon @paths_changed="updateEdited($event)" :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
 
         <GmapPolygon @paths_changed="updateEdited($event)" :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-        <GmapMarker :position="{lat: 9.9619982, lng: -84.1453169}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-        <GmapMarker :position="{lat: 9.9588093, lng: -84.0996049}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-        <GmapMarker :position="{lat: 9.9091783, lng: -84.0996579}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-        <GmapMarker :position="{lat: 9.9622643, lng: -84.0123009}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
+        
 
       </GmapMap>
     </b-modal>

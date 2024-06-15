@@ -934,6 +934,7 @@ export default {
         initialDate: null,
         endDate: null
       }).then((response) =>{
+        console.log(constants.routes.backendAPI)
         this.conversacionesTotales = response.data.result.total.whatsappTotalConversations;
         this.conversacionesVendidas = response.data.result.total.whatsappSelledConversations;
         this.conversacionesNoVendidas = response.data.result.total.whatsappNotSelledConversations;
