@@ -12,7 +12,7 @@
         <GmapPolygon @paths_changed="updateEdited($event)" :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
         <GmapPolygon @paths_changed="updateEdited($event)" :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
 
-        <GmapPolygon @paths_changed="updateEdited($event)" :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
+        <GmapPolygon @paths_changed="updateEdited($event)" :paths="redMap" :options="redMapOptions" :editable="true"></GmapPolygon>
         
 
       </GmapMap>

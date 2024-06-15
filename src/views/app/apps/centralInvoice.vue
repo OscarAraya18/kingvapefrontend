@@ -38,10 +38,7 @@
         </GmapMarker>
 
         <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-        <GmapMarker :position="{lat: 9.9619982, lng: -84.1453169}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-        <GmapMarker :position="{lat: 9.9588093, lng: -84.0996049}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-        <GmapMarker :position="{lat: 9.9091783, lng: -84.0996579}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-        <GmapMarker :position="{lat: 9.9622643, lng: -84.0123009}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
+        
       </GmapMap>
     </b-modal>
     
@@ -294,10 +291,7 @@
             <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
 
             <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-            <GmapMarker :position="{lat: 9.9619982, lng: -84.1453169}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-            <GmapMarker :position="{lat: 9.9588093, lng: -84.0996049}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-            <GmapMarker :position="{lat: 9.9091783, lng: -84.0996579}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-            <GmapMarker :position="{lat: 9.9622643, lng: -84.0123009}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
+            
           </GmapMap>
           <br>
           <div style="display: flex;">
@@ -377,10 +371,7 @@
         <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
 
         <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-        <GmapMarker :position="{lat: 9.9619982, lng: -84.1453169}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-        <GmapMarker :position="{lat: 9.9588093, lng: -84.0996049}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-        <GmapMarker :position="{lat: 9.9091783, lng: -84.0996579}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-        <GmapMarker :position="{lat: 9.9622643, lng: -84.0123009}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
+        
       </GmapMap>
       <br>
 
@@ -460,10 +451,7 @@
             <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
             <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
             <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-            <GmapMarker :position="{lat: 9.9619982, lng: -84.1453169}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-            <GmapMarker :position="{lat: 9.9588093, lng: -84.0996049}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-            <GmapMarker :position="{lat: 9.9091783, lng: -84.0996579}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-            <GmapMarker :position="{lat: 9.9622643, lng: -84.0123009}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
+            
           </GmapMap>
           <br>
 
@@ -587,10 +575,7 @@
             <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
             <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
             <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-            <GmapMarker :position="{lat: 9.9619982, lng: -84.1453169}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-            <GmapMarker :position="{lat: 9.9588093, lng: -84.0996049}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-            <GmapMarker :position="{lat: 9.9091783, lng: -84.0996579}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-            <GmapMarker :position="{lat: 9.9622643, lng: -84.0123009}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
+            
           </GmapMap>
           <br>
           <div style="display: flex;">

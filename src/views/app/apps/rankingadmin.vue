@@ -38,10 +38,7 @@
             <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
 
             <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-            <GmapMarker :position="{lat: 9.9619982, lng: -84.1453169}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-            <GmapMarker :position="{lat: 9.9588093, lng: -84.0996049}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-            <GmapMarker :position="{lat: 9.9091783, lng: -84.0996579}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-            <GmapMarker :position="{lat: 9.9622643, lng: -84.0123009}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
+            
           </GmapMap><br>
 
           <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{historyMessage.whatsappLocationMessageLatitude}}</p>
@@ -276,10 +273,7 @@
                                 <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
 
                                 <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-                                <GmapMarker :position="{lat: 9.9619982, lng: -84.1453169}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-                                <GmapMarker :position="{lat: 9.9588093, lng: -84.0996049}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-                                <GmapMarker :position="{lat: 9.9091783, lng: -84.0996579}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-                                <GmapMarker :position="{lat: 9.9622643, lng: -84.0123009}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
+                                
                               
                               </GmapMap><br>
 
@@ -332,10 +326,7 @@
                         <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
 
                         <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-                        <GmapMarker :position="{lat: 9.9619982, lng: -84.1453169}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-                        <GmapMarker :position="{lat: 9.9588093, lng: -84.0996049}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-                        <GmapMarker :position="{lat: 9.9091783, lng: -84.0996579}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-                        <GmapMarker :position="{lat: 9.9622643, lng: -84.0123009}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
+
                       </GmapMap><br>
                       <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
                       <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
@@ -418,10 +409,7 @@
                                 <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
 
                                 <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-                                <GmapMarker :position="{lat: 9.9619982, lng: -84.1453169}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-                                <GmapMarker :position="{lat: 9.9588093, lng: -84.0996049}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-                                <GmapMarker :position="{lat: 9.9091783, lng: -84.0996579}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-                                <GmapMarker :position="{lat: 9.9622643, lng: -84.0123009}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
+                                
                               </GmapMap><br>
                               <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
                               <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
@@ -467,10 +455,7 @@
                         <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
 
                         <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-                        <GmapMarker :position="{lat: 9.9619982, lng: -84.1453169}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-                        <GmapMarker :position="{lat: 9.9588093, lng: -84.0996049}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-                        <GmapMarker :position="{lat: 9.9091783, lng: -84.0996579}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
-                        <GmapMarker :position="{lat: 9.9622643, lng: -84.0123009}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/death.png')}"/>
+
                       </GmapMap><br>
                       <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
                       <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
