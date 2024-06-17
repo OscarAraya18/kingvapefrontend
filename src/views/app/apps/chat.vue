@@ -1029,7 +1029,7 @@
                 </div>
 
                 <div class="d-flex" v-if="agentType == 'agent'"> 
-                  <button class="btn btn-primary mr-2" type="button" @click="openEndConversationModal()" v-b-modal.endConversationModal>Finalizar sin venta</button>
+                  <button class="btn btn-primary mr-2" type="button" @click="openEndConversationModal()" v-b-modal.endConversationModal>Finalizar</button>
                   <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación sin venta" @ok="closeWhatsappConversation()">
                     <b-form-select v-model="selectedCloseLocality" :options="closeLocalityOptions"></b-form-select>
                     <br><br><br>
@@ -1054,7 +1054,7 @@
                     <b-form-checkbox id="checkbox-1" v-model="sendEndMessage">Enviar mensaje de despedida</b-form-checkbox>
                   </b-modal>
 
-                  <button class="btn btn-primary mr-2" type="button" v-b-modal.closeDuplicateModal>Cerrar duplicado</button>
+                  <button class="btn btn-primary mr-2" type="button" v-b-modal.closeDuplicateModal>Duplicado</button>
                   <b-modal scrollable size="m" centered id="closeDuplicateModal" title="Cerrar duplicado" @ok="closeWhatsappDuplicateConversation()">
                     <p>¿Estás seguro de cerrar esta conversación como duplicada? Esta acción no es reversible</p>
                   </b-modal>
@@ -1347,7 +1347,7 @@
                   </b-modal>
 
                   <div style="margin-top: 10px;">
-                    <button class="btn btn-primary mr-2" type="button" @click="openEndConversationModal()" v-b-modal.endConversationModal>Finalizar sin venta</button>
+                    <button class="btn btn-primary mr-2" type="button" @click="openEndConversationModal()" v-b-modal.endConversationModal>Finalizar</button>
                     <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación sin venta" @ok="closeWhatsappConversation()">
                       <b-form-select v-model="selectedCloseLocality" :options="closeLocalityOptions"></b-form-select>
                       <br><br><br>
@@ -1373,7 +1373,7 @@
                     </b-modal>
 
 
-                    <button class="btn btn-primary mr-2" type="button" v-b-modal.closeDuplicateModal>Cerrar duplicado</button>
+                    <button class="btn btn-primary mr-2" type="button" v-b-modal.closeDuplicateModal>Duplicado</button>
                     <b-modal scrollable size="m" centered id="closeDuplicateModal" title="Cerrar duplicado" @ok="closeWhatsappDuplicateConversation()">
                       <p>¿Estás seguro de cerrar esta conversación  como duplicada? Esta acción no es reversible</p>
                     </b-modal>
