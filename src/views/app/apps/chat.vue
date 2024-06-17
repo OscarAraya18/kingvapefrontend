@@ -3959,6 +3959,8 @@ export default {
 
           if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationURL']){
             this.whatsappInvoiceClientLocationURL = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationURL'];
+          } else {
+            this.whatsappInvoiceClientLocationURL = '';
           }
           if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceShippingNote']){
             currentActiveConversation.whatsappConversationRecipientLocationDetails = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceShippingNote'];

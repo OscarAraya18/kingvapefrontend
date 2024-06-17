@@ -887,12 +887,13 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Contacto encontrado', 'El nombre del cliente es "' + response.data.result[0].contactName + '".')
+          this.showNotification('success', 'Contacto encontrado', 'El nombre del cliente es "' + response.data.result[0].contactName + '".');
         } else {
           this.showNotification('danger', 'Error al buscar el contacto', 'Ha ocurrido un error inesperado al buscar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
       .catch((error) => {
+        console.log(error);
         this.showNotification('danger', 'Error al buscar el contacto', 'Ha ocurrido un error inesperado al buscar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
