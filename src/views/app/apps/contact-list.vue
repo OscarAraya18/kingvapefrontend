@@ -1,7 +1,7 @@
 <template>
   
   <div class="main-content">
-    <b-form-input v-model="conversationID" @keyup.enter="openHistoryConversationFromConversationID()" placeholder='ID de la conversación' style='margin-bottom: 10px;'></b-form-input>
+    <b-form-input v-model="contactPhoneNumber" @keyup.enter="openContactFromPhoneNumber()" placeholder='Número de teléfono' style='margin-bottom: 10px;'></b-form-input>
     <br>
     <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
       <img style="width: 1000px;" :src="bigImageSource">
@@ -636,7 +636,7 @@ export default {
   },
   data() {
     return {
-      conversationID: '',
+      contactPhoneNumber: '',
 
       cartagoMap: [],
       cartagoMapOptions: {},
@@ -874,6 +874,23 @@ export default {
       })
       .catch((error) => {
         this.showNotification('danger', 'Error al abrir la conversación del historial', 'Ha ocurrido un error inesperado al abrir la conversación del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+    openContactFromPhoneNumber(){
+      axios.post(constants.routes.backendAPI+'/selectContact', 
+      {
+        contactPhoneNumber: this.contactPhoneNumber
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.showNotification('success', 'Contacto encontrado', 'El nombre del cliente es "' + response.data.result[0].contactName + '".')
+        } else {
+          this.showNotification('danger', 'Error al buscar el contacto', 'Ha ocurrido un error inesperado al buscar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        this.showNotification('danger', 'Error al buscar el contacto', 'Ha ocurrido un error inesperado al buscar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
 
