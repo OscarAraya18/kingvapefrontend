@@ -1029,8 +1029,8 @@
                 </div>
 
                 <div class="d-flex" v-if="agentType == 'agent'"> 
-                  <button class="btn btn-primary mr-2" type="button" @click="openEndConversationModal()" v-b-modal.endConversationModal>Finalizar</button>
-                  <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación" @ok="closeWhatsappConversation()">
+                  <button class="btn btn-primary mr-2" type="button" @click="openEndConversationModal()" v-b-modal.endConversationModal>Finalizar sin venta</button>
+                  <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación sin venta" @ok="closeWhatsappConversation()">
                     <b-form-select v-model="selectedCloseLocality" :options="closeLocalityOptions"></b-form-select>
                     <br><br><br>
                     
@@ -1053,6 +1053,12 @@
                     <br>
                     <b-form-checkbox id="checkbox-1" v-model="sendEndMessage">Enviar mensaje de despedida</b-form-checkbox>
                   </b-modal>
+
+                  <button class="btn btn-primary mr-2" type="button" v-b-modal.closeDuplicateModal>Cerrar duplicado</button>
+                  <b-modal scrollable size="m" centered id="closeDuplicateModal" title="Cerrar duplicado" @ok="closeWhatsappDuplicateConversation()">
+                    <p>¿Estás seguro de cerrar esta conversación como duplicada? Esta acción no es reversible</p>
+                  </b-modal>
+
                   <b-dropdown dropup variant="primary" text="Transferir">
                     <template v-for="agent in agents">
                       <b-dropdown-item :style="getAgentColor(agent)" @click="requestTransferWhatsappConversation(agent)">
@@ -1341,8 +1347,8 @@
                   </b-modal>
 
                   <div style="margin-top: 10px;">
-                    <button class="btn btn-primary mr-2" type="button" @click="openEndConversationModal()" v-b-modal.endConversationModal>Finalizar</button>
-                    <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación" @ok="closeWhatsappConversation()">
+                    <button class="btn btn-primary mr-2" type="button" @click="openEndConversationModal()" v-b-modal.endConversationModal>Finalizar sin venta</button>
+                    <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación sin venta" @ok="closeWhatsappConversation()">
                       <b-form-select v-model="selectedCloseLocality" :options="closeLocalityOptions"></b-form-select>
                       <br><br><br>
                       
@@ -1365,6 +1371,14 @@
                       <br>
                       <b-form-checkbox id="checkbox-1" v-model="sendEndMessage">Enviar mensaje de despedida</b-form-checkbox>
                     </b-modal>
+
+
+                    <button class="btn btn-primary mr-2" type="button" v-b-modal.closeDuplicateModal>Cerrar duplicado</button>
+                    <b-modal scrollable size="m" centered id="closeDuplicateModal" title="Cerrar duplicado" @ok="closeWhatsappDuplicateConversation()">
+                      <p>¿Estás seguro de cerrar esta conversación  como duplicada? Esta acción no es reversible</p>
+                    </b-modal>
+
+
                     <b-dropdown dropup variant="primary" text="Transferir">
                       <template v-for="agent in agents">
                         <b-dropdown-item :style="getAgentColor(agent)" @click="requestTransferWhatsappConversation(agent)">
@@ -3980,6 +3994,44 @@ export default {
         }, 1);
     },
 
+    closeWhatsappDuplicateConversation(){
+      if (this.currentActiveConversationID){
+        axios.post(constants.routes.backendAPI+'/closeWhatsappDuplicateConversation',
+        {
+          whatsappConversationID: this.currentActiveConversationID
+        })
+        .then((response) =>{ 
+          if (response.data.success){
+            this.showNotification('success', 'Conversación cerrada', "Se ha cerrado la conversación asociada al número '" + this.currentActiveConversation.whatsappConversationRecipientPhoneNumber + "'.");
+            
+            const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
+            if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+              delete ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
+            }
+            localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
+
+            const datosActualesLocalStorage = JSON.parse(localStorage.getItem('datosActuales'));
+            if (datosActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+              delete datosActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
+            }
+            localStorage.setItem('datosActuales', JSON.stringify(datosActualesLocalStorage));
+
+            delete this.activeConversationsAsJSON[this.currentActiveConversationID];
+            this.currentActiveConversation = null;
+            this.repliedMessage = null;
+            this.sortConversations();
+          } else {
+            this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }
+        })
+        .catch(() =>{
+          this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        })
+      } else {
+        this.showNotification('danger', 'Error al cerrar la conversación', 'Ha ocurrido un error inesperado al cerrar la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      }
+    },
+
     closeWhatsappConversation(){
       if (this.selectedCloseLocality == 'Seleccione una localidad'){
         this.showNotification('danger', 'Error al cerrar la conversación', 'Por favor, complete la sucursal relacionada a la conversación por cerrar. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
@@ -4141,7 +4193,6 @@ export default {
       .then((response) =>{
         
         if (response.data.success){
-          
           const respondedActiveConversations = response.data.result;
           const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
           const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
