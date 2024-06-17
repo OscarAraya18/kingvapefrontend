@@ -1,7 +1,6 @@
 <template>
   
   <div class="main-content">
-    <b-form-input v-model="contactPhoneNumber" @keyup.enter="openContactFromPhoneNumber()" placeholder='Número de teléfono' style='margin-bottom: 10px;'></b-form-input>
     <br>
     <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
       <img style="width: 1000px;" :src="bigImageSource">
@@ -69,6 +68,8 @@
     <h3><strong>Cantidad de contactos:</strong> {{contactAmount}}</h3>
     <br><br>
 
+    <b-form-input v-model="contactPhoneNumber" @keyup.enter="openContactFromPhoneNumber()" placeholder='Número de teléfono' style='margin-bottom: 10px;'></b-form-input>
+    <br>
 
     <b-form-select v-model="contactLetter" class="mb-3" :options="contactLettersOptions" @change="getContacts">
     </b-form-select>
