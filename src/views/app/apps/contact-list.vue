@@ -65,8 +65,10 @@
       </div>
     </b-modal>
 
-    <h3><strong>Cantidad de contactos:</strong> {{contactAmount}}</h3>
-    <br><br>
+    <div v-if="agentType == 'admin'">
+      <h3><strong>Cantidad de contactos:</strong> {{contactAmount}}</h3>
+      <br><br>
+    </div>
 
     <b-form-input v-model="contactPhoneNumber" @keyup.enter="openContactFromPhoneNumber()" placeholder='Número de teléfono' style='margin-bottom: 10px;'></b-form-input>
     <br>
