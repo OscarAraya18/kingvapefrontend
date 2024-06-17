@@ -607,7 +607,7 @@ export default {
       const colorByAgent = 
       {
         'Sharon Espinoza': '#fae187',
-        'Mariana Mesen': '#ffa8b8',
+        'Mariana Mesen': '#daff8f',
         'Daniela Murillo': '#fcac60',
         'Sergio Barrot': '#424880',
         'Jose Estrada': '#3e5c47',

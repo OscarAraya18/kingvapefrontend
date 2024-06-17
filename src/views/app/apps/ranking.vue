@@ -39,7 +39,7 @@
       </b-card>
     </div>
 
-    <br><br><br><br>
+    <br><br><br>
     
     <div style="display: flex; justify-content: center; align-items: center;">
       <div id="chart1" style="margin-left: 70px; margin-right: 35px;">
@@ -53,6 +53,14 @@
             </b-card-text>
             <b-card-text style="font-size: xx-large; margin-left: 10px;">
               {{vendedoraDelDia[0].agentName}}
+            </b-card-text>
+          </div>
+          <div style="display: flex;">
+            <b-card-text style="font-size: xx-large; color: #00578a">
+              Vendedor del mes:
+            </b-card-text>
+            <b-card-text style="font-size: xx-large; margin-left: 10px;">
+              {{monthSell}}
             </b-card-text>
           </div>
         </b-card>
@@ -117,6 +125,7 @@ export default {
       opcionesGraficoBarra: {},
 
       vendedoraDelDia: '',
+      monthSell: '',
 
       feedbackInformation: null,
       
@@ -131,7 +140,7 @@ export default {
       const colorByAgent = 
       {
         'Sharon Espinoza': '#fae187',
-        'Mariana Mesen': '#ffa8b8',
+        'Mariana Mesen': '#daff8f',
         'Daniela Murillo': '#fcac60',
         'Sergio Barrot': '#424880',
         'Jose Estrada': '#3e5c47',
@@ -233,6 +242,10 @@ export default {
 
       axios.get(constants.routes.backendAPI+'/selectTodayTopSell').then((response) =>{
         this.vendedoraDelDia = response.data.result;
+      });
+
+      axios.get(constants.routes.backendAPI+'/selectThisMonthTopSell').then((response) =>{
+        this.monthSell = response.data.result.agentName;
       });
 
 
