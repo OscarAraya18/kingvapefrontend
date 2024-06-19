@@ -3385,15 +3385,12 @@ export default {
 
     sendWhatsappTextMessage(){
       const envio = this.currentActiveConversation['textoEnviar'];
-      this.activeConversationsAsJSON[this.currentActiveConversationID].textoEnviar = '';
       this.sendingMessageDisable = true;
       var repliedMessageID = '';
       if (this.repliedMessage != null){
         repliedMessageID = this.repliedMessage.whatsappGeneralMessageID;
       }
-
       this.repliedMessage = null;
-      
       axios.post(constants.routes.backendAPI+'/sendWhatsappTextMessage',
       {
         whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
@@ -3401,12 +3398,14 @@ export default {
         whatsappTextMessageBody: envio
       }) 
       .then((response) =>{ 
-        if (response.data.success){
+        if (response.data.success){          
           this.currentActiveConversation['textoEnviar'] = '';
           this.sendingMessageDisable = false;
           this.repliedMessage = null;
           this.newTextMessageContent = '';
           const whatsappConversationID = response.data.result.whatsappConversationID;
+
+          this.activeConversationsAsJSON[whatsappConversationID].textoEnviar = '';
           this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);          
           this.scrollDown();
           this.sortConversations();
@@ -3883,6 +3882,9 @@ export default {
 
     changeCurrentActiveConversation(currentActiveConversation, activeConversationID){
         this.currentActiveConversationID = activeConversationID;
+
+        console.log(this.activeConversationsAsJSON[this.currentActiveConversationID].textoEnviar);
+
         this.currentActiveConversation = currentActiveConversation;
         this.productos = [];
         this.repliedMessage = null;
