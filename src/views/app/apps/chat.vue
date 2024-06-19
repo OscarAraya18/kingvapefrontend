@@ -3384,16 +3384,21 @@ export default {
 
 
     sendWhatsappTextMessage(){
+      const envio = this.currentActiveConversation['textoEnviar'];
+      this.activeConversationsAsJSON[this.currentActiveConversationID].textoEnviar = '';
       this.sendingMessageDisable = true;
       var repliedMessageID = '';
       if (this.repliedMessage != null){
         repliedMessageID = this.repliedMessage.whatsappGeneralMessageID;
       }
+
+      this.repliedMessage = null;
+      
       axios.post(constants.routes.backendAPI+'/sendWhatsappTextMessage',
       {
         whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
         whatsappGeneralMessageRepliedMessageID: repliedMessageID,
-        whatsappTextMessageBody: this.currentActiveConversation['textoEnviar']
+        whatsappTextMessageBody: envio
       }) 
       .then((response) =>{ 
         if (response.data.success){
