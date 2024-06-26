@@ -2815,6 +2815,7 @@ export default {
     },
 
     async startRecording() {
+      this.recordedAudioFile = null;
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       this.mediaRecorder = new MediaRecorder(stream);
       this.chunks = [];
