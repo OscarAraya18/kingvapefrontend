@@ -1186,10 +1186,10 @@
                         <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
                         <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 150px; height: auto;"/>
                         <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias (BAC)'"><br>
-                          Te envío por acá nuestras cuentas bancarias del BAC en caso de que canceles por transferencia
+                          Te envío por acá nuestras cuentas bancarias del BAC en caso de que canceles por transferencia. Si gustas que el pedido te sea entregado el día de hoy, por favor recuerda seleccionar la opción para que la transferencia se refleje en nuestras cuentas de manera inmediata
                         </div>
                         <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias (BCR)'"><br>
-                          Te envío por acá nuestras cuentas bancarias del BCR en caso de que canceles por transferencia
+                          Te envío por acá nuestras cuentas bancarias del BCR en caso de que canceles por transferencia. Si gustas que el pedido te sea entregado el día de hoy, por favor recuerda seleccionar la opción para que la transferencia se refleje en nuestras cuentas de manera inmediata
                         </div>
                         <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Mensaje de bienvenida'"><br>
                           {{ agentStartMessage }}
@@ -1320,10 +1320,10 @@
                         <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
                         <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 150px; height: auto;"/>
                         <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias (BAC)'"><br>
-                          Te envío por acá nuestras cuentas bancarias del BAC en caso de que canceles por transferencia
+                          Te envío por acá nuestras cuentas bancarias del BAC en caso de que canceles por transferencia. Si gustas que el pedido te sea entregado el día de hoy, por favor recuerda seleccionar la opción para que la transferencia se refleje en nuestras cuentas de manera inmediata
                         </div>
                         <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias (BCR)'"><br>
-                          Te envío por acá nuestras cuentas bancarias del BCR en caso de que canceles por transferencia
+                          Te envío por acá nuestras cuentas bancarias del BCR en caso de que canceles por transferencia. Si gustas que el pedido te sea entregado el día de hoy, por favor recuerda seleccionar la opción para que la transferencia se refleje en nuestras cuentas de manera inmediata
                         </div>
                         <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Mensaje de bienvenida'"><br>
                           {{ agentStartMessage }}
@@ -3781,9 +3781,9 @@ export default {
     sendSelectedWhatsappFavoriteImageMessage(selectedWhatsappFavoriteImage){
       var text = '';
       if (selectedWhatsappFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias (BAC)'){
-        text = 'Te envío por acá nuestras cuentas bancarias del BAC en caso de que canceles por transferencia';
+        text = 'Te envío por acá nuestras cuentas bancarias del BAC en caso de que canceles por transferencia. Si gustas que el pedido te sea entregado el día de hoy, por favor recuerda seleccionar la opción para que la transferencia se refleje en nuestras cuentas de manera inmediata';
       } else if (selectedWhatsappFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias (BCR)'){
-        text = 'Te envío por acá nuestras cuentas bancarias del BCR en caso de que canceles por transferencia';
+        text = 'Te envío por acá nuestras cuentas bancarias del BCR en caso de que canceles por transferencia. Si gustas que el pedido te sea entregado el día de hoy, por favor recuerda seleccionar la opción para que la transferencia se refleje en nuestras cuentas de manera inmediata';
       } else {
         text = localStorage.getItem('agentStartMessage');
       }
