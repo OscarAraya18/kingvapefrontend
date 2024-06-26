@@ -1340,6 +1340,12 @@ export default {
           tdClass: "text-left",
         },
         {
+          label: "Punto de encuentro",
+          field: "whatsappFeedbackFive",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
           label: "Comentario",
           field: "whatsappFeedbackSix",
           thClass: "text-left",

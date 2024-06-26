@@ -99,7 +99,8 @@ export default {
   methods: {
     sendFeedback(){
       this.loading = true;
-      if (this.questionOne != null && this.questionTwo != null && this.questionThree != null && this.questionFour != null && this.questionFour != null){
+      alert(this.questionFive);
+      if (this.questionOne != null && this.questionTwo != null && this.questionThree != null && this.questionFour != null && this.questionFive != null){
         axios.post(constants.routes.backendAPI+'/insertFeedback',
         {
           whatsappConversationID: this.whatsappConversationID,
