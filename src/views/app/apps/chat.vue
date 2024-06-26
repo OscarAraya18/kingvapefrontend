@@ -1185,8 +1185,11 @@
                       <b-list-group-item style="cursor: pointer;" v-for="agentFavoriteImage in agentFavoriteImages3" button @click="sendSelectedWhatsappFavoriteImageMessage(agentFavoriteImage)">
                         <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
                         <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 150px; height: auto;"/>
-                        <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias'"><br>
-                          Te envío por acá nuestras cuentas bancarias en caso de que canceles por transferencia
+                        <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias (BAC)'"><br>
+                          Te envío por acá nuestras cuentas bancarias del BAC en caso de que canceles por transferencia
+                        </div>
+                        <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias (BCR)'"><br>
+                          Te envío por acá nuestras cuentas bancarias del BCR en caso de que canceles por transferencia
                         </div>
                         <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Mensaje de bienvenida'"><br>
                           {{ agentStartMessage }}
@@ -1316,8 +1319,11 @@
                       <b-list-group-item style="cursor: pointer;" v-for="agentFavoriteImage in agentFavoriteImages3" button @click="sendSelectedWhatsappFavoriteImageMessage(agentFavoriteImage)">
                         <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
                         <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 150px; height: auto;"/>
-                        <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias'"><br>
-                          Te envío por acá nuestras cuentas bancarias en caso de que canceles por transferencia
+                        <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias (BAC)'"><br>
+                          Te envío por acá nuestras cuentas bancarias del BAC en caso de que canceles por transferencia
+                        </div>
+                        <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias (BCR)'"><br>
+                          Te envío por acá nuestras cuentas bancarias del BCR en caso de que canceles por transferencia
                         </div>
                         <div v-if="agentFavoriteImage.whatsappFavoriteImageName == 'Mensaje de bienvenida'"><br>
                           {{ agentStartMessage }}
@@ -3773,8 +3779,10 @@ export default {
 
     sendSelectedWhatsappFavoriteImageMessage(selectedWhatsappFavoriteImage){
       var text = '';
-      if (selectedWhatsappFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias'){
-        text = 'Te envío por acá nuestras cuentas bancarias en caso de que canceles por transferencia';
+      if (selectedWhatsappFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias (BAC)'){
+        text = 'Te envío por acá nuestras cuentas bancarias del BAC en caso de que canceles por transferencia';
+      } else if (selectedWhatsappFavoriteImage.whatsappFavoriteImageName == 'Cuentas bancarias (BCR)'){
+        text = 'Te envío por acá nuestras cuentas bancarias del BCR en caso de que canceles por transferencia';
       } else {
         text = localStorage.getItem('agentStartMessage');
       }
