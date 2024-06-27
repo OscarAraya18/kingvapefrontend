@@ -105,7 +105,7 @@
             data-item="transfer"
             :class="{ active: selectedParentMenu == 'transfer' }"
             :data-submenu="false"
-            v-if="isAdmin == true || agentName == 'Diana Jimenez' || locality == true"
+            v-if="isAdmin == true || agentName == 'Diana Jimenez' || agentName == 'Jose Estrada' || locality == true"
           >
             <router-link tag="a" class="nav-item-hold" to="/app/apps/transfer">
               <i class="nav-icon i-Arrow-Right-2"></i>
