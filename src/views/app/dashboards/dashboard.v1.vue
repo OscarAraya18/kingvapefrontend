@@ -1655,6 +1655,7 @@ export default {
     this.selectAgentNames();
     this.selectTransferableAgents();
     this.getInformation();
+    this.selectNotResolvedWhatsappFeedbacks();
 
     this.queryInterval = setInterval(() => {
       if (this.todayInitialDate == null && this.todayEndDate == null){

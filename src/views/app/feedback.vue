@@ -99,7 +99,6 @@ export default {
   methods: {
     sendFeedback(){
       this.loading = true;
-      alert(this.questionFive);
       if (this.questionOne != null && this.questionTwo != null && this.questionThree != null && this.questionFour != null && this.questionFive != null){
         axios.post(constants.routes.backendAPI+'/insertFeedback',
         {
