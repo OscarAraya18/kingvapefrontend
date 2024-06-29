@@ -3486,7 +3486,7 @@ export default {
         whatsappTextMessageContent = whatsappTextMessageContent + `%0a*TOTAL*: ₡` + this.calcularTotal;        
         var repliedMessageID = ''
         if (this.repliedMessage != null){
-          repliedMessageID = this.repliedMessage.messageID;
+          repliedMessageID = this.repliedMessage.whatsappGeneralMessageID;
         }
         this.sendingMessageDisable = true;
         whatsappTextMessageContent = whatsappTextMessageContent.replace('#','');
@@ -3524,7 +3524,7 @@ export default {
       reader.onload = () => {
         var repliedMessageID = '';
         if (this.repliedMessage != null){
-          repliedMessageID = this.repliedMessage.messageID
+          repliedMessageID = this.repliedMessage.whatsappGeneralMessageID;
         }
         this.loaders.fileShare = true;
         axios.post(constants.routes.backendAPI+'/sendWhatsappImageMessage', 
@@ -3558,7 +3558,7 @@ export default {
     sendWhatsappAudioMessage(){
       var repliedMessageID = '';
       if (this.repliedMessage != null){
-        repliedMessageID = this.repliedMessage.messageID
+        repliedMessageID = this.repliedMessage.whatsappGeneralMessageID;
       }
       this.loaderAudio = true;
       axios.post(constants.routes.backendAPI+'/sendWhatsappAudioMessage', 
@@ -3588,7 +3588,7 @@ export default {
     sendWhatsappLocationMessage(locationName){
       var repliedMessageID = '';
       if (this.repliedMessage != null){
-        repliedMessageID = this.repliedMessage.messageID
+        repliedMessageID = this.repliedMessage.whatsappGeneralMessageID
       }
       if (this.currentActiveConversation.whatsappConversationRecipientLocations[locationName]){
         if (this.currentActiveConversation.whatsappConversationRecipientLocations[locationName].latitude != '0'){
