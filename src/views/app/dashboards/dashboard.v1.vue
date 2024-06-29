@@ -680,6 +680,8 @@
         
         <div class="card-body p-0">
           
+          <h2 style="margin: 30px;"><strong>Conversaciones actuales:</strong> {{ activeConversationsRows.length }}</h2>
+
           <vue-good-table
             :columns="activeConversationsColumns"
             :line-numbers="false"
@@ -1648,7 +1650,6 @@ export default {
       localStorage.setItem('whatsappConversationComments', JSON.stringify({}));
     }
     
-    this.selectNotResolvedWhatsappFeedbacks();
     this.selectApplicationLive();
     this.selectTodayInformation(true);
     this.selectAgentNames();
@@ -1658,6 +1659,7 @@ export default {
     this.queryInterval = setInterval(() => {
       if (this.todayInitialDate == null && this.todayEndDate == null){
         this.getInformation();
+        this.selectNotResolvedWhatsappFeedbacks();
       }
     }, 30000);
     
