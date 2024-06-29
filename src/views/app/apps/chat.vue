@@ -1099,9 +1099,13 @@
                       <b-nav-item :active="getActiveNavItem('Zero')" @click="changeActiveNavItem('Zero')">Zero</b-nav-item>
                     </b-nav>
                     <br>
+                    
                     <div v-if="currentNavItem == 'Nicotina'">
+                      <b-form-input @keyup="buscarCatalogoNicotina()" v-model="catalogoNicotinaBuscado" placeholder="Nombre del catálogo a buscar"></b-form-input>
+                      <br>
                       <b-list-group style="height: 700px; overflow-y: auto;">
-                        <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
+                        <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()" v-if="agentFavoriteImages.length != 0">Seleccionar todo el catálogo</b-list-group-item>
+                        <b-list-group-item style="cursor: pointer;" @click="selectAllFavoriteImage()" v-else>No se ha encontrado ningún catálogo con el nombre "{{ catalogoNicotinaBuscado }}"</b-list-group-item>
                         <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
                           <div style="display:flex; ">
                             <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
@@ -1236,8 +1240,13 @@
                     </b-nav>
                     <br>
                     <div v-if="currentNavItem == 'Nicotina'">
+                      <b-form-input @keyup="buscarCatalogoNicotina()" v-model="catalogoNicotinaBuscado" placeholder="Nombre del catálogo a buscar"></b-form-input>
+                      <br>
+
                       <b-list-group style="height: 700px; overflow-y: auto;">
-                        <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
+                        <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()" v-if="agentFavoriteImages.length != 0">Seleccionar todo el catálogo</b-list-group-item>
+                        <b-list-group-item style="cursor: pointer;" @click="selectAllFavoriteImage()" v-else>No se ha encontrado ningún catálogo con el nombre "{{ catalogoNicotinaBuscado }}"</b-list-group-item>
+                        
                         <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
                           <div style="display:flex; ">
                             <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
@@ -1749,7 +1758,7 @@ export default {
   }, 
   data() {
     return {
-      searchedCatalogue: '',
+      catalogoNicotinaBuscado: '',
 
       db: null,
 
@@ -1941,6 +1950,7 @@ export default {
 
       agentFavoriteMessages: [],
       agentFavoriteImages: [],
+      agentFavoriteImagesBackup: [],
       agentFavoriteImages2: [],
       agentFavoriteImages3: [],
       liquids1: [],
@@ -2001,6 +2011,12 @@ export default {
   },
 
   methods: {
+    buscarCatalogoNicotina(){
+      this.agentFavoriteImages = this.agentFavoriteImagesBackup.filter(item =>
+        item.whatsappFavoriteImageName.toLowerCase().startsWith(this.catalogoNicotinaBuscado.toLowerCase())
+      );
+    },
+    
     getCurrentRespondedConversationsAmount(){
       var amount = 0;
       for (var whatsappConversationID in this.activeConversationsAsJSON){
@@ -2754,6 +2770,7 @@ export default {
             for (var agentFavoriteImageIndex in response.data.result){
               if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'nicotine'){
                 this.agentFavoriteImages.push(response.data.result[agentFavoriteImageIndex]);
+                this.agentFavoriteImagesBackup.push(response.data.result[agentFavoriteImageIndex]);
               } else if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'zero'){
                 this.agentFavoriteImages2.push(response.data.result[agentFavoriteImageIndex]);
               } else if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'message'){
@@ -2786,6 +2803,8 @@ export default {
     },
 
     deselectImages(){
+      this.catalogoNicotinaBuscado = '';
+      this.agentFavoriteImages = this.agentFavoriteImagesBackup;
       for (var agentFavoriteImageIndex in this.agentFavoriteImages){
         this.agentFavoriteImages[agentFavoriteImageIndex]['selected'] = false;
       }
