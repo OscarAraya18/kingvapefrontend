@@ -1092,6 +1092,7 @@
                   <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
                     <img style="width: 1000px;" :src="bigImageSource">
                   </b-modal>
+                 
                   <b-modal @ok="sendWhatsappFavoriteImageMessage()" scrollable title="Catálogo de desechables" size="m" centered id="disposablesModal">
                     <b-nav tabs justified>
                       <b-nav-item :active="getActiveNavItem('Nicotina')" @click="changeActiveNavItem('Nicotina')">Nicotina</b-nav-item>
@@ -1099,11 +1100,11 @@
                     </b-nav>
                     <br>
                     <div v-if="currentNavItem == 'Nicotina'">
-                      <b-list-group style="height: 400px; overflow-y: auto;">
+                      <b-list-group style="height: 700px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
                         <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
                           <div style="display:flex; ">
-                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
+                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
                             <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
                               <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
                             </div>
@@ -1112,11 +1113,11 @@
                       </b-list-group>
                     </div>
                     <div v-else>
-                      <b-list-group style="height: 400px; overflow-y: auto;">
+                      <b-list-group style="height: 700px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
                         <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages2" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
                           <div style="display:flex; ">
-                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
+                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
                             <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
                               <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
                             </div>
@@ -1235,11 +1236,11 @@
                     </b-nav>
                     <br>
                     <div v-if="currentNavItem == 'Nicotina'">
-                      <b-list-group style="height: 400px; overflow-y: auto;">
+                      <b-list-group style="height: 700px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
                         <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
                           <div style="display:flex; ">
-                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
+                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
                             <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
                               <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
                             </div>
@@ -1248,11 +1249,11 @@
                       </b-list-group>
                     </div>
                     <div v-else>
-                      <b-list-group style="height: 400px; overflow-y: auto;">
+                      <b-list-group style="height: 700px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
                         <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages2" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
                           <div style="display:flex; ">
-                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
+                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
                             <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
                               <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
                             </div>
