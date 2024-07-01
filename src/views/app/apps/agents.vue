@@ -143,20 +143,6 @@
 
           <span v-else-if="props.column.field == 'name'">
             <div class="ul-widget-app__profile-pic">
-              <img
-                class="profile-picture avatar-sm mb-2 rounded-circle img-fluid"
-                v-if="props.row.avatar != ''"
-                :src="`data:image/png;base64,${props.row.avatar}`"
-                alt=""
-                style="margin-right: 20px;"
-              />
-              <img
-                class="profile-picture avatar-sm mb-2 rounded-circle img-fluid"
-                v-else
-                :src="agentDefaultProfilePicture"
-                alt=""
-                style="margin-right: 20px;"
-              />
               {{ props.row.name }}
             </div>
           </span>
@@ -513,9 +499,9 @@ export default {
           } else {
             working = 'OFF';
           }
+          console.log(agentsInformation[agentIndex]);
           this.agents.push(
           { 
-            avatar: agentsInformation[agentIndex].agentProfileImage,
             name: agentsInformation[agentIndex].agentName,
             id: agentsInformation[agentIndex].agentID,
             username: agentsInformation[agentIndex].agentUsername,
