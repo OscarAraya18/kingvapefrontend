@@ -2,6 +2,10 @@
   <div class="no-gutters">
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 
+    <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
+      <img style="width: 1000px;" :src="bigImageSource">
+    </b-modal>
+
     <div style="position: absolute; top: 5px; left: 30px; display: flex;">
       <div style="min-height: 25px; min-width: 25px; background-color: rgb(0, 177, 0); border-radius: 100px; display: flex; align-items: center; justify-content: center;">
         <p style="margin: 0; font-size: 15px;">
@@ -1089,9 +1093,7 @@
                     <i class="i-Shopping-Bag"></i>
                   </button>
                   <b-tooltip target="sendDisposables">Desechables</b-tooltip>
-                  <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
-                    <img style="width: 1000px;" :src="bigImageSource">
-                  </b-modal>
+                  
                  
                   <b-modal @ok="sendWhatsappFavoriteImageMessage()" scrollable title="Catálogo de desechables" size="m" centered id="disposablesModal">
                     <b-nav tabs justified>
@@ -1135,9 +1137,7 @@
                     <i class="i-Drop"></i>
                   </button>
                   <b-tooltip target="sendLiquids">Líquidos</b-tooltip>
-                  <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
-                    <img style="width: 1000px;" :src="bigImageSource">
-                  </b-modal>
+
                   <b-modal @ok="sendWhatsappFavoriteImageMessageLiquid()" scrollable title="Catálogo de líquidos" size="m" centered id="liquidsModal">
                     <b-nav tabs justified>
                       <b-nav-item :active="getActiveNavItemLiquid('Ice')" @click="changeActiveNavItemLiquid('Ice')">Ice</b-nav-item>
@@ -1230,9 +1230,7 @@
                     <i class="i-Shopping-Bag"></i>
                   </button>
                   <b-tooltip target="sendDisposables">Desechables</b-tooltip>
-                  <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
-                    <img style="width: 1000px;" :src="bigImageSource">
-                  </b-modal>
+  
                   <b-modal @ok="sendWhatsappFavoriteImageMessage()" scrollable title="Catálogo de desechables" size="m" centered id="disposablesModal">
                     <b-nav tabs justified>
                       <b-nav-item :active="getActiveNavItem('Nicotina')" @click="changeActiveNavItem('Nicotina')">Nicotina</b-nav-item>
@@ -1276,9 +1274,7 @@
                     <i class="i-Drop"></i>
                   </button>
                   <b-tooltip target="sendLiquids">Líquidos</b-tooltip>
-                  <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
-                    <img style="width: 1000px;" :src="bigImageSource">
-                  </b-modal>
+
                   <b-modal @ok="sendWhatsappFavoriteImageMessageLiquid()" scrollable title="Catálogo de líquidos" size="m" centered id="liquidsModal">
                     <b-nav tabs justified>
                       <b-nav-item :active="getActiveNavItemLiquid('Ice')" @click="changeActiveNavItemLiquid('Ice')">Ice</b-nav-item>
