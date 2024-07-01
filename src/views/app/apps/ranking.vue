@@ -57,7 +57,7 @@
           </div>
           <div style="display: flex;">
             <b-card-text style="font-size: xx-large; color: #00578a">
-              Vendedor del mes:
+              Vendedor(a) del mes:
             </b-card-text>
             <b-card-text style="font-size: xx-large; margin-left: 10px;">
               {{monthSell}}
