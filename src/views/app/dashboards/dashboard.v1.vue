@@ -1007,13 +1007,6 @@ import router from "../../../router";
 import StarRating from 'vue-star-rating'
 import { props } from "vue-barcode";
 
-import { Feature, Map, View } from 'ol';
-import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
-import { OSM, Vector as VectorSource } from 'ol/source';
-
-import { fromLonLat } from "ol/proj";
-import { Polygon } from "ol/geom";
-import { Fill, Stroke, Style } from "ol/style";
 import MapComponent from "../../../components/mapComponent.vue";
 
 const constants = require('@../../../src/constants.js'); 
