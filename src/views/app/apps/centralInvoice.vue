@@ -3,43 +3,7 @@
 
     
     <b-modal id="mapModal" size="lg" centered hide-header hide-footer>
-      <GmapMap :center="mapCenter" :zoom="12" style="width: 100%; height: 600px">
-        <GmapMarker :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
-        <GmapMarker :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
-        <GmapMarker :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
-        <GmapMarker :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
-        <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
-        <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
-        <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
-        <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
-        <GmapMarker :icon="getMapIcon(location)" v-for="location in locations" :position="{lat: location.whatsappInvoiceClientLocation.latitude, lng: location.whatsappInvoiceClientLocation.longitude}" :draggable="false" :clickable="true" @click="openMarker(location)">
-          <gmap-info-window
-            :opened="location.opened"
-            :closeclick="true"
-            @closeclick="openMarker(location)"
-            :options="{maxWidth: 300}">
-            <div class="location-details">
-              <p><strong>Nombre :</strong> {{location.whatsappInvoiceClientName}}</p>
-              <p><strong>Teléfono: </strong> {{parsePhoneNumber(location.whatsappInvoiceClientPhoneNumber)}}</p>
-              <p><strong>Monto: </strong> ₡{{parseInt(location.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
-              <p><strong>Método de pago: </strong> {{location.whatsappInvoicePaymentMethod}}</p>
-              <p><strong>Estado de pago: </strong> {{location.whatsappInvoicePaymentState}}</p>
-              <p><strong>Nota de la dirección: </strong> {{location.whatsappInvoiceLocationNote}}</p>
-              <p><strong>Nota del envío: </strong> {{location.whatsappInvoiceShippingNote}}</p>
-              <p v-if="location.whatsappInvoiceState == 'R'" :style="getMapLocalityAgentColor(location.localityAgentColor)"><strong>Mensajero: </strong> {{location.localityAgentName}}</p>
-
-
-              <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(location)" class="i-Shopping-Cart" style="font-size: xx-large; cursor: pointer;"></i>
- 
-              <b-badge v-if="location.whatsappInvoiceState == 'S'" @click="clickOnLocalityInvoice(location)" style="cursor: pointer; margin-left:10px; position: relative; top: -7px; font-size: x-large;" pill variant="warning">S</b-badge>
-
-            </div>
-          </gmap-info-window>
-        </GmapMarker>
-
-        <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-        
-      </GmapMap>
+      Trabajando en esto...
     </b-modal>
     
 
@@ -279,20 +243,10 @@
           <br>
 
           <h5><strong>Ubicación: </strong></h5>
-          <GmapMap :center="getWhatsappInvoiceClientLocation()" :zoom="13" style="width: 100%; height: 400px" v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation">
-            <GmapMarker :position="getWhatsappInvoiceClientLocation()" :draggable="false"/>
-            <GmapMarker id="zapoteTag" :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-            <GmapMarker id="escazuTag" :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-            <GmapMarker id="cartagoTag" :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-            <GmapMarker id="herediaTag" :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-            <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
-            <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
-            <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
-            <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
 
-            <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-            
-          </GmapMap>
+          <MapComponent v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation" mapHeight="400px" mapWidth="100%" :clientLongitude="getWhatsappInvoiceClientLocation().lng" :clientLatitude="getWhatsappInvoiceClientLocation().lat"></MapComponent>
+
+          
           <br>
           <div style="display: flex;">
             <b-form-select @change="changeWhatsappInvoiceLocation()" v-model="updatedWhatsappInvoiceLocation" :options="updateWhatsappInvoiceLocationOptions"></b-form-select>
@@ -359,20 +313,9 @@
       
       
       <h5><strong>Ubicación: </strong></h5>
-      <GmapMap :center="getWhatsappInvoiceClientLocation()" :zoom="13" style="width: 100%; height: 300px" v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation">
-        <GmapMarker :position="getWhatsappInvoiceClientLocation()" :draggable="false"/>
-        <GmapMarker id="zapoteTag" :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-        <GmapMarker id="escazuTag" :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-        <GmapMarker id="cartagoTag" :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-        <GmapMarker id="herediaTag" :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-        <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
-        <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
-        <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
-        <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
+      <MapComponent v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation" mapHeight="300px" mapWidth="100%" :clientLongitude="getWhatsappInvoiceClientLocation().lng" :clientLatitude="getWhatsappInvoiceClientLocation().lat"></MapComponent>
 
-        <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-        
-      </GmapMap>
+      
       <br>
 
     </b-modal>
@@ -439,20 +382,9 @@
             <h5><strong>Ubicación: </strong></h5>
             <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceClientLocation'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: auto; left: 10px; top:-5px; position: relative;"/>
           </div>
+          <MapComponent v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation" mapHeight="300px" mapWidth="100%" :clientLongitude="getWhatsappInvoiceClientLocation().lng" :clientLatitude="getWhatsappInvoiceClientLocation().lat"></MapComponent>
+
           
-          <GmapMap :center="getWhatsappInvoiceClientLocation()" :zoom="13" style="width: 100%; height: 300px" v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation">
-            <GmapMarker :position="getWhatsappInvoiceClientLocation()" :draggable="false"/>
-            <GmapMarker id="zapoteTag" :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-            <GmapMarker id="escazuTag" :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-            <GmapMarker id="cartagoTag" :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-            <GmapMarker id="herediaTag" :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-            <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
-            <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
-            <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
-            <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
-            <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-            
-          </GmapMap>
           <br>
 
           <div style="text-align: center;">
@@ -564,19 +496,8 @@
           <br>
 
           <h5><strong>Ubicación: </strong></h5>
-          <GmapMap :center="getWhatsappInvoiceClientLocation()" :zoom="13" style="width: 100%; height: 415px" v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation">
-            <GmapMarker :position="getWhatsappInvoiceClientLocation()" :draggable="false"/>
-            <GmapMarker id="zapoteTag" :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-            <GmapMarker id="escazuTag" :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-            <GmapMarker id="cartagoTag" :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-            <GmapMarker id="herediaTag" :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-            <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
-            <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
-            <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
-            <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
-            <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-            
-          </GmapMap>
+          <MapComponent v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation" mapHeight="415px" mapWidth="100%" :clientLongitude="getWhatsappInvoiceClientLocation().lng" :clientLatitude="getWhatsappInvoiceClientLocation().lat"></MapComponent>
+
           <br>
           <div style="display: flex;">
             <b-form-select @change="changeWhatsappInvoiceLocation()" v-model="updatedWhatsappInvoiceLocation" :options="updateWhatsappInvoiceLocationOptions"></b-form-select>
@@ -1253,10 +1174,11 @@
 import axios from 'axios';
 const constants = require('@../../../src/constants.js');
 import VueBarcode from 'vue-barcode';
+import MapComponent from "../../../components/mapComponent.vue";
 
 
 export default {
-  components: {VueBarcode},
+  components: {VueBarcode, MapComponent},
 
   data() {
     return {

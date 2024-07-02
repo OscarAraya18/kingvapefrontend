@@ -1,21 +1,7 @@
 <template>
   <div class="main-header">
     <b-modal id="generalMapModal" size="lg" centered hide-header hide-footer>
-      <GmapMap :center="{lat: 9.9242503, lng: -84.0585289}" :zoom="10" style="width: 100%; height: 600px">
-        <GmapMarker :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
-        <GmapMarker :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
-        <GmapMarker :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
-        <GmapMarker :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
-        
-        <GmapPolygon @paths_changed="updateEdited($event)" :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
-        <GmapPolygon @paths_changed="updateEdited($event)" :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
-        <GmapPolygon @paths_changed="updateEdited($event)" :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
-        <GmapPolygon @paths_changed="updateEdited($event)" :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
-
-        <GmapPolygon @paths_changed="updateEdited($event)" :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-        
-
-      </GmapMap>
+      <MapComponent mapHeight="450px" mapWidth="100%"></MapComponent>
     </b-modal>
 
     <b-modal scrollable size="m" centered id="notificationModal" hide-header hide-footer no-close-on-backdrop>
@@ -277,6 +263,7 @@ import { isMobile } from "mobile-device-detect";
 import { mixin as clickaway } from "vue-clickaway";
 import router from "../../../router";
 import axios from 'axios';
+import MapComponent from "../../../components/mapComponent.vue";
 const constants = require('@../../../src/constants.js'); 
 const webSocket = new WebSocket('wss:payitcr.com');
 
@@ -284,7 +271,8 @@ export default {
   mixins: [clickaway],
   components: {
     Sidebar,
-    searchComponent
+    searchComponent,
+    MapComponent
   },
 
   data() {

@@ -19,12 +19,10 @@ import 'vue2-daterange-picker/dist/vue2-daterange-picker.css'
 //import material-icon scss
 import "font-awesome/css/font-awesome.min.css";
 
+
 import ApexCharts from 'apexcharts'
-
 import StarRating from 'vue-star-rating'
-
 import VueBarcode from 'vue-barcode';
-
 
 //defined as global component
 Vue.component('VueFontawesome', require('vue-fontawesome-icon/VueFontawesome.vue').default);
@@ -34,13 +32,20 @@ import InstantSearch from 'vue-instantsearch';
 // Vue.use(VueRouter);
  
 import * as VueGoogleMaps from 'vue2-google-maps'
-
 Vue.use(VueGoogleMaps, {
 load: {
 	key: 'AIzaSyDJtF81Ow1o-W5PZvxarGOXxpQbaWg_WF4',
 	libraries: 'places', 
 }
 })
+
+
+
+
+
+
+
+
 
 Vue.use(InstantSearch);
 Vue.use(GullKit);

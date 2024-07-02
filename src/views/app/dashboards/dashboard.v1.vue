@@ -1,34 +1,10 @@
 <template>
   <div class="main-content">
+
+    
+
     <b-modal id="mapModal" size="lg" centered hide-header hide-footer>
-      <GmapMap :center="{lat: 9.9242503, lng: -84.0585289}" :zoom="10" style="width: 100%; height: 600px">
-        <GmapMarker :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
-        <GmapMarker :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
-        <GmapMarker :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
-        <GmapMarker :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{url: require('../../../assets/pageAssets/2.png')}"/>
-        <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
-        <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
-        <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
-        <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
-
-        <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-        
-
-        <GmapMarker :label='location.char' v-for="location in locations" :position="{lat: location.latitude, lng: location.longitude}" :draggable="false" :clickable="true" @click="openMarker(location)">
-          <gmap-info-window
-            :opened="location.opened"
-            :closeclick="true"
-            @closeclick="openMarker(location)"
-            :options="{maxWidth: 300}">
-            <div class="location-details">
-              <p><strong>Nombre:</strong> {{location.whatsappConversationRecipientProfileName}}</p>
-              <p><strong>Teléfono:</strong> {{location.whatsappConversationRecipientPhoneNumber}}</p>
-              <p><strong>Monto:</strong>₡ {{location.amount}}</p>
-              <button v-b-modal.conversationModal class="btn btn-outline-primary text-black btn-rounded" @click="whatsappConversationOpenAction(location)">Abrir</button>
-            </div>
-          </gmap-info-window>
-        </GmapMarker>
-      </GmapMap>
+      Trabajando en esto...
     </b-modal>
 
     <b-modal scrollable size="m" centered hide-footer id="historyMessageModal" hide-header>
@@ -51,22 +27,9 @@
         </div>
         
         <div v-if="historyMessage.whatsappGeneralMessageType=='location'" class="m-0">
-          <GmapMap :center="getLocation(historyMessage)" :zoom="zoom" style="width: 1000px; height: 450px">
-            <GmapMarker :position="getLocation(historyMessage)" :draggable="false"/>
+          <MapComponent mapHeight="450px" mapWidth="1000px" :clientLongitude="getLocation(historyMessage).lng" :clientLatitude="getLocation(historyMessage).lat"></MapComponent>
 
-            <GmapMarker id="zapoteTag" :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-            <GmapMarker id="escazuTag" :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-            <GmapMarker id="cartagoTag" :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-            <GmapMarker id="herediaTag" :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-
-            <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
-            <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
-            <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
-            <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
-            <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-            
-
-          </GmapMap><br>
+          <br>
           <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{historyMessage.whatsappLocationMessageLatitude}}</p>
           <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{historyMessage.whatsappLocationMessageLongitude}}</p><br>
           <b-dropdown variant="primary" dropup text="Guardar ubicación" style="margin-right: 10px;">
@@ -802,22 +765,9 @@
                             </div>
                             
                             <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                              <GmapMap :center="getLocation(answeredMessage)" :zoom="zoom" style="width: 600px; height: 250px">
-                                <GmapMarker :position="getLocation(answeredMessage)" :draggable="false"/>
+                              <MapComponent mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
 
-                                  <GmapMarker id="zapoteTag" :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-                                  <GmapMarker id="escazuTag" :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-                                  <GmapMarker id="cartagoTag" :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-                                  <GmapMarker id="herediaTag" :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-
-                                  <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
-                                  <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
-                                  <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
-                                  <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
-                                  <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-                                  
-                              
-                              </GmapMap><br>
+                              <br>
                               <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
                               <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
                             </div>
@@ -855,22 +805,9 @@
                     </div>
                     
                     <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                      <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 600px; height: 250px">
-                        <GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/>
+                      <MapComponent mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
 
-                        <GmapMarker id="zapoteTag" :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-                        <GmapMarker id="escazuTag" :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-                        <GmapMarker id="cartagoTag" :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-                        <GmapMarker id="herediaTag" :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-
-                        <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
-                        <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
-                        <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
-                        <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
-                        <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-
-                      
-                      </GmapMap><br>
+                      <br>
                       <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
                       <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
                     </div>
@@ -940,21 +877,9 @@
                             </div>
                             
                             <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                              <GmapMap :center="getLocation(answeredMessage)" :zoom="zoom" style="width: 600px; height: 250px">
-                                <GmapMarker :position="getLocation(answeredMessage)" :draggable="false"/>
-                                
-                                <GmapMarker id="zapoteTag" :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-                                <GmapMarker id="escazuTag" :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-                                <GmapMarker id="cartagoTag" :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-                                <GmapMarker id="herediaTag" :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
+                              <MapComponent mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
 
-                                <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
-                                <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
-                                <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
-                                <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
-                                <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-                                
-                              </GmapMap><br>
+                              <br>
                               <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
                               <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
                             </div>
@@ -987,22 +912,9 @@
                     </div>
                     
                     <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                      <GmapMap :center="getLocation(currentActiveConversationMessage)" :zoom="zoom" style="width: 600px; height: 250px">
-                        <GmapMarker :position="getLocation(currentActiveConversationMessage)" :draggable="false"/>
-                        
-                        <GmapMarker id="zapoteTag" :position="{lat: 9.920173, lng: -84.051987}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-                        <GmapMarker id="escazuTag" :position="{lat: 9.949093, lng: -84.163117}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-                        <GmapMarker id="cartagoTag" :position="{lat: 9.864751, lng: -83.925354}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
-                        <GmapMarker id="herediaTag" :position="{lat: 9.99168, lng: -84.135}" :draggable="false" :icon="{ url: require('../../../assets/pageAssets/2.png')}" />"/>
+                      <MapComponent mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
 
-                        <GmapPolygon :paths="cartagoMap" :options="cartagoMapOptions" :editable="false"></GmapPolygon>
-                        <GmapPolygon :paths="zapoteMap" :options="zapoteMapOptions" :editable="false"></GmapPolygon>
-                        <GmapPolygon :paths="herediaMap" :options="herediaMapOptions" :editable="false"></GmapPolygon>
-                        <GmapPolygon :paths="escazuMap" :options="escazuMapOptions" :editable="false"></GmapPolygon>
-                        <GmapPolygon :paths="redMap" :options="redMapOptions" :editable="false"></GmapPolygon>
-                        
-
-                      </GmapMap><br>
+                      <br>
                       <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
                       <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
                     </div>
@@ -1032,6 +944,10 @@
 </template>
 
 <style scoped>
+  .testingMap{
+    height:600px; width:800px
+
+  }
   .noliveLogo {
     cursor: pointer; 
     width: 90px; 
@@ -1070,7 +986,6 @@
     }
   }
 
-
   .alertAnimation{
     animation: alertAnimationAnimate 1s infinite;
   }
@@ -1085,11 +1000,21 @@ import {
   splineAreaWidgetThree,
 } from "@/data/dashboard1";
 
+
 import axios from 'axios';
 import ApexCharts from 'apexcharts'
 import router from "../../../router"; 
 import StarRating from 'vue-star-rating'
 import { props } from "vue-barcode";
+
+import { Feature, Map, View } from 'ol';
+import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
+import { OSM, Vector as VectorSource } from 'ol/source';
+
+import { fromLonLat } from "ol/proj";
+import { Polygon } from "ol/geom";
+import { Fill, Stroke, Style } from "ol/style";
+import MapComponent from "../../../components/mapComponent.vue";
 
 const constants = require('@../../../src/constants.js'); 
 
@@ -1102,7 +1027,8 @@ export default {
   },
 
   components: {
-    StarRating
+    StarRating,
+    MapComponent
   },
   
   data() {
@@ -1606,7 +1532,8 @@ export default {
 
       loaderFilter: false,
 
-      locations: []
+      locations: [],
+
     };
   },
 
@@ -1621,6 +1548,12 @@ export default {
   },
 
   mounted(){
+    
+
+    
+
+
+
     let todayInitialDate = new Date();
     todayInitialDate.setHours(0, 0, 0, 0);
     this.todayInitialDate = todayInitialDate;
@@ -1628,13 +1561,7 @@ export default {
     todayEndDate.setHours(23, 59, 59, 999);
     this.todayEndDate = todayEndDate;
   
-    this.cartagoMap = constants.routes.cartagoMap;
-    this.herediaMap = constants.routes.herediaMap;
-    this.zapoteMap = constants.routes.zapoteMap;
-    this.escazuMap = constants.routes.escazuMap;
-
-    this.redMap = constants.routes.redMap;
-    this.redMapOptions = constants.routes.redMapOptions;
+    
 
 
     this.iceLogoSRC = constants.routes.iceLogoSRC;
