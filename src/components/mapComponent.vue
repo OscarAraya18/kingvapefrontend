@@ -1,5 +1,5 @@
 <template>
-  <div id = "map" :style="getMapDimensions()">
+  <div :id = "mapId" :style="getMapDimensions()">
   </div> 
 </template>
 
@@ -11,6 +11,7 @@ import { OSM, Vector as VectorSource } from 'ol/source';
 import { fromLonLat } from "ol/proj";
 import { Point, Polygon } from "ol/geom";
 import { Fill, Icon, Stroke, Style } from "ol/style";
+import {FullScreen, defaults as defaultControls} from 'ol/control.js';
 
 const constants = require('@../../../src/constants.js'); 
 
@@ -25,7 +26,8 @@ export default {
 
   data() {
     return {
-      mapModal: null
+      mapModal: null,
+      mapId: `map-${Math.random().toString(36).substr(2, 9)}`,
     }
   },
 
@@ -45,8 +47,10 @@ export default {
   mounted(){
     const mapCenter = fromLonLat([this.clientLongitude || -84.0585289, this.clientLatitude || 9.9242503]);
 
+
     this.mapModal = new Map({
-      target: 'map',
+      controls: defaultControls().extend([new FullScreen()]),
+      target: this.mapId,
       layers: [new TileLayer({source: new OSM()})],
       view: new View({center: mapCenter, zoom: this.clientLatitude? 15 : 10}),
     });
