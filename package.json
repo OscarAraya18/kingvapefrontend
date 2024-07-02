@@ -21,6 +21,7 @@
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^4.5.3",
     "bootstrap-vue": "^2.21.2",
+    
     "chart.js": "^2.9.4",
     "core-js": "^3.8.2",
     "es6-promise": "^4.2.8",
@@ -29,6 +30,9 @@
     "jsbarcode": "^3.11.6",
     "mobile-device-detect": "^0.4.3",
     "nprogress": "^0.2.0",
+    "ol": "^9.2.4",
+    "ol-contextmenu": "^5.4.0",
+    "ol-ext": "^4.0.18",
     "sass": "^1.66.1",
     "v-calendar": "^2.3.4",
     "v2-datepicker": "^3.1.1",
@@ -60,6 +64,8 @@
     "vue2-daterange-picker": "^0.5.1",
     "vue2-editor": "^1.0.1",
     "vue2-google-maps": "^0.10.7",
+    "vue2-leaflet": "^2.7.1",
+    "vue3-openlayers": "^10.0.1",
     "vuedraggable": "^2.24.3",
     "vuejs-smart-table": "0.0.5",
     "vuelidate": "^0.7.6",
@@ -69,6 +75,7 @@
     "ws": "^8.13.0"
   },
   "devDependencies": {
+    "@vue-leaflet/vue-leaflet": "^0.10.1",
     "@vue/cli-plugin-babel": "^5.0.8",
     "@vue/cli-plugin-eslint": "^5.0.8",
     "@vue/cli-service": "^5.0.8",
@@ -77,6 +84,7 @@
     "copy-webpack-plugin": "^6.4.1",
     "eslint": "^7.17.0",
     "eslint-plugin-vue": "^6.2.2",
+    "leaflet": "^1.9.4",
     "sass-loader": "^10.1.1",
     "vue-loader": "^15.9.6",
     "vue-template-compiler": "^2.6.12"
