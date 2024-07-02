@@ -328,7 +328,7 @@
               
               <div v-if="historyMessage.whatsappGeneralMessageType=='location'" class="m-0">
 
-                <MapComponent mapHeight="450px" mapWidth="465px" :clientLongitude="getLocation(historyMessage).lng" :clientLatitude="getLocation(historyMessage).lat"></MapComponent>
+                <MapComponent  mapHeight="450px" mapWidth="465px" :clientLongitude="getLocation(historyMessage).lng" :clientLatitude="getLocation(historyMessage).lat"></MapComponent>
 
                 <br>
                 <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{historyMessage.whatsappLocationMessageLatitude}}</p>
@@ -398,7 +398,7 @@
                                 </div>
                                 
                                 <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                                  <MapComponent mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
+                                  <MapComponent  mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
 
                                   <br>
                                   <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
@@ -444,7 +444,7 @@
                         </div>
                         
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                          <MapComponent mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
+                          <MapComponent  mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
 
                           <br>
                           <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
@@ -522,7 +522,7 @@
                                 </div>
                                 
                                 <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                                  <MapComponent mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
+                                  <MapComponent  mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
 
                                   <br>
                                   <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
@@ -563,7 +563,7 @@
                         </div>
                         
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                          <MapComponent mapHeight="450px" mapWidth="600px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
+                          <MapComponent  mapHeight="450px" mapWidth="600px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
 
                           <br>
                           <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
@@ -644,7 +644,7 @@
                                   </div>
                                   
                                   <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                                    <MapComponent mapHeight="450px" mapWidth="600px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
+                                    <MapComponent  mapHeight="450px" mapWidth="600px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
 
                                     <br>
                                     <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
@@ -694,7 +694,7 @@
                           
                           <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
 
-                            <MapComponent mapHeight="450px" mapWidth="800px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
+                            <MapComponent  mapHeight="450px" mapWidth="800px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
 
                             
                             <br>
@@ -775,7 +775,7 @@
                                   </div>
                                   
                                   <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                                    <MapComponent mapHeight="450px" mapWidth="1000px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
+                                    <MapComponent  mapHeight="450px" mapWidth="1000px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
 
                                     <br>
                                     <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
@@ -816,7 +816,7 @@
                           </div>
                           
                           <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                            <MapComponent mapHeight="450px" mapWidth="1000px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
+                            <MapComponent  mapHeight="450px" mapWidth="1000px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
 
                             
                             <br>
@@ -869,7 +869,7 @@
                     </div>
                     
                     <div v-if="repliedMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                      <MapComponent mapHeight="450px" mapWidth="1000px" :clientLongitude="getLocation(repliedMessage).lng" :clientLatitude="getLocation(repliedMessage).lat"></MapComponent>
+                      <MapComponent  mapHeight="450px" mapWidth="1000px" :clientLongitude="getLocation(repliedMessage).lng" :clientLatitude="getLocation(repliedMessage).lat"></MapComponent>
                       <br>
                       <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{repliedMessage.whatsappLocationMessageLatitude}}</p>
                       <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{repliedMessage.whatsappLocationMessageLongitude}}</p><br>
@@ -1875,11 +1875,16 @@ export default {
       conversationComments: [],
       openedComments: [],
 
-      openedCommentsTable: []
+      openedCommentsTable: [],
+
+
+      scrollAvailable: true
     };
   },
 
   methods: {
+
+
     buscarCatalogoNicotina(){
       this.agentFavoriteImages = this.agentFavoriteImagesBackup.filter(item =>
         item.whatsappFavoriteImageName.toLowerCase().startsWith(this.catalogoNicotinaBuscado.toLowerCase())

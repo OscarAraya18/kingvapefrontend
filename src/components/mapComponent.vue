@@ -52,7 +52,7 @@ export default {
       controls: defaultControls().extend([new FullScreen()]),
       target: this.mapId,
       layers: [new TileLayer({source: new OSM()})],
-      view: new View({center: mapCenter, zoom: this.clientLatitude? 15 : 10}),
+      view: new View({center: mapCenter, zoom: this.clientLatitude? 13 : 10}),
     });
 
 
