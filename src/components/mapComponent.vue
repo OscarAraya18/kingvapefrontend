@@ -1,9 +1,22 @@
 <template>
-  <div :id = "mapId" :style="getMapDimensions()">
-  </div> 
+  <div>
+    <b-modal scrollable size="lg" centered id="modalMapaConversacion" hide-footer hide-header>
+      <div v-if="openedConversation" style="padding: 10px;">
+        <h4><strong>ID: </strong>{{ openedConversation.whatsappConversationID }}</h4>
+        <h4><strong>Nombre: </strong>{{ openedConversation.whatsappConversationRecipientProfileName }}</h4>
+        <h4><strong>Número: </strong>{{ openedConversation.whatsappConversationRecipientPhoneNumber }}</h4>
+        <h4><strong>Monto: </strong>₡{{ openedConversation.amount }}</h4>
+      </div>
+    </b-modal>
+
+    <div :id = "mapId" :style="getMapDimensions()">
+    </div> 
+  </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 import { Feature, Map, View } from 'ol';
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import { OSM, Vector as VectorSource } from 'ol/source';
@@ -28,6 +41,11 @@ export default {
     return {
       mapModal: null,
       mapId: `map-${Math.random().toString(36).substr(2, 9)}`,
+      openedConversation: null,
+      currentConversation: null,
+      openConversationLoader: false,
+      openedName: '',
+      openedNumber: ''
     }
   },
 
@@ -44,6 +62,41 @@ export default {
       return 'width: ' + this.mapWidth + '; height: ' + this.mapHeight;
     },
 
+    getMessageOwnerStyle(messageOwner){
+      if(messageOwner != null){
+        return 'user';
+      } 
+    },
+
+    getMessageOwnerColor(messageOwner){
+      if(messageOwner == null){
+        return "background-color:#ceefff";
+      } 
+      return "background-color:#dedede";
+    },
+
+    parseHour(originalHour){
+      const parsingDate = new Date(originalHour);
+      const options = {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      };
+      var formattedDate = parsingDate.toLocaleString('en-GB', options);
+      if (formattedDate.slice(-2) == 'am'){
+        formattedDate = formattedDate.slice(0,-2) + 'AM'
+      } else if (formattedDate.slice(-2) == 'pm') {
+        formattedDate = formattedDate.slice(0,-2) + 'PM'
+      }
+      if (formattedDate.includes('00') && formattedDate.includes('PM')){
+        formattedDate = formattedDate.replace('00', '12');
+      }
+      return formattedDate;
+    },
+
     parseNumber(phoneNumber){
       const cleaned = ('' + phoneNumber).replace(/\D/g, '');
       const match = cleaned.match(/^(\d{3})(\d{2})(\d{2})(\d{2})(\d{2})$/);
@@ -51,6 +104,29 @@ export default {
         return `(${match[1]}) ${match[2]}${match[3]}${match[4]}${match[5]}`;
       }
       return phoneNumber;
+    },
+
+    openConversation(conversation){
+      this.openConversationLoader = true;
+      this.openedName = conversation.whatsappConversationRecipientProfileName;
+      this.openedNumber = conversation.whatsappConversationRecipientPhoneNumber;
+      this.currentConversation = null;
+      axios.post(constants.routes.backendAPI+'/selectAgentConversation', 
+      {
+        'whatsappConversationID': conversation.whatsappConversationID
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.currentConversation = response.data.result[conversation.whatsappConversationID];
+          this.openConversationLoader = false;
+        } else {
+          this.showNotification('danger', 'Error al abrir la conversación', 'Ha ocurrido un error inesperado al abrir la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        this.showNotification('danger', 'Error al abrir la conversación', 'Ha ocurrido un error inesperado al abrir la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
     }
   },
 
@@ -100,61 +176,6 @@ export default {
     let herediaStoreVectorSource = new VectorSource({features: [herediaStoreFeature]});
     let herediaStoreVectorLayer = new VectorLayer({source: herediaStoreVectorSource, style: iconStyle})
     this.mapModal.addLayer(herediaStoreVectorLayer);
-
-
-
-
-
-    if (this.clientLatitude){
-      let clientLocationImage = new Icon({
-        anchor: [0.5, 1],
-        src: 'https://i.postimg.cc/ncgWWjcP/1.webp'
-      });
-      let clientLocationStyle = new Style({image: clientLocationImage});
-      let clientLocationStoreFeature = new Feature({
-        geometry: new Point(fromLonLat([this.clientLongitude, this.clientLatitude])),
-      });
-      let clientLocationStoreVectorSource = new VectorSource({features: [clientLocationStoreFeature]});
-      let clientLocationStoreVectorLayer = new VectorLayer({source: clientLocationStoreVectorSource, style: clientLocationStyle})
-      this.mapModal.addLayer(clientLocationStoreVectorLayer);
-    }
-
-    if (this.multipleClients){
-      let clientLocationImage = new Icon({
-        anchor: [0.5, 1],
-        src: 'https://i.postimg.cc/ncgWWjcP/1.webp'
-      });
-
-      for (var clientIndex in this.multipleClients){
-        const client = this.multipleClients[clientIndex];
-
-        let clientText = new Text({
-          text: `${client.whatsappConversationRecipientProfileName.replace(/\s*\(.*?\)$/, '')} \n ${this.parseNumber(client.whatsappConversationRecipientPhoneNumber)} \n ₡${client.amount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}`,
-          scale: 1.2,
-          fill: new Fill({color: '#fff'}),
-          stroke: new Stroke({color: "0",width: 3})
-        });
-
-        let clientLocationStyle = new Style({image: clientLocationImage, text: clientText});
-
-
-        let clientLocationStoreFeature = new Feature({
-          geometry: new Point(fromLonLat([client.longitude, client.latitude])),
-        });
-        clientLocationStoreFeature.setProperties({'clientInformation': client})
-        let clientLocationStoreVectorSource = new VectorSource({features: [clientLocationStoreFeature]});
-        let clientLocationStoreVectorLayer = new VectorLayer({source: clientLocationStoreVectorSource, style: clientLocationStyle})
-        this.mapModal.addLayer(clientLocationStoreVectorLayer);
-      }
-    }
-    
-
-
-
-
-
-
-
 
     this.cartagoMap = constants.routes.cartagoMap;
     let cartagoMapFormatted = [];
@@ -288,14 +309,53 @@ export default {
     }
 
 
-    this.mapModal.on('click', (evt) => {
+    if (this.clientLatitude){
+      let clientLocationImage = new Icon({
+        anchor: [0.5, 1],
+        src: 'https://i.postimg.cc/ncgWWjcP/1.webp'
+      });
+      let clientLocationStyle = new Style({image: clientLocationImage});
+      let clientLocationStoreFeature = new Feature({
+        geometry: new Point(fromLonLat([this.clientLongitude, this.clientLatitude])),
+      });
+      let clientLocationStoreVectorSource = new VectorSource({features: [clientLocationStoreFeature]});
+      let clientLocationStoreVectorLayer = new VectorLayer({source: clientLocationStoreVectorSource, style: clientLocationStyle})
+      this.mapModal.addLayer(clientLocationStoreVectorLayer);
+    }
+
+    if (this.multipleClients){
+      let clientLocationImage = new Icon({
+        anchor: [0.5, 1],
+        src: 'https://i.postimg.cc/ncgWWjcP/1.webp'
+      });
+
+      for (var clientIndex in this.multipleClients){
+        const client = this.multipleClients[clientIndex];
+
+        let clientLocationStyle = new Style({image: clientLocationImage});
+
+        let clientLocationStoreFeature = new Feature({
+          geometry: new Point(fromLonLat([client.longitude, client.latitude]))
+        });
+        clientLocationStoreFeature.setId(client);
+        let clientLocationStoreVectorSource = new VectorSource({features: [clientLocationStoreFeature]});
+        let clientLocationStoreVectorLayer = new VectorLayer({source: clientLocationStoreVectorSource, style: clientLocationStyle})
+        this.mapModal.addLayer(clientLocationStoreVectorLayer);
+      }
+    }
+
+
+    this.mapModal.on('singleclick', (evt) => {
       const feature = this.mapModal.forEachFeatureAtPixel(evt.pixel,
         (feature) => {
           return feature;
         });
 
       if (feature) {
-        console.log(feature.values_.clientInformation)
+        if(feature.id_){
+          this.openedConversation = feature.id_;
+          this.$root.$emit('bv::show::modal', 'modalMapaConversacion');
+        }
       }
     });
 
