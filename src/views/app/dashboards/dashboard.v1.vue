@@ -643,7 +643,7 @@
         
         <div class="card-body p-0">
           
-          <h2 style="margin: 30px;"><strong>Conversaciones actuales:</strong> {{ activeConversationsRows.length }}</h2>
+          <h2 v-if="view == 'activeConversations'" style="margin: 30px;"><strong>Conversaciones actuales:</strong> {{ activeConversationsRows.length }}</h2>
 
           <vue-good-table
             :columns="activeConversationsColumns"
