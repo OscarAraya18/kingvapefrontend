@@ -10,7 +10,7 @@ import { OSM, Vector as VectorSource } from 'ol/source';
 
 import { fromLonLat } from "ol/proj";
 import { Point, Polygon } from "ol/geom";
-import { Fill, Icon, Stroke, Style } from "ol/style";
+import { Fill, Icon, Stroke, Style, Text } from "ol/style";
 import {FullScreen, defaults as defaultControls} from 'ol/control.js';
 
 const constants = require('@../../../src/constants.js'); 
@@ -35,12 +35,22 @@ export default {
     mapWidth: String,
     mapHeight: String,
     clientLongitude: Number,
-    clientLatitude: Number
+    clientLatitude: Number,
+    multipleClients: Array
   },
 
   methods: {
     getMapDimensions(){
       return 'width: ' + this.mapWidth + '; height: ' + this.mapHeight;
+    },
+
+    parseNumber(phoneNumber){
+      const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+      const match = cleaned.match(/^(\d{3})(\d{2})(\d{2})(\d{2})(\d{2})$/);
+      if (match) {
+        return `(${match[1]}) ${match[2]}${match[3]}${match[4]}${match[5]}`;
+      }
+      return phoneNumber;
     }
   },
 
@@ -107,6 +117,35 @@ export default {
       let clientLocationStoreVectorSource = new VectorSource({features: [clientLocationStoreFeature]});
       let clientLocationStoreVectorLayer = new VectorLayer({source: clientLocationStoreVectorSource, style: clientLocationStyle})
       this.mapModal.addLayer(clientLocationStoreVectorLayer);
+    }
+
+    if (this.multipleClients){
+      let clientLocationImage = new Icon({
+        anchor: [0.5, 1],
+        src: 'https://i.postimg.cc/ncgWWjcP/1.webp'
+      });
+
+      for (var clientIndex in this.multipleClients){
+        const client = this.multipleClients[clientIndex];
+
+        let clientText = new Text({
+          text: `${client.whatsappConversationRecipientProfileName.replace(/\s*\(.*?\)$/, '')} \n ${this.parseNumber(client.whatsappConversationRecipientPhoneNumber)} \n ₡${client.amount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}`,
+          scale: 1.2,
+          fill: new Fill({color: '#fff'}),
+          stroke: new Stroke({color: "0",width: 3})
+        });
+
+        let clientLocationStyle = new Style({image: clientLocationImage, text: clientText});
+
+
+        let clientLocationStoreFeature = new Feature({
+          geometry: new Point(fromLonLat([client.longitude, client.latitude])),
+        });
+        clientLocationStoreFeature.setProperties({'clientInformation': client})
+        let clientLocationStoreVectorSource = new VectorSource({features: [clientLocationStoreFeature]});
+        let clientLocationStoreVectorLayer = new VectorLayer({source: clientLocationStoreVectorSource, style: clientLocationStyle})
+        this.mapModal.addLayer(clientLocationStoreVectorLayer);
+      }
     }
     
 
@@ -247,6 +286,21 @@ export default {
       let redVectorLayer = new VectorLayer({source: redVectorSource, style: redStyle});
       this.mapModal.addLayer(redVectorLayer);
     }
+
+
+    this.mapModal.on('click', (evt) => {
+      const feature = this.mapModal.forEachFeatureAtPixel(evt.pixel,
+        (feature) => {
+          return feature;
+        });
+
+      if (feature) {
+        console.log(feature.values_.clientInformation)
+      }
+    });
+
+
+
   }
 };
 </script>

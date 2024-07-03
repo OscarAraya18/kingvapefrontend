@@ -7,9 +7,7 @@ const state = {
 const getters = {
   getBackendURL: state => state.backendURL,
   getWebsocketURL: state => state.websocketURL,
-
   getApplicationVersion: state => state.applicationVersion
-
 };
 
 const actions = {

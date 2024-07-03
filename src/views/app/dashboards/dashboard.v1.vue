@@ -4,7 +4,7 @@
     
 
     <b-modal id="mapModal" size="lg" centered hide-header hide-footer>
-      Trabajando en esto...
+      <MapComponent mapHeight="450px" mapWidth="100%" :multipleClients="locations"></MapComponent>
     </b-modal>
 
     <b-modal scrollable size="m" centered hide-footer id="historyMessageModal" hide-header>
@@ -2438,7 +2438,6 @@ export default {
         if (location.latitude != 0 && location.longitude != 0){
           if (location.latitude != '' && location.longitude != ''){        
             if (!(location.latitude in latitudes) && !(location.longitude in longitudes)){
-              console.log(char.split('King Vape')[1][1]);
               this.locations.push
               ({
                 'latitude': location.latitude,
