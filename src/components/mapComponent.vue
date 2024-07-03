@@ -326,7 +326,7 @@ export default {
     if (this.multipleClients){
       let clientLocationImage = new Icon({
         anchor: [0.5, 1],
-        src: 'https://i.postimg.cc/ncgWWjcP/1.webp'
+        src: 'https://i.postimg.cc/FFW1jzYn/2.webp'
       });
 
       for (var clientIndex in this.multipleClients){

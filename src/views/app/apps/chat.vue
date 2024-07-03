@@ -610,7 +610,7 @@
             
             
             <div style="background-image: url('https://i.postimg.cc/HkJhz3Sz/qwd83nc4xxf41.jpg');">
-              <vue-perfect-scrollbar ref="scrollRef" :settings="{ suppressScrollX: true, wheelPropagation: false }" class="chat-content perfect-scrollbar rtl-ps-none ps scroll" style="padding-bottom: 30px;">
+              <div class="chat-content scroll" style="padding-bottom: 100px; overflow-y: scroll" ref="scrollRef">
                 <div v-for="currentActiveConversationMessage in currentActiveConversation.whatsappConversationMessages" @contextmenu.prevent="replyMessageRightClick(currentActiveConversationMessage)">
                   <div class="d-flex mb-30 appearMessageAnimation" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
                     <div :style="getMessageOwnerColor(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)" class="message flex-grow-1">
@@ -836,7 +836,7 @@
                     </div>
                   </div>
                 </div>
-              </vue-perfect-scrollbar>
+              </div>
             </div>
             <div class="pl-3 pr-3 pt-4 pb-3 box-shadow-1 chat-input-area" style="position: absolute; bottom: 0; width: 100%; z-index: 1000; background-color:white">
               <div v-if="loaders.fileShare == true" style="text-align: center;">
@@ -1967,7 +1967,7 @@ export default {
     scrollDown(){
       let scrollInterval = setInterval(() => {
         if (this.$refs.scrollRef) {
-          const psContainer = this.$refs.scrollRef.$el;
+          const psContainer = this.$refs.scrollRef;
           psContainer.scrollTop = psContainer.scrollHeight;
           clearInterval(scrollInterval);
         }
@@ -4426,7 +4426,7 @@ export default {
     scrollUp(){
       this.$nextTick(() => {
         if (this.$refs.scrollRef) {
-          const psContainer = this.$refs.scrollRef.$el;
+          const psContainer = this.$refs.scrollRef;
           psContainer.scrollTop = 0;
         }
       });
