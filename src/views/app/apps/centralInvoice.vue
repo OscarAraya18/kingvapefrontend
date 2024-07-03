@@ -24,8 +24,9 @@
           <template slot="table-row" slot-scope="props">
             <div v-if="props.column.field == 'whatsappInvoiceAgentID'">
               <i v-b-modal.informacionModal @click="openWhatsappInvoiceInformation(props.row)" class="i-Information" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
-
               <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(props.row)" class="i-Shopping-Cart" style="font-size: xx-large; cursor: pointer;"></i>
+              <button @click="clickOnCentralInvoice(props.row, true)" class="btn btn-primary text-black btn-rounded" style="margin-top: 10px; margin-bottom: 10px;">Retornar a sucursal</button>
+
             </div>
             <div v-else-if="props.column.field == 'whatsappInvoiceClientPhoneNumber'">
               {{ parsePhoneNumber(props.row.whatsappInvoiceClientPhoneNumber) }}
@@ -206,9 +207,14 @@
             <div class="flex-grow-1"></div>
             <i @click="updateWhatsappInvoiceShippingNote()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
             <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceShippingNote'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
-  
           </div>
           <br>
+
+          <br>
+          <div style="display: flex;">
+            <h5><strong>Pedido para hoy: </strong></h5>
+            <b-form-checkbox value="1" unchecked-value="0" @input="updateWhatsappInvoiceIsForToday(updatedWhatsappInvoice)" v-model="updatedWhatsappInvoice.whatsappInvoiceIsForToday" style="margin-left: 15px; position: relative; top: -27px" size="lg"></b-form-checkbox>
+          </div>
 
           <div v-if="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason">
             <h5><strong>Motivo del fallo en la entrega: </strong></h5>
@@ -242,24 +248,25 @@
           </div>
           <br>
 
-          <h5><strong>Ubicación: </strong></h5>
-
-          <MapComponent v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation" mapHeight="400px" mapWidth="100%" :clientLongitude="getWhatsappInvoiceClientLocation().lng" :clientLatitude="getWhatsappInvoiceClientLocation().lat"></MapComponent>
-
-          
-          <br>
-          <div style="display: flex;">
-            <b-form-select @change="changeWhatsappInvoiceLocation()" v-model="updatedWhatsappInvoiceLocation" :options="updateWhatsappInvoiceLocationOptions"></b-form-select>
-            <i @click="selectWhatsappInvoiceLocations()" class="i-Data-Search text-25 text-info ml-3" style="cursor: pointer"></i>    
-            <i @click="updateWhatsappInvoiceClientLocation()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
-            <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceClientLocation'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
+          <div v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocationURL == ''">
+            <h5><strong>Ubicación: </strong></h5>
+            <MapComponent v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation && updatedWhatsappInvoice.whatsappInvoiceClientLocationURL == ''" mapHeight="400px" mapWidth="100%" :clientLongitude="getWhatsappInvoiceClientLocation().lng" :clientLatitude="getWhatsappInvoiceClientLocation().lat"></MapComponent>
+            <br>
+            <div style="display: flex;">
+              <b-form-select @change="changeWhatsappInvoiceLocation()" v-model="updatedWhatsappInvoiceLocation" :options="updateWhatsappInvoiceLocationOptions"></b-form-select>
+              <i @click="selectWhatsappInvoiceLocations()" class="i-Data-Search text-25 text-info ml-3" style="cursor: pointer"></i>    
+              <i @click="updateWhatsappInvoiceClientLocation()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
+              <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceClientLocation'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
+            </div>
           </div>
+          
         </div>
       </div>
 
     </b-modal>
 
-    
+    <br>
+
     <b-modal id="informacionModal" size="lg" centered hide-footer hide-header>
       <h5><strong>ID: </strong> {{ updatedWhatsappInvoice.whatsappInvoiceID }}</h5>
       <h5><strong>Nombre del cliente: </strong> {{ updatedWhatsappInvoice.whatsappInvoiceClientName }}</h5>
@@ -311,10 +318,11 @@
       </div>
       
       
+      <div v-else>
+        <h5><strong>Ubicación: </strong></h5>
+        <MapComponent v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation" mapHeight="300px" mapWidth="100%" :clientLongitude="getWhatsappInvoiceClientLocation().lng" :clientLatitude="getWhatsappInvoiceClientLocation().lat"></MapComponent>
+      </div>
       
-      <h5><strong>Ubicación: </strong></h5>
-      <MapComponent v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation" mapHeight="300px" mapWidth="100%" :clientLongitude="getWhatsappInvoiceClientLocation().lng" :clientLatitude="getWhatsappInvoiceClientLocation().lat"></MapComponent>
-
       
       <br>
 
@@ -378,23 +386,23 @@
             <br>
           </div>
           
-          <div style="display: flex;">
+          <div v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocationURL == ''" style="display: flex;">
             <h5><strong>Ubicación: </strong></h5>
             <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceClientLocation'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: auto; left: 10px; top:-5px; position: relative;"/>
+            <MapComponent v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation" mapHeight="300px" mapWidth="100%" :clientLongitude="getWhatsappInvoiceClientLocation().lng" :clientLatitude="getWhatsappInvoiceClientLocation().lat"></MapComponent>
+            <div style="text-align: center;">
+              <div style="display: flex;">
+                <img @click="contactClient()" src="@/assets/pageAssets/w.png" alt style="width: 50px; margin-right: 20px; height: auto;"/>
+                <img @click="goWithMaps()" src="@/assets/pageAssets/map.png" alt style="width: 50px; margin-right: 20px; height: auto;"/>
+                <img @click="goWithWaze()" src="@/assets/pageAssets/z.png" alt style="width: 50px; height: auto;"/>
+
+              </div>
+            </div>
           </div>
-          <MapComponent v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation" mapHeight="300px" mapWidth="100%" :clientLongitude="getWhatsappInvoiceClientLocation().lng" :clientLatitude="getWhatsappInvoiceClientLocation().lat"></MapComponent>
 
           
           <br>
 
-          <div style="text-align: center;">
-            <div style="display: flex;">
-              <img @click="contactClient()" src="@/assets/pageAssets/w.png" alt style="width: 50px; margin-right: 20px; height: auto;"/>
-              <img @click="goWithMaps()" src="@/assets/pageAssets/map.png" alt style="width: 50px; margin-right: 20px; height: auto;"/>
-              <img @click="goWithWaze()" src="@/assets/pageAssets/z.png" alt style="width: 50px; height: auto;"/>
-
-            </div>
-          </div>
 
 
     </b-modal>
@@ -460,7 +468,7 @@
             <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceLocationNote'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
           </div>
           <br>
-
+          
           <h5><strong>Nota del envío: </strong></h5>
           <div style="display: flex;">
             <b-form-textarea no-resize rows="3" class="form-control" placeholder="Coloque una nota del envío" v-model="updatedWhatsappInvoice.whatsappInvoiceShippingNote"/>    
@@ -469,6 +477,12 @@
             <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceShippingNote'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
           </div>
           <br>
+
+          <br>
+          <div style="display: flex;">
+            <h5><strong>Pedido para hoy: </strong></h5>
+            <b-form-checkbox value="1" unchecked-value="0" @input="updateWhatsappInvoiceIsForToday(updatedWhatsappInvoice)" v-model="updatedWhatsappInvoice.whatsappInvoiceIsForToday" style="margin-left: 15px; position: relative; top: -27px" size="lg"></b-form-checkbox>
+          </div>
 
           <div v-if="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason">
             <h5><strong>Motivo del fallo en la entrega: </strong></h5>
@@ -494,17 +508,18 @@
             <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceClientLocationURL'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
           </div>
           <br>
-
-          <h5><strong>Ubicación: </strong></h5>
-          <MapComponent v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation" mapHeight="415px" mapWidth="100%" :clientLongitude="getWhatsappInvoiceClientLocation().lng" :clientLatitude="getWhatsappInvoiceClientLocation().lat"></MapComponent>
-
-          <br>
-          <div style="display: flex;">
-            <b-form-select @change="changeWhatsappInvoiceLocation()" v-model="updatedWhatsappInvoiceLocation" :options="updateWhatsappInvoiceLocationOptions"></b-form-select>
-            <i @click="selectWhatsappInvoiceLocations()" class="i-Data-Search text-25 text-info ml-3" style="cursor: pointer"></i>    
-            <i @click="updateWhatsappInvoiceClientLocation()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
-            <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceClientLocation'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
-          </div>
+          
+          <div v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocationURL == ''">
+            <h5><strong>Ubicación: </strong></h5>
+            <MapComponent v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation" mapHeight="415px" mapWidth="100%" :clientLongitude="getWhatsappInvoiceClientLocation().lng" :clientLatitude="getWhatsappInvoiceClientLocation().lat"></MapComponent>
+            <br>
+            <div style="display: flex;">
+              <b-form-select @change="changeWhatsappInvoiceLocation()" v-model="updatedWhatsappInvoiceLocation" :options="updateWhatsappInvoiceLocationOptions"></b-form-select>
+              <i @click="selectWhatsappInvoiceLocations()" class="i-Data-Search text-25 text-info ml-3" style="cursor: pointer"></i>    
+              <i @click="updateWhatsappInvoiceClientLocation()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
+              <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceClientLocation'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
+            </div>
+          </div >
         </div>
       </div>
 
@@ -1768,8 +1783,8 @@ export default {
       window.open(url, '_blank');
     },
 
-    clickOnCentralInvoice(whatsappInvoice){
-      if (this.agentType == 'central'){
+    clickOnCentralInvoice(whatsappInvoice, aux=false){
+      if (this.agentType == 'central' || aux){
         axios.post(this.backendURL+'/updateWhatsappInvoiceState', 
         {
           whatsappInvoiceID: whatsappInvoice.whatsappInvoiceID,
@@ -1779,7 +1794,7 @@ export default {
         })
         .then((response) =>{
           if (response.data.success){
-            this.showNotification('success', 'Comanda enviada', 'Se ha enviado la comanda existosamente.');
+            aux ? this.showNotification('success', 'Comanda retornada a la sucursal', 'Se ha retornado la comanda a la sucursal existosamente.') : this.showNotification('success', 'Comanda enviada', 'Se ha enviado la comanda existosamente.');
           } else {
             this.showNotification('danger', 'Error al enviar la comanda', 'Ha ocurrido un error inesperado al enviar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           }
@@ -1943,6 +1958,24 @@ export default {
       {
         whatsappInvoiceID: whatsappInvoice.whatsappInvoiceID,
         whatsappInvoiceHasBeenBilled: whatsappInvoice.whatsappInvoiceHasBeenBilled
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.showNotification('success', 'Estado de la comanda modificada', 'Se ha modificado el estado de la comanda existosamente.');
+        } else {
+          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+    },
+
+    updateWhatsappInvoiceIsForToday(whatsappInvoice){
+      axios.post(this.backendURL+'/updateWhatsappInvoiceIsForToday', 
+      {
+        whatsappInvoiceID: whatsappInvoice.whatsappInvoiceID,
+        updateWhatsappInvoiceIsForToday: whatsappInvoice.whatsappInvoiceIsForToday
       })
       .then((response) =>{
         if (response.data.success){
