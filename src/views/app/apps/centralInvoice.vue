@@ -390,15 +390,15 @@
             <h5><strong>Ubicación: </strong></h5>
             <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceClientLocation'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: auto; left: 10px; top:-5px; position: relative;"/>
             <MapComponent v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation" mapHeight="300px" mapWidth="100%" :clientLongitude="getWhatsappInvoiceClientLocation().lng" :clientLatitude="getWhatsappInvoiceClientLocation().lat"></MapComponent>
-            <div style="text-align: center;">
+          </div>
+
+          <div style="text-align: center;">
               <div style="display: flex;">
                 <img @click="contactClient()" src="@/assets/pageAssets/w.png" alt style="width: 50px; margin-right: 20px; height: auto;"/>
                 <img @click="goWithMaps()" src="@/assets/pageAssets/map.png" alt style="width: 50px; margin-right: 20px; height: auto;"/>
                 <img @click="goWithWaze()" src="@/assets/pageAssets/z.png" alt style="width: 50px; height: auto;"/>
-
               </div>
             </div>
-          </div>
 
           
           <br>
