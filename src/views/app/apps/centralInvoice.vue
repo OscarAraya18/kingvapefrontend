@@ -386,10 +386,14 @@
             <br>
           </div>
           
-          <div v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocationURL == ''" style="display: flex;">
-            <h5><strong>Ubicación: </strong></h5>
-            <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceClientLocation'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: auto; left: 10px; top:-5px; position: relative;"/>
+          <div v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocationURL == ''">
+            <div style="display: flex;">
+              <h5><strong>Ubicación: </strong></h5>
+              <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceClientLocation'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: auto; left: 10px; top:-5px; position: relative;"/>
+            </div>
+            <br>
             <MapComponent v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation" mapHeight="300px" mapWidth="100%" :clientLongitude="getWhatsappInvoiceClientLocation().lng" :clientLatitude="getWhatsappInvoiceClientLocation().lat"></MapComponent>
+            <br>
           </div>
 
           <div style="text-align: center;">
@@ -398,7 +402,7 @@
                 <img @click="goWithMaps()" src="@/assets/pageAssets/map.png" alt style="width: 50px; margin-right: 20px; height: auto;"/>
                 <img @click="goWithWaze()" src="@/assets/pageAssets/z.png" alt style="width: 50px; height: auto;"/>
               </div>
-            </div>
+            </div> 
 
           
           <br>
