@@ -1,7 +1,222 @@
 <template>
   <div>
 
-    <h4><strong>Transacciones a validar:</strong></h4>
+    <b-modal scrollable hide-footer hide-header size="lg" centered hide-backdrop id="conversationModal" v-if="currentConversation != null" @shown="scrollToBottom">
+      <div v-if="openConversationLoader == true" style="text-align: center;">
+        <br><span class="spinner-glow spinner-glow-primary"></span>
+      </div>
+      <div v-else>
+        <div style="margin-bottom: 20px;">
+          <h3><strong>{{openedName}}</strong></h3>
+          <h3>{{parseNumber(openedNumber)}}</h3>
+        </div>
+        <div ref="scrollHistory" style="max-height: 80vh; overflow-y: auto;">
+          <div v-for="currentActiveConversationMessage in currentConversation.whatsappConversationMessages">
+            
+            <div class="d-flex mb-30" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
+              <div :style="getMessageOwnerColor(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)" class="message flex-grow-1">
+                <div class="d-flex">
+                  <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber != null">
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
+                      <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                        
+                        <div v-if="currentConversation.whatsappConversationMessages.map(whatsappGeneralMessage => whatsappGeneralMessage.whatsappGeneralMessageID).includes(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID) == false">
+                          <button @click="getHistoryMessage(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID)" class="btn btn-icon btn-primary mr-2" v-b-modal.historyMessageModal><i class="i-Clock"></i>Abrir mensaje del historial</button>
+                        </div>
+                        
+                        <div v-for="answeredMessage in currentConversation.whatsappConversationMessages">
+                          <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
+                            
+                            <p v-if="answeredMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'contact'"> 
+                              <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.whatsappContactMessageName}}</p>
+                              <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.whatsappContactMessagePhoneNumber}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'image'"> 
+                              <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`">
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappImageMessageCaption}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='video'"> 
+                              <video controls width="400" :src="`data:video/mp4;base64,${answeredMessage.whatsappVideoMessageFile}`"></video>
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappVideoMessageCaption}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                              <MapComponent mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
+
+                              <br>
+                              <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
+                              <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                              <a style="color: black;" :href="`data:${answeredMessage.whatsappDocumentMessageMimeType};base64,${answeredMessage.whatsappDocumentMessageFile}`" :download="answeredMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{answeredMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                            </div>
+                            
+                            <audio controls v-if="answeredMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${answeredMessage.whatsappAudioMessageFile}`"></audio>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                              <img v-b-modal.bigImageModal @click="openBigImage(answeredMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="answeredMessage.whatsappFavoriteImageMessageDriveURL">
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappFavoriteImageMessageCaption != null">{{answeredMessage.whatsappFavoriteImageMessageCaption}}</p>
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'contact'"> 
+                      <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{currentActiveConversationMessage.whatsappContactMessageName}}</p>
+                      <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{currentActiveConversationMessage.whatsappContactMessagePhoneNumber}}</p>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
+                      <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='video'"> 
+                      <video controls width="400" :src="`data:video/mp4;base64,${currentActiveConversationMessage.whatsappVideoMessageFile}`"></video>
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappVideoMessageCaption}}</p>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                      <MapComponent mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
+
+                      <br>
+                      <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
+                      <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                      <a style="color: black;" :href="`data:${currentActiveConversationMessage.whatsappDocumentMessageMimeType};base64,${currentActiveConversationMessage.whatsappDocumentMessageFile}`" :download="currentActiveConversationMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{currentActiveConversationMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                    </div>
+                    
+                    <audio controls v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${currentActiveConversationMessage.whatsappAudioMessageFile}`"></audio>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                      <img v-b-modal.bigImageModal @click="openBigImage(currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL">
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappFavoriteImageMessageCaption != null">{{currentActiveConversationMessage.whatsappFavoriteImageMessageCaption}}</p>
+
+                    </div>
+                  
+                  </div>
+                  <span v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null" style="display:flex; margin-left: 0; margin-right:auto;" class="text-small text-muted">
+                    <img :id="'r'+currentActiveConversationMessage.whatsappGeneralMessageID" v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null" style="cursor: pointer; width: 25px; height: 25px; margin-right: 5px;" src="@/assets/read.png">
+                    <img :id="'d'+currentActiveConversationMessage.whatsappGeneralMessageID" v-else-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null" style="cursor: pointer; width: 25px; height: 25px; margin-right: 5px;" src="@/assets/delivered.png">
+                    <img :id="'s'+currentActiveConversationMessage.whatsappGeneralMessageID" v-else style="cursor: pointer; width: 25px; height: 25px; margin-right: 5px;" src="@/assets/send.png">
+                    <b-tooltip :target="'r'+currentActiveConversationMessage.whatsappGeneralMessageID">
+                      <p>Envíado: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null">Recibido: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null">Leído: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime)}}</p>
+                    </b-tooltip>
+                    <b-tooltip :target="'d'+currentActiveConversationMessage.whatsappGeneralMessageID">
+                      <p>Envíado: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null">Recibido: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null">Leído: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime)}}</p>
+                    </b-tooltip>
+                    <b-tooltip :target="'s'+currentActiveConversationMessage.whatsappGeneralMessageID">
+                      <p>Envíado: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null">Recibido: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null">Leído: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime)}}</p>
+                    </b-tooltip>
+                    {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}
+                  </span>
+                  <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
+                  <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null">
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
+                      <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                        
+                        <div v-if="currentConversation.whatsappConversationMessages.map(whatsappGeneralMessage => whatsappGeneralMessage.whatsappGeneralMessageID).includes(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID) == false">
+                          <button @click="getHistoryMessage(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID)" class="btn btn-icon btn-primary mr-2" v-b-modal.historyMessageModal><i class="i-Clock"></i>Abrir mensaje del historial</button>
+                        </div>
+                        
+                        <div v-for="answeredMessage in currentConversation.whatsappConversationMessages">
+
+                          <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
+                            
+                            <p v-if="answeredMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'contact'"> 
+                              <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.whatsappContactMessageName}}</p>
+                              <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.whatsappContactMessagePhoneNumber}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'image'"> 
+                              <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`">
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappImageMessageCaption}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='video'"> 
+                              <video controls width="400" :src="`data:video/mp4;base64,${answeredMessage.whatsappVideoMessageFile}`"></video>
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappVideoMessageCaption}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                              <MapComponent mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
+
+                              <br>
+                              <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
+                              <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                              <a style="color: black;" :href="`data:${answeredMessage.whatsappDocumentMessageMimeType};base64,${answeredMessage.whatsappDocumentMessageFile}`" :download="answeredMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{answeredMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                            </div>
+                            
+                            <audio controls v-if="answeredMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${answeredMessage.whatsappAudioMessageFile}`"></audio>
+                          
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                              <img v-b-modal.bigImageModal @click="openBigImage(answeredMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="answeredMessage.whatsappFavoriteImageMessageDriveURL">
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappFavoriteImageMessageCaption != null">{{answeredMessage.whatsappFavoriteImageMessageCaption}}</p>
+                            </div>
+                          
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'contact'"> 
+                      <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{currentActiveConversationMessage.whatsappContactMessageName}}</p>
+                      <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{currentActiveConversationMessage.whatsappContactMessagePhoneNumber}}</p>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
+                      <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                      <MapComponent mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
+
+                      <br>
+                      <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
+                      <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
+                    </div>
+                    
+                    <audio controls v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${currentActiveConversationMessage.whatsappAudioMessageFile}`"></audio>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                      <img v-b-modal.bigImageModal @click="openBigImage(currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL">
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappFavoriteImageMessageCaption != null">{{currentActiveConversationMessage.whatsappFavoriteImageMessageCaption}}</p>
+                    </div>
+                  
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </b-modal>
+
+    <h4><strong>SINPES (contra entrega) de hoy:</strong></h4>
     <br>
     <div class="card mb-30">
       <div class="card-body p-0">
@@ -11,112 +226,59 @@
           styleClass="order-table vgt-table"
           :rows="sinpeRows1">
           <template slot="table-row" slot-scope="props">
-            <div v-if="props.column.field == 'transactionApprover'">
-              <div v-if="agentType == 'locality'">
-                <b-form-select @change="selectTransactionApprover(props.row.transactionID, props.row.transactionApproverLocalityAgentID)" v-model="props.row.transactionApproverLocalityAgentID" class="mb-1" :options="approverOptions"></b-form-select>
-              </div>
-              <div v-else>
-                {{ agentName }}
-              </div>
+
+            <div v-if="props.column.field == 'whatsappInvoiceClientPhoneNumber'">
+              {{ parseNumber(props.row.whatsappInvoiceClientPhoneNumber) }}
             </div>
-            <div v-else-if="props.column.field == 'transactionAction'" style="text-align: right;">
-              <button class="btn btn-primary text-black btn-rounded" @click="validateTransaction(props.row)">Validar</button>
+
+            <div v-else-if="props.column.field == 'whatsappInvoiceAmount'">
+              ₡{{props.row.whatsappInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}            
             </div>
-            <div v-else-if="props.column.field == 'transactionStore'">
-              <div v-if="agentType == 'locality'">
-                {{ localityName }}
-              </div>
-              <div v-else>
-                <b-form-select @change="selectTransactionStore(props.row.transactionID, props.row.transactionStoreLocalityID)" v-model="props.row.transactionStoreLocalityID" class="mb-1" :options="localitiesOptions"></b-form-select>
-              </div>
+            
+            <div v-else-if="props.column.field == 'localityName'">
+              <b-badge style="color: black; font-size: small;" :style="{backgroundColor: props.row.localityColor}">{{ props.row.localityName }}</b-badge>
             </div>
-            <div v-else-if="props.column.field == 'transactionSystemDate'" >
-              {{ parseDateTime(props.row.transactionSystemDate) }}
+            
+            <div v-else-if="props.column.field == 'localityAgentName'">
+              <b-badge v-if="props.row.localityAgentName" style="color: black; font-size: small;" :style="{backgroundColor: props.row.localityAgentColor}">{{ props.row.localityAgentName }}</b-badge>
+              <b-badge v-else style="color: white; font-size: small; background-color: black;">Sin mensajero asignado</b-badge>
             </div>
+
+            <div v-else-if="props.column.field == 'whatsappInvoiceApproveAction'">
+              <p @click="updateWhatsappInvoiceSINPE(props.row.whatsappInvoiceID, props.row.whatsappInvoiceSINPEApproved)" style="position: relative; top: 10px">
+                {{ props.row.whatsappInvoiceSINPEApproved ? '✅' : '❌'  }}
+              </p>
+            </div>
+
+            <div v-else-if="props.column.field == 'whatsappConversationOpenAction'">
+              <button v-b-modal.conversationModal class="btn btn-primary text-black btn-rounded" @click="whatsappConversationOpenAction(props.row)">Abrir</button>
+            </div>
+            
+            
+
           </template>
         </vue-good-table>
       </div>
     </div>
-
-
-    <div v-if="agentType == 'admin'">
-      <br><br>
-      <h4><strong>Transacciones previas:</strong></h4>
-      <br>
-      <div style="display: flex;">
-        <div style="width: 40%; margin-right: 2%;">
-          <h5><strong>Fecha inicial:</strong></h5>
-          <b-form-datepicker v-model="initialDateOption"></b-form-datepicker>
-        </div>
-        <div style="width: 45%;">
-          <h5><strong>Fecha final:</strong></h5>
-          <b-form-datepicker v-model="endDateOption"></b-form-datepicker>
-        </div>
-        <div>
-          <button class="btn btn-icon" style="width: 100%; background-color: #F9E530; font-size: 15px; margin-left: 30px;" @click="filter()"><i class="i-Search-People"></i>Aplicar filtro</button>
-          <br><br>
-          <button class="btn btn-icon" style="width: 100%; background-color: rgb(255, 184, 32); font-size: 15px; margin-left: 30px;" @click="cleanFilter()"><i class="i-Folder-Trash"></i>Limpiar filtros</button>
-        </div>
-      </div>
-      <br><br>
-      <div class="card mb-30">
-        <div class="card-body p-0">
-          <vue-good-table
-            :columns="usedTransactionColumns"
-            :line-numbers="false"
-            styleClass="order-table vgt-table"
-            :rows="usedTransactions">
-            <template slot="table-row" slot-scope="props">
-              <div v-if="props.column.field == 'transactionAction'" style="text-align: right;">
-                <button class="btn btn-danger text-black btn-rounded" @click="reverseTransaction(props.row)">Reversar</button>
-              </div>
-              <div v-else-if="props.column.field == 'transactionRelatedMessageID'" style="text-align: right;">
-                <div v-if="props.row.transactionRelatedMessageID == null">
-                  <button class="btn btn-gray text-black btn-rounded" style="cursor: no-drop">No disponible</button>
-                </div>
-                <div v-else> 
-                  <button v-b-modal.transactionMessageModal @click="selectTransactionMessage(props.row.transactionRelatedMessageID)" class="btn btn-info text-black btn-rounded">Abrir</button>
-                </div>
-              </div>
-              <div v-else-if="props.column.field == 'agentName'">
-                <div v-if="props.row.agentName != null">
-                  {{ props.row.agentName }}
-                </div>
-                <div v-else>
-                  {{ props.row.localityAgentName }}
-                </div>
-              </div>
-            </template>
-          </vue-good-table>
-        </div>
-      </div>
-    </div>
   </div>
-  
-  
-  
 </template>
 
 <script>
 import axios from 'axios';
 
 const constants = require('@../../../src/constants.js'); 
-const webSocket = new WebSocket('wss:payitcr.com');
+import MapComponent from "../../../components/mapComponent.vue";
 
 export default {
+  components: {
+    MapComponent
+  },
 
   data() {
     return {
-      loaders:
-      {
-        transactionMessage: false
-      },
-
-      filtering: false,
-
+     
       agentType: '',
-      agentName: '',
-      localityName: '',
+      agentID: '',
 
       sinpeColumns: 
       [
@@ -127,20 +289,26 @@ export default {
           tdClass: "text-left pl-3",
         },
         {
-          label: "ID de la órden",
+          label: "ID de la orden",
           field: "whatsappInvoiceID",
           thClass: "text-left pl-3",
           tdClass: "text-left pl-3",
         },
         {
           label: "Número del cliente",
-          field: "whatsappInvoiceClientName",
+          field: "whatsappInvoiceClientPhoneNumber",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
           label: "Nombre del cliente",
           field: "whatsappInvoiceClientName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Monto",
+          field: "whatsappInvoiceAmount",
           thClass: "text-left",
           tdClass: "text-left",
         },
@@ -157,8 +325,8 @@ export default {
           tdClass: "text-left",
         },
         {
-          label: "Aprovar",
-          field: "transactionApprover",
+          label: "Aprovado",
+          field: "whatsappInvoiceApproveAction",
           thClass: "text-left",
           tdClass: "text-left",
         },
@@ -170,210 +338,35 @@ export default {
         }
       ],
 
-      transactionsColumns: 
-      [
-        {
-          label: "Número de referencia",
-          field: "transactionID",
-          thClass: "text-left pl-3",
-          tdClass: "text-left pl-3",
-        },
-        {
-          label: "Descripción",
-          field: "transactionNote",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Cantidad",
-          field: "transactionAmount",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Fecha del banco",
-          field: "transactionDate",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Fecha del sistema",
-          field: "transactionSystemDate",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Tiempo transcurrido",
-          field: "transactionTime",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Aprovado por",
-          field: "transactionApprover",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Localidad",
-          field: "transactionStore",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "",
-          field: "transactionAction",
-          thClass: "text-left",
-          tdClass: "text-left",
-        }
-      ],
+      sinpeRows1: [],
 
-      notUsedTransactions: [],
-      selectedApprover: '',
-      approverOptions: [],
-      localitiesOptions: [],
-      selectedTransactionApprovers: {},
-      selectedTransactionStores: {},
-
-
-      usedTransactionColumns: [
-        {
-          label: "Número de referencia",
-          field: "transactionID",
-          thClass: "text-left pl-3",
-          tdClass: "text-left pl-3",
-        },
-        {
-          label: "Descripción",
-          field: "transactionNote",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Cantidad",
-          field: "transactionAmount",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Fecha del banco",
-          field: "transactionDate",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Fecha del sistema",
-          field: "transactionSystemDate",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Aprovado por",
-          field: "agentName",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Localidad",
-          field: "localityName",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Fecha de aprobación",
-          field: "transactionApprovedDate",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Mensaje relacionado",
-          field: "transactionRelatedMessageID",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "",
-          field: "transactionAction",
-          thClass: "text-left",
-          tdClass: "text-left",
-        }
-      ],
-      
-      usedTransactions: [],
-
-      
-      initialDateOption: '',
-      endDateOption: '',
-
-
-      localitiesOptions: [],
-      agentOptions: [],
-
-      initialDateOptionClose: '',
-      endDateOptionClose: '',
-      passwordInput: ''
-
+      openedName: '',
+      openedNumber: '',
+      openConversationLoader: false,
+      currentConversation: null
 
     };
   },
 
   methods: {
-    filter(){
-      this.filtering = true;
-      axios.post(constants.routes.backendAPI+'/selectUsedTransactions',
-      {
-        initialDate: this.initialDateOption,
-        endDate: this.endDateOption
-      })
-      .then((response) =>{
-        if (response.data.success){
-          this.usedTransactions = response.data.result;
-          this.usedTransactions = this.usedTransactions.map(transaction => {
-            return {
-              ...transaction,
-              transactionApproverLocalityAgentID: this.getSelectedTransactionApprover(transaction.transactionID),
-              transactionDate: this.parseDate(transaction.transactionDate),
-              transactionApprovedDate: this.parseDateTime(transaction.transactionApprovedDate),
-              transactionSystemDate: this.parseDateTime(transaction.transactionSystemDate),
-              transactionAmount: `₡ ${parseFloat(transaction.transactionAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}`
-            };
-          });
-        } else {
-          this.showNotification('danger', 'Error al consultar las transacciones previas', 'Ha ocurrido un error inesperado al consultar las transacciones previas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        }
-      })
-      .catch(() => {
-        this.showNotification('danger', 'Error al consultar las transacciones previas', 'Ha ocurrido un error inesperado al consultar las transacciones previas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-      })
+    getLocation(whatsappGeneralMessage){
+      return {lat: whatsappGeneralMessage.whatsappLocationMessageLatitude, lng: whatsappGeneralMessage.whatsappLocationMessageLongitude}
     },
 
-    selectTransactionMessage(whatsappGeneralMessageID){
-      this.loaders.transactionMessage = true;
-      axios.post(constants.routes.backendAPI+'/selectWhatsappGeneralMessage', 
-      {
-        whatsappGeneralMessageID: whatsappGeneralMessageID
-      })
-      .then((response) => {
-        if (response.data.success){
-          this.transactionMessage = response.data.result;
-          this.loaders.transactionMessage = false;
-        } else {
-          this.loaders.transactionMessage = false;
-          this.showNotification('danger', 'Error al abrir el mensaje de la transacción', 'Ha ocurrido un error inesperado al abrir el mensaje de la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        }
-      })
-      .catch(() => {
-        this.showNotification('danger', 'Error al abrir el mensaje de la transacción', 'Ha ocurrido un error inesperado al abrir el mensaje de la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-      })
+    getMessageOwnerStyle(messageOwner){
+      if(messageOwner != null){
+        return 'user';
+      } 
     },
 
-    cleanFilter(){
-      this.initialDateOption = '';
-      this.endDateOption = '';
-      this.filtering = false;
+    getMessageOwnerColor(messageOwner){
+      if(messageOwner == null){
+        return "background-color:#ceefff";
+      } 
+      return "background-color:#dedede";
     },
 
-    parseDate(originalHour){
+    parseHour(originalHour){
       const parsingDate = new Date(originalHour);
       const options = {
         day: '2-digit',
@@ -383,9 +376,18 @@ export default {
         minute: '2-digit',
         hour12: true
       };
-      var formattedDate = parsingDate.toLocaleString('en-GB', options).slice(0,-10);
+      var formattedDate = parsingDate.toLocaleString('en-GB', options);
+      if (formattedDate.slice(-2) == 'am'){
+        formattedDate = formattedDate.slice(0,-2) + 'AM'
+      } else if (formattedDate.slice(-2) == 'pm') {
+        formattedDate = formattedDate.slice(0,-2) + 'PM'
+      }
+      if (formattedDate.includes('00') && formattedDate.includes('PM')){
+        formattedDate = formattedDate.replace('00', '12');
+      }
       return formattedDate;
     },
+    
 
     parseDateTime(originalHour){
       const parsingDate = new Date(originalHour);
@@ -409,27 +411,39 @@ export default {
       return formattedDate;
     },
 
-    startTimer(){
-      setInterval(() => {
-        for (var transactionIndex in this.notUsedTransactions){
-          this.notUsedTransactions[transactionIndex].transactionTime = this.getElapsedTime(this.notUsedTransactions[transactionIndex].transactionSystemDate);
+    parseNumber(phoneNumber){
+      const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+      const match = cleaned.match(/^(\d{3})(\d{2})(\d{2})(\d{2})(\d{2})$/);
+      if (match) {
+        return `(${match[1]}) ${match[2]}${match[3]}${match[4]}${match[5]}`;
+      }
+      return phoneNumber;
+    },
+
+    whatsappConversationOpenAction(whatsappConversation){
+      this.openedName = whatsappConversation.whatsappInvoiceClientName;
+      this.openedNumber = whatsappConversation.whatsappInvoiceClientPhoneNumber;
+      var whatsappConversationID = whatsappConversation.whatsappConversationID;
+      this.openConversationLoader = true;
+      this.currentConversation = {};
+      axios.post(constants.routes.backendAPI+'/selectAgentConversation', 
+      {
+        'whatsappConversationID': whatsappConversationID
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.currentConversation = response.data.result[whatsappConversationID];
+          this.openConversationLoader = false;
+        } else {
+          this.showNotification('danger', 'Error al abrir la conversación', 'Ha ocurrido un error inesperado al abrir la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
-      }, 1000);
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al abrir la conversación', 'Ha ocurrido un error inesperado al abrir la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
     },
 
-    getElapsedTime(transactionSystemDate){
-      const startDate = new Date(transactionSystemDate);
-
-      const now = new Date();
-
-      const timeDifference = now - startDate;
-
-      const segundos = Math.floor(timeDifference / 1000) % 60;
-      const minutos = Math.floor(timeDifference / (1000 * 60)) % 60;
-      const horas = Math.floor(timeDifference / (1000 * 60 * 60)) % 24;
-      return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
-
-    },
+    /*
 
     reverseTransaction(transaction){
       this.$swal({
@@ -563,82 +577,7 @@ export default {
 
       }
     },
-
-
-    selectNotUsedTransactions(){
-      axios.post(constants.routes.backendAPI+'/selectNotUsedTransactions')
-      .then((response) =>{
-        if (response.data.success){
-          this.notUsedTransactions = response.data.result;
-          this.notUsedTransactions = this.notUsedTransactions.map(transaction => {
-            return {
-              ...transaction,
-              transactionApproverLocalityAgentID: this.getSelectedTransactionApprover(transaction.transactionID),
-              transactionStoreLocalityID: this.getSelectedTransactionStore(transaction.transactionID),
-              transactionTime: this.getElapsedTime(transaction.transactionSystemDate),
-              transactionDate: this.parseDate(transaction.transactionDate),
-              transactionSystemDate: transaction.transactionSystemDate,
-              transactionAmount: `₡ ${parseFloat(transaction.transactionAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}`
-            };
-          });
-        } else {
-          this.showNotification('danger', 'Error al consultar las transacciones a validar', 'Ha ocurrido un error inesperado al consultar las transacciones a validar. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        }
-      })
-      .catch((e) => {
-        console.log(e);
-        this.showNotification('danger', 'Error al consultar las transacciones a validar', 'Ha ocurrido un error inesperado al consultar las transacciones a validar. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-      })
-    },
-
-    selectUsedTransactions(){
-      axios.post(constants.routes.backendAPI+'/selectUsedTransactions',
-      {
-        initialDate: '',
-        endDate: ''
-      })
-      .then((response) =>{
-        if (response.data.success){
-          this.usedTransactions = response.data.result;
-          this.usedTransactions = this.usedTransactions.map(transaction => {
-            return {
-              ...transaction,
-              transactionApproverLocalityAgentID: this.getSelectedTransactionApprover(transaction.transactionID),
-              transactionDate: this.parseDate(transaction.transactionDate),
-              transactionApprovedDate: this.parseDateTime(transaction.transactionApprovedDate),
-              transactionSystemDate: this.parseDateTime(transaction.transactionSystemDate),
-              transactionAmount: `₡ ${parseFloat(transaction.transactionAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}`
-            };
-          });
-        } else {
-          this.showNotification('danger', 'Error al consultar las transacciones previas', 'Ha ocurrido un error inesperado al consultar las transacciones previas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        }
-      })
-      .catch((e) => {
-        console.log(e);
-        this.showNotification('danger', 'Error al consultar las transacciones previas', 'Ha ocurrido un error inesperado al consultar las transacciones previas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-      })
-    },
-    
-    cleanFilterClose(){
-      this.initialDateOptionClose = '';
-      this.initialDateOptionClose = '';
-      for (var agentIndex in this.agentOptions){
-        this.agentOptions[agentIndex].visible = true;
-        this.agentOptions[agentIndex].selected = true;
-      }
-      for (var localityIndex in this.localitiesOptions){
-        this.localitiesOptions[localityIndex].selected = true;
-      }
-    },
-
-    changeLocalityOptions(locality){
-      for (var agentIndex in this.agentOptions){
-        if (this.agentOptions[agentIndex].localityID == locality.localityID){
-          this.agentOptions[agentIndex].visible = !this.agentOptions[agentIndex].visible;
-        }
-      }
-    },
+    */
 
     showNotification(notificationType, notificationTitle, notificationContent){
       this.$bvToast.toast(notificationContent, {
@@ -649,6 +588,44 @@ export default {
     },
 
 
+    selectWhatsappInvoiceForSINPE(initialDate, endDate){
+      axios.post(constants.routes.backendAPI+'/selectWhatsappInvoiceForSINPE',
+      {
+        'initialDate': initialDate,
+        'endDate': endDate
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.sinpeRows1 = response.data.result;
+        } else {
+          this.showNotification('danger', 'Error al consultar las órdenes con SINPE por confirmar', 'Ha ocurrido un error inesperado al consultar las órdenes con SINPE por confirmar. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al consultar las órdenes con SINPE por confirmar', 'Ha ocurrido un error inesperado al consultar las órdenes con SINPE por confirmar. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+    updateWhatsappInvoiceSINPE(whatsappInvoiceID, whatsappInvoiceSINPEApproved){
+      axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceSINPE',
+      {
+        'whatsappInvoiceID': whatsappInvoiceID,
+        'whatsappInvoiceSINPEApproved': !whatsappInvoiceSINPEApproved,
+        'whatsappInvoiceSINPEApprover': this.agentID
+      })
+      .then((response) =>{
+        this.selectWhatsappInvoiceForSINPE();
+        if (whatsappInvoiceSINPEApproved == false){
+          this.showNotification('success', 'SINPE confirmado', 'Se ha aprobado el SINPE exitosamente.')
+        } else {
+          this.showNotification('success', 'SINPE rechazado', 'Se ha rechazado el SINPE exitosamente.')
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al confirmar el SINPE', 'Ha ocurrido un error inesperado al confirmar el SINPE. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    }
+
     
   },
 
@@ -658,21 +635,13 @@ export default {
   mounted(){
     
     this.agentType = localStorage.getItem('agentType');
-    this.agentName = localStorage.getItem('agentName');
-    
+    this.agentID = localStorage.getItem('agentID');
+    this.selectWhatsappInvoiceForSINPE(null, null);
 
       
-    /*
-    this.selectNotUsedTransactions();
-    this.selectUsedTransactions();
     setInterval(() => {
-      this.selectNotUsedTransactions();
-      if (this.filtering == false){
-        this.selectUsedTransactions();
-      }
+      this.selectWhatsappInvoiceForSINPE(null, null);
     }, 10000);
-    this.startTimer();
-    */
   },
 
   created: function() {}

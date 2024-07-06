@@ -216,6 +216,11 @@
             <b-form-checkbox value="1" unchecked-value="0" @input="updateWhatsappInvoiceIsForToday(updatedWhatsappInvoice)" v-model="updatedWhatsappInvoice.whatsappInvoiceIsForToday" style="margin-left: 15px; position: relative; top: -27px" size="lg"></b-form-checkbox>
           </div>
 
+          <div style="display: flex;" v-if="updatedWhatsappInvoice.whatsappInvoicePaymentMethod == 'SINPE (contra entrega)'">
+            <h5><strong>SINPE (contra entrega) confirmado: </strong></h5>
+            <b-form-checkbox value="1" unchecked-value="0" disabled v-model="updatedWhatsappInvoice.whatsappInvoiceSINPEApproved" style="margin-left: 15px; position: relative; top: -27px" size="lg"></b-form-checkbox>
+          </div>
+
           <div v-if="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason">
             <h5><strong>Motivo del fallo en la entrega: </strong></h5>
             <div style="display: flex;">
@@ -376,6 +381,11 @@
           </div>
           <br>
 
+          <div style="display: flex;" v-if="updatedWhatsappInvoice.whatsappInvoicePaymentMethod == 'SINPE (contra entrega)'">
+            <h5><strong>SINPE (contra entrega) confirmado: </strong></h5>
+            <b-form-checkbox value="1" unchecked-value="0" disabled v-model="updatedWhatsappInvoice.whatsappInvoiceSINPEApproved" style="margin-left: 15px; position: relative; top: -27px" size="lg"></b-form-checkbox>
+          </div>
+
           <div v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocationURL != ''">
             <h5><strong>Enlace de la ubicación: </strong></h5>
             <div style="display: flex;">
@@ -487,6 +497,12 @@
             <h5><strong>Pedido para hoy: </strong></h5>
             <b-form-checkbox value="1" unchecked-value="0" @input="updateWhatsappInvoiceIsForToday(updatedWhatsappInvoice)" v-model="updatedWhatsappInvoice.whatsappInvoiceIsForToday" style="margin-left: 15px; position: relative; top: -27px" size="lg"></b-form-checkbox>
           </div>
+
+          <div style="display: flex;" v-if="updatedWhatsappInvoice.whatsappInvoicePaymentMethod == 'SINPE (contra entrega)'">
+            <h5><strong>SINPE (contra entrega) confirmado: </strong></h5>
+            <b-form-checkbox value="1" unchecked-value="0" disabled v-model="updatedWhatsappInvoice.whatsappInvoiceSINPEApproved" style="margin-left: 15px; position: relative; top: -27px" size="lg"></b-form-checkbox>
+          </div>
+
 
           <div v-if="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason">
             <h5><strong>Motivo del fallo en la entrega: </strong></h5>
@@ -1819,24 +1835,30 @@ export default {
     },
     
     clickOnShippingInvoice(whatsappInvoice){
-      if (this.agentType == 'localityAgent'){
-        axios.post(this.backendURL+'/updateWhatsappInvoiceState', 
-        {
-          whatsappInvoiceID: whatsappInvoice.whatsappInvoiceID,
-          whatsappInvoiceState: 'E'
-        })
-        .then((response) =>{
-          if (response.data.success){
-            this.showNotification('success', 'Comanda entregada', 'Se ha entregado la comanda existosamente.');
-            this.$root.$emit('bv::hide::modal', 'shippingModal');
-          } else {
+      /*if (whatsappInvoice.whatsappInvoiceSINPEApproved == false && whatsappInvoice.whatsappInvoicePaymentMethod == 'SINPE (contra entrega)'){
+        this.showNotification('info', 'SINPE no confirmado', 'El SINPE contra entrega no ha sido confirmado desde el call center. La orden no puede ser entregada.');
+      } else {
+*/
+        if (this.agentType == 'localityAgent'){
+          axios.post(this.backendURL+'/updateWhatsappInvoiceState', 
+          {
+            whatsappInvoiceID: whatsappInvoice.whatsappInvoiceID,
+            whatsappInvoiceState: 'E'
+          })
+          .then((response) =>{
+            if (response.data.success){
+              this.showNotification('success', 'Comanda entregada', 'Se ha entregado la comanda existosamente.');
+              this.$root.$emit('bv::hide::modal', 'shippingModal');
+            } else {
+              this.showNotification('danger', 'Error al entregar la comanda', 'Ha ocurrido un error inesperado al entregar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            }
+          })
+          .catch(() => {
             this.showNotification('danger', 'Error al entregar la comanda', 'Ha ocurrido un error inesperado al entregar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-          }
-        })
-        .catch(() => {
-          this.showNotification('danger', 'Error al entregar la comanda', 'Ha ocurrido un error inesperado al entregar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-        })
-      }
+          })
+        }
+      //}
+    
     },
 
 

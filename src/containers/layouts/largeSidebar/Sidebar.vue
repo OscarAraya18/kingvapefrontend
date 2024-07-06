@@ -121,7 +121,7 @@
             data-item="locality"
             :class="{ active: selectedParentMenu == 'locality' }"
             :data-submenu="false"
-            v-if="isAdmin == true || locality == true"
+            v-if="locality == false"
           >
             <router-link tag="a" class="nav-item-hold" to="/app/apps/locality">
               <i class="nav-icon i-Dollar"></i>

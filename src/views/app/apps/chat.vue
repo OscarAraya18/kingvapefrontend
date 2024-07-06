@@ -1669,12 +1669,13 @@
                             
                           </b-row>
 
+                          <h5 v-if="displayCodigoDescuento" style="background-color: #18d100">Se ha aprobado el código de descuento '{{ displayCodigoDescuento }}' para esta conversación</h5>
+                          <br>
+                          <button v-b-modal.modalCodigoDescuento @click="openModalCodigoDescuento()" class="btn btn-icon btn-primary"><i class="i-Check"></i>Canjear código de descuento</button>
+
                         </b-tab>
                     </b-tabs> 
 
-                    <h5 v-if="displayCodigoDescuento" style="background-color: #18d100">Se ha aprobado el código de descuento '{{ displayCodigoDescuento }}' para esta conversación</h5>
-                    <br>
-                    <button v-b-modal.modalCodigoDescuento @click="openModalCodigoDescuento()" class="btn btn-icon btn-primary"><i class="i-Check"></i>Canjear código de descuento</button>
 
 
           </b-card> 
