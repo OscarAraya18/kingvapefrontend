@@ -232,7 +232,7 @@
             </div>
 
             <div v-else-if="props.column.field == 'whatsappInvoiceAmount'">
-              ₡{{props.row.whatsappInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}            
+              ₡{{ parseInt(props.row.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}         
             </div>
             
             <div v-else-if="props.column.field == 'localityName'">
