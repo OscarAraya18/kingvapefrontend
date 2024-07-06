@@ -276,6 +276,7 @@ export default {
 
   data() {
     return {
+      queryInterval: null,
      
       agentType: '',
       agentID: '',
@@ -632,6 +633,10 @@ export default {
 
   computed: {},
 
+  beforeDestroy(){
+    clearInterval(this.queryInterval);
+  },
+
   mounted(){
     
     this.agentType = localStorage.getItem('agentType');
@@ -639,9 +644,9 @@ export default {
     this.selectWhatsappInvoiceForSINPE(null, null);
 
       
-    setInterval(() => {
+    this.queryInterval = setInterval(() => {
       this.selectWhatsappInvoiceForSINPE(null, null);
-    }, 10000);
+    }, 5000);
   },
 
   created: function() {}
