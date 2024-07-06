@@ -1,88 +1,15 @@
 <template>
   <div>
 
-    <b-modal scrollable size="m" centered id="transactionMessageModal" hide-header hide-footer>
-      <div v-if="loaders.transactionMessage == false && transactionMessage != null">
-        <p v-if="transactionMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{transactionMessage.whatsappTextMessageBody}}</p>
-        <div v-if="transactionMessage.whatsappGeneralMessageType == 'image'"> 
-          <img style="width: 250px;" :src="`data:image/png;base64,${transactionMessage.whatsappImageMessageFile}`">
-          <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="transactionMessage.whatsappImageMessageCaption != null">{{transactionMessage.whatsappImageMessageCaption}}</p>
-        </div>
-        <div v-if="transactionMessage.whatsappGeneralMessageType=='document'" class="m-0">
-          <a style="color: black;" :href="`data:${transactionMessage.whatsappDocumentMessageMimeType};base64,${transactionMessage.whatsappDocumentMessageFile}`" :download="transactionMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{transactionMessage.whatsappDocumentMessageFileName}}</strong></p></a>
-        </div>
-      </div>
-      <div v-else style="text-align: center;">
-        <br><span class="spinner-glow spinner-glow-primary"></span>
-      </div>
-    </b-modal>
-
-    <b-modal hide-footer hide-header scrollable size="lg" centered id="openClosePaymentMethod">
-      <div v-if="loader == true" style="text-align: center;">
-        <br><span class="spinner-glow spinner-glow-primary"></span>
-      </div>
-      <div v-if="isAdmin">
-        <div style="width: 100%;">
-          <h5><strong>Filtro por fecha inicial:</strong></h5>
-          <b-form-datepicker v-model="initialDateOptionClose"></b-form-datepicker>
-        </div>
-        <br>
-        <div style="width: 100%;">
-          <h5><strong>Filtro por fecha final:</strong></h5>
-          <b-form-datepicker v-model="endDateOptionClose"></b-form-datepicker>
-        </div>
-        <br>
-        <div style="width: 100%;">
-          <h5><strong>Filtro por localidad:</strong></h5>
-          <div style="border: 1px solid rgb(140, 140, 140); border-radius: 5px; height: 100px; overflow-y: auto; padding-top: 10px; padding-bottom: 10px;">
-            <div v-for="locality in localitiesOptions">
-              <input @click="changeLocalityOptions(locality)" type="checkbox" v-model="locality.selected" style="accent-color: #FFD733; margin-left:10px; margin-right: 10px;">
-              {{ locality.localityName }}
-            </div>
-          </div>
-        </div>
-        <br>
-        <div style="width: 100%;">
-          <h5><strong>Filtro por agente:</strong></h5>
-          <div style="border: 1px solid rgb(140, 140, 140); border-radius: 5px; height: 180px; overflow-y: auto; padding-top: 10px; padding-bottom: 10px;">
-            <div v-for="agent in agentOptions">
-              <div v-if="agent.visible">
-                <input type="checkbox" v-model="agent.selected" style="accent-color: #FFD733; margin-left:10px; margin-right: 10px;">
-                {{ agent.agentName }}
-              </div>
-            </div>
-          </div>
-        </div>
-        <br>
-        <div style="width: 100%; display: flex;">
-          <button class="btn btn-icon btn-info" style="margin-right:1%; width: 49%; font-size: 15px;" @click="generateInvoice()"><i class="i-Search-People"></i>Generar factura</button>
-          <button class="btn btn-icon" style="margin-left:1%; width: 49%; background-color: rgb(255, 184, 32); font-size: 15px;" @click="cleanFilterClose()"><i class="i-Folder-Trash"></i>Limpiar filtros</button>
-        </div>
-      </div>
-      
-      <div v-else>
-        <b-form-input v-model="passwordInput" placeholder="Contraseña de administrador"></b-form-input>
-        <br>
-        <div style="text-align: center;">
-          <button class="btn btn-info" style="width: 50%; font-size: 15px;" @click="generateTodayInvoice()">Generar cierre</button>
-        </div>
-      </div>
-    
-    </b-modal>
-
-
-    <div v-if="agentType == 'agent'">
-      <h4><strong>Transacciones a validar:</strong></h4>
-      <br>
-    </div>
-
+    <h4><strong>Transacciones a validar:</strong></h4>
+    <br>
     <div class="card mb-30">
       <div class="card-body p-0">
         <vue-good-table
-          :columns="transactionsColumns"
+          :columns="sinpeColumns"
           :line-numbers="false"
           styleClass="order-table vgt-table"
-          :rows="notUsedTransactions">
+          :rows="sinpeRows1">
           <template slot="table-row" slot-scope="props">
             <div v-if="props.column.field == 'transactionApprover'">
               <div v-if="agentType == 'locality'">
@@ -103,22 +30,17 @@
                 <b-form-select @change="selectTransactionStore(props.row.transactionID, props.row.transactionStoreLocalityID)" v-model="props.row.transactionStoreLocalityID" class="mb-1" :options="localitiesOptions"></b-form-select>
               </div>
             </div>
-
             <div v-else-if="props.column.field == 'transactionSystemDate'" >
               {{ parseDateTime(props.row.transactionSystemDate) }}
             </div>
-
           </template>
         </vue-good-table>
-
       </div>
     </div>
 
-    <button class="btn btn-info" style="width: 100%; font-size: 15px;" @click="openInvoiceModal()" v-b-modal.openClosePaymentMethod>Cierre</button>
 
-
-    <div v-if="agentType == 'agent'">
-      <br><br><br><br>
+    <div v-if="agentType == 'admin'">
+      <br><br>
       <h4><strong>Transacciones previas:</strong></h4>
       <br>
       <div style="display: flex;">
@@ -137,7 +59,6 @@
         </div>
       </div>
       <br><br>
-
       <div class="card mb-30">
         <div class="card-body p-0">
           <vue-good-table
@@ -165,15 +86,15 @@
                   {{ props.row.localityAgentName }}
                 </div>
               </div>
-              
             </template>
           </vue-good-table>
         </div>
       </div>
-
     </div>
-
   </div>
+  
+  
+  
 </template>
 
 <script>
@@ -197,7 +118,60 @@ export default {
       agentName: '',
       localityName: '',
 
-      transactionsColumns: [
+      sinpeColumns: 
+      [
+        {
+          label: "ID de la conversación",
+          field: "whatsappConversationID",
+          thClass: "text-left pl-3",
+          tdClass: "text-left pl-3",
+        },
+        {
+          label: "ID de la órden",
+          field: "whatsappInvoiceID",
+          thClass: "text-left pl-3",
+          tdClass: "text-left pl-3",
+        },
+        {
+          label: "Número del cliente",
+          field: "whatsappInvoiceClientName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Nombre del cliente",
+          field: "whatsappInvoiceClientName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Localidad",
+          field: "localityName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Mensajero",
+          field: "localityAgentName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Aprovar",
+          field: "transactionApprover",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Conversación",
+          field: "whatsappConversationOpenAction",
+          thClass: "text-left",
+          tdClass: "text-left",
+        }
+      ],
+
+      transactionsColumns: 
+      [
         {
           label: "Número de referencia",
           field: "transactionID",
@@ -332,7 +306,6 @@ export default {
       endDateOption: '',
 
 
-      isAdmin: '',
       localitiesOptions: [],
       agentOptions: [],
 
@@ -591,25 +564,6 @@ export default {
       }
     },
 
-    selectTransactionApprover(transactionID, transactionApproverLocalityAgentID){
-      this.selectedTransactionApprovers[transactionID] = transactionApproverLocalityAgentID;
-    },
-
-    selectTransactionStore(transactionID, transactionStoreLocalityID){
-      this.selectedTransactionStores[transactionID] = transactionStoreLocalityID;
-    },
-
-    getSelectedTransactionApprover(transactionID){
-      if (transactionID in this.selectedTransactionApprovers){
-        return this.selectedTransactionApprovers[transactionID];
-      }
-    },
-
-    getSelectedTransactionStore(transactionID){
-      if (transactionID in this.selectedTransactionStores){
-        return this.selectedTransactionStores[transactionID];
-      }
-    },
 
     selectNotUsedTransactions(){
       axios.post(constants.routes.backendAPI+'/selectNotUsedTransactions')
@@ -665,122 +619,7 @@ export default {
         this.showNotification('danger', 'Error al consultar las transacciones previas', 'Ha ocurrido un error inesperado al consultar las transacciones previas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
-
-    selectLocalityAgents(){
-      axios.post(constants.routes.backendAPI+'/selectLocalityAgents', 
-      {
-        localityAgentLocalityID: localStorage.getItem('localityID')
-      })
-      .then((response) =>{
-        if (response.data.success){
-          for (var localityAgentIndex in response.data.result){
-            const localityAgentID = response.data.result[localityAgentIndex].localityAgentID;
-            const localityAgentName = response.data.result[localityAgentIndex].localityAgentName;
-            this.approverOptions.push({value: localityAgentID, text: localityAgentName});
-          }
-        } else {
-          this.showNotification('danger', 'Error al consultar los agentes de la localidad', 'Ha ocurrido un error inesperado al consultar los agentes de la localidad. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        }
-      })
-      .catch(() => {
-        this.showNotification('danger', 'Error al consultar los agentes de la localidad', 'Ha ocurrido un error inesperado al consultar los agentes de la localidad. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-      })
-    },
-
-    selectLocalities(){
-      axios.post(constants.routes.backendAPI+'/selectLocalities')
-      .then((response) =>{
-        if (response.data.success){
-          for (var localityIndex in response.data.result){
-            const localityID = response.data.result[localityIndex].localityID;
-            const localityName = response.data.result[localityIndex].localityName;
-            this.localitiesOptions.push({value: localityID, text: localityName});
-          }
-        } else {
-          this.showNotification('danger', 'Error al consultar las localidades', 'Ha ocurrido un error inesperado al consultar las localidades. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        }
-      })
-      .catch(() => {
-        this.showNotification('danger', 'Error al consultar las localidades', 'Ha ocurrido un error inesperado al consultar las localidades. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-      })
-    },
-
-    cleanPassword(){
-      this.passwordInput = '';
-    },
-
-    generateTodayInvoice(){
-      if (localStorage.getItem('localityPassword') == this.passwordInput){
-        axios.post(constants.routes.backendAPI+'/generateTodayInvoice', {
-          localityID: localStorage.getItem('localityID')
-        }).then((response) =>{
-          if (response.data.success){
-            alert('entro')
-            const invoiceBase64 = response.data.result;
-            const byteCharacters = atob(invoiceBase64);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray], { type: 'application/pdf' });
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = 'Reporte de transacciones.pdf';
-            link.click();
-          } else {
-            this.showNotification('danger', 'Error al generar la factura', 'Ha ocurrido un error inesperado al generar la factura. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-          }
-        })
-        .catch(() => {
-          this.showNotification('danger', 'Error al generar la factura', 'Ha ocurrido un error inesperado al generar la factura. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        })
-      } else {
-        this.showNotification('danger', 'Contraseña de administrador incorrecta', 'Por favor coloque la contraseña correcta para generar el cierre. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-      }
-    },
-
-    generateInvoice(){
-      var localities = [];
-      var agents = [];
-      for (var localityIndex in this.localitiesOptions){
-        if (this.localitiesOptions[localityIndex].selected){
-          localities.push(this.localitiesOptions[localityIndex].localityID);
-        }
-      }
-      for (var agentIndex in this.agentOptions){
-        if (this.agentOptions[agentIndex].selected && this.agentOptions[agentIndex].visible){
-          agents.push(this.agentOptions[agentIndex].agentID);
-        }
-      }
-      axios.post(constants.routes.backendAPI+'/generateInvoice', {
-        localities: localities,
-        agents: agents,
-        initialDate: this.initialDateOption,
-        endDate: this.endDateOption
-      }).then((response) =>{
-        if (response.data.success){
-          const invoiceBase64 = response.data.result;
-          const byteCharacters = atob(invoiceBase64);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-              byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], { type: 'application/pdf' });
-          const link = document.createElement('a');
-          link.href = window.URL.createObjectURL(blob);
-          link.download = 'Reporte de transacciones.pdf';
-          link.click();
-        } else {
-          this.showNotification('danger', 'Error al generar la factura', 'Ha ocurrido un error inesperado al generar la factura. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        }
-      })
-      .catch(() => {
-        this.showNotification('danger', 'Error al generar la factura', 'Ha ocurrido un error inesperado al generar la factura. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-      })
-    },
-
+    
     cleanFilterClose(){
       this.initialDateOptionClose = '';
       this.initialDateOptionClose = '';
@@ -809,73 +648,20 @@ export default {
       });
     },
 
-    selectAllLocalityAgents(){
-      axios.post(constants.routes.backendAPI+'/selectAllLocalityAgents').then((response) =>{
-        if (response.data.success){
-          this.agentOptions = [];
-          for (var agentIndex in response.data.result){
-            const agentID = response.data.result[agentIndex].agentID;
-            const agentName = response.data.result[agentIndex].agentName;
-            const localityID = response.data.result[agentIndex].localityID;
-            this.agentOptions.push({agentID: agentID, agentName: agentName, localityID: localityID, selected: true, visible: true});
-          }
-        } else {
-          this.showNotification('danger', 'Error al consultar los agentes', 'Ha ocurrido un error inesperado al consultar los agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        }
-      })
-      .catch(() => {
-        this.showNotification('danger', 'Error al consultar los agentes', 'Ha ocurrido un error inesperado al consultar los agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-      })
-    },
 
-    selectLocalitiesClose(){
-      axios.post(constants.routes.backendAPI+'/selectLocalities')
-      .then((response) =>{
-        if (response.data.success){
-          this.localitiesOptions = [];
-          for (var localityIndex in response.data.result){
-            const localityID = response.data.result[localityIndex].localityID;
-            const localityName = response.data.result[localityIndex].localityName;
-            this.localitiesOptions.push({localityID: localityID, localityName: localityName, selected: true});
-          }
-        } else {
-          this.showNotification('danger', 'Error al consultar las localidades', 'Ha ocurrido un error inesperado al consultar las localidades. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        }
-      })
-      .catch(() => {
-        this.showNotification('danger', 'Error al consultar las localidades', 'Ha ocurrido un error inesperado al consultar las localidades. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-      })
-    },
-
-    openInvoiceModal(){
-      this.cleanFilterClose();
-      this.selectLocalityAgents();
-      this.selectLocalitiesClose();
-    },
-
-
+    
   },
 
 
   computed: {},
 
   mounted(){
-    if (localStorage.getItem('locality') == 'yes'){
-      this.agentType = 'locality';
-      this.localityName = localStorage.getItem('localityName');
-      this.selectLocalityAgents();
-    } else {
-      this.agentType = 'agent';
-      this.agentName = localStorage.getItem('agentName');
-      this.selectLocalities();
-    }
     
-    if (localStorage.getItem('agentType') == 'admin'){
-      this.isAdmin = true;
-    } else {
-      this.isAdmin = false;
-    }
+    this.agentType = localStorage.getItem('agentType');
+    this.agentName = localStorage.getItem('agentName');
     
+
+      
     /*
     this.selectNotUsedTransactions();
     this.selectUsedTransactions();

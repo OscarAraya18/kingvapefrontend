@@ -5,6 +5,11 @@
       <img style="width: 1000px;" :src="bigImageSource">
     </b-modal>
 
+
+    <b-modal scrollable size="m" centered id="modalCodigoDescuento" title="Canjear código de descuento" @ok="redeemDiscountCode()">
+      <b-form-input v-model="inputCodigoDescuento" placeholder='Código de descuento'></b-form-input>
+    </b-modal>
+
     <div style="position: absolute; top: 5px; left: 30px; display: flex;">
       <div style="min-height: 25px; min-width: 25px; background-color: rgb(0, 177, 0); border-radius: 100px; display: flex; align-items: center; justify-content: center;">
         <p style="margin: 0; font-size: 15px;">
@@ -328,7 +333,7 @@
               
               <div v-if="historyMessage.whatsappGeneralMessageType=='location'" class="m-0">
 
-                <MapComponent  mapHeight="450px" mapWidth="465px" :clientLongitude="getLocation(historyMessage).lng" :clientLatitude="getLocation(historyMessage).lat"></MapComponent>
+                <MapComponent v-if="showMap"  mapHeight="450px" mapWidth="465px" :clientLongitude="historyMessage.whatsappLocationMessageLongitude" :clientLatitude="historyMessage.whatsappLocationMessageLatitude"></MapComponent>
 
                 <br>
                 <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{historyMessage.whatsappLocationMessageLatitude}}</p>
@@ -398,7 +403,7 @@
                                 </div>
                                 
                                 <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                                  <MapComponent  mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
+                                  <MapComponent v-if="showMap"  mapHeight="250px" mapWidth="600px" :clientLongitude="answeredMessage.whatsappLocationMessageLongitude" :clientLatitude="answeredMessage.whatsappLocationMessageLatitude"></MapComponent>
 
                                   <br>
                                   <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
@@ -444,7 +449,8 @@
                         </div>
                         
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                          <MapComponent  mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
+
+                          <MapComponent v-if="showMap"  mapHeight="250px" mapWidth="600px" :clientLongitude="currentActiveConversationMessage.whatsappLocationMessageLongitude" :clientLatitude="currentActiveConversationMessage.whatsappLocationMessageLatitude"></MapComponent>
 
                           <br>
                           <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
@@ -522,7 +528,8 @@
                                 </div>
                                 
                                 <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                                  <MapComponent  mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
+
+                                  <MapComponent v-if="showMap"  mapHeight="250px" mapWidth="600px" :clientLongitude="answeredMessage.whatsappLocationMessageLongitude" :clientLatitude="answeredMessage.whatsappLocationMessageLatitude"></MapComponent>
 
                                   <br>
                                   <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
@@ -563,7 +570,8 @@
                         </div>
                         
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                          <MapComponent  mapHeight="450px" mapWidth="600px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
+
+                          <MapComponent v-if="showMap"  mapHeight="450px" mapWidth="600px" :clientLongitude="currentActiveConversationMessage.whatsappLocationMessageLongitude" :clientLatitude="currentActiveConversationMessage.whatsappLocationMessageLatitude"></MapComponent>
 
                           <br>
                           <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
@@ -644,7 +652,8 @@
                                   </div>
                                   
                                   <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                                    <MapComponent  mapHeight="450px" mapWidth="600px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
+
+                                    <MapComponent v-if="showMap"  mapHeight="450px" mapWidth="600px" :clientLongitude="answeredMessage.whatsappLocationMessageLongitude" :clientLatitude="answeredMessage.whatsappLocationMessageLatitude"></MapComponent>
 
                                     <br>
                                     <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
@@ -694,7 +703,7 @@
                           
                           <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
 
-                            <MapComponent  mapHeight="450px" mapWidth="800px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
+                            <MapComponent v-if="showMap" mapHeight="450px" mapWidth="800px" :clientLongitude="currentActiveConversationMessage.whatsappLocationMessageLongitude" :clientLatitude="currentActiveConversationMessage.whatsappLocationMessageLatitude"></MapComponent>
 
                             
                             <br>
@@ -775,7 +784,7 @@
                                   </div>
                                   
                                   <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                                    <MapComponent  mapHeight="450px" mapWidth="1000px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
+                                    <MapComponent v-if="showMap"  mapHeight="450px" mapWidth="1000px" :clientLongitude="answeredMessage.whatsappLocationMessageLongitude" :clientLatitude="answeredMessage.whatsappLocationMessageLatitude"></MapComponent>
 
                                     <br>
                                     <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
@@ -816,7 +825,7 @@
                           </div>
                           
                           <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                            <MapComponent  mapHeight="450px" mapWidth="1000px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
+                            <MapComponent v-if="showMap"  mapHeight="450px" mapWidth="1000px" :clientLongitude="currentActiveConversationMessage.whatsappLocationMessageLongitude" :clientLatitude="currentActiveConversationMessage.whatsappLocationMessageLatitude"></MapComponent>
 
                             
                             <br>
@@ -869,7 +878,7 @@
                     </div>
                     
                     <div v-if="repliedMessage.whatsappGeneralMessageType=='location'" class="m-0">
-                      <MapComponent  mapHeight="450px" mapWidth="1000px" :clientLongitude="getLocation(repliedMessage).lng" :clientLatitude="getLocation(repliedMessage).lat"></MapComponent>
+                      <MapComponent v-if="showMap"  mapHeight="450px" mapWidth="1000px" :clientLongitude="repliedMessage.whatsappLocationMessageLongitude" :clientLatitude="repliedMessage.whatsappLocationMessageLatitude"></MapComponent>
                       <br>
                       <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{repliedMessage.whatsappLocationMessageLatitude}}</p>
                       <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{repliedMessage.whatsappLocationMessageLongitude}}</p><br>
@@ -1656,15 +1665,16 @@
                                 Subtotal: {{calcularSubTotal}}  <br>
                                 Descuento: {{calcularDescuento}} <br>
                                 Total: {{calcularTotal}}  
-                            </p>
-
-                            
-                            
+                            </p>                            
                             
                           </b-row>
 
                         </b-tab>
                     </b-tabs> 
+
+                    <h5 v-if="displayCodigoDescuento" style="background-color: #18d100">Se ha aprobado el código de descuento '{{ displayCodigoDescuento }}' para esta conversación</h5>
+                    <br>
+                    <button v-b-modal.modalCodigoDescuento @click="openModalCodigoDescuento()" class="btn btn-icon btn-primary"><i class="i-Check"></i>Canjear código de descuento</button>
 
 
           </b-card> 
@@ -1707,6 +1717,8 @@ export default {
 
   data() {
     return {
+      showMap: false,
+
       catalogoNicotinaBuscado: '',
 
       db: null,
@@ -1961,11 +1973,41 @@ export default {
       openedCommentsTable: [],
 
 
-      scrollAvailable: true
+      scrollAvailable: true,
+
+      inputCodigoDescuento: '',
+      displayCodigoDescuento: null
     };
   },
 
   methods: {
+    redeemDiscountCode(){
+      axios.post(constants.routes.backendAPI+'/redeemDiscountCode',
+      {
+        'discountCodeValue': this.inputCodigoDescuento,
+        'discountCodePhoneNumber': this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+        'discountCodeWhatsappConversationID': this.currentActiveConversationID
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.showNotification('success', 'Código de descuento canjeado', response.data.result);
+          var codigosDescuento = JSON.parse(localStorage.getItem('codigosDescuento'));
+          codigosDescuento[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = this.inputCodigoDescuento;
+          localStorage.setItem('codigosDescuento', JSON.stringify(codigosDescuento));
+          this.displayCodigoDescuento = this.inputCodigoDescuento;
+        } else {
+          this.showNotification('danger', 'Error al canjear el código de descuento', response.data.result || 'Error al canjear el código de descuento', 'Ha ocurrido un error inesperado al canjear el código de descuento. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al canjear el código de descuento', 'Ha ocurrido un error inesperado al canjear el código de descuento. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+
+    },
+
+    openModalCodigoDescuento(){
+      this.inputCodigoDescuento = '';
+    },
 
 
     buscarCatalogoNicotina(){
@@ -3232,16 +3274,24 @@ export default {
           })
           .then((response) =>{ 
             if (response.data.success){
+              
               const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
               if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
                 delete ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
               }
               localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
+              
               const datosActualesLocalStorage = JSON.parse(localStorage.getItem('datosActuales'));
               if (datosActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
                 delete datosActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
               }
               localStorage.setItem('datosActuales', JSON.stringify(datosActualesLocalStorage));
+
+              const codigosDescuento = JSON.parse(localStorage.getItem('codigosDescuento'));
+              if (codigosDescuento[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+                delete codigosDescuento[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
+              }
+              localStorage.setItem('codigosDescuento', JSON.stringify(codigosDescuento));
 
               axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
               {
@@ -4006,10 +4056,17 @@ export default {
       })
     },
 
+    toggleMap() {
+      this.showMap = false;
+      this.$nextTick(() => {
+        this.showMap = true;
+      });
+    },
+
     changeCurrentActiveConversation(currentActiveConversation, activeConversationID){
+      this.toggleMap();
         this.currentActiveConversationID = activeConversationID;
 
-        console.log(this.activeConversationsAsJSON[this.currentActiveConversationID].textoEnviar);
 
         this.currentActiveConversation = currentActiveConversation;
         this.productos = [];
@@ -4030,6 +4087,14 @@ export default {
         if (databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
           this.currentActiveConversation.whatsappConversationProducts = databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber];        
         }
+
+        const codigosDescuento = JSON.parse(localStorage.getItem('codigosDescuento'));
+        if (codigosDescuento[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+          this.displayCodigoDescuento = codigosDescuento[currentActiveConversation.whatsappConversationRecipientPhoneNumber];        
+        } else {
+          this.displayCodigoDescuento = null;
+        }
+
 
         const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
         if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
@@ -4830,6 +4895,9 @@ export default {
     }
     if (localStorage.getItem('referenciaSucursales') == null){
       localStorage.setItem('referenciaSucursales', JSON.stringify({}))
+    }
+    if (localStorage.getItem('codigosDescuento') == null){
+      localStorage.setItem('codigosDescuento', JSON.stringify({}))
     }
 
     if (localStorage.getItem('hints') == null){
