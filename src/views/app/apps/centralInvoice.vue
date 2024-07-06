@@ -1835,10 +1835,10 @@ export default {
     },
     
     clickOnShippingInvoice(whatsappInvoice){
-      /*if (whatsappInvoice.whatsappInvoiceSINPEApproved == false && whatsappInvoice.whatsappInvoicePaymentMethod == 'SINPE (contra entrega)'){
+      if (whatsappInvoice.whatsappInvoiceSINPEApproved == false && whatsappInvoice.whatsappInvoicePaymentMethod == 'SINPE (contra entrega)'){
         this.showNotification('info', 'SINPE no confirmado', 'El SINPE contra entrega no ha sido confirmado desde el call center. La orden no puede ser entregada.');
       } else {
-*/
+
         if (this.agentType == 'localityAgent'){
           axios.post(this.backendURL+'/updateWhatsappInvoiceState', 
           {
@@ -1857,8 +1857,8 @@ export default {
             this.showNotification('danger', 'Error al entregar la comanda', 'Ha ocurrido un error inesperado al entregar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           })
         }
-      //}
-    
+      }
+
     },
 
 

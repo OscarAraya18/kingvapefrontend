@@ -1,7 +1,7 @@
 const state = {
   backendURL: 'https://payitcr.com',
   websocketURL: 'wss:payitcr.com',
-  applicationVersion: '1.2.14'
+  applicationVersion: '1.2.15'
 };
 
 const getters = {
