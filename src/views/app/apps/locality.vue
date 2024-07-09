@@ -234,6 +234,10 @@
             <div v-else-if="props.column.field == 'whatsappInvoiceAmount'">
               ₡ {{ parseInt(props.row.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}         
             </div>
+
+            <div v-else-if="props.column.field == 'conversationAgentName'">
+              <b-badge style="font-size: small;" :style="{backgroundColor: props.row.conversationAgentColor, color: props.row.conversationAgentFontColor}">{{ props.row.conversationAgentName }}</b-badge>
+            </div>
             
             <div v-else-if="props.column.field == 'localityName'">
               <b-badge style="color: black; font-size: small;" :style="{backgroundColor: props.row.localityColor}">{{ props.row.localityName }}</b-badge>
@@ -250,16 +254,84 @@
               </p>
             </div>
 
+            <div v-else-if="props.column.field == 'approverAgentName'">
+              <b-badge v-if="props.row.approverAgentName" style="font-size: small;" :style="{backgroundColor: props.row.approverAgentColor, color: props.row.approverAgentFontColor}">{{ props.row.approverAgentName }}</b-badge>
+              <b-badge v-else style="color: white; font-size: small; background-color: black;">No ha sido aprovado</b-badge>
+            </div>
+
+
             <div v-else-if="props.column.field == 'whatsappConversationOpenAction'">
               <button v-b-modal.conversationModal class="btn btn-primary text-black btn-rounded" @click="whatsappConversationOpenAction(props.row)">Abrir</button>
             </div>
-            
-            
 
           </template>
         </vue-good-table>
       </div>
     </div>
+
+
+    <div v-if="agentType == 'admin'">
+      <br><br><br>
+      <h4><strong>SINPES (contra entrega) por rango de fecha:</strong></h4>
+      <br><br>
+      <h5><strong>Fecha inicial:</strong></h5>
+      <b-form-datepicker v-model="initialDateFiltered"></b-form-datepicker>
+      <br>
+      <h5><strong>Fecha final:</strong></h5>
+      <b-form-datepicker v-model="endDateFiltered"></b-form-datepicker>
+      <br><br><br>
+      <div class="card mb-30" v-if="sinpeRows2.length != 0">
+        <div class="card-body p-0">
+          <vue-good-table
+            :columns="sinpeColumns"
+            :line-numbers="false"
+            styleClass="order-table vgt-table"
+            :rows="sinpeRows2">
+            <template slot="table-row" slot-scope="props">
+
+              <div v-if="props.column.field == 'whatsappInvoiceClientPhoneNumber'">
+                {{ parseNumber(props.row.whatsappInvoiceClientPhoneNumber) }}
+              </div>
+
+              <div v-else-if="props.column.field == 'whatsappInvoiceAmount'">
+                ₡ {{ parseInt(props.row.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}         
+              </div>
+
+              <div v-else-if="props.column.field == 'conversationAgentName'">
+                <b-badge style="font-size: small;" :style="{backgroundColor: props.row.conversationAgentColor, color: props.row.conversationAgentFontColor}" >{{ props.row.conversationAgentName }}</b-badge>
+              </div>
+              
+              <div v-else-if="props.column.field == 'localityName'">
+                <b-badge style="color: black; font-size: small;" :style="{backgroundColor: props.row.localityColor}">{{ props.row.localityName }}</b-badge>
+              </div>
+              
+              <div v-else-if="props.column.field == 'localityAgentName'">
+                <b-badge v-if="props.row.localityAgentName" style="color: black; font-size: small;" :style="{backgroundColor: props.row.localityAgentColor}">{{ props.row.localityAgentName }}</b-badge>
+                <b-badge v-else style="color: white; font-size: small; background-color: black;">Sin mensajero asignado</b-badge>
+              </div>
+
+              <div v-else-if="props.column.field == 'whatsappInvoiceApproveAction'">
+                <p @click="updateWhatsappInvoiceSINPE(props.row.whatsappInvoiceID, props.row.whatsappInvoiceSINPEApproved)" style="position: relative; top: 10px">
+                  {{ props.row.whatsappInvoiceSINPEApproved ? '✅' : '❌'  }}
+                </p>
+              </div>
+
+              <div v-else-if="props.column.field == 'approverAgentName'">
+                <b-badge v-if="props.row.approverAgentName" style="font-size: small;" :style="{backgroundColor: props.row.approverAgentColor, color: props.row.approverAgentFontColor}">{{ props.row.approverAgentName }}</b-badge>
+                <b-badge v-else style="color: white; font-size: small; background-color: black;">No ha sido aprovado</b-badge>
+              </div>
+
+              <div v-else-if="props.column.field == 'whatsappConversationOpenAction'">
+                <button v-b-modal.conversationModal class="btn btn-primary text-black btn-rounded" @click="whatsappConversationOpenAction(props.row)">Abrir</button>
+              </div>
+
+            </template>
+          </vue-good-table>
+        </div>
+      </div>
+    </div>
+
+
   </div>
 </template>
 
@@ -314,6 +386,12 @@ export default {
           tdClass: "text-left",
         },
         {
+          label: "Atendido por",
+          field: "conversationAgentName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
           label: "Localidad",
           field: "localityName",
           thClass: "text-left",
@@ -332,6 +410,12 @@ export default {
           tdClass: "text-left",
         },
         {
+          label: "Aprovado por",
+          field: "approverAgentName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
           label: "Conversación",
           field: "whatsappConversationOpenAction",
           thClass: "text-left",
@@ -344,9 +428,23 @@ export default {
       openedName: '',
       openedNumber: '',
       openConversationLoader: false,
-      currentConversation: null
+      currentConversation: null,
+
+      sinpeRows2: [],
+      initialDateFiltered: null,
+      endDateFiltered: null
 
     };
+  },
+
+  watch: {
+    initialDateFiltered(){
+      this.selectWhatsappInvoiceForSINPEFiltered(this.initialDateFiltered, this.endDateFiltered);
+    },
+
+    endDateFiltered(){
+      this.selectWhatsappInvoiceForSINPEFiltered(this.initialDateFiltered, this.endDateFiltered);
+    }
   },
 
   methods: {
@@ -607,6 +705,24 @@ export default {
       })
     },
 
+    selectWhatsappInvoiceForSINPEFiltered(initialDate, endDate){
+      axios.post(constants.routes.backendAPI+'/selectWhatsappInvoiceForSINPE',
+      {
+        'initialDate': initialDate,
+        'endDate': endDate
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.sinpeRows2 = response.data.result;
+        } else {
+          this.showNotification('danger', 'Error al consultar las órdenes con SINPE por confirmar', 'Ha ocurrido un error inesperado al consultar las órdenes con SINPE por confirmar. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al consultar las órdenes con SINPE por confirmar', 'Ha ocurrido un error inesperado al consultar las órdenes con SINPE por confirmar. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
     updateWhatsappInvoiceSINPE(whatsappInvoiceID, whatsappInvoiceSINPEApproved){
       axios.post(constants.routes.backendAPI+'/updateWhatsappInvoiceSINPE',
       {
@@ -615,7 +731,7 @@ export default {
         'whatsappInvoiceSINPEApprover': this.agentID
       })
       .then((response) =>{
-        this.selectWhatsappInvoiceForSINPE();
+        this.selectWhatsappInvoiceForSINPE(null, null);
         if (whatsappInvoiceSINPEApproved == false){
           this.showNotification('success', 'SINPE confirmado', 'Se ha aprobado el SINPE exitosamente.')
         } else {
