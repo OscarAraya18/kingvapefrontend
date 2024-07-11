@@ -23,7 +23,7 @@
         <ul class="navigation-left">
           
           <li
-            v-if="locality == false && localityAgent == false"
+            v-if="locality == false && localityAgent == false && (agentName != 'Mile Cruz')"
             @mouseenter="toggleSubMenu"
             class="nav-item"
             data-item="chat"
@@ -40,7 +40,7 @@
 
 
           <li
-            v-if="locality == false && localityAgent == false"
+            v-if="locality == false && localityAgent == false && (agentName != 'Mile Cruz')"
             @mouseenter="toggleSubMenu"
             class="nav-item"
             data-item="contacts"
@@ -71,6 +71,7 @@
           </li>
           
           <li
+            v-if="(agentName != 'Mile Cruz')"
             @mouseenter="toggleSubMenu"
             class="nav-item"
             data-item="centralInvoice"
@@ -121,7 +122,7 @@
             data-item="locality"
             :class="{ active: selectedParentMenu == 'locality' }"
             :data-submenu="false"
-            v-if="locality == false"
+            v-if="locality == false && (agentName != 'Mile Cruz')"
           >
             <router-link tag="a" class="nav-item-hold" to="/app/apps/locality">
               <i class="nav-icon i-Dollar"></i>
@@ -132,7 +133,7 @@
 
 
           <li
-            v-if="isAdmin == true && locality == false"
+            v-if="(isAdmin == true && locality == false) || agentName == 'Mile Cruz'"
             @mouseenter="toggleSubMenu"
             class="nav-item"
             data-item="images"

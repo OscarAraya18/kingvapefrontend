@@ -298,7 +298,12 @@ export default {
           .then(response =>{ 
             if (response.data.success == true){
               localStorage.setItem('agentFavoriteMessages', JSON.stringify(response.data.result));
-              router.push('/app/apps/chat');
+              if (localStorage.getItem('agentName') == 'Mile Cruz'){
+                router.push('/app/apps/images');
+
+              } else {
+                router.push('/app/apps/chat');
+              }
             } else {
               this.$bvToast.toast("Ha ocurrido un error al consultar la información del agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
                 title: "Error al consultar la información del agente",

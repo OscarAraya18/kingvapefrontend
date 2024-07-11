@@ -59,7 +59,7 @@
 
       <button @click="updateApplicationStatus()" :class="getApplicationStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="(ranking == false) && (agentType == 'admin')"><strong>{{ applicationStatus }}</strong></button>
       
-      <button @click="updateAgentStatus()" :class="getAgentStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="ranking == false && agentStatus!='' && agentName != 'Pantalla'"><strong>{{ agentStatus }}</strong></button>
+      <button @click="updateAgentStatus()" :class="getAgentStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="ranking == false && agentStatus!='' && agentName != 'Pantalla' && agentName != 'Mile Cruz'"><strong>{{ agentStatus }}</strong></button>
       
 
       <div style="width: 50px; height: 50px; border-radius: 100%; margin-right: 15px;" v-if="ranking == false">
@@ -70,7 +70,7 @@
 
           </template>
           <div class="dropdown-menu-right" aria-labelledby="userDropdown">
-            <a class="dropdown-item" href="#" v-if="locality == false && localityAgent == false" v-b-modal.updateProfileModal style="font-size: medium;">Modificar perfil</a>
+            <a class="dropdown-item" href="#" v-if="locality == false && localityAgent == false && agentName != 'Mile Cruz'" v-b-modal.updateProfileModal style="font-size: medium;">Modificar perfil</a>
             <a class="dropdown-item" href="#" @click.prevent="logoutUser" style="font-size: medium;">Cerrar sesión</a>
             
             <div style="display: flex; margin-right: 10px; margin-top: 10px;">
@@ -180,13 +180,13 @@
 
     </b-modal>
 
-    <div style="position: fixed; bottom: 200px; right: 18px;" v-if="(ranking == false) && (locality == false) && (localityAgent == false)">
+    <div style="position: fixed; bottom: 200px; right: 18px;" v-if="(ranking == false) && (locality == false) && (localityAgent == false) && (agentName != 'Mile Cruz')">
       <img v-b-modal.generalMapModal  class="hoverAnimationTranslator" style="cursor: pointer; width: 40px; height: 40px; position: relative; top: 10px;" src="@/assets/pageAssets/map.png">
     </div>
 
 
     <div style="position: fixed; bottom: 140px; right: 15px;">
-      <b-dropdown dropup v-if="(ranking == false) && (locality == false) && (localityAgent == false)" id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
+      <b-dropdown dropup v-if="(ranking == false) && (locality == false) && (localityAgent == false) && (agentName != 'Mile Cruz')" id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
         <template slot="button-content">
           <img class="hoverAnimationTranslator" id="traductorButton" style="cursor: pointer; width: 45px; height: 40px; position: relative; top: 10px;" src="@/assets/icons/notification.png">
         </template>
@@ -219,7 +219,7 @@
 
     
     <div style="position: fixed; bottom: 80px; right: 20px;">
-      <b-dropdown v-if="(ranking == false) && (locality == false) && (localityAgent == false)" id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
+      <b-dropdown v-if="(ranking == false) && (locality == false) && (localityAgent == false) && (agentName != 'Mile Cruz')" id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
         <template slot="button-content">
           <img class="hoverAnimationTranslator" id="traductorButton" style="cursor: pointer; width: 35px; height: 40px; position: relative; top: 10px;" src="@/assets/traductor.png">
         </template>
@@ -243,7 +243,7 @@
       </b-dropdown>
     </div>
 
-    <div style="position: fixed; bottom: 30px; right: 20px;" v-if="(ranking == false) && (locality == false) && (localityAgent == false)">
+    <div style="position: fixed; bottom: 30px; right: 20px;" v-if="(ranking == false) && (locality == false) && (localityAgent == false) && (agentName != 'Mile Cruz')">
       <img @click="startRecording()" v-if="recordingScreen == false" class="hoverAnimationTranslator" id="traductorButton" style="cursor: pointer; width: 35px; height: 40px; position: relative; top: 10px;" src="@/assets/icons/recordScreen.png">
       <img @click="stopRecording()" v-else class="hoverAnimationTranslator" id="traductorButton" style="cursor: pointer; width: 35px; height: 40px; position: relative; top: 10px;" src="@/assets/icons/recordingScreen.png">
     </div>
