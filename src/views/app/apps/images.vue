@@ -1,6 +1,11 @@
 <template>
   <div class="main-content">
     <b-card>
+
+
+      <b-button @click="openInsert()" v-b-modal.insertModal variant="primary">CREAR CATÁLOGO</b-button>
+
+      <br><br><br>
       <vue-good-table :columns="tableOptions" :line-numbers="false" styleClass="tableOne vgt-table" :rows="whatsappFavoriteImages">
         <template slot="table-row" slot-scope="props">
 
@@ -14,7 +19,6 @@
 
           <span v-else-if="props.column.field == 'actions'">
             <i class="i-Eraser-2 text-25 text-success mr-2" @click="openEdit(props.row)" v-b-modal.editModal style="cursor: pointer"></i>
-            <i class="i-Close-Window text-25 text-danger" @click="deleteImage(props.row)" style="cursor: pointer"></i>
           </span>
 
         </template>
@@ -23,7 +27,50 @@
     </b-card>
     <br>
 
+    <b-modal id="insertModal" hide-header hide-footer centered> 
+      <div class="p-1" v-if="insertingImage != null">
+        <p style="font-size: medium; margin-bottom: 5px;"><strong>Nombre:</strong></p>
+        <b-form-input v-model="insertingImage.whatsappFavoriteImageName" placeholder="Nombre"></b-form-input>
 
+        <br>
+
+        <p style="font-size: medium; margin-bottom: 5px;"><strong>Identificador de WhatsApp:</strong></p>
+        <b-form-input v-model="insertingImage.whatsappFavoriteImageFileID" placeholder="Identificador de WhatsApp"></b-form-input>
+
+        <br>
+
+        <p style="font-size: medium; margin-bottom: 5px;"><strong>Enlace:</strong></p>
+        <b-form-input v-model="insertingImage.whatsappFavoriteImageDriveURL" placeholder="Enlace de Cloudinary"></b-form-input>
+
+        <br>
+
+        <p style="font-size: medium; margin-bottom: 5px;"><strong>Tipo de catálogo:</strong></p>
+        <b-form-input v-model="insertingImage.whatsappFavoriteImageCatalog" placeholder="Tipo de catálogo"></b-form-input>
+
+        <br>
+
+        <p style="font-size: medium; margin-bottom: 5px;"><strong>Generar identificador de WhatsApp:</strong></p>
+        <div v-if="loader1 == false">
+          <input type="file" accept="image/png, image/jpeg" @change="uploadImage()" id="imageUploader" ref="imageFile">
+          <br><br>
+          <b-button @click="uploadWhatsappFavoriteImage(true)" variant="info">Renovar</b-button>
+        </div>
+        <div v-else style="text-align: center;">
+          <br><span class="spinner-glow spinner-glow-primary"></span>
+        </div>
+
+
+        <br><br>
+        <div style="text-align: center;">
+          <div v-if="loader2 == false">
+            <b-button @click="insertWhatsappFavoriteImage()" style="width: 80%;" variant="primary">Crear catálogo</b-button>
+          </div>
+          <div v-else style="text-align: center;">
+            <br><br><span class="spinner-glow spinner-glow-primary"></span>
+          </div>
+        </div>
+      </div>
+    </b-modal>
 
     <b-modal id="editModal" hide-header hide-footer centered> 
       <div class="p-1" v-if="editingImage != null">
@@ -37,7 +84,7 @@
 
         <br>
 
-        <p style="font-size: medium; margin-bottom: 5px;"><strong>Enlace de Cloudinary:</strong></p>
+        <p style="font-size: medium; margin-bottom: 5px;"><strong>Enlace:</strong></p>
         <b-form-input v-model="editingImage.whatsappFavoriteImageDriveURL" placeholder="Enlace de Cloudinary"></b-form-input>
 
         <br>
@@ -86,6 +133,7 @@ export default {
       loader2: false,
 
       editingImage: null,
+      insertingImage: null,
       imageFile: null,
 
       tableOptions: [
@@ -193,7 +241,7 @@ export default {
       
     },
 
-    uploadWhatsappFavoriteImage(){
+    uploadWhatsappFavoriteImage(aux = false){
       this.loader1 = true;
       this.imageFile = this.$refs.imageFile.files[0];
       var reader = new FileReader();
@@ -207,7 +255,11 @@ export default {
           if (response.data.success){
             this.loader1 = false;
             this.uploaded = true;
-            this.editingImage.whatsappFavoriteImageFileID = response.data.result.whatsappImageMessageFileID;
+            if (aux){
+              this.insertingImage.whatsappFavoriteImageFileID = response.data.result.whatsappImageMessageFileID;
+            } else {
+              this.editingImage.whatsappFavoriteImageFileID = response.data.result.whatsappImageMessageFileID;
+            }
           } else {
             this.loader1 = false;
             this.showNotification('danger', 'Error al subir la imagen', 'Ha ocurrido un error inesperado al subir la imagen. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
@@ -224,9 +276,48 @@ export default {
       };
     },
 
+    insertWhatsappFavoriteImage(){
+      if (this.uploaded == true){
+        axios.post(constants.routes.backendAPI+'/insertWhatsappFavoriteImage', 
+        {
+          whatsappFavoriteImageName: this.insertingImage.whatsappFavoriteImageName,
+          whatsappFavoriteImageFileID: this.insertingImage.whatsappFavoriteImageFileID,
+          whatsappFavoriteImageDriveURL: this.insertingImage.whatsappFavoriteImageDriveURL,
+          whatsappFavoriteImageCatalog: this.insertingImage.whatsappFavoriteImageCatalog
+        })
+        .then((response) =>{
+          if (response.data.success){
+            this.loader2 = false;
+            this.$root.$emit('bv::hide::modal', 'insertModal');
+            this.showNotification('success', 'Catálogo creado', 'Se ha creado el catálogo exitosamente.');
+            this.selectAllWhatsappFavoriteImages();
+          } else {
+            this.loader2 = false;
+            this.showNotification('danger', 'Error al crear el catálogo', 'Ha ocurrido un error inesperado al crear el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          }
+        })
+        .catch(() =>{
+          this.loader2 = false;
+          this.showNotification('danger', 'Error al crear el catálogo', 'Ha ocurrido un error inesperado al crear el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        })
+      } else {
+        this.showNotification('danger', 'Error al crear el catálogo', 'Debe generar el identificador de WhatsApp. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      }
+    },
+
     openEdit(image){
       this.uploaded = false;
       this.editingImage = image;
+    },
+
+    openInsert(){
+      this.uploaded = false;
+      this.insertingImage = {
+        whatsappFavoriteImageName: '',
+        whatsappFavoriteImageFileID: '',
+        whatsappFavoriteImageDriveURL: '',
+        whatsappFavoriteImageCatalog: ''
+      }
     },
 
     selectAllWhatsappFavoriteImages(){
