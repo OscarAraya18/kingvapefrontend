@@ -282,10 +282,10 @@ export default {
 
       cartagoMap: [],
       cartagoMapOptions: {
-        strokeColor: "#26a699",
+        strokeColor: "#55b5ab",
         strokeOpacity: 0.5,
         strokeWeight: 3,
-        fillColor: "#26a699",
+        fillColor: "#55b5ab",
         fillOpacity: 0.4,
       },
 
@@ -300,19 +300,19 @@ export default {
 
       herediaMap: [],
       herediaMapOptions: {
-        strokeColor: "#9f7cd0",
+        strokeColor: "#a78dcc",
         strokeOpacity: 0.5,
         strokeWeight: 3,
-        fillColor: "#9f7cd0",
+        fillColor: "#a78dcc",
         fillOpacity: 0.4,
       },
 
       escazuMap: [],
       escazuMapOptions: {
-        strokeColor: "#e44f9c",
+        strokeColor: "#db67a3",
         strokeOpacity: 0.5,
         strokeWeight: 3,
-        fillColor: "#e44f9c",
+        fillColor: "#db67a3",
         fillOpacity: 0.4,
       },
 

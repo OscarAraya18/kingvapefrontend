@@ -677,7 +677,7 @@
         </div>
 
         <div style="width: 25%; margin-right: 1%;">
-          <b-card style="height: 90vh; background-color: #e44f9c;">
+          <b-card style="height: 90vh; background-color: #db67a3;">
             <div style="justify-content: center; width: 100%;">
               <div v-if="(escazuCentralWhatsappInvoiceAmount + escazuLocalityWhatsappInvoiceAmount + escazuShippingWhatsappInvoiceAmount) >= 20" style="position: absolute; justify-content: center; top: -75px; z-index: 500; left: 50%; transform: translateX(-50%);">
                 <img class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 120px; height: auto;"/>
@@ -775,7 +775,7 @@
         </div>
 
         <div style="width: 25%; margin-right: 1%;">
-          <b-card style="height: 90vh; background-color: #9f7cd0;">
+          <b-card style="height: 90vh; background-color: #a78dcc;">
             <div style="justify-content: center; width: 100%;">
               <div v-if="(herediaCentralWhatsappInvoiceAmount + herediaLocalityWhatsappInvoiceAmount + herediaShippingWhatsappInvoiceAmount) >= 20" style="position: absolute; justify-content: center; top: -75px; z-index: 500; left: 50%; transform: translateX(-50%);">
                 <img class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 120px; height: auto;"/>
@@ -873,7 +873,7 @@
         </div>
 
         <div style="width: 25%; margin-right: 1%;">
-          <b-card style="height: 90vh; background-color: #26a699;">
+          <b-card style="height: 90vh; background-color: #55b5ab;">
             <div style="justify-content: center; width: 100%;">
               <div v-if="(cartagoCentralWhatsappInvoiceAmount + cartagoLocalityWhatsappInvoiceAmount + cartagoShippingWhatsappInvoiceAmount) >= 20" style="position: absolute; justify-content: center; top: -75px; z-index: 500; left: 50%; transform: translateX(-50%);">
                 <img class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 120px; height: auto;"/>
@@ -1144,7 +1144,7 @@
     0% {
     }
     50% {
-      background-color: #e44f9c;
+      background-color: #db67a3;
     }
     100% {
     }
@@ -1291,10 +1291,10 @@ export default {
 
       cartagoMap: [],
       cartagoMapOptions: {
-        strokeColor: "#26a699",
+        strokeColor: "#55b5ab",
         strokeOpacity: 0.5,
         strokeWeight: 3,
-        fillColor: "#26a699",
+        fillColor: "#55b5ab",
         fillOpacity: 0.4,
       },
 
@@ -1309,19 +1309,19 @@ export default {
 
       herediaMap: [],
       herediaMapOptions: {
-        strokeColor: "#9f7cd0",
+        strokeColor: "#a78dcc",
         strokeOpacity: 0.5,
         strokeWeight: 3,
-        fillColor: "#9f7cd0",
+        fillColor: "#a78dcc",
         fillOpacity: 0.4,
       },
 
       escazuMap: [],
       escazuMapOptions: {
-        strokeColor: "#e44f9c",
+        strokeColor: "#db67a3",
         strokeOpacity: 0.5,
         strokeWeight: 3,
-        fillColor: "#e44f9c",
+        fillColor: "#db67a3",
         fillOpacity: 0.4,
       },
 
@@ -2794,15 +2794,15 @@ export default {
       } else if (localStorage.getItem('localityID') == '3'){
         this.localityName = 'CARTAGO';
         this.mapCenter = {lat: 9.864751, lng: -83.925354};
-        this.localityColor = 'height: 85vh; background-color: #26a699;';
+        this.localityColor = 'height: 85vh; background-color: #55b5ab;';
       } else if (localStorage.getItem('localityID') == '4'){
         this.localityName = 'ESCAZÚ';
         this.mapCenter = {lat: 9.949093, lng: -84.163117};
-        this.localityColor = 'height: 85vh; background-color: #e44f9c;';
+        this.localityColor = 'height: 85vh; background-color: #db67a3;';
       } else {
         this.localityName = 'HEREDIA';
         this.mapCenter = {lat: 9.99168, lng: -84.135};
-        this.localityColor = 'height: 85vh; background-color: #e44f9c;';
+        this.localityColor = 'height: 85vh; background-color: #db67a3;';
       }   
 
       this.selectAllActiveWhatsappInvoiceFromLocality(true);

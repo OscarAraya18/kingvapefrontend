@@ -479,7 +479,7 @@
                 <p @click="selectTodayConversationsByLocalityNameAndType('1', 2)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{zapoteNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{zapoteSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
-              <b-card style="width: 50%; margin-left: 1.5%; background-color: #e44f9c;">
+              <b-card style="width: 50%; margin-left: 1.5%; background-color: #db67a3;">
                 <div style="display: flex;">
                   <p style="font-size: 22px; margin-top: 5px;"><strong>ESCAZÚ:</strong></p>
                     <div class="flex-grow-1"></div>
@@ -493,7 +493,7 @@
             </div>
 
             <div style="display: flex; margin-top: 25px;">
-              <b-card style="width: 50%; margin-right: 1.5%; background-color: #26a699;">
+              <b-card style="width: 50%; margin-right: 1.5%; background-color: #55b5ab;">
                 <div style="display: flex;">
                   <p style="font-size: 22px; margin-top: 5px;"><strong>CARTAGO:</strong></p>
                     <div class="flex-grow-1"></div>
@@ -504,7 +504,7 @@
                 <p @click="selectTodayConversationsByLocalityNameAndType('3', 2)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{cartagoNotSelled}}</p>
                 <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
               </b-card>
-              <b-card style="width: 50%; margin-left: 1.5%; background-color: #9f7cd0;">
+              <b-card style="width: 50%; margin-left: 1.5%; background-color: #a78dcc;">
                 <div style="display: flex;">
                   <p style="font-size: 22px; margin-top: 5px;"><strong>HEREDIA:</strong></p>
                     <div class="flex-grow-1"></div>
@@ -1035,10 +1035,10 @@ export default {
 
       cartagoMap: [],
       cartagoMapOptions: {
-        strokeColor: "#26a699",
+        strokeColor: "#55b5ab",
         strokeOpacity: 0.5,
         strokeWeight: 3,
-        fillColor: "#26a699",
+        fillColor: "#55b5ab",
         fillOpacity: 0.4,
       },
 
@@ -1053,19 +1053,19 @@ export default {
 
       herediaMap: [],
       herediaMapOptions: {
-        strokeColor: "#9f7cd0",
+        strokeColor: "#a78dcc",
         strokeOpacity: 0.5,
         strokeWeight: 3,
-        fillColor: "#9f7cd0",
+        fillColor: "#a78dcc",
         fillOpacity: 0.4,
       },
 
       escazuMap: [],
       escazuMapOptions: {
-        strokeColor: "#e44f9c",
+        strokeColor: "#db67a3",
         strokeOpacity: 0.5,
         strokeWeight: 3,
-        fillColor: "#e44f9c",
+        fillColor: "#db67a3",
         fillOpacity: 0.4,
       },
 
@@ -2265,7 +2265,7 @@ export default {
           this.herediaSales = 0;
         }
 
-        this.opcionesGraficoPaquetes = {chart: {width: 330, type: 'pie', fontSize: 20}, tooltip: {enabled: true}, labels: ['Zapote', 'Escazú', 'Cartago', 'Heredia'], colors: ['#fed330', '#e44f9c', '#26a699', '#9f7cd0']};
+        this.opcionesGraficoPaquetes = {chart: {width: 330, type: 'pie', fontSize: 20}, tooltip: {enabled: true}, labels: ['Zapote', 'Escazú', 'Cartago', 'Heredia'], colors: ['#fed330', '#db67a3', '#55b5ab', '#a78dcc']};
         this.datosGraficoPaquetes = [this.zapoteSelled, this.escazuSelled, this.cartagoSelled, this.herediaSelled];
         this.datosGraficoDinero = [this.zapoteSales, this.escazuSales, this.cartagoSales, this.herediaSales];
 
