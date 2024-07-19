@@ -429,7 +429,11 @@ export default {
           C1E0F5: 'https://i.postimg.cc/wvhvzfV2/C1E0F5.webp',
           CB9BDE: 'https://i.postimg.cc/50qxTH4k/CB9BDE.webp',
           DEFF9C: 'https://i.postimg.cc/cCxsSs61/DEFF9C.webp',
-          F7D547: 'https://i.postimg.cc/j2MRqGJH/F7D547.webp'
+          F7D547: 'https://i.postimg.cc/j2MRqGJH/F7D547.webp',
+          C1DD83: 'https://i.postimg.cc/W449kCKW/C1DD83.webp',
+          '34EBC3': 'https://i.postimg.cc/nzj0d7nq/34EBC3.webp',
+          '6E81FF': 'https://i.postimg.cc/zGGwtWj3/6E81FF.webp',
+          FC7A56: 'https://i.postimg.cc/GtRGkstL/FC7A56.webp'
         }
 
         for (var clientIndex in this.multipleClients){

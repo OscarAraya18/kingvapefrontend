@@ -47,7 +47,18 @@
 
     <b-modal id="motosModal" size="lg" centered hide-header hide-footer>
       <div style="width: 700px;">
-        <apexchart type="pie" width="600" :options="opcionesGraficoCircular" :series="datosGraficoCircular"></apexchart>
+        
+        <h4><strong>Filtro por fecha inicial:</strong></h4>
+        <b-form-datepicker v-model="mensajerosInitial"></b-form-datepicker>
+        <br>
+        <h4><strong>Filtro por fecha final:</strong></h4>
+        <b-form-datepicker v-model="mensajerosEnd"></b-form-datepicker>
+        <br>
+
+        <div v-if="loaderMotos" style="text-align: center;">
+          <br><span class="spinner-glow spinner-glow-primary"></span>
+        </div>
+        <apexchart v-else type="pie" width="600" :options="opcionesGraficoCircular" :series="datosGraficoCircular"></apexchart>
       </div>
     </b-modal>
 
@@ -974,7 +985,7 @@
             </div>
             <div style="display: flex; margin-left: 30px;">
               <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayDeliveredInvoices()" style="margin-right: 7px; cursor: pointer;">📦</h1>
-              <h1 v-b-modal.motosModal @click="openMotosModal()" style="margin-right: 7px; cursor: pointer;">🏍️</h1>
+              <h1 v-b-modal.motosModal @click="openMotosModal(true)" style="margin-right: 7px; cursor: pointer;">🏍️</h1>
               <h1 v-b-modal.deliveredInvoicesModal @click="selectTodayCanceledInvoices()" style="margin-right: 7px; cursor: pointer;">❌</h1>
               <h1 @click="openMapModal()" style="cursor: pointer;">🌎</h1>
             </div>
@@ -1215,6 +1226,10 @@ export default {
 
   data() {
     return {
+      mensajerosInitial: null,
+      mensajerosEnd: null,
+      loaderMotos: false,
+
       localityAgentColor: '',
       
       errorCount: 0,
@@ -1414,7 +1429,7 @@ export default {
       loaderReturned: false,
 
 
-      backendURL: 'https://payitcr.com',
+      backendURL: 'http://localhost:8081',
 
       opcionesGraficoCircular: {},
       datosGraficoCircular: [],
@@ -1427,7 +1442,14 @@ export default {
   },
 
   watch: {
+    mensajerosInitial(){
+      this.openMotosModal(false);
 
+    },
+
+    mensajerosEnd(){
+      this.openMotosModal(false);
+    }
   },
   
   methods: {
@@ -1534,10 +1556,17 @@ export default {
 
 
 
-    openMotosModal(){
+    openMotosModal(refresh){
+      if (refresh){
+        this.mensajerosInitial = null;
+        this.mensajerosEnd = null;
+      }
+      this.loaderMotos = true;
       axios.post(this.backendURL+'/selectTodayDeliveredInvoicesByLocality', 
       {
-        whatsappInvoiceLocalityID: localStorage.getItem('localityID')
+        whatsappInvoiceLocalityID: localStorage.getItem('localityID'),
+        initialDate: this.mensajerosInitial,
+        endDate: this.mensajerosEnd
       })
       .then((response) =>{
         if (response.data.success){
@@ -1561,7 +1590,7 @@ export default {
             legend: {fontSize: '20px'},
             colors: this.localityAgentOptions.map(obj => obj.color)
           };
-
+          this.loaderMotos = false;
         } else {
           this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           this.loaderDelivered = false;
@@ -1716,10 +1745,13 @@ export default {
     },
 
     selectTodayDeliveredInvoices(){
+
       this.loaderDelivered = true;
       axios.post(this.backendURL+'/selectTodayDeliveredInvoicesByLocality', 
       {
-        whatsappInvoiceLocalityID: localStorage.getItem('localityID')
+        whatsappInvoiceLocalityID: localStorage.getItem('localityID'),
+        initialDate: this.mensajerosInitial,
+        endDate: this.mensajerosEnd
       })
       .then((response) =>{
         if (response.data.success){
