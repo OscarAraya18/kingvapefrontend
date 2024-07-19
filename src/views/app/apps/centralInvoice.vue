@@ -1429,7 +1429,7 @@ export default {
       loaderReturned: false,
 
 
-      backendURL: 'http://localhost:8081',
+      backendURL: 'https://payitcr.com',
 
       opcionesGraficoCircular: {},
       datosGraficoCircular: [],
