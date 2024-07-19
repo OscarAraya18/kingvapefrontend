@@ -9,6 +9,54 @@
       </div>
     </b-modal>
 
+    <b-modal scrollable size="lg" centered id="modalMapaTienda" hide-footer hide-header>
+      <div v-if="openedConversation" style="padding: 10px;">
+        <h4><strong>ID: </strong>{{ openedConversation.whatsappInvoiceID }}</h4>
+        <h4><strong>Nombre: </strong>{{ openedConversation.clientName }}</h4>
+        <h4><strong>Número: </strong>{{ parseNumber(openedConversation.clientPhoneNumber) }}</h4>
+        <h4><strong>Monto: </strong>₡{{ openedConversation.amount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h4>
+
+        <div v-if="openedConversation.localityAgentName == null">
+          <br>
+          <button @click="openAssignLocalityAgentModal(openedConversation)" class="btn btn-primary mr-2">Asignar a mensajero</button>
+        </div>
+        <div v-else>
+          <h4><strong>Mensajero: </strong>{{ openedConversation.localityAgentName }}</h4>
+        </div>
+
+      </div>
+    </b-modal>
+
+    <b-modal id="assignLocalityAgentModal2" size="sm" centered hide-header @ok="assignLocalityAgent()">
+
+      <h5><strong>Seleccione un mensajero: </strong></h5>
+      <b-form-select v-model="assignedLocalityAgent">
+        <b-form-select-option
+        v-for="(localityAgentOption, localityAgentOptionIndex) in localityAgentOptions"
+        :key="localityAgentOptionIndex"
+        :value="localityAgentOption.value"
+        :title="localityAgentOption.title"> 
+          <p>{{localityAgentOption.text}}</p>
+        </b-form-select-option>
+      </b-form-select>
+
+      <br><br>
+
+      <h5><strong>Seleccione un facturador: </strong></h5>
+      <b-form-select v-model="assignedLocalityAgentBiller">
+        <b-form-select-option
+        v-for="(localityAgentOption, localityAgentOptionIndex) in localityAgentBillerOptions"
+        :key="localityAgentOptionIndex"
+        :value="localityAgentOption.value"
+        :title="localityAgentOption.title"> 
+          <p>{{localityAgentOption.text}}</p>
+        </b-form-select-option>
+      </b-form-select>
+
+    </b-modal>
+
+
+
     <div :id = "mapId" :style="getMapDimensions()">
     </div> 
   </div>
@@ -45,7 +93,15 @@ export default {
       currentConversation: null,
       openConversationLoader: false,
       openedName: '',
-      openedNumber: ''
+      openedNumber: '',
+
+
+      whatsappInvoiceID: null,
+      whatsappInvoiceLocalityID: null,
+      assignedLocalityAgentBiller: null,
+      assignedLocalityAgent: null,
+
+      backendURL: 'https://payitcr.com'
     }
   },
 
@@ -54,10 +110,56 @@ export default {
     mapHeight: String,
     clientLongitude: Number,
     clientLatitude: Number,
-    multipleClients: Array
+    multipleClients: Array,
+    localityMap: Boolean,
+    localityAgentOptions: Array,
+    localityAgentBillerOptions: Array
   },
 
   methods: {
+    assignLocalityAgent(){
+      if ((this.assignedLocalityAgent != null) && (this.assignedLocalityAgentBiller != null)){        
+        axios.post(this.backendURL+'/updateWhatsappInvoiceState', 
+        {
+          whatsappInvoiceID: this.whatsappInvoiceID,
+          whatsappInvoiceState: 'R',
+          whatsappInvoiceLocalityID: this.whatsappInvoiceLocalityID,
+          whatsappInvoiceLocalityAgentID: this.assignedLocalityAgent,
+          whatsappInvoiceLocalityAgentBillerID: this.assignedLocalityAgentBiller
+        })
+        .then((response) =>{
+          if (response.data.success){
+            this.showNotification('success', 'Comanda asignada', 'Se ha asignado la comanda existosamente.');
+          } else {
+            this.showNotification('danger', 'Error al asignar la comanda', 'Ha ocurrido un error inesperado al asignar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }
+        })
+        .catch((e) => {
+          console.log(e)
+          this.showNotification('danger', 'Error al asignar la comanda', 'Ha ocurrido un error inesperado al asignar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        })
+      } else {
+        this.showNotification('danger', 'Error al asignar la comanda', 'Complete el mensajero asignado y el facturador e intente nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      }
+    },
+
+    showNotification(notificationType, notificationTitle, notificationContent){
+      this.$bvToast.toast(notificationContent, {
+        title: notificationTitle,
+        variant: notificationType,
+        solid: true
+      });
+    },
+
+    openAssignLocalityAgentModal(whatsappInvoice){
+      this.whatsappInvoiceID = whatsappInvoice.whatsappInvoiceID;
+      this.whatsappInvoiceLocalityID = whatsappInvoice.whatsappInvoiceLocalityID;
+      this.assignedLocalityAgent = null;
+      this.assignedLocalityAgentBiller = null;
+      this.$root.$emit('bv::show::modal', 'assignLocalityAgentModal2');
+
+    },
+    
     getMapDimensions(){
       return 'width: ' + this.mapWidth + '; height: ' + this.mapHeight;
     },
@@ -169,7 +271,6 @@ export default {
     let cartagoStoreVectorLayer = new VectorLayer({source: cartagoStoreVectorSource, style: iconStyle})
     this.mapModal.addLayer(cartagoStoreVectorLayer);
 
-
     let herediaStoreFeature = new Feature({
       geometry: new Point(fromLonLat([-84.135, 9.99168])),
     });
@@ -202,7 +303,6 @@ export default {
     let cartagoVectorLayer = new VectorLayer({source: cartagoVectorSource, style: cartagoStyle});
     this.mapModal.addLayer(cartagoVectorLayer);
 
-
     this.herediaMap = constants.routes.herediaMap;
     let herediaMapFormatted = [];
     for (var herediaMapIndex in this.herediaMap[0]){
@@ -227,7 +327,6 @@ export default {
     herediaVectorSource.addFeature(herediaFeature);
     let herediaVectorLayer = new VectorLayer({source: herediaVectorSource, style: herediaStyle});
     this.mapModal.addLayer(herediaVectorLayer);
-
 
     this.zapoteMap = constants.routes.zapoteMap;
     let zapoteMapFormatted = [];
@@ -254,7 +353,6 @@ export default {
     let zapoteVectorLayer = new VectorLayer({source: zapoteVectorSource, style: zapoteStyle});
     this.mapModal.addLayer(zapoteVectorLayer);
 
-
     this.escazuMap = constants.routes.escazuMap;
     let escazuMapFormatted = [];
     for (var escazuMapIndex in this.escazuMap[0]){
@@ -280,7 +378,6 @@ export default {
     let escazuVectorLayer = new VectorLayer({source: escazuVectorSource, style: escazuStyle});
     this.mapModal.addLayer(escazuVectorLayer);
 
-  
     this.redMap = constants.routes.redMap;
     let redLineStyle = new Stroke({
       color: 'rgba(171, 0, 0, 0.5)',
@@ -324,40 +421,89 @@ export default {
     }
 
     if (this.multipleClients){
-      let clientLocationImage = new Icon({
-        anchor: [0.5, 1],
-        src: 'https://i.postimg.cc/FFW1jzYn/2.webp'
-      });
 
-      for (var clientIndex in this.multipleClients){
-        const client = this.multipleClients[clientIndex];
+      if (this.localityMap){
 
-        let clientLocationStyle = new Style({image: clientLocationImage});
+        const colorPins = 
+        {
+          C1E0F5: 'https://i.postimg.cc/wvhvzfV2/C1E0F5.webp',
+          CB9BDE: 'https://i.postimg.cc/50qxTH4k/CB9BDE.webp',
+          DEFF9C: 'https://i.postimg.cc/cCxsSs61/DEFF9C.webp',
+          F7D547: 'https://i.postimg.cc/j2MRqGJH/F7D547.webp'
+        }
 
-        let clientLocationStoreFeature = new Feature({
-          geometry: new Point(fromLonLat([client.longitude, client.latitude]))
+        for (var clientIndex in this.multipleClients){
+          const client = this.multipleClients[clientIndex];
+          const color = client.localityAgentColor ? colorPins[client.localityAgentColor.substr(1)] : 'https://i.postimg.cc/ncgWWjcP/1.webp'
+          let clientLocationImage = new Icon({
+            anchor: [0.5, 1],
+            src: color
+          });
+          let clientLocationStyle = new Style({image: clientLocationImage});
+          let clientLocationStoreFeature = new Feature({
+            geometry: new Point(fromLonLat([client.longitude, client.latitude]))
+          });
+          clientLocationStoreFeature.setId(client);
+          let clientLocationStoreVectorSource = new VectorSource({features: [clientLocationStoreFeature]});
+          let clientLocationStoreVectorLayer = new VectorLayer({source: clientLocationStoreVectorSource, style: clientLocationStyle})
+          this.mapModal.addLayer(clientLocationStoreVectorLayer);
+
+          this.mapModal.on('singleclick', (evt) => {
+            const feature = this.mapModal.forEachFeatureAtPixel(evt.pixel,
+              (feature) => {
+                return feature;
+              });
+
+            if (feature) {
+              if(feature.id_){
+                this.openedConversation = feature.id_;
+                this.$root.$emit('bv::show::modal', 'modalMapaTienda');
+              }
+            }
+          });
+        }
+
+      } else {
+        let clientLocationImage = new Icon({
+          anchor: [0.5, 1],
+          src: 'https://i.postimg.cc/FFW1jzYn/2.webp'
         });
-        clientLocationStoreFeature.setId(client);
-        let clientLocationStoreVectorSource = new VectorSource({features: [clientLocationStoreFeature]});
-        let clientLocationStoreVectorLayer = new VectorLayer({source: clientLocationStoreVectorSource, style: clientLocationStyle})
-        this.mapModal.addLayer(clientLocationStoreVectorLayer);
+
+        for (var clientIndex in this.multipleClients){
+          const client = this.multipleClients[clientIndex];
+
+          let clientLocationStyle = new Style({image: clientLocationImage});
+
+          let clientLocationStoreFeature = new Feature({
+            geometry: new Point(fromLonLat([client.longitude, client.latitude]))
+          });
+          clientLocationStoreFeature.setId(client);
+          let clientLocationStoreVectorSource = new VectorSource({features: [clientLocationStoreFeature]});
+          let clientLocationStoreVectorLayer = new VectorLayer({source: clientLocationStoreVectorSource, style: clientLocationStyle})
+          this.mapModal.addLayer(clientLocationStoreVectorLayer);
+        }
+
+
+        this.mapModal.on('singleclick', (evt) => {
+          const feature = this.mapModal.forEachFeatureAtPixel(evt.pixel,
+            (feature) => {
+              return feature;
+            });
+
+          if (feature) {
+            if(feature.id_){
+              this.openedConversation = feature.id_;
+              this.$root.$emit('bv::show::modal', 'modalMapaConversacion');
+            }
+          }
+        });
       }
+
+      
     }
 
 
-    this.mapModal.on('singleclick', (evt) => {
-      const feature = this.mapModal.forEachFeatureAtPixel(evt.pixel,
-        (feature) => {
-          return feature;
-        });
-
-      if (feature) {
-        if(feature.id_){
-          this.openedConversation = feature.id_;
-          this.$root.$emit('bv::show::modal', 'modalMapaConversacion');
-        }
-      }
-    });
+    
 
 
 

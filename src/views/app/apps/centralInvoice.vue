@@ -3,7 +3,7 @@
 
     
     <b-modal id="mapModal" size="lg" centered hide-header hide-footer>
-      Trabajando en esto...
+      <MapComponent :localityAgentOptions="localityAgentOptions" :localityAgentBillerOptions="localityAgentBillerOptions" :multipleClients="locations" :localityMap="true" mapHeight="400px" mapWidth="100%"></MapComponent>
     </b-modal>
     
 
@@ -76,8 +76,7 @@
          v-for="(localityAgentOption, localityAgentOptionIndex) in localityAgentOptions"
          :key="localityAgentOptionIndex"
          :value="localityAgentOption.value"
-         :title="localityAgentOption.title"
-         :style="getLocalityAgentOptionColor(localityAgentOption)"> 
+         :title="localityAgentOption.title"> 
           <p>{{localityAgentOption.text}}</p>
         </b-form-select-option>
       </b-form-select>
@@ -90,8 +89,7 @@
          v-for="(localityAgentOption, localityAgentOptionIndex) in localityAgentBillerOptions"
          :key="localityAgentOptionIndex"
          :value="localityAgentOption.value"
-         :title="localityAgentOption.title"
-         :style="getLocalityAgentOptionColor(localityAgentOption)"> 
+         :title="localityAgentOption.title"> 
           <p>{{localityAgentOption.text}}</p>
         </b-form-select-option>
       </b-form-select>
@@ -1435,8 +1433,23 @@ export default {
   methods: {
     openMapModal(){
       this.locations = [];
-      for (var invoice in this.localityWhatsappInvoices){
-        this.appendLocation(this.localityWhatsappInvoices[invoice]);
+      for (var invoiceIndex in this.localityWhatsappInvoices){
+        const invoice = this.localityWhatsappInvoices[invoiceIndex];
+        if (invoice.whatsappInvoiceClientLocation != ''){
+          this.locations.push
+          ({
+            'latitude': JSON.parse(invoice.whatsappInvoiceClientLocation).latitude,
+            'longitude': JSON.parse(invoice.whatsappInvoiceClientLocation).longitude,
+            'clientName': invoice.whatsappInvoiceClientName,
+            'clientPhoneNumber': invoice.whatsappInvoiceClientPhoneNumber,
+            'amount': invoice.whatsappInvoiceAmount,
+            'localityAgentName': invoice.localityAgentName,
+            'localityAgentColor': invoice.localityAgentColor,
+            'opened': false,
+            'whatsappInvoiceID': invoice.whatsappInvoiceID,
+            'whatsappInvoiceLocalityID': invoice.whatsappInvoiceLocalityID
+          });
+        }
       }
       this.$root.$emit('bv::show::modal', 'mapModal');
     },
