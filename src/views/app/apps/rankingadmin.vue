@@ -559,11 +559,12 @@ export default {
         'Mariana Mesen': '#daff8f',
         'Daniela Murillo': '#fcac60',
         'Sergio Barrot': '#424880',
-        'Jose Estrada': '#3e5c47',
+        'Jose Estrada': '#1f992d',
         'Franco Chacon': '#8a8a8a',
         'Ricardo Chacon': '#e86800',
-        'Emma Garcia': '#b570fa',
-        'Diana Jimenez': '#ffa8b8'
+        'Emma Garcia': '#b5e3eb',
+        'Diana Jimenez': '#ffa8b8',
+        'Katherine Gonzalez': '#b0a1ff'
       };
       for (var agentIndex in agentNames){
         const agentName = agentNames[agentIndex];
