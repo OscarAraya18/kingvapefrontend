@@ -856,7 +856,6 @@
                   <div style="background-color: rgb(255, 238, 252); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
                     <div>
                       <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Respondiendo a:</strong></p>
-                      {{repliedMessage.whatsappGeneralMessageID}}
                       <i class="i-Close-Window text-25 text-danger" style="float: right; position: relative; top:-25px; cursor: pointer;" @click="cancelReply()"></i>
                     </div><br>
                     
