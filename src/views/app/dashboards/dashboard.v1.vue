@@ -727,8 +727,17 @@
       </div>
       <div v-else>
         <div style="margin-bottom: 20px;">
-          <h3><strong>{{openedName}}</strong></h3>
+          <div style="display: flex;">
+            <h3><strong>{{openedName}}</strong></h3>
+            <div class="flex-grow-1"></div>
+            <div v-if="openedAgent != null" :style="getAgentColor(openedAgent)" style="width: 200px">
+              <h4 style="position: relative; top: 5px;"><strong>{{openedAgent.agentName}}</strong></h4>
+            </div>
+          </div>
           <h3>{{parseNumber(openedNumber)}}</h3>
+
+          
+
         </div>
         <div ref="scrollHistory" style="max-height: 80vh; overflow-y: auto;">
           <div v-for="currentActiveConversationMessage in currentConversation.whatsappConversationMessages">
@@ -1032,6 +1041,7 @@ export default {
 
       openedName: '',
       openedNumber: '',
+      openedAgent: null,
 
       cartagoMap: [],
       cartagoMapOptions: {
@@ -2593,6 +2603,12 @@ export default {
     whatsappConversationOpenAction(whatsappConversation){
       this.openedName = whatsappConversation.whatsappConversationRecipientProfileName;
       this.openedNumber = whatsappConversation.whatsappConversationRecipientPhoneNumber;
+      this.openedAgent = 
+      {
+        'agentName': whatsappConversation.agentName,
+        'agentColor': whatsappConversation.agentColor,
+        'agentFontColor': whatsappConversation.agentFontColor
+      };
 
       var whatsappConversationID = whatsappConversation.whatsappConversationID;
       this.openConversationLoader = true;

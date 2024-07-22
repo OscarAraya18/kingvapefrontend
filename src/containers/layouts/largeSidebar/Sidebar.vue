@@ -103,14 +103,14 @@
           <li
             @mouseenter="toggleSubMenu"
             class="nav-item"
-            data-item="transfer"
-            :class="{ active: selectedParentMenu == 'transfer' }"
+            data-item="shippers"
+            :class="{ active: selectedParentMenu == 'shippers' }"
             :data-submenu="false"
-            v-if="isAdmin == true || agentName == 'Diana Jimenez' || agentName == 'Jose Estrada' || locality == true"
+            v-if="isAdmin == true && locality == false"
           >
-            <router-link tag="a" class="nav-item-hold" to="/app/apps/transfer">
-              <i class="nav-icon i-Arrow-Right-2"></i>
-              <span class="nav-text"><strong>TRANSFERIR</strong></span>
+            <router-link tag="a" class="nav-item-hold" to="/app/apps/delivery">
+              <i class="nav-icon i-Motorcycle"></i>
+              <span class="nav-text"><strong>MENSAJEROS</strong></span>
             </router-link>
             <div class="triangle"></div>
           </li>
@@ -133,7 +133,40 @@
 
 
           <li
-            v-if="(isAdmin == true && locality == false) || agentName == 'Mile Cruz'"
+            @mouseenter="toggleSubMenu"
+            class="nav-item"
+            data-item="agents"
+            :class="{ active: selectedParentMenu == 'agents' }"
+            :data-submenu="false"
+            v-if="isAdmin == true && locality == false"
+          >
+            <router-link tag="a" class="nav-item-hold" to="/app/apps/agents">
+              <i class="nav-icon i-Support"></i>
+              <span class="nav-text"><strong>AGENTES</strong></span>
+            </router-link>
+            <div class="triangle"></div>
+          </li>
+
+
+          <li
+            @mouseenter="toggleSubMenu"
+            class="nav-item"
+            data-item="transfer"
+            :class="{ active: selectedParentMenu == 'transfer' }"
+            :data-submenu="false"
+            v-if="isAdmin == true || agentName == 'Diana Jimenez' || agentName == 'Jose Estrada' || locality == true"
+          >
+            <router-link tag="a" class="nav-item-hold" to="/app/apps/transfer">
+              <i class="nav-icon i-Arrow-Right-2"></i>
+              <span class="nav-text"><strong>TRANSFERIR</strong></span>
+            </router-link>
+            <div class="triangle"></div>
+          </li>
+
+
+
+          <li
+            v-if="(locality == false) || agentName == 'Mile Cruz' || agentName == 'Oscar Araya'"
             @mouseenter="toggleSubMenu"
             class="nav-item"
             data-item="images"
@@ -148,20 +181,6 @@
           </li>
 
           
-          <li
-            @mouseenter="toggleSubMenu"
-            class="nav-item"
-            data-item="agents"
-            :class="{ active: selectedParentMenu == 'agents' }"
-            :data-submenu="false"
-            v-if="isAdmin == true && locality == false"
-          >
-            <router-link tag="a" class="nav-item-hold" to="/app/apps/agents">
-              <i class="nav-icon i-Support"></i>
-              <span class="nav-text"><strong>AGENTES</strong></span>
-            </router-link>
-            <div class="triangle"></div>
-          </li>
 
 
         </ul>

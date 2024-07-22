@@ -3776,6 +3776,7 @@ export default {
       const currentConversation = this.currentActiveConversation;
       
       if (this.currentNavItem == 'Nicotina'){
+
         for (var image in this.agentFavoriteImages){
           if (this.agentFavoriteImages[image].selected){       
             await axios.post(constants.routes.backendAPI+'/sendWhatsappFavoriteImageMessage', 
@@ -3800,6 +3801,7 @@ export default {
             })
           }
         }
+        
       } else {
         for (var image in this.agentFavoriteImages2){
           if (this.agentFavoriteImages2[image].selected){       

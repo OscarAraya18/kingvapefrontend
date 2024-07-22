@@ -225,10 +225,6 @@ const routes = [
             component: () =>
               import("./views/app/apps/scrumboard/editScrumBoard"),
           },
-          // {
-          //   path: "scrumboard-one",
-          //   component: () => import("./views/app/apps/scrumboard/scrumboard-content-one")
-          // },
           {
             path: "contact-list-table",
             name: "contact-list-table",
@@ -347,6 +343,10 @@ const routes = [
           {
             path: "images",
             component: () => import("./views/app/apps/images"),
+          },
+          {
+            path: "delivery",
+            component: () => import("./views/app/apps/delivery"),
           },
           {
             path: "payment-checkout",
