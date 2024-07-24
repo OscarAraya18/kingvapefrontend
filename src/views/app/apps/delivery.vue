@@ -81,7 +81,7 @@
           <MapComponent style="border-radius: 2%" v-if="openMap" :route="true" :multipleClients="locations" mapHeight="370px" mapWidth="100%"></MapComponent>
         </b-card>
         <br>
-        <b-card style="background-color: rgb(214, 214, 214); max-height: 380px; overflow-y: auto;">
+        <b-card style="background-color: rgb(214, 214, 214); max-height: 340px; overflow-y: auto;">
           <div v-for="time in timeInformation" style="margin-top: 5px; margin-bottom: 5px;">
             
             <div>
