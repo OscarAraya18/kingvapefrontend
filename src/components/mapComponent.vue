@@ -3,6 +3,8 @@
     <b-modal scrollable size="lg" centered id="modalMapaConversacion" hide-footer hide-header>
       <div v-if="openedConversation" style="padding: 10px;">
         <h4><strong>ID: </strong>{{ openedConversation.whatsappConversationID }}</h4>
+        <h4 :v-if="openConversation.whatsappInvoiceState"><strong>Estado: </strong>{{ openedConversation.whatsappInvoiceState }}</h4>
+
         <h4><strong>Nombre: </strong>{{ openedConversation.whatsappConversationRecipientProfileName }}</h4>
         <h4><strong>Número: </strong>{{ openedConversation.whatsappConversationRecipientPhoneNumber }}</h4>
         <h4><strong>Monto: </strong>₡{{ openedConversation.amount }}</h4>
@@ -111,6 +113,7 @@ export default {
     clientLongitude: Number,
     clientLatitude: Number,
     multipleClients: Array,
+    route: Boolean,
     localityMap: Boolean,
     localityAgentOptions: Array,
     localityAgentBillerOptions: Array
@@ -468,10 +471,13 @@ export default {
         }
 
       } else {
+
         let clientLocationImage = new Icon({
           anchor: [0.5, 1],
-          src: 'https://i.postimg.cc/FFW1jzYn/2.webp'
+          src: this.route ? 'https://i.postimg.cc/Qxyx3j8m/1.webp' : 'https://i.postimg.cc/FFW1jzYn/2.webp'
         });
+
+
 
         for (var clientIndex in this.multipleClients){
           const client = this.multipleClients[clientIndex];
