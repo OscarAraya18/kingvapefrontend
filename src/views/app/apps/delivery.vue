@@ -6,7 +6,10 @@
         <div style="display: flex;">
 
           <b-card style="width: 48%; background-color: #fed330; margin-right: 1%;">
-            <h2 style="margin-top: 5px; margin-bottom: 30px;"><strong>ZAPOTE:</strong></h2>
+            <div style="display: flex;">
+              <b-badge style="font-size: x-large; margin-right: 20px; max-height: 40px;" pill variant="secondary">{{motosZapote}}</b-badge>
+              <h2 style="margin-top: 5px; margin-bottom: 30px;"><strong>ZAPOTE:</strong></h2>
+            </div>
             <div v-for="(agent, key) in deliveryInformation['1']" :key="key" style="margin-top: 5px; margin-bottom: 5px;">
               <p v-if="key == 'Sin mensajero asignado'" style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>: {{ agent }}</p>
               <div v-else style="display: flex;">
@@ -18,7 +21,10 @@
           </b-card>
           <br>
           <b-card style="width: 48%; background-color: #db67a3; margin-left: 1%;">
-            <h2 style="margin-top: 5px; margin-bottom: 30px;"><strong>ESCAZÚ:</strong></h2>
+            <div style="display: flex;">
+              <b-badge style="font-size: x-large; margin-right: 20px; max-height: 40px;" pill variant="secondary">{{motosEscazu}}</b-badge>
+              <h2 style="margin-top: 5px; margin-bottom: 30px;"><strong>ESCAZÚ:</strong></h2>
+            </div>
             <div v-for="(agent, key) in deliveryInformation['4']" :key="key" style="margin-top: 5px; margin-bottom: 5px;">
               <p v-if="key == 'Sin mensajero asignado'" style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>: {{ agent }}</p>
               <div v-else style="display: flex;">
@@ -34,7 +40,10 @@
 
         <div style="display: flex;">
           <b-card style="width: 48%; background-color: #a78dcc; margin-right: 1%;">
-            <h2 style="margin-top: 5px; margin-bottom: 30px;"><strong>HEREDIA:</strong></h2>
+            <div style="display: flex;">
+              <b-badge style="font-size: x-large; margin-right: 20px; max-height: 40px;" pill variant="secondary">{{motosHeredia}}</b-badge>
+              <h2 style="margin-top: 5px; margin-bottom: 30px;"><strong>HEREDIA:</strong></h2>
+            </div>
             <div v-for="(agent, key) in deliveryInformation['5']" :key="key" style="margin-top: 5px; margin-bottom: 5px;">
               <p v-if="key == 'Sin mensajero asignado'" style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>: {{ agent }}</p>
               <div v-else style="display: flex;">
@@ -46,7 +55,10 @@
           </b-card>
           <br>
           <b-card style="width: 48%; background-color: #55b5ab; margin-left: 1%;">
-            <h2 style="margin-top: 5px; margin-bottom: 30px;"><strong>CARTAGO:</strong></h2>
+            <div style="display: flex;">
+              <b-badge style="font-size: x-large; margin-right: 20px; max-height: 40px;" pill variant="secondary">{{motosCartago}}</b-badge>
+              <h2 style="margin-top: 5px; margin-bottom: 30px;"><strong>CARTAGO:</strong></h2>
+            </div>
             <div v-for="(agent, key) in deliveryInformation['3']" :key="key" style="margin-top: 5px; margin-bottom: 5px;">
               <p v-if="key == 'Sin mensajero asignado'" style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>: {{ agent }}</p>
               <div v-else style="display: flex;">
@@ -99,7 +111,12 @@ export default {
       sucursal: 0,
 
       queryInterval: null,
-      timeInterval: null
+      timeInterval: null,
+
+      motosZapote: 0,
+      motosEscazu: 0,
+      motosHeredia: 0,
+      motosCartago: 0
     };
   },
 
@@ -110,6 +127,38 @@ export default {
         variant: notificationType,
         solid: true
       });
+    },
+
+    selectMensajerosDisponibles(){
+      axios.post(constants.routes.backendAPI+'/selectMensajerosDisponibles').then((response) =>{
+        if (response.data.success){
+          var cantidadZapote = 0;
+          var cantidadEscazu = 0;
+          var cantidadHeredia = 0;
+          var cantidadCartago = 0;
+          for (var agentIndex in response.data.result){
+            const localityID = response.data.result[agentIndex].localityAgentLocalityID;
+            if (localityID == 1){
+              cantidadZapote += 1;
+            } else if (localityID == 4){
+              cantidadEscazu += 1;
+            } else if (localityID == 5){
+              cantidadHeredia += 1;
+            } else {
+              cantidadCartago += 1;
+            }
+          }
+          this.motosZapote = cantidadZapote;
+          this.motosEscazu = cantidadEscazu;
+          this.motosHeredia = cantidadHeredia;
+          this.motosCartago = cantidadCartago;
+        } else {
+          this.showNotification('danger', 'Error al solicitar la lista de motorizados disponibles', 'Ha ocurrido un error inesperado al solicitar la lista de motorizados disponibles. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch(() =>{
+        this.showNotification('danger', 'Error al solicitar la lista de motorizados disponibles', 'Ha ocurrido un error inesperado al solicitar la lista de motorizados disponibles. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
     },
 
     getTimerRepresentation(timeInSeconds){
@@ -195,9 +244,11 @@ export default {
 
   mounted(){
     this.selectTodayDeliveryInformation();
-
+    this.selectMensajerosDisponibles();
     this.queryInterval = setInterval(() => {
       this.selectTodayDeliveryInformation();
+      this.selectMensajerosDisponibles();
+
     }, 6000);
 
     this.timeInterval = setInterval(() => {
