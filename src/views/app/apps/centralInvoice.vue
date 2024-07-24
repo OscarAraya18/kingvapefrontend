@@ -601,7 +601,7 @@
               </div>
 
               <div style="display: flex; justify-content: center;">
-                <b-badge style="font-size: x-large; margin-right: 20px" pill variant="secondary">{{motosZapote}}</b-badge>
+                <b-badge style="font-size: x-large; margin-right: 20px; max-height: 40px;" pill variant="secondary">{{motosZapote}}</b-badge>
                 <h1 style="margin-top: auto; margin-bottom: auto;"><strong>ZAPOTE</strong></h1>
                 <div style="margin-left: 20px;">
                   <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="danger">{{zapoteCentralWhatsappInvoiceAmount}}</b-badge>
@@ -705,7 +705,7 @@
               </div>
 
               <div style="display: flex; justify-content: center;">
-                <b-badge style="font-size: x-large; margin-right: 20px" pill variant="secondary">{{motosEscazu}}</b-badge>
+                <b-badge style="font-size: x-large; margin-right: 20px; max-height: 40px;" pill variant="secondary">{{motosEscazu}}</b-badge>
 
                 <h1 style="margin-top: auto; margin-bottom: auto;"><strong>ESCAZÚ</strong></h1>
                 <div style="margin-left: 20px;">
@@ -805,7 +805,7 @@
               </div>
 
               <div style="display: flex; justify-content: center;">
-                <b-badge style="font-size: x-large; margin-right: 20px" pill variant="secondary">{{motosHeredia}}</b-badge>
+                <b-badge style="font-size: x-large; margin-right: 20px; max-height: 40px;" pill variant="secondary">{{motosHeredia}}</b-badge>
 
                 <h1 style="margin-top: auto; margin-bottom: auto;"><strong>HEREDIA</strong></h1>
                 <div style="margin-left: 20px;">
@@ -905,7 +905,7 @@
               </div>
 
               <div style="display: flex; justify-content: center;">
-                <b-badge style="font-size: x-large; margin-right: 20px" pill variant="secondary">{{motosCartago}}</b-badge>
+                <b-badge style="font-size: x-large; margin-right: 20px; max-height: 40px;" pill variant="secondary">{{motosCartago}}</b-badge>
 
                 <h1 style="margin-top: auto; margin-bottom: auto;"><strong>CARTAGO</strong></h1>
                 <div style="margin-left: 20px;">
