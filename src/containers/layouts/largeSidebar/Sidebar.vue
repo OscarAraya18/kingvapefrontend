@@ -166,7 +166,7 @@
 
 
           <li
-            v-if="(locality == false) || agentName == 'Mile Cruz' || agentName == 'Oscar Araya'"
+            v-if="agentName == 'Mile Cruz' || agentName == 'Oscar'"
             @mouseenter="toggleSubMenu"
             class="nav-item"
             data-item="images"

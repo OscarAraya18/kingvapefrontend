@@ -1118,7 +1118,9 @@
                     </b-list-group>
                   </b-modal>
 
+                  <!--
                   <button v-if="availableConversation == true" id="sendSticker" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="openSendStickerModal()" v-b-modal.sendStickerModal><i class="i-Teddy-Bear"></i></button>
+                  -->
                   <b-tooltip target="sendSticker">Stickers</b-tooltip>
 
                   <button v-if="availableConversation == true" id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>
@@ -1291,8 +1293,10 @@
 
                     </b-list-group>
                   </b-modal>
-
+<!--
                   <button v-if="availableConversation == true" id="sendSticker" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="openSendStickerModal()" v-b-modal.sendStickerModal><i class="i-Teddy-Bear"></i></button>
+-->
+                  
                   <b-tooltip target="sendSticker">Enviar sticker</b-tooltip>
 
                   <button v-if="availableConversation == true" id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>

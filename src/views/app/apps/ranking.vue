@@ -143,7 +143,7 @@ export default {
         'Mariana Mesen': '#daff8f',
         'Daniela Murillo': '#fcac60',
         'Sergio Barrot': '#424880',
-        'Jose Estrada': '#1f992d',
+        'Jose Estrada': '#255c34',
         'Franco Chacon': '#8a8a8a',
         'Ricardo Chacon': '#e86800',
         'Emma Garcia': '#b5e3eb',
