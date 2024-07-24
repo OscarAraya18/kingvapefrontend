@@ -601,9 +601,9 @@
               </div>
 
               <div style="display: flex; justify-content: center;">
-                <b-badge style="font-size: x-large; margin-right: 20px; max-height: 40px;" pill variant="secondary">{{motosZapote}}</b-badge>
+                <b-badge style="font-size: x-large; margin-right: 10px; max-height: 40px;" pill variant="secondary">{{motosZapote}}</b-badge>
                 <h1 style="margin-top: auto; margin-bottom: auto;"><strong>ZAPOTE</strong></h1>
-                <div style="margin-left: 20px;">
+                <div style="margin-left: 10px;">
                   <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="danger">{{zapoteCentralWhatsappInvoiceAmount}}</b-badge>
                   <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="warning">{{zapoteLocalityWhatsappInvoiceAmount}}</b-badge>
                   <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="success">{{zapoteShippingWhatsappInvoiceAmount}}</b-badge>
@@ -705,10 +705,10 @@
               </div>
 
               <div style="display: flex; justify-content: center;">
-                <b-badge style="font-size: x-large; margin-right: 20px; max-height: 40px;" pill variant="secondary">{{motosEscazu}}</b-badge>
+                <b-badge style="font-size: x-large; margin-right: 10px; max-height: 40px;" pill variant="secondary">{{motosEscazu}}</b-badge>
 
                 <h1 style="margin-top: auto; margin-bottom: auto;"><strong>ESCAZÚ</strong></h1>
-                <div style="margin-left: 20px;">
+                <div style="margin-left: 10px;">
                   <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="danger">{{escazuCentralWhatsappInvoiceAmount}}</b-badge>
                   <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="warning">{{escazuLocalityWhatsappInvoiceAmount}}</b-badge>
                   <b-badge style="font-size: x-large;" pill variant="success">{{escazuShippingWhatsappInvoiceAmount}}</b-badge>
@@ -805,10 +805,10 @@
               </div>
 
               <div style="display: flex; justify-content: center;">
-                <b-badge style="font-size: x-large; margin-right: 20px; max-height: 40px;" pill variant="secondary">{{motosHeredia}}</b-badge>
+                <b-badge style="font-size: x-large; margin-right: 10px; max-height: 40px;" pill variant="secondary">{{motosHeredia}}</b-badge>
 
                 <h1 style="margin-top: auto; margin-bottom: auto;"><strong>HEREDIA</strong></h1>
-                <div style="margin-left: 20px;">
+                <div style="margin-left: 10px;">
                   <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="danger">{{herediaCentralWhatsappInvoiceAmount}}</b-badge>
                   <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="warning">{{herediaLocalityWhatsappInvoiceAmount}}</b-badge>
                   <b-badge style="font-size: x-large;" pill variant="success">{{herediaShippingWhatsappInvoiceAmount}}</b-badge>
@@ -905,10 +905,10 @@
               </div>
 
               <div style="display: flex; justify-content: center;">
-                <b-badge style="font-size: x-large; margin-right: 20px; max-height: 40px;" pill variant="secondary">{{motosCartago}}</b-badge>
+                <b-badge style="font-size: x-large; margin-right: 10px; max-height: 40px;" pill variant="secondary">{{motosCartago}}</b-badge>
 
                 <h1 style="margin-top: auto; margin-bottom: auto;"><strong>CARTAGO</strong></h1>
-                <div style="margin-left: 20px;">
+                <div style="margin-left: 10px;">
                   <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="danger">{{cartagoCentralWhatsappInvoiceAmount}}</b-badge>
                   <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="warning">{{cartagoLocalityWhatsappInvoiceAmount}}</b-badge>
                   <b-badge style="font-size: x-large;" pill variant="success">{{cartagoShippingWhatsappInvoiceAmount}}</b-badge>

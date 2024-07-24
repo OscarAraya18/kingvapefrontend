@@ -13,7 +13,7 @@
             <div v-for="(agent, key) in deliveryInformation['1']" :key="key" style="margin-top: 5px; margin-bottom: 5px;">
               <p v-if="key == 'Sin mensajero asignado'" style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>: {{ agent }}</p>
               <div v-else style="display: flex;">
-                <p style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>:</p>
+                <p style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key.split(' ')[0] }}</strong>:</p>
                 <div class="flex-grow-1"></div>
                 <b-badge style="margin-left:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">{{ agent.route }}</b-badge>
                 <b-badge style="margin-left:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">{{ agent.delivered }}</b-badge>
@@ -29,7 +29,7 @@
             <div v-for="(agent, key) in deliveryInformation['4']" :key="key" style="margin-top: 5px; margin-bottom: 5px;">
               <p v-if="key == 'Sin mensajero asignado'" style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>: {{ agent }}</p>
               <div v-else style="display: flex;">
-                <p style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>:</p>
+                <p style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key.split(' ')[0] }}</strong>:</p>
                 <div class="flex-grow-1"></div>
                 <b-badge style="margin-left:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">{{ agent.route }}</b-badge>
                 <b-badge style="margin-left:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">{{ agent.delivered }}</b-badge>
@@ -49,7 +49,7 @@
             <div v-for="(agent, key) in deliveryInformation['5']" :key="key" style="margin-top: 5px; margin-bottom: 5px;">
               <p v-if="key == 'Sin mensajero asignado'" style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>: {{ agent }}</p>
               <div v-else style="display: flex;">
-                <p style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>:</p>
+                <p style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key.split(' ')[0] }}</strong>:</p>
                 <div class="flex-grow-1"></div>
                 <b-badge style="margin-left:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">{{ agent.route }}</b-badge>
                 <b-badge style="margin-left:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">{{ agent.delivered }}</b-badge>
@@ -65,7 +65,7 @@
             <div v-for="(agent, key) in deliveryInformation['3']" :key="key" style="margin-top: 5px; margin-bottom: 5px;">
               <p v-if="key == 'Sin mensajero asignado'" style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>: {{ agent }}</p>
               <div v-else style="display: flex;">
-                <p style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>:</p>
+                <p style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key.split(' ')[0] }}</strong>:</p>
                 <div class="flex-grow-1"></div>
                 <b-badge style="margin-left:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">{{ agent.route }}</b-badge>
                 <b-badge style="margin-left:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">{{ agent.delivered }}</b-badge>
@@ -76,11 +76,12 @@
       </div>
 
       <div style="width: 50%;">
+        <br>
         <b-card style="background-color: rgb(214, 214, 214);">
-          <MapComponent style="border-radius: 2%" v-if="openMap" :route="true" :multipleClients="locations" mapHeight="400px" mapWidth="100%"></MapComponent>
+          <MapComponent style="border-radius: 2%" v-if="openMap" :route="true" :multipleClients="locations" mapHeight="370px" mapWidth="100%"></MapComponent>
         </b-card>
         <br>
-        <b-card style="background-color: rgb(214, 214, 214); max-height: 450px; overflow-y: auto;">
+        <b-card style="background-color: rgb(214, 214, 214); max-height: 380px; overflow-y: auto;">
           <div v-for="time in timeInformation" style="margin-top: 5px; margin-bottom: 5px;">
             
             <div>
