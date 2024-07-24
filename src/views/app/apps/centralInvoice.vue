@@ -2618,9 +2618,9 @@ export default {
             } else if (localityID == 4){
               cantidadEscazu += 1;
             } else if (localityID == 5){
-              cantidadCartago += 1;
-            } else {
               cantidadHeredia += 1;
+            } else {
+              cantidadCartago += 1;
             }
           }
           this.motosZapote = cantidadZapote;
