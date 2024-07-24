@@ -58,7 +58,26 @@
         <div v-if="loaderMotos" style="text-align: center;">
           <br><span class="spinner-glow spinner-glow-primary"></span>
         </div>
-        <apexchart v-else type="pie" width="600" :options="opcionesGraficoCircular" :series="datosGraficoCircular"></apexchart>
+
+        <div v-else>
+          <br>
+          <apexchart type="pie" width="600" :options="opcionesGraficoCircular" :series="datosGraficoCircular"></apexchart>
+          <br><br><br>
+          <div>
+            <h4><strong>Disponibilidad de mensajeros de hoy:</strong></h4>
+
+            <br>
+            <div v-for="mensajero in mensajerosToday">
+              <div style="display: flex">
+                <b-form-checkbox value="1" unchecked-value="0" @input="updateLocalityAgentIsWorkingToday(mensajero)" v-model="mensajero.today" style="margin-left: 15px; position: relative; top: -27px" size="lg"></b-form-checkbox>
+
+                <p>{{ mensajero.text}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
       </div>
     </b-modal>
 
@@ -582,11 +601,13 @@
               </div>
 
               <div style="display: flex; justify-content: center;">
+                <b-badge style="font-size: x-large; margin-right: 30px" pill variant="secondary">{{motosZapote}}</b-badge>
                 <h1 style="margin-top: auto; margin-bottom: auto;"><strong>ZAPOTE</strong></h1>
                 <div style="margin-left: 30px;">
                   <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="danger">{{zapoteCentralWhatsappInvoiceAmount}}</b-badge>
                   <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="warning">{{zapoteLocalityWhatsappInvoiceAmount}}</b-badge>
-                  <b-badge style="font-size: x-large;" pill variant="success">{{zapoteShippingWhatsappInvoiceAmount}}</b-badge>
+                  <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="success">{{zapoteShippingWhatsappInvoiceAmount}}</b-badge>
+
                 </div>
               </div>
             </div>
@@ -684,6 +705,8 @@
               </div>
 
               <div style="display: flex; justify-content: center;">
+                <b-badge style="font-size: x-large; margin-right: 30px" pill variant="secondary">{{motosEscazu}}</b-badge>
+
                 <h1 style="margin-top: auto; margin-bottom: auto;"><strong>ESCAZÚ</strong></h1>
                 <div style="margin-left: 30px;">
                   <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="danger">{{escazuCentralWhatsappInvoiceAmount}}</b-badge>
@@ -782,6 +805,8 @@
               </div>
 
               <div style="display: flex; justify-content: center;">
+                <b-badge style="font-size: x-large; margin-right: 30px" pill variant="secondary">{{motosHeredia}}</b-badge>
+
                 <h1 style="margin-top: auto; margin-bottom: auto;"><strong>HEREDIA</strong></h1>
                 <div style="margin-left: 30px;">
                   <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="danger">{{herediaCentralWhatsappInvoiceAmount}}</b-badge>
@@ -880,6 +905,8 @@
               </div>
 
               <div style="display: flex; justify-content: center;">
+                <b-badge style="font-size: x-large; margin-right: 30px" pill variant="secondary">{{motosCartago}}</b-badge>
+
                 <h1 style="margin-top: auto; margin-bottom: auto;"><strong>CARTAGO</strong></h1>
                 <div style="margin-left: 30px;">
                   <b-badge style="font-size: x-large; margin-right: 7px;" pill variant="danger">{{cartagoCentralWhatsappInvoiceAmount}}</b-badge>
@@ -1437,7 +1464,14 @@ export default {
       mapCenter: null,
       locations: [],
 
-      live: null
+      live: null,
+
+
+      mensajerosToday: [],
+      motosZapote: 0,
+      motosEscazu: 0,
+      motosHeredia: 0,
+      motosCartago: 0
     };
   },
 
@@ -1529,6 +1563,27 @@ export default {
       }
     },
 
+    updateLocalityAgentIsWorkingToday(mensajero){      
+      axios.post(this.backendURL+'/updateLocalityAgentIsWorkingToday', 
+      {
+        localityAgentID: mensajero.value,
+        localityAgentIsWorkingToday: mensajero.today
+      })
+      .then(async (response) =>{
+        console.log(response.data);
+        if (response.data.success){
+          this.showNotification('success', 'Disponibilidad del mensajero actualizada', 'Se ha actualizado la disponibilidad del mensajero exitosamente');
+        } else {
+          this.showNotification('danger', 'Error al actualizar la disponibilidad del mensajero', 'Ha ocurrido un error inesperado al actualizar la disponibilidad del mensajero. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al actualizar la disponibilidad del mensajero', 'Ha ocurrido un error inesperado al actualizar la disponibilidad del mensajero. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+
+      
+    },
+
     getLocalityAgentLabels(names, amounts){
       var agentLabels = [];
       var max = {'amount': 0, 'name': ''};
@@ -1556,7 +1611,7 @@ export default {
 
 
 
-    openMotosModal(refresh){
+    async openMotosModal(refresh){
       if (refresh){
         this.mensajerosInitial = null;
         this.mensajerosEnd = null;
@@ -1568,7 +1623,7 @@ export default {
         initialDate: this.mensajerosInitial,
         endDate: this.mensajerosEnd
       })
-      .then((response) =>{
+      .then(async (response) =>{
         if (response.data.success){
           
           this.deliveredInvoices = response.data.result;
@@ -1590,15 +1645,16 @@ export default {
             legend: {fontSize: '20px'},
             colors: this.localityAgentOptions.map(obj => obj.color)
           };
+
+          await this.selectLocalityAgentNames();
           this.loaderMotos = false;
+          
         } else {
           this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-          this.loaderDelivered = false;
         }
       })
       .catch(() => {
         this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-        this.loaderDelivered = false;
       })
       
     },
@@ -2548,7 +2604,40 @@ export default {
       })
     },
 
-    selectLocalityAgentNames(){
+    selectMensajerosDisponibles(){
+      axios.post(constants.routes.backendAPI+'/selectMensajerosDisponibles').then((response) =>{
+        if (response.data.success){
+          var cantidadZapote = 0;
+          var cantidadEscazu = 0;
+          var cantidadHeredia = 0;
+          var cantidadCartago = 0;
+          for (var agentIndex in response.data.result){
+            const localityID = response.data.result[agentIndex].localityAgentLocalityID;
+            if (localityID == 1){
+              cantidadZapote += 1;
+            } else if (localityID == 4){
+              cantidadEscazu += 1;
+            } else if (localityID == 5){
+              cantidadCartago += 1;
+            } else {
+              cantidadHeredia += 1;
+            }
+          }
+          this.motosZapote = cantidadZapote;
+          this.motosEscazu = cantidadEscazu;
+          this.motosHeredia = cantidadHeredia;
+          this.motosCartago = cantidadCartago;
+        } else {
+          this.showNotification('danger', 'Error al solicitar la lista de motorizados disponibles', 'Ha ocurrido un error inesperado al solicitar la lista de motorizados disponibles. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch(() =>{
+        this.showNotification('danger', 'Error al solicitar la lista de motorizados disponibles', 'Ha ocurrido un error inesperado al solicitar la lista de motorizados disponibles. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+
+    async selectLocalityAgentNames(){
       axios.post(this.backendURL+'/selectLocalityAgentNames', 
       {
         localityAgentLocalityID: localStorage.getItem('localityID')
@@ -2559,7 +2648,8 @@ export default {
           const localityAgents = response.data.result;
           for (var localityAgentIndex in localityAgents){
             if (localityAgents[localityAgentIndex].localityAgentType == 'Mensajero'){
-              this.localityAgentOptions.push({value: localityAgents[localityAgentIndex].localityAgentID, text: localityAgents[localityAgentIndex].localityAgentName, color: localityAgents[localityAgentIndex].localityAgentColor});
+              this.localityAgentOptions.push({value: localityAgents[localityAgentIndex].localityAgentID, text: localityAgents[localityAgentIndex].localityAgentName, color: localityAgents[localityAgentIndex].localityAgentColor, today: localityAgents[localityAgentIndex].localityAgentIsWorkingToday});
+              this.mensajerosToday = this.localityAgentOptions;
             } else {
               this.localityAgentBillerOptions.push({value: localityAgents[localityAgentIndex].localityAgentID, text: localityAgents[localityAgentIndex].localityAgentName, color: localityAgents[localityAgentIndex].localityAgentColor});
             }
@@ -2781,6 +2871,8 @@ export default {
 
       this.isAdmin = (localStorage.getItem('agentType') == 'admin');
       this.selectAllActiveWhatsappInvoice(true);
+      this.selectMensajerosDisponibles();
+
       this.selectAgentNames();
       this.runTimers();
 
@@ -2827,6 +2919,7 @@ export default {
     this.queryInterval = setInterval(() => {
       if (this.agentType == 'central'){
         this.selectAllActiveWhatsappInvoice(false);
+        this.selectMensajerosDisponibles();
         this.selectApplicationLive();
       } else if (this.agentType == 'locality'){
         this.selectAllActiveWhatsappInvoiceFromLocality(false);
