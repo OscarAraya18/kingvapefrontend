@@ -59,7 +59,7 @@
 
 
 
-    <div :id = "mapId" :style="getMapDimensions()">
+    <div :id="mapId" :style="getMapDimensions()">
     </div> 
   </div>
 </template>

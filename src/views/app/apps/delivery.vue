@@ -14,6 +14,7 @@
               <p v-if="key == 'Sin mensajero asignado'" style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>: {{ agent }}</p>
               <div v-else style="display: flex;">
                 <p style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>:</p>
+                <div class="flex-grow-1"></div>
                 <b-badge style="margin-left:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">{{ agent.route }}</b-badge>
                 <b-badge style="margin-left:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">{{ agent.delivered }}</b-badge>
               </div>
@@ -29,6 +30,7 @@
               <p v-if="key == 'Sin mensajero asignado'" style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>: {{ agent }}</p>
               <div v-else style="display: flex;">
                 <p style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>:</p>
+                <div class="flex-grow-1"></div>
                 <b-badge style="margin-left:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">{{ agent.route }}</b-badge>
                 <b-badge style="margin-left:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">{{ agent.delivered }}</b-badge>
               </div>
@@ -48,6 +50,7 @@
               <p v-if="key == 'Sin mensajero asignado'" style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>: {{ agent }}</p>
               <div v-else style="display: flex;">
                 <p style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>:</p>
+                <div class="flex-grow-1"></div>
                 <b-badge style="margin-left:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">{{ agent.route }}</b-badge>
                 <b-badge style="margin-left:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">{{ agent.delivered }}</b-badge>
               </div>
@@ -63,6 +66,7 @@
               <p v-if="key == 'Sin mensajero asignado'" style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>: {{ agent }}</p>
               <div v-else style="display: flex;">
                 <p style="font-size: large; margin-top: 5px; margin-bottom: 5px;"><strong>{{ key }}</strong>:</p>
+                <div class="flex-grow-1"></div>
                 <b-badge style="margin-left:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">{{ agent.route }}</b-badge>
                 <b-badge style="margin-left:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">{{ agent.delivered }}</b-badge>
               </div>
@@ -72,9 +76,11 @@
       </div>
 
       <div style="width: 50%;">
-        <MapComponent v-if="openMap" :route="true" :multipleClients="locations" mapHeight="400px" mapWidth="100%"></MapComponent>
+        <b-card style="background-color: rgb(214, 214, 214);">
+          <MapComponent style="border-radius: 2%" v-if="openMap" :route="true" :multipleClients="locations" mapHeight="400px" mapWidth="100%"></MapComponent>
+        </b-card>
         <br>
-        <b-card style="background-color: rgb(214, 214, 214); max-height: 460px; overflow-y: auto;">
+        <b-card style="background-color: rgb(214, 214, 214); max-height: 450px; overflow-y: auto;">
           <div v-for="time in timeInformation" style="margin-top: 5px; margin-bottom: 5px;">
             
             <div>
