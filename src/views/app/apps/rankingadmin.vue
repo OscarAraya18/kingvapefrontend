@@ -731,6 +731,16 @@ export default {
       });
     },
 
+    getAgentLabelsForLineChart(agents){
+      const sortedAgents = agents.sort((a, b) => {
+        const totalA = a.whatsappNotSelledConversations + a.whatsappSelledConversations;
+        const totalB = b.whatsappNotSelledConversations + b.whatsappSelledConversations;
+        return totalB - totalA;
+      });
+      const sortedNames = sortedAgents.map(agent => agent.agentName);
+      return sortedNames;
+    },
+
     getInformationByDate(){
       axios.post(constants.routes.backendAPI+'/selectFilteredPieChartInformation',
       {
@@ -766,7 +776,7 @@ export default {
             },
           type: 'bar', height: 350, stacked: true},
           plotOptions: {bar: { horizontal: false, borderRadius: 10}},
-          xaxis: {type: 'string', categories: response.data.result.map(agent => agent.agentName),
+          xaxis: {type: 'string', categories: this.getAgentLabelsForLineChart(response.data.result),
           labels: {style: {fontSize: '20px'}}},
           fill: {colors: ['#008a07', '#d10015'], opacity: 1},
           legend: {show: false}
@@ -834,7 +844,7 @@ export default {
             }, 
           type: 'bar', height: 350, stacked: true},
           plotOptions: {bar: { horizontal: false, borderRadius: 10}},
-          xaxis: {type: 'string', categories: response.data.result.map(agent => agent.agentName),
+          xaxis: {type: 'string', categories: this.getAgentLabelsForLineChart(response.data.result),
           labels: {style: {fontSize: '20px'}}},
           fill: {colors: ['#008a07', '#d10015'], opacity: 1},
           legend: {show: false},
