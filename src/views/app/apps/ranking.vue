@@ -162,28 +162,19 @@ export default {
     },
 
     getAgentLabels(agentInformation){
-      var agentLabels = [];
-      var max = {'amount': 0, 'name': ''};
-      var min = {'amount': 100000000000000000000000, 'name': ''};
+      const pares = Object.entries(agentInformation);
+      pares.sort((a, b) => b[1] - a[1]);
+      const llavesOrdenadas = pares.map(par => par[0]);
+      llavesOrdenadas[0] = llavesOrdenadas[0] + ' 🔥';
+      llavesOrdenadas[llavesOrdenadas.length-1] = llavesOrdenadas[llavesOrdenadas.length-1] + ' ❄️';
+      return llavesOrdenadas;
+    },
 
-      for (var agentIndex in agentInformation){
-        agentLabels.push(agentIndex);
-        if (agentInformation[agentIndex] >= max['amount']){
-          max = {'amount': agentInformation[agentIndex], 'name': agentIndex};
-        }
-        if (agentInformation[agentIndex] <= min['amount']){
-          min = {'amount': agentInformation[agentIndex], 'name': agentIndex};
-        }
-      }
-      for (var agentIndex in agentLabels){
-        if (agentLabels[agentIndex] == max['name']){
-          agentLabels[agentIndex] = agentLabels[agentIndex] + ' 🔥';
-        }
-        if (agentLabels[agentIndex] == min['name']){
-          agentLabels[agentIndex] = agentLabels[agentIndex] + ' ❄️';
-        }
-      }
-      return agentLabels;
+    getAgentLabelsForColors(agentInformation){
+      const pares = Object.entries(agentInformation);
+      pares.sort((a, b) => b[1] - a[1]);
+      const llavesOrdenadas = pares.map(par => par[0]);
+      return llavesOrdenadas;
     },
 
 
@@ -194,14 +185,14 @@ export default {
       });
       
       axios.get(constants.routes.backendAPI+'/selectPieChartInformation').then((response) =>{
-        this.facturadoPorAgente = Object.values(response.data);
+        this.facturadoPorAgente = Object.values(response.data).sort((a, b) => b - a);
         this.opcionesGraficoCircular = 
         {
           chart: {width: 850, type: 'pie', fontSize: 40}, 
           tooltip: {enabled: false}, 
           labels: this.getAgentLabels(response.data),
           legend: {fontSize: '30px'},
-          colors: this.getAgentColors(Object.keys(response.data)),
+          colors: this.getAgentColors(this.getAgentLabelsForColors(response.data)),
           dataLabels: {enabled: false}
         };
       });
