@@ -1,6 +1,7 @@
 <template>
 
   <div>
+    
     <div style="display: flex; justify-content: center; align-items: center;">
       <b-card style="width: 30%; margin-right: 30px;">
         <div style="display: flex;">
@@ -96,6 +97,51 @@
   
 </template>
 
+<style scoped>
+
+canvas {
+  overflow-y: hidden;
+  overflow-x: hidden;
+  width: 100%;
+  margin: 0;
+}
+
+.animation > div > div {
+  padding: 0.25rem 0.75rem;
+  height:2.81rem;
+  margin-bottom: 2.81rem;
+  display:inline-block;
+}
+
+.animation div:first-child {
+  animation: text-animation 8s infinite;
+}
+
+.first div {
+  background-color:#20a7d8;
+}
+.second div {
+  background-color:#CD921E;
+}
+.third div {
+  background-color:#c10528;
+}
+
+@keyframes text-animation {
+  0% {margin-top: 0;}
+  10% {margin-top: 0;}
+  20% {margin-top: -5.62rem;}
+  30% {margin-top: -5.62rem;}
+  40% {margin-top: -11.24rem;}
+  60% {margin-top: -11.24rem;}
+  70% {margin-top: -5.62rem;}
+  80% {margin-top: -5.62rem;}
+  90% {margin-top: 0;}
+  100% {margin-top: 0;}
+}
+
+</style>
+
 <script>
 import axios from 'axios';
 import ApexCharts from 'apexcharts'
@@ -127,9 +173,9 @@ export default {
       vendedoraDelDia: '',
       monthSell: '',
 
-      feedbackInformation: null,
+      feedbackInformation: null
       
-      test: 5
+      
 
     };
   },
@@ -256,7 +302,7 @@ export default {
       });
 
 
-    },
+    }
     
   },
 
@@ -268,6 +314,8 @@ export default {
   },
 
   mounted(){
+
+
     this.getInformation();
 
     setInterval(() => {

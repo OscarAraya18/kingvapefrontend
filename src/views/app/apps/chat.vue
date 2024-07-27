@@ -903,7 +903,7 @@
                   </div><br>
                 </div>
                 <div class="form-group" style="display: flex; align-items: center;" v-if="availableConversation == true">
-                  <b-form-textarea ref="textoEnviar" :disabled='sendingMessageDisable' class="form-control" placeholder="Escribe un mensaje" @keyup.enter="sendWhatsappTextMessage()" v-model="currentActiveConversation.textoEnviar" style="margin-bottom: 20px; width: 100%" no-resize rows="3"/>
+                  <b-form-textarea ref="textoEnviar" :disabled='sendingMessageDisable' class="form-control" placeholder="Escribe un mensaje" @keyup.enter="sendWhatsappTextMessage()" @keyup="detectShortcuts()" v-model="currentActiveConversation.textoEnviar" style="margin-bottom: 20px; width: 100%" no-resize rows="3"/>
                   
                 </div>
 
@@ -1985,6 +1985,21 @@ export default {
   },
 
   methods: {
+    detectShortcuts(){
+      const lastChar = this.currentActiveConversation.textoEnviar[this.currentActiveConversation.textoEnviar.length - 1];
+      if (lastChar){
+        if (lastChar == '@'){
+          const nombre = this.currentActiveConversation.whatsappConversationRecipientProfileName.split(' ')[0];
+          if (nombre){
+            this.currentActiveConversation.textoEnviar = this.currentActiveConversation.textoEnviar.slice(0, -1);
+            this.currentActiveConversation.textoEnviar = this.currentActiveConversation.textoEnviar + nombre;
+          }
+        }
+      }
+
+    },
+
+
     redeemDiscountCode(){
       axios.post(constants.routes.backendAPI+'/redeemDiscountCode',
       {
