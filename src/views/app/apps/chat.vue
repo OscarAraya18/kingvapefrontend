@@ -5,6 +5,14 @@
       <img style="width: 1000px;" :src="bigImageSource">
     </b-modal>
 
+    <b-modal scrollable size="m" centered id="insertContactReminderModal" title="Añadir recordatorio" @ok="insertContactReminder()">
+      <b-form-select v-model="insertContactReminderSelectedType" :options="insertContactReminderTypeOptions"></b-form-select>
+      <div v-if="insertContactReminderSelectedType != null">
+        <br>
+        <b-form-textarea no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="insertContactReminderMessage"/>  
+      </div>
+    </b-modal>
+
 
     <b-modal scrollable size="m" centered id="modalCodigoDescuento" title="Canjear código de descuento" @ok="redeemDiscountCode()">
       <b-form-input v-model="inputCodigoDescuento" placeholder='Código de descuento'></b-form-input>
@@ -1598,6 +1606,7 @@
                                 <b-button block @click="sendWhatsappOrderTextMessage()" variant="warning">Compartir carrito</b-button>
                                 <br>
                                 <b-button block @click="saveContact()" variant="info">Guardar contacto</b-button>
+                                
                               </b-card>
                             </div>
 
@@ -1713,6 +1722,16 @@ export default {
       }
     },
 
+    insertContactReminderSelectedType(){
+      if (this.insertContactReminderSelectedType == 'Siguimiento de producto'){
+        this.insertContactReminderMessage = 'Hola, feliz día! Te quería avisar que nos acaba de llegar    ' + '   por lo que habías preguntado! Contamos con motorizados listos para realizar tu envío cuanto antes 🏍️🔥. Si gustas solo nos respondes este mensaje y podemos coordinar tu pedido! Recuerda que nuestro envío es totalmente gratuito';
+      } else if (this.insertContactReminderSelectedType == 'Envío de guía'){
+        this.insertContactReminderMessage = 'Hola, feliz día! Mis compañeros encargados de correos y encomiendas justo me compartieron tu guía, con el número   ' + '   . Por favor responde este mensaje para compartirte una foto de la guía! Muchas gracias!';
+      } else {
+        this.insertContactReminderMessage = '';
+      }
+    }
+
   }, 
 
   components: {
@@ -1721,6 +1740,8 @@ export default {
 
   data() {
     return {
+      insertContactReminderMessage: null,
+
       showMap: false,
 
       catalogoNicotinaBuscado: '',
@@ -1985,6 +2006,9 @@ export default {
   },
 
   methods: {
+
+
+
     detectShortcuts(){
       const lastChar = this.currentActiveConversation.textoEnviar[this.currentActiveConversation.textoEnviar.length - 1];
       if (lastChar){

@@ -564,7 +564,8 @@ export default {
         'Ricardo Chacon': '#e86800',
         'Emma Garcia': '#b5e3eb',
         'Diana Jimenez': '#ffa8b8',
-        'Kathy Gonzalez': '#b0a1ff'
+        'Kathy Gonzalez': '#b0a1ff',
+        'Rafat J.': '#000000'
       };
       for (var agentIndex in agentNames){
         const agentName = agentNames[agentIndex];

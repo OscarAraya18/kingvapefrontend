@@ -394,17 +394,12 @@
       </b-modal>
 
       <b-modal id="modalContactar" title="Enviar mensaje al contacto" @ok="sendWhatsappTextMessage()" ref="modalContactar" centered>
-        <div class="p-3">
-          <b-form-group label="Mensaje a enviar:" style="font-size: medium;">
-            <b-form-textarea
-              class="form-control"
-              label="note"
-              v-model="sendingMessage"
-              rows="3"
-            >
+        <div class="p-2">
+            <b-form-select v-model="selectedMessageType" :options="messageTypes"></b-form-select>
+            <br><br>
+            <b-form-textarea class="form-control" label="note" v-model="sendingMessage" rows="3">
             </b-form-textarea>
-            <br>
-          </b-form-group>
+            
         </div>
       </b-modal>
 
@@ -578,6 +573,15 @@ export default {
 
   data() {
     return {
+      messageTypes: 
+      [
+        { value: null, text: 'Seleccione un tipo de mensaje' },
+        { value: 'Siguimiento de producto', text: 'Siguimiento de producto'},
+        { value: 'Envío de guía', text: 'Envío de guía'},
+        { value: 'Otro', text: 'Otro'},
+      ],
+      selectedMessageType: null,
+
       contactPhoneNumber: '',
 
       cartagoMap: [],
@@ -906,7 +910,8 @@ export default {
         whatsappConversationRecipientPhoneNumber: whatsappConversationRecipientPhoneNumber,
         whatsappConversationRecipientProfileName: whatsappConversationRecipientProfileName,
         whatsappTextMessageBody: this.sendingMessage,
-        whatsappConversationAssignedAgentID: parseInt(localStorage.getItem('agentID'))
+        whatsappConversationAssignedAgentID: parseInt(localStorage.getItem('agentID')),
+        messageType: this.selectedMessageType
       })
       .then((response) =>{ 
         if (response.data.success){
