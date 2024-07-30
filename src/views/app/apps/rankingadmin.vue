@@ -565,7 +565,8 @@ export default {
         'Emma Garcia': '#b5e3eb',
         'Diana Jimenez': '#ffa8b8',
         'Kathy Gonzalez': '#b0a1ff',
-        'Rafat J.': '#000000'
+        'Rafat J.': '#000000',
+        'Abigail Vindas': '#fa5eff'
       };
       for (var agentIndex in agentNames){
         const agentName = agentNames[agentIndex];
