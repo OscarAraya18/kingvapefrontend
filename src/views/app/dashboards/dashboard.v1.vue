@@ -472,7 +472,7 @@
                 <div style="display: flex;">
                   <p style="font-size: 22px; margin-top: 5px;"><strong>ZAPOTE:</strong></p>
                     <div class="flex-grow-1"></div>
-                    <img v-if="(zapoteSelled) >= 60 && todayLoader == false" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
+                    <img v-if="(zapoteSelled) >= 80 && todayLoader == false" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
                 </div>
                 <p @click="selectTodayConversationsByLocalityNameAndType('1', 3)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{zapoteSelled + zapoteNotSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('1', 1)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{zapoteSelled}}</p>

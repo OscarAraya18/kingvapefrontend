@@ -596,7 +596,7 @@
           <b-card style="height: 90vh; background-color: #fed330;">
             
             <div style="justify-content: center; width: 100%;">
-              <div v-if="(zapoteCentralWhatsappInvoiceAmount + zapoteLocalityWhatsappInvoiceAmount + zapoteShippingWhatsappInvoiceAmount) >= 20" style="position: absolute; justify-content: center; top: -75px; z-index: 500; left: 50%; transform: translateX(-50%);">
+              <div v-if="(zapoteCentralWhatsappInvoiceAmount + zapoteLocalityWhatsappInvoiceAmount + zapoteShippingWhatsappInvoiceAmount) >= 30" style="position: absolute; justify-content: center; top: -75px; z-index: 500; left: 50%; transform: translateX(-50%);">
                 <img class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 120px; height: auto;"/>
               </div>
 
