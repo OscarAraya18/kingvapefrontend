@@ -625,7 +625,7 @@
 
             
             
-            <div style="background-image: url('https://i.postimg.cc/HkJhz3Sz/qwd83nc4xxf41.jpg');">
+            <div style="background-image: url('https://i.postimg.cc/fTRJ9KCf/8c98994518b575bfd8c949e91d20548b.jpg');">
               <div class="chat-content scroll" style="padding-bottom: 35px; overflow-y: scroll" ref="scrollRef">
                 <div v-for="currentActiveConversationMessage in currentActiveConversation.whatsappConversationMessages" @contextmenu.prevent="replyMessageRightClick(currentActiveConversationMessage)">
                   <div class="d-flex mb-30 appearMessageAnimation" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
