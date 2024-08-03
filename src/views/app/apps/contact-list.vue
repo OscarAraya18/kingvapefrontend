@@ -576,7 +576,7 @@ export default {
       messageTypes: 
       [
         { value: null, text: 'Seleccione un tipo de mensaje' },
-        { value: 'Siguimiento de producto', text: 'Siguimiento de producto'},
+        { value: 'Seguimiento de producto', text: 'Seguimiento de producto'},
         { value: 'Envío de guía', text: 'Envío de guía'},
         { value: 'Otro', text: 'Otro'},
       ],

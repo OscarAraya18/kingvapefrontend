@@ -1723,7 +1723,7 @@ export default {
     },
 
     insertContactReminderSelectedType(){
-      if (this.insertContactReminderSelectedType == 'Siguimiento de producto'){
+      if (this.insertContactReminderSelectedType == 'Seguimiento de producto'){
         this.insertContactReminderMessage = 'Hola, feliz día! Te quería avisar que nos acaba de llegar    ' + '   por lo que habías preguntado! Contamos con motorizados listos para realizar tu envío cuanto antes 🏍️🔥. Si gustas solo nos respondes este mensaje y podemos coordinar tu pedido! Recuerda que nuestro envío es totalmente gratuito';
       } else if (this.insertContactReminderSelectedType == 'Envío de guía'){
         this.insertContactReminderMessage = 'Hola, feliz día! Mis compañeros encargados de correos y encomiendas justo me compartieron tu guía, con el número   ' + '   . Por favor responde este mensaje para compartirte una foto de la guía! Muchas gracias!';

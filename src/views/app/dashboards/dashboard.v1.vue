@@ -298,7 +298,7 @@
         >
           <i class="i-Checkout"></i>
           <div class="content">
-            <p class="text-muted mt-2 mb-0">Reportes</p>
+            <p class="text-muted mt-2 mb-0">Conversaciones</p>
           </div>
         </b-card>
       </b-col>
@@ -309,9 +309,9 @@
           @click="getEstadisticas()"
           :style="getTagStyle(3)"
         >
-          <i class="i-Male"></i>
+          <i class="i-Clock"></i>
           <div class="content">
-            <p class="text-muted mt-2 mb-0">Estadísticas</p>
+            <p class="text-muted mt-2 mb-0">Reportes</p>
           </div>
         </b-card>
       </b-col>
@@ -333,7 +333,7 @@
         <h4><strong>Filtro por agente:</strong></h4>
         <b-form-select v-model="agentFiltered" class="mb-3" :options="agentOptions"></b-form-select>
         <br>
-        <h4><strong>Filtro por sucursal de envío:</strong></h4>
+        <h4><strong>Filtro por localidad:</strong></h4>
         <b-form-select v-model="storeFiltered" class="mb-3" :options="storeOptions"></b-form-select>
         <br>
         <h4><strong>Filtro por conversión:</strong></h4>
@@ -352,7 +352,69 @@
       <br><br><br><br>
     </div>
 
+
+
     <div v-if="view == 'estadisticas'">
+      <br>
+      <b-card style="background-color: rgb(214, 214, 214);">
+        <h4><strong>Tipo de reporte:</strong></h4>
+        <b-form-select v-model="reportSelectType" class="mb-3" :options="reportTypeOptions"></b-form-select>
+        
+        <div v-if="reportSelectType != null">
+          <h4><strong>Filtro por fecha inicial:</strong></h4>
+          <b-form-datepicker v-model="reportInitialDate"></b-form-datepicker>
+          <br>         
+          <h4><strong>Filtro por fecha final:</strong></h4>
+          <b-form-datepicker v-model="reportEndDate"></b-form-datepicker>
+          <br>
+          <div v-if="reportSelectType == 'Productos más vendidos' || reportSelectType == 'Entregas por mensajero'">
+            <h4><strong>Filtro por localidad:</strong></h4>
+            <b-form-select v-model="reportSelectedLocality" class="mb-3" :options="storeOptions"></b-form-select>
+            <br>
+          </div>
+          <button v-if="loaderReport == false" class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="generateReport()"><i class="i-Search-People"></i>Generar reporte</button>
+          <div v-else style="text-align: center;">
+            <span class="spinner-glow spinner-glow-primary"></span>
+          </div>
+
+          <div v-if="reportSelectType == 'Productos más vendidos' && topSalesReport">
+            <br>
+            <vue-good-table
+              :columns="topSalesReportTable"
+              :line-numbers="false"
+              styleClass="order-table vgt-table"
+              :rows="topSalesReport"
+            >
+            </vue-good-table>
+          </div>
+
+          <div v-if="reportSelectType == 'Ventas recuperadas por agente' && agentReport">
+            <br>
+            <vue-good-table
+              :columns="agentReportTable"
+              :line-numbers="false"
+              styleClass="order-table vgt-table"
+              :rows="agentReport"
+            >
+            </vue-good-table>
+          </div>
+
+          <div v-if="reportSelectType == 'Entregas por mensajero' && datosGraficoCircular.length != 0">
+            <br>
+            <apexchart type="pie" width="600" :options="opcionesGraficoCircular" :series="datosGraficoCircular"></apexchart>
+            <br><br><br>
+          </div>
+
+        </div>
+
+
+      </b-card>
+      <br><br><br><br>
+    </div>
+
+
+
+    <div v-if="view == 'kakaka'">
       <br>
       <b-card>
         <h4><strong>Dato a graficar:</strong></h4>
@@ -373,7 +435,7 @@
         </div>
         <br>
         <div v-if="plotTypeOption != 4">
-          <h4><strong>Filtro por sucursal de envío:</strong></h4>
+          <h4><strong>Filtro por localidad:</strong></h4>
           <div style="border: 1px solid rgb(140, 140, 140); border-radius: 5px; height: 100px; overflow-y: auto; padding-top: 10px; padding-bottom: 10px;">
             <div v-for="store in storeOptionsMultiple">
               <input type="checkbox" v-model="store.selected" style="accent-color: #FFD733; margin-left:10px; margin-right: 10px;">
@@ -1122,6 +1184,67 @@ export default {
       plotTypeOptions: [{value:1, text:'Cantidad de dinero'}, {value:2, text:'Cantidad de conversaciones vendidas'}, {value:3, text:'Cantidad de conversaciones no vendidas'}, {value:4, text:'Conexión'}],
       plotTypeOption: 1,
 
+
+      loaderReport: false,
+      reportTypeOptions: ['Productos más vendidos', 'Ventas recuperadas por agente', 'Entregas por mensajero'],
+      reportLocalityOptions: [{value:'1', text:'King Vape Zapote'}, {value:'4', text:'King Vape Escazú'}, {value:'5', text:'King Vape Heredia'}, {value:'3', text:'King Vape Cartago'}, {value:'King Vape Center', text:'King Vape Center'}],
+      reportSelectType: null,
+      reportInitialDate: null,
+      reportEndDate: null,
+      reportSelectedLocality: null,
+      reportSelectedLocality: null,
+      topSalesReport: null,
+      topSalesReportTable: [
+        {
+          label: "Código del producto",
+          field: "productCode",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Nombre del producto",
+          field: "productName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Cantidad",
+          field: "productAmount",
+          thClass: "text-left",
+          tdClass: "text-left",
+        }
+      ],
+      agentReport: null,
+      agentReportTable: [
+        {
+          label: "Agente",
+          field: "agentName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Vendidos",
+          field: "ventas",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "No vendidos",
+          field: "noVentas",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Enviados",
+          field: "total",
+          thClass: "text-left",
+          tdClass: "text-left",
+        }
+      ],
+      localityAgentOptions: [],
+      datosGraficoCircular: [],
+      opcionesGraficoCircular: null,
+
       initialDateOption: '',
       endDateOption: '',
 
@@ -1547,6 +1670,17 @@ export default {
 
     todayEndDate(){
       this.getInformation();
+    },
+
+    reportSelectType(){
+      this.reportInitialDate = null;
+      this.reportEndDate = null;
+      this.reportSelectedLocality = null;
+      this.topSalesReport = null;
+      this.agentReport = null;
+      this.datosGraficoCircular = [];
+
+      this.loaderReport = false;
     }
   },
 
@@ -1623,6 +1757,136 @@ export default {
   },
 
   methods: {
+    getLocalityAgentLabels(names, amounts){
+      var agentLabels = [];
+      var max = {'amount': 0, 'name': ''};
+      var min = {'amount': 100000000, 'name': ''};
+
+      for (var agentIndex in names){
+        agentLabels.push(names[agentIndex].text);
+        if (amounts[agentIndex] >= max['amount']){
+          max = {'amount': amounts[agentIndex], 'name': names[agentIndex].text};
+        }
+        if (amounts[agentIndex] <= min['amount']){
+          min = {'amount': amounts[agentIndex], 'name': names[agentIndex].text};
+        }
+      }
+      for (var agentIndex in agentLabels){
+        if (agentLabels[agentIndex] == max['name']){
+          agentLabels[agentIndex] = agentLabels[agentIndex] + ' 🔥';
+        }
+        if (agentLabels[agentIndex] == min['name']){
+          agentLabels[agentIndex] = agentLabels[agentIndex] + ' ❄️';
+        }
+      }
+      return agentLabels;
+    },
+
+    generateReport(){
+      this.loaderReport = true;
+      this.topSalesReport = null;
+      this.agentReport = null;
+      this.datosGraficoCircular = [];
+
+      if (this.reportSelectType == 'Productos más vendidos'){
+        axios.post(constants.routes.backendAPI+'/generateTopSalesReport', 
+        {
+          'reportInitialDate': this.reportInitialDate,
+          'reportEndDate': this.reportEndDate,
+          'reportLocality': this.reportSelectedLocality
+        }).then((response) =>{
+          if (response.data.success){
+            this.topSalesReport = response.data.result;
+            this.loaderReport = false;
+          } else {
+            this.showNotification('danger', 'Error al generar el reporte', 'Ha ocurrido un error inesperado al generar el reporte. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }
+        })
+        .catch(() =>{
+          this.$root.$emit('bv::hide::modal', 'commentsModal');
+          this.showNotification('danger', 'Error al generar el reporte', 'Ha ocurrido un error inesperado al generar el reporte. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        })
+      } else if (this.reportSelectType == 'Ventas recuperadas por agente'){
+        axios.post(constants.routes.backendAPI+'/generateFollowupReport', 
+        {
+          'reportInitialDate': this.reportInitialDate,
+          'reportEndDate': this.reportEndDate
+        }).then((response) =>{
+          if (response.data.success){
+            this.agentReport = response.data.result;
+            this.loaderReport = false;
+          } else {
+            this.showNotification('danger', 'Error al generar el reporte', 'Ha ocurrido un error inesperado al generar el reporte. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }
+        })
+        .catch(() =>{
+          this.$root.$emit('bv::hide::modal', 'commentsModal');
+          this.showNotification('danger', 'Error al generar el reporte', 'Ha ocurrido un error inesperado al generar el reporte. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        })
+      } else {
+        axios.post(constants.routes.backendAPI+'/selectLocalityAgentNames', 
+        {
+          localityAgentLocalityID: this.reportSelectedLocality
+        }).then((response) =>{
+          if (response.data.success){
+            this.localityAgentOptions = [];
+            const localityAgents = response.data.result;
+            for (var localityAgentIndex in localityAgents){
+              if (localityAgents[localityAgentIndex].localityAgentType == 'Mensajero'){
+                this.localityAgentOptions.push({value: localityAgents[localityAgentIndex].localityAgentID, text: localityAgents[localityAgentIndex].localityAgentName, color: localityAgents[localityAgentIndex].localityAgentColor, today: localityAgents[localityAgentIndex].localityAgentIsWorkingToday});
+              }
+            }
+
+            axios.post(constants.routes.backendAPI+'/selectTodayDeliveredInvoicesByLocality', 
+            {
+              whatsappInvoiceLocalityID: this.reportSelectedLocality,
+              initialDate: this.reportInitialDate,
+              endDate: this.reportInitialDate
+            })
+            .then(async (response) =>{
+              if (response.data.success){
+                
+                const deliveredInvoices = response.data.result;
+
+                var aux1 = [];
+                for (var agentIndex in this.localityAgentOptions){
+                  
+                  var amount = deliveredInvoices.filter(invoice => invoice['whatsappInvoiceLocalityAgentID'] == this.localityAgentOptions[agentIndex].value).length;
+                  aux1.push(amount);
+                }
+                this.datosGraficoCircular = aux1;
+
+                
+                this.opcionesGraficoCircular = 
+                {
+                  chart: {width: 750, type: 'pie', fontSize: 40}, 
+                  tooltip: {enabled: true}, 
+                  labels: this.getLocalityAgentLabels(this.localityAgentOptions, aux1),
+                  legend: {fontSize: '20px'},
+                  colors: this.localityAgentOptions.map(obj => obj.color)
+                };
+                this.loaderReport = false;
+
+                
+              } else {
+                this.showNotification('danger', 'Error al generar el reporte', 'Ha ocurrido un error inesperado al generar el reporte. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+              }
+            })
+            .catch(() => {
+              this.showNotification('danger', 'Error al generar el reporte', 'Ha ocurrido un error inesperado al generar el reporte. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            })
+
+
+          } else {
+            this.showNotification('danger', 'Error al solicitar la lista de agentes', 'Ha ocurrido un error inesperado al solicitar la lista de agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          }
+        })
+        .catch(() =>{
+          this.showNotification('danger', 'Error al solicitar la lista de agentes', 'Ha ocurrido un error inesperado al solicitar la lista de agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        })
+
+      }
+    },
 
     openMarker(location){
       location.opened = !location.opened;
@@ -2558,6 +2822,13 @@ export default {
 
     getEstadisticas(){
       this.view = 'estadisticas';
+      this.reportSelectType = null;
+      this.reportInitialDate = null;
+      this.reportEndDate = null;
+      this.reportSelectedLocality = null;
+      this.topSalesReport = null;
+      this.agentReport = null;
+      this.loaderReport = null;
     },
 
 

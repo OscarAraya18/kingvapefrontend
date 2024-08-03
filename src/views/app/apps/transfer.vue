@@ -79,7 +79,7 @@
 <script>
 import axios from 'axios';
 const constants = require('@../../../src/constants.js'); 
-const webSocket = new WebSocket('wss:payitcr.com');
+const webSocket = new WebSocket('wss:kingvapebackend-production.up.railway.app');
 
 
 export default {
