@@ -1200,7 +1200,7 @@ export default {
       reportEndDate: null,
       reportSelectedLocality: null,
       reportProductAmount: 5,
-      productAmountOptions: [5, 10, 25, 50, 100, 150, 200, 250, 500, {value:2000, text:'Todos'}],
+      productAmountOptions: [5, 10, 25, 50, 100, 150, 200, 250, 500, {value:100000, text:'Todos'}],
       topSalesReport: null, 
       topSalesReportTable: [
         {
