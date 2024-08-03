@@ -298,7 +298,7 @@
         >
           <i class="i-Checkout"></i>
           <div class="content">
-            <p class="text-muted mt-2 mb-0">Conversaciones</p>
+            <p class="text-muted mt-2 mb-0">Reportes</p>
           </div>
         </b-card>
       </b-col>
@@ -311,7 +311,7 @@
         >
           <i class="i-Clock"></i>
           <div class="content">
-            <p class="text-muted mt-2 mb-0">Reportes</p>
+            <p class="text-muted mt-2 mb-0">Conversaciones</p>
           </div>
         </b-card>
       </b-col>
@@ -368,6 +368,9 @@
           <b-form-datepicker v-model="reportEndDate"></b-form-datepicker>
           <br>
           <div v-if="reportSelectType == 'Productos más vendidos' || reportSelectType == 'Entregas por mensajero'">
+            <h4><strong>Cantidad de productos:</strong></h4>
+            <b-form-select v-model="reportProductAmount" class="mb-3" :options="productAmountOptions"></b-form-select>
+            <br>
             <h4><strong>Filtro por localidad:</strong></h4>
             <b-form-select v-model="reportSelectedLocality" class="mb-3" :options="storeOptions"></b-form-select>
             <br>
@@ -379,13 +382,17 @@
 
           <div v-if="reportSelectType == 'Productos más vendidos' && topSalesReport">
             <br>
-            <vue-good-table
+            <br>
+            <div>
+              <vue-good-table
               :columns="topSalesReportTable"
               :line-numbers="false"
               styleClass="order-table vgt-table"
               :rows="topSalesReport"
-            >
-            </vue-good-table>
+              >
+              </vue-good-table>
+            </div>
+            <div id="tableContainer"></div>
           </div>
 
           <div v-if="reportSelectType == 'Ventas recuperadas por agente' && agentReport">
@@ -1192,8 +1199,9 @@ export default {
       reportInitialDate: null,
       reportEndDate: null,
       reportSelectedLocality: null,
-      reportSelectedLocality: null,
-      topSalesReport: null,
+      reportProductAmount: 5,
+      productAmountOptions: [5, 10, 25, 50, 100, 150, 200, 250, 500, {value:2000, text:'Todos'}],
+      topSalesReport: null, 
       topSalesReportTable: [
         {
           label: "Código del producto",
@@ -1676,6 +1684,7 @@ export default {
       this.reportInitialDate = null;
       this.reportEndDate = null;
       this.reportSelectedLocality = null;
+      this.reportProductAmount = 5;
       this.topSalesReport = null;
       this.agentReport = null;
       this.datosGraficoCircular = [];
@@ -1757,6 +1766,7 @@ export default {
   },
 
   methods: {
+    
     getLocalityAgentLabels(names, amounts){
       var agentLabels = [];
       var max = {'amount': 0, 'name': ''};
@@ -1793,7 +1803,8 @@ export default {
         {
           'reportInitialDate': this.reportInitialDate,
           'reportEndDate': this.reportEndDate,
-          'reportLocality': this.reportSelectedLocality
+          'reportLocality': this.reportSelectedLocality,
+          'productAmount': this.reportProductAmount
         }).then((response) =>{
           if (response.data.success){
             this.topSalesReport = response.data.result;
@@ -2826,6 +2837,7 @@ export default {
       this.reportInitialDate = null;
       this.reportEndDate = null;
       this.reportSelectedLocality = null;
+      this.reportProductAmount = 5;
       this.topSalesReport = null;
       this.agentReport = null;
       this.loaderReport = null;
