@@ -183,6 +183,31 @@
     <div style="position: fixed; bottom: 45px; right: 18px;" v-if="(ranking == false) && (locality == false) && (localityAgent == false) && (agentName != 'Mile Cruz')">
       <img v-b-modal.generalMapModal  class="hoverAnimationTranslator" style="cursor: pointer; width: 40px; height: 40px; position: relative; top: 10px;" src="@/assets/pageAssets/map.png">
     </div>
+
+    <div style="position: fixed; bottom: 105px; right: 20px;">
+      <b-dropdown v-if="(ranking == false) && (locality == false) && (localityAgent == false) && (agentName != 'Mile Cruz')" id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
+        <template slot="button-content">
+          <img class="hoverAnimationTranslator" id="traductorButton" style="cursor: pointer; width: 35px; height: 40px; position: relative; top: 10px;" src="@/assets/traductor.png">
+        </template>
+        <div class="dropdown-menu-right" aria-labelledby="userDropdown" style="width: 350px;">
+          <div style="padding: 15px;">
+            <b-form-textarea autofocus v-model="traduceInput" placeholder="Mensaje a traducir" rows="4"></b-form-textarea>
+            <br>
+            <div style="display: flex;">
+              <div>
+                <b-form-radio-group
+                  style="position: relative; left: 0px;"
+                  v-model="selectedLanguage"
+                  :options="languageOptions"
+                ></b-form-radio-group>
+              </div>
+              <div class="flex-grow-1"></div>
+              <b-button @click="traduce()" variant="info">Traducir</b-button>
+            </div>
+          </div>
+        </div>
+      </b-dropdown>
+    </div>
     
   </div>
 </template>
