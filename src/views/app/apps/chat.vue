@@ -2087,7 +2087,7 @@ export default {
           this.insertIDModalLoader = false;
           this.$root.$emit('bv::hide::modal', 'insertIDModal');
           this.showNotification('success', 'Cédula del cliente registrada', 'Se ha registrado la cédula del cliente exitosamente.');
-          this.currentActiveConversation.IDModalSource = this.insertIDModalSource2;
+          this.currentActiveConversation.IDModalSource = this.insertIDModalSource2; 
           this.currentActiveConversation.IDModalType = this.insertIDModalType2;
           this.currentActiveConversation.whatsappConversationRecipientIDHasImage = true;
         } else {
