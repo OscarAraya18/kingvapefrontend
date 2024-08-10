@@ -46,11 +46,6 @@
         <div style="text-align: center">
           <button @click="insertClientIDS()" class="btn btn-info mr-2" type="button">Registrar cédula</button>
         </div>
-
-
-
-
-        
       </div>
     </b-modal>
 
