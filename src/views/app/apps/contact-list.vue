@@ -6,6 +6,20 @@
       <img style="width: 1000px;" :src="bigImageSource">
     </b-modal>
 
+
+    <b-modal scrollable size="lg" centered id="IDModal" hide-footer hide-header>
+      <div v-if="loaderID == true" style="text-align: center;">
+        <br>
+        <span class="spinner-glow spinner-glow-primary"></span>
+      </div>
+      
+      <div v-else>
+        <img v-if="IDModalType == 'image'" style="width: 1000px;" :src="IDModalSource">
+        <iframe v-else :src="IDModalSource" width="100%" height="600px"></iframe>
+      </div>
+    </b-modal>
+
+
     <b-modal scrollable size="m" centered hide-footer id="historyMessageModal" hide-header>
       <div v-if="historyMessageLoader == false && historyMessage != null">
         <p v-if="historyMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{historyMessage.whatsappTextMessageBody}}</p>
@@ -97,6 +111,9 @@
 
         <template slot="table-row" slot-scope="props">
           <span v-if="props.column.field == 'button'">
+
+              <i v-if="props.row.clientID" @click="selectClientIDSImage(props.row.phone)" class="i-ID-Card text-25 text-black"  style="cursor: pointer; margin-right: 10px;"></i>
+
               <i class="i-Clock text-25 text-info" @click="getHistoryConversations(props.row.phone)" v-b-modal.modalHistorial style="cursor: pointer; margin-right: 10px;"></i>
 
               <i class="i-Notepad text-25 text-warning" @click="openContact(props.row.button)" v-b-modal.modalContactar style="cursor: pointer; margin-right: 7px;"></i>
@@ -676,7 +693,11 @@ export default {
       zoom: 15,
       currentSell: [],
       
-      bigImageSource: null
+      bigImageSource: null,
+
+      loaderID: false,
+      IDModalSource: null,
+      IDModalType: null
     };
 
     
@@ -703,6 +724,47 @@ export default {
   },
 
   methods: {
+
+    selectClientIDSImage(clientIDSPhoneNumber){
+      this.loaderID = true;
+      this.IDModalSource = null;
+      this.IDModalType = null;
+      this.$root.$emit('bv::show::modal', 'IDModal');
+      
+      axios.post(constants.routes.backendAPI+'/selectClientIDSImage',
+      {
+        'clientIDSPhoneNumber': clientIDSPhoneNumber
+      })
+      .then((response) =>{
+        if (response.data.success){
+          if (response.data.result.type == 'image'){
+            this.IDModalSource = `data:image/png;base64,${response.data.result.source}`;
+            this.IDModalType = response.data.result.type;
+            this.loaderID = false;
+          } else {
+            const binaryString = window.atob(response.data.result.source);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+              bytes[i] = binaryString.charCodeAt(i);
+            }
+            const blob = new Blob([bytes], { type: 'application/pdf' });
+            this.IDModalSource = URL.createObjectURL(blob);
+            this.IDModalType = response.data.result.type;
+            this.loaderID = false;
+          }
+        } else {
+          this.showNotification('danger', 'Error al abrir la cédula del cliente', 'Ha ocurrido un error inesperado abrir la cédula del cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.$root.$emit('bv::hide::modal', 'IDModal');
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al abrir la cédula del cliente', 'Ha ocurrido un error inesperado abrir la cédula del cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.$root.$emit('bv::hide::modal', 'IDModal');
+      })
+      
+    },
+
     getContactAmount(){
       axios.get(constants.routes.backendAPI+'/selectContactAmount')
       .then((response) => {
@@ -1101,7 +1163,8 @@ export default {
             id: response.data.result[contact].contactID,
             locationDetails: response.data.result[contact].contactLocationDetails,
             note: response.data.result[contact].contactNote,
-            button: contact
+            button: contact,
+            clientID: response.data.result[contact].clientIDSPhoneNumber
           })
         }
         this.loaderContact = false;

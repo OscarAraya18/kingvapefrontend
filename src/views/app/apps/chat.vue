@@ -373,6 +373,9 @@
               <div v-if="historyMessage.whatsappGeneralMessageType == 'image'"> 
                 <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${historyMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${historyMessage.whatsappImageMessageFile}`">
                 <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="historyMessage.whatsappImageMessageCaption != null">{{historyMessage.whatsappImageMessageCaption}}</p>
+                
+                <button @click="openInsertClientIDSImage(currentActiveConversation.whatsappConversationRecipientPhoneNumber, `data:image/png;base64,${historyMessage.whatsappImageMessageFile}`, 'image')" v-if="historyMessage.whatsappImageMessageType == 'image'" class="btn btn-icon btn-rounded btn-info ml-2" style="height: 40px;" type="button" v-b-modal.insertClientIDSImageModal><i class="i-ID-Card"></i></button>
+
               </div>
               
               <div v-if="historyMessage.whatsappGeneralMessageType=='video'"> 
@@ -444,6 +447,8 @@
                                 <div v-if="answeredMessage.whatsappGeneralMessageType == 'image'"> 
                                   <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`">
                                   <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappImageMessageCaption}}</p>
+                                  <button @click="openInsertClientIDSImage(currentHistoryConversation.whatsappConversationRecipientPhoneNumber, `data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`, 'image')" v-if="answeredMessage.whatsappImageMessageType == 'image'" class="btn btn-icon btn-rounded btn-info ml-2" style="height: 40px;" type="button" v-b-modal.insertClientIDSImageModal><i class="i-ID-Card"></i></button>
+
                                 </div>
                                 
                                 <div v-if="answeredMessage.whatsappGeneralMessageType=='video'"> 
@@ -467,6 +472,8 @@
                                 
                                 <div v-if="answeredMessage.whatsappGeneralMessageType=='document'" class="m-0">
                                   <a style="color: black;" :href="`data:${answeredMessage.whatsappDocumentMessageMimeType};base64,${answeredMessage.whatsappDocumentMessageFile}`" :download="answeredMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{answeredMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                                  <button @click="openInsertClientIDSImage(currentHistoryConversation.whatsappConversationRecipientPhoneNumber, `data:application/pdf;base64,${answeredMessage.whatsappDocumentMessageFile}`, 'pdf')" v-if="answeredMessage.whatsappDocumentMessageMimeType == 'application/pdf'" class="btn btn-icon btn-rounded btn-info ml-2" style="height: 40px;" type="button" v-b-modal.insertClientIDSImageModal><i class="i-ID-Card"></i></button>
+
                                 </div>
                                 
                                 <audio controls v-if="answeredMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${answeredMessage.whatsappAudioMessageFile}`"></audio>
@@ -490,6 +497,8 @@
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
                           <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
                           <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
+                          <button @click="openInsertClientIDSImage(currentHistoryConversation.whatsappConversationRecipientPhoneNumber, `data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`, 'image')" v-if="currentActiveConversationMessage.whatsappImageMessageType == 'image'" class="btn btn-icon btn-rounded btn-info ml-2" style="height: 40px;" type="button" v-b-modal.insertClientIDSImageModal><i class="i-ID-Card"></i></button>
+
                         </div>
                         
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='video'"> 
@@ -514,6 +523,8 @@
                         
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='document'" class="m-0">
                           <a style="color: black;" :href="`data:${currentActiveConversationMessage.whatsappDocumentMessageMimeType};base64,${currentActiveConversationMessage.whatsappDocumentMessageFile}`" :download="currentActiveConversationMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{currentActiveConversationMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                          <button @click="openInsertClientIDSImage(currentHistoryConversation.whatsappConversationRecipientPhoneNumber, `data:application/pdf;base64,${currentActiveConversationMessage.whatsappDocumentMessageFile}`, 'pdf')" v-if="currentActiveConversationMessage.whatsappDocumentMessageMimeType == 'application/pdf'" class="btn btn-icon btn-rounded btn-info ml-2" style="height: 40px;" type="button" v-b-modal.insertClientIDSImageModal><i class="i-ID-Card"></i></button>
+
                         </div>
                         
                         <audio controls v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${currentActiveConversationMessage.whatsappAudioMessageFile}`"></audio>
