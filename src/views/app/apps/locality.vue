@@ -256,7 +256,7 @@
 
             <div v-else-if="props.column.field == 'approverAgentName'">
               <b-badge v-if="props.row.approverAgentName" style="font-size: small;" :style="{backgroundColor: props.row.approverAgentColor, color: props.row.approverAgentFontColor}">{{ props.row.approverAgentName }}</b-badge>
-              <b-badge v-else style="color: white; font-size: small; background-color: black;">No ha sido aprovado</b-badge>
+              <b-badge v-else style="color: white; font-size: small; background-color: black;">No ha sido aprobado</b-badge>
             </div>
 
 
@@ -318,7 +318,7 @@
 
               <div v-else-if="props.column.field == 'approverAgentName'">
                 <b-badge v-if="props.row.approverAgentName" style="font-size: small;" :style="{backgroundColor: props.row.approverAgentColor, color: props.row.approverAgentFontColor}">{{ props.row.approverAgentName }}</b-badge>
-                <b-badge v-else style="color: white; font-size: small; background-color: black;">No ha sido aprovado</b-badge>
+                <b-badge v-else style="color: white; font-size: small; background-color: black;">No ha sido aprobado</b-badge>
               </div>
 
               <div v-else-if="props.column.field == 'whatsappConversationOpenAction'">
@@ -404,13 +404,13 @@ export default {
           tdClass: "text-left",
         },
         {
-          label: "Aprovado",
+          label: "Aprobado",
           field: "whatsappInvoiceApproveAction",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
-          label: "Aprovado por",
+          label: "Aprobado por",
           field: "approverAgentName",
           thClass: "text-left",
           tdClass: "text-left",

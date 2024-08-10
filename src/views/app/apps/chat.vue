@@ -1543,8 +1543,8 @@
                               <b-form-group style="width:100%;">
                                 <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientProfileName" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientName', currentActiveConversation.whatsappConversationRecipientProfileName)" placeholder='Nombre del cliente' style='margin-bottom: 10px;'></b-form-input>
                                 <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientPhoneNumber" placeholder="Número de teléfono del cliente" style="margin-bottom: 10px;"></b-form-input>
-                                <div v-if="currentActiveConversation.whatsappConversationRecipientIDHasImage" style="display: flex;">
-                                  <div style="margin-right: 5%">
+                                <div v-if="currentActiveConversation.whatsappConversationRecipientIDHasImage" style="display: flex; width: 100%;">
+                                  <div style="margin-right: 5%; width: 80%;">
                                     <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientID" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientID', currentActiveConversation.whatsappConversationRecipientID)" placeholder='Cédula del cliente' style='margin-bottom: 10px;'></b-form-input>
                                   </div>
 
