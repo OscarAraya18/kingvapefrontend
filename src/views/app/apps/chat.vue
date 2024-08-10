@@ -5,11 +5,52 @@
       <img style="width: 1000px;" :src="bigImageSource">
     </b-modal>
 
-    <b-modal scrollable size="m" centered id="insertContactReminderModal" title="Añadir recordatorio" @ok="insertContactReminder()">
-      <b-form-select v-model="insertContactReminderSelectedType" :options="insertContactReminderTypeOptions"></b-form-select>
-      <div v-if="insertContactReminderSelectedType != null">
+    <b-modal scrollable size="lg" centered id="IDModal" hide-footer hide-header>
+      <div v-if="loaderID == true" style="text-align: center;">
         <br>
-        <b-form-textarea no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="insertContactReminderMessage"/>  
+        <span class="spinner-glow spinner-glow-primary"></span>
+      </div>
+      
+      <div v-else>
+        <img v-if="IDModalType == 'image'" style="width: 1000px;" :src="IDModalSource">
+        <iframe v-else :src="IDModalSource" width="100%" height="600px"></iframe>
+      </div>
+    </b-modal>
+
+    <b-modal scrollable :size="insertIDModalSource ? 'm' : 'sm'" centered id="insertIDModal" hide-footer hide-header>
+      <div v-if="insertIDModalLoader == true" style="text-align: center;">
+        <br>
+        <span class="spinner-glow spinner-glow-primary"></span>
+      </div>
+      
+      <div v-else>
+        <div style="display: flex;">
+          <div v-if="insertIDModalSource" style="width: 50%; margin-right: 1%">
+            <p style="margin: 0; font-size: 15px;">
+              <strong>Cédula actual del cliente:</strong>
+            </p>
+            <br>
+            <img v-if="insertIDModalType == 'image'" style="width: 200px;" :src="insertIDModalSource">
+            <iframe v-else :src="insertIDModalSource" width="50%" height="300px"></iframe>
+          </div>
+          <div>
+            <p style="margin: 0; font-size: 15px;">
+              <strong>Nueva cédula del cliente:</strong>
+            </p>
+            <br>
+            <img v-if="insertIDModalType2 == 'image' && insertIDModalSource2" style="width: 200px;" :src="insertIDModalSource2">
+            <iframe v-else :src="insertIDModalSource2" width="50%" height="300px"></iframe>
+          </div>
+        </div>
+        <br>
+        <div style="text-align: center">
+          <button @click="insertClientIDS()" class="btn btn-info mr-2" type="button">Registrar cédula</button>
+        </div>
+
+
+
+
+        
       </div>
     </b-modal>
 
@@ -700,6 +741,7 @@
                             <div style="display: flex;">
                               <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
                               <button @click="openSaveStickerModal(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" v-if="currentActiveConversationMessage.whatsappImageMessageType == 'sticker'" class="btn btn-icon btn-rounded btn-primary ml-2" style="height: 40px;" type="button" v-b-modal.saveStickerModal><i class="i-Disk"></i></button>
+                              <button @click="openInsertClientIDSImage(currentActiveConversation.whatsappConversationRecipientPhoneNumber, `data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`, 'image')" v-if="currentActiveConversationMessage.whatsappImageMessageType == 'image'" class="btn btn-icon btn-rounded btn-info ml-2" style="height: 40px;" type="button" v-b-modal.insertClientIDSImageModal><i class="i-ID-Card"></i></button>
                             </div>
                             <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
                           </div>
@@ -727,6 +769,8 @@
                           
                           <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='document'" class="m-0">
                             <a style="color: black;" :href="`data:${currentActiveConversationMessage.whatsappDocumentMessageMimeType};base64,${currentActiveConversationMessage.whatsappDocumentMessageFile}`" :download="currentActiveConversationMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{currentActiveConversationMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                            <button @click="openInsertClientIDSImage(currentActiveConversation.whatsappConversationRecipientPhoneNumber, `data:application/pdf;base64,${currentActiveConversationMessage.whatsappDocumentMessageFile}`, 'pdf')" v-if="currentActiveConversationMessage.whatsappDocumentMessageMimeType == 'application/pdf'" class="btn btn-icon btn-rounded btn-info ml-2" style="height: 40px;" type="button" v-b-modal.insertClientIDSImageModal><i class="i-ID-Card"></i></button>
+
                           </div>
                           
                           <audio controls v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${currentActiveConversationMessage.whatsappAudioMessageFile}`"></audio>
@@ -1499,7 +1543,19 @@
                               <b-form-group style="width:100%;">
                                 <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientProfileName" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientName', currentActiveConversation.whatsappConversationRecipientProfileName)" placeholder='Nombre del cliente' style='margin-bottom: 10px;'></b-form-input>
                                 <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientPhoneNumber" placeholder="Número de teléfono del cliente" style="margin-bottom: 10px;"></b-form-input>
-                                <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientID" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientID', currentActiveConversation.whatsappConversationRecipientID)" placeholder='Cédula del cliente' style='margin-bottom: 10px;'></b-form-input>
+                                <div v-if="currentActiveConversation.whatsappConversationRecipientIDHasImage" style="display: flex;">
+                                  <div style="margin-right: 5%">
+                                    <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientID" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientID', currentActiveConversation.whatsappConversationRecipientID)" placeholder='Cédula del cliente' style='margin-bottom: 10px;'></b-form-input>
+                                  </div>
+
+                                  <div style="position: relative; top: -2px;">
+                                    <button @click="selectClientIDSImage(currentActiveConversation.whatsappConversationRecipientPhoneNumber)" class="btn btn-icon btn-info"><i class="i-ID-Card"></i></button>
+                                  </div>
+                                </div>
+                                <div v-else>
+                                  <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientID" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientID', currentActiveConversation.whatsappConversationRecipientID)" placeholder='Cédula del cliente' style='margin-bottom: 10px;'></b-form-input>
+
+                                </div>
                                 <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientEmail" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientEmail', currentActiveConversation.whatsappConversationRecipientEmail)" placeholder="Correo electrónico del cliente"></b-form-input> 
                               </b-form-group>
                             </b-card>
@@ -2001,12 +2057,147 @@ export default {
       scrollAvailable: true,
 
       inputCodigoDescuento: '',
-      displayCodigoDescuento: null
+      displayCodigoDescuento: null,
+
+      loaderID: false,
+      IDModalSource: null,
+      IDModalType: null,
+
+      insertIDModalLoader: false,
+      insertIDModalSource: null,
+      insertIDModalType: null,
+
+      insertIDModalSource2: null,
+      insertIDModalType2: null
     };
   },
 
   methods: {
 
+    insertClientIDS(){
+      this.insertIDModalLoader = true;
+      axios.post(constants.routes.backendAPI+'/insertClientIDS',
+      {
+        'clientIDSPhoneNumber': this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+        'clientIDSType': this.insertIDModalType2,
+        'clientIDSImage': this.insertIDModalSource2
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.insertIDModalLoader = false;
+          this.$root.$emit('bv::hide::modal', 'insertIDModal');
+          this.showNotification('success', 'Cédula del cliente registrada', 'Se ha registrado la cédula del cliente exitosamente.');
+
+        } else {
+          this.showNotification('danger', 'Error al registrar la cédula del cliente', 'Ha ocurrido un error inesperado registrar la cédula del cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.$root.$emit('bv::hide::modal', 'insertIDModal');
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al registrar la cédula del cliente', 'Ha ocurrido un error inesperado registrar la cédula del cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.$root.$emit('bv::hide::modal', 'insertIDModal');
+      })
+    },
+
+    openInsertClientIDSImage(phoneNumber, source, type){
+      this.insertIDModalLoader = true;
+      this.insertIDModalSource = null;
+      this.insertIDModalType = null;
+      this.insertIDModalSource2 = source;
+      this.insertIDModalType2 = type;
+
+      this.$root.$emit('bv::show::modal', 'insertIDModal');
+      if (this.currentActiveConversation.IDModalSource){
+        this.insertIDModalSource = this.currentActiveConversation.IDModalSource;
+        this.insertIDModalType = this.currentActiveConversation.IDModalType;
+        this.insertIDModalLoader = false;
+      } else {
+        axios.post(constants.routes.backendAPI+'/selectClientIDSImage',
+        {
+          'clientIDSPhoneNumber': phoneNumber
+        })
+        .then((response) =>{
+          if (response.data.success){
+            if (response.data.result.source){
+              if (response.data.result.type == 'image'){
+                this.insertIDModalSource = `data:image/png;base64,${response.data.result.source}`;
+                this.insertIDModalType = response.data.result.type;
+                this.currentActiveConversation.IDModalSource = this.insertIDModalSource;
+                this.currentActiveConversation.IDModalType = this.insertIDModalType;
+              } else {
+                const binaryString = window.atob(response.data.result.source);
+                const len = binaryString.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) {
+                  bytes[i] = binaryString.charCodeAt(i);
+                }
+                const blob = new Blob([bytes], { type: 'application/pdf' });
+                this.insertIDModalSource = URL.createObjectURL(blob);
+                this.insertIDModalType = response.data.result.type;
+                this.currentActiveConversation.IDModalSource = this.insertIDModalSource;
+                this.currentActiveConversation.IDModalType = this.insertIDModalType;
+              }
+            }
+            this.insertIDModalLoader = false;
+          } else {
+            this.showNotification('danger', 'Error al abrir la cédula del cliente', 'Ha ocurrido un error inesperado abrir la cédula del cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            this.$root.$emit('bv::hide::modal', 'insertIDModal');
+          }
+        })
+        .catch(() => {
+          this.showNotification('danger', 'Error al abrir la cédula del cliente', 'Ha ocurrido un error inesperado abrir la cédula del cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.$root.$emit('bv::hide::modal', 'insertIDModal');
+        })
+      }
+    },
+
+    selectClientIDSImage(clientIDSPhoneNumber){
+      this.loaderID = true;
+      this.IDModalSource = null;
+      this.IDModalType = null;
+      this.$root.$emit('bv::show::modal', 'IDModal');
+      if (this.currentActiveConversation.IDModalSource){
+        this.IDModalSource = this.currentActiveConversation.IDModalSource;
+        this.IDModalType = this.currentActiveConversation.IDModalType;
+        this.loaderID = false;
+      } else {
+        axios.post(constants.routes.backendAPI+'/selectClientIDSImage',
+        {
+          'clientIDSPhoneNumber': clientIDSPhoneNumber
+        })
+        .then((response) =>{
+          if (response.data.success){
+            if (response.data.result.type == 'image'){
+              this.IDModalSource = `data:image/png;base64,${response.data.result.source}`;
+              this.IDModalType = response.data.result.type;
+              this.currentActiveConversation.IDModalSource = this.IDModalSource;
+              this.currentActiveConversation.IDModalType = this.IDModalType;
+              this.loaderID = false;
+            } else {
+              const binaryString = window.atob(response.data.result.source);
+              const len = binaryString.length;
+              const bytes = new Uint8Array(len);
+              for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+              }
+              const blob = new Blob([bytes], { type: 'application/pdf' });
+              this.IDModalSource = URL.createObjectURL(blob);
+              this.IDModalType = response.data.result.type;
+              this.currentActiveConversation.IDModalSource = this.IDModalSource;
+              this.currentActiveConversation.IDModalType = this.IDModalType;
+              this.loaderID = false;
+            }
+          } else {
+            this.showNotification('danger', 'Error al abrir la cédula del cliente', 'Ha ocurrido un error inesperado abrir la cédula del cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            this.$root.$emit('bv::hide::modal', 'IDModal');
+          }
+        })
+        .catch(() => {
+          this.showNotification('danger', 'Error al abrir la cédula del cliente', 'Ha ocurrido un error inesperado abrir la cédula del cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.$root.$emit('bv::hide::modal', 'IDModal');
+        })
+      }
+    },
 
 
     detectShortcuts(){
@@ -4462,6 +4653,8 @@ export default {
               respondedActiveConversations[activeConversationID]['latitude'] = 0;
               respondedActiveConversations[activeConversationID]['longitude'] = 0;
               respondedActiveConversations[activeConversationID]['whatsappConversationIsForToday'] = true;
+
+              console.log(respondedActiveConversations[activeConversationID])
             }    
           }
           this.activeConversationsAsJSON = {};
