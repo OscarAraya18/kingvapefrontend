@@ -397,7 +397,7 @@
 
 
 
-    <b-modal id="mensajeroModal" size="lg" centered hide-footer hide-header>
+    <b-modal id="mensajeroModal" size="lg" centered hide-footer title="Información del pedido">
       <div style="display: flex">
         <div v-if="updatedWhatsappInvoice">
           <h4><strong>ID:</strong> {{ updatedWhatsappInvoice.whatsappInvoiceID }}</h4>
