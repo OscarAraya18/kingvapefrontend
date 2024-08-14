@@ -368,9 +368,11 @@
           <b-form-datepicker v-model="reportEndDate"></b-form-datepicker>
           <br>
           <div v-if="reportSelectType == 'Productos más vendidos' || reportSelectType == 'Entregas por mensajero'">
-            <h4><strong>Cantidad de productos:</strong></h4>
-            <b-form-select v-model="reportProductAmount" class="mb-3" :options="productAmountOptions"></b-form-select>
-            <br>
+            <div v-if="reportSelectType == 'Productos más vendidos'">
+              <h4><strong>Cantidad de productos:</strong></h4>
+                <b-form-select v-model="reportProductAmount" class="mb-3" :options="productAmountOptions"></b-form-select>
+              <br>
+            </div>
             <h4><strong>Filtro por localidad:</strong></h4>
             <b-form-select v-model="reportSelectedLocality" class="mb-3" :options="storeOptions"></b-form-select>
             <br>
@@ -1854,11 +1856,12 @@ export default {
             {
               whatsappInvoiceLocalityID: this.reportSelectedLocality,
               initialDate: this.reportInitialDate,
-              endDate: this.reportInitialDate
+              endDate: this.reportEndDate
             })
             .then(async (response) =>{
               if (response.data.success){
                 
+                console.log(response.data.result);
                 const deliveredInvoices = response.data.result;
 
                 var aux1 = [];
