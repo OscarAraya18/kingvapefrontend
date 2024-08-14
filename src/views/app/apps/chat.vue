@@ -355,6 +355,29 @@
           </b-modal>
 
 
+          <b-modal scrollable title="Promociones del día de la madre" size="m" centered id="promosModal" @ok="sendPromos()">   
+            <div v-if="loaderPromos == false">
+              <b-list-group style="height: 700px; overflow-y: auto;">
+
+                <b-list-group-item :variant="getAllPromoVariant()" style="cursor: pointer;" @click="selectAllPromo()" v-if="agentFavoriteImages.length != 0">Seleccionar todas las promociones</b-list-group-item>
+                
+                <b-list-group-item style="cursor: pointer;" v-for="(promoImage, index) in promos" :variant="getImageVariant(promoImage)" button @click="selectPromo(index)">
+                  <div style="display:flex; ">
+                    <img :src="promoImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                    <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
+                      <h6>{{promoImage.whatsappFavoriteImageName}}</h6>
+                    </div>
+                  </div>
+                </b-list-group-item>
+
+              </b-list-group>
+            </div>
+            <div v-else style="text-align: center;">
+              <br><span class="spinner-glow spinner-glow-primary"></span>
+            </div>
+          </b-modal>
+
+
           <b-modal scrollable size="m" centered hide-footer id="historyMessageModal" hide-header>
             <b-list-group v-if="loaders.historyMessage == false && historyMessage != null">
               
@@ -1176,10 +1199,9 @@
                     </b-list-group>
                   </b-modal>
 
-                  <!--
-                  <button v-if="availableConversation == true" id="sendSticker" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="openSendStickerModal()" v-b-modal.sendStickerModal><i class="i-Teddy-Bear"></i></button>
-                  -->
-                  <b-tooltip target="sendSticker">Stickers</b-tooltip>
+                  
+                  <button v-if="availableConversation == true" id="sendPromos" class="btn btn-icon btn-rounded mr-2" style="background-color: #faafed;" type="button" @click="openPromosModal()" v-b-modal.promosModal><i class="i-Gift-Box"></i></button>
+                  <b-tooltip target="sendPromos">Promocioness</b-tooltip>
 
                   <button v-if="availableConversation == true" id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>
                   <b-tooltip target="sendAudio">Audio</b-tooltip>
@@ -1351,11 +1373,10 @@
 
                     </b-list-group>
                   </b-modal>
-<!--
-                  <button v-if="availableConversation == true" id="sendSticker" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="openSendStickerModal()" v-b-modal.sendStickerModal><i class="i-Teddy-Bear"></i></button>
--->
-                  
-                  <b-tooltip target="sendSticker">Enviar sticker</b-tooltip>
+
+                  <button v-if="availableConversation == true" id="sendPromos" class="btn btn-icon btn-rounded mr-2" style="background-color: #faafed;" type="button" @click="openPromosModal()" v-b-modal.promosModal><i class="i-Gift-Box"></i></button>
+                  <b-tooltip target="sendPromos">Promociones</b-tooltip>
+
 
                   <button v-if="availableConversation == true" id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>
                   <b-tooltip target="sendAudio">Enviar audio</b-tooltip>
@@ -2074,11 +2095,19 @@ export default {
       insertIDModalType: null,
 
       insertIDModalSource2: null,
-      insertIDModalType2: null
+      insertIDModalType2: null,
+
+      loaderPromos: false,
+      promos: [],
+      allPromoSelected: false
     };
   },
 
   methods: {
+
+    openPromosModal(){
+      this.loaderPromos = false;
+    },
 
     insertClientIDS(){
       this.insertIDModalLoader = true;
@@ -3036,6 +3065,8 @@ export default {
                 this.salts1.push(response.data.result[agentFavoriteImageIndex]);
               } else if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'saltNoIce'){
                 this.salts2.push(response.data.result[agentFavoriteImageIndex]);
+              } else if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'promo'){
+                this.promos.push(response.data.result[agentFavoriteImageIndex]);
               }
             }
             for (var agentFavoriteImageIndex in this.agentFavoriteImages){
@@ -3055,6 +3086,9 @@ export default {
             }
             for (var agentFavoriteImageIndex in this.salts2){
               this.salts2[agentFavoriteImageIndex]['selected'] = false;
+            }
+            for (var promoIndex in this.promos){
+              this.promos[promoIndex]['selected'] = false;
             }
           } else {
             this.showNotification('danger', 'Error al consultar las imágenes del catálogo', 'Ha ocurrido un error inesperado al consultar las imágenes del catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
@@ -3243,6 +3277,17 @@ export default {
       }
     },
 
+    getAllPromoVariant(){
+      var variant = 'success';
+      for(var imageIndex in this.promos){
+        if (this.promos[imageIndex].selected == false){
+          return 'default';
+        };
+      }
+      return variant;
+    
+    },
+
     getAllFavoriteVariant(){
       var variant = 'success';
       if (this.currentNavItem == 'Nicotina'){
@@ -3300,6 +3345,10 @@ export default {
       }
     },
 
+    selectPromo(image){
+      this.$set(this.promos, image, { ...this.promos[image], selected: !this.promos[image].selected });
+    },
+
     selectFavoriteImage(image){
       if (this.currentNavItem == 'Nicotina'){
         this.$set(this.agentFavoriteImages, image, { ...this.agentFavoriteImages[image], selected: !this.agentFavoriteImages[image].selected });
@@ -3322,6 +3371,19 @@ export default {
       } else {
         this.$set(this.salts2, image, { ...this.salts2[image], selected: !this.salts2[image].selected });
       }
+    },
+
+    selectAllPromo(){
+      if (this.allPromoSelected == false){
+        for (var imageIndex in this.promos) {
+          this.$set(this.promos, imageIndex, { ...this.promos[imageIndex], selected: true });
+        }
+      } else {
+        for (var imageIndex in this.promos) {
+          this.$set(this.promos, imageIndex, { ...this.promos[imageIndex], selected: false });
+        }
+      }
+      this.allPromoSelected = !this.allPromoSelected;
     },
 
     selectAllFavoriteImage(){
@@ -4011,6 +4073,38 @@ export default {
       .catch((error) =>{
         this.showNotification('danger', 'Error al enviar la ubicación', 'Ha ocurrido un error inesperado al enviar la ubicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
+    },
+
+
+    async sendPromos(){
+      const currentConversation = this.currentActiveConversation;
+      
+      for (var image in this.promos){
+        if (this.promos[image].selected){       
+          await axios.post(constants.routes.backendAPI+'/sendWhatsappFavoriteImageMessage', 
+          {
+            whatsappConversationRecipientPhoneNumber: currentConversation.whatsappConversationRecipientPhoneNumber,
+            whatsappFavoriteImageMessageContent: this.promos[image],
+            whatsappFavoriteImageMessageCaption: null
+          })
+          .then((response) => {
+            if (response.data.success){
+              this.promos[image].selected = false;
+              this.repliedMessage = null;
+              const whatsappConversationID = response.data.result.whatsappConversationID;
+              this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
+              this.scrollDown();
+            } else {
+              this.showNotification('danger', 'Error al enviar la promoción al cliente', 'Ha ocurrido un error inesperado al enviar la promoción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+            }
+          })
+          .catch((error) =>{
+            this.showNotification('danger', 'Error al enviar la promoción al cliente', 'Ha ocurrido un error inesperado al enviar la promoción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          })
+        }
+      }
+        
+      this.sortConversations();
     },
 
 
