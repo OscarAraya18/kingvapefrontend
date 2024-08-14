@@ -4,7 +4,7 @@
       <div style="text-align: center;">
         <h1 style="font-size: xx-large;">FEEDBACK <strong>#{{ whatsappConversationID }}</strong></h1>
         <br>
-        <p style="font-size: large;">Estimado cliente. Su satisfacción es y será siempre nuestra prioridad. Nos encantaría hacerle un par de preguntas para así recibir su opinión y trabajar en mejorar aún más nuestro servicio</p>
+        <p style="font-size: large;">Estimado cliente: su satisfacción es y será siempre nuestra prioridad. Nos encantaría hacerle un par de preguntas para así recibir su opinión y trabajar en mejorar aún más nuestro servicio</p>
       </div>
       <br><br>
 
@@ -33,11 +33,18 @@
       <br><br>
 
       <div style="text-align: center;">
-        <button v-if="loading==false" class="btn btn-info" @click="sendFeedback()">Compartir feedback</button>
+        <div v-if="loading == false">
+          <br>
+          <button v-if="loading==false" class="btn btn-info" @click="sendFeedback()">Compartir feedback</button>
+          <br><br>
+          <p style="font-size:xx-small; color: gray;">Al compartir tu feedback, aceptas que el mismo pueda ser utilizado por King Vape de manera anónima con fines de mejora de nuestros servicios y atención</p>
+        </div>
         <div v-else>
           <span class="spinner-glow spinner-glow-primary"></span>
         </div>
       </div>
+
+
     </div>
   </b-card>
 

@@ -664,7 +664,7 @@
                   <div v-if="props.row.whatsappFeedbackSix == ''">
                     Sin comentario
                   </div>
-                  <div v-else style="width: 700px;">
+                  <div v-else style="width: 300px;">
                     {{props.row.whatsappFeedbackSix}}
                   </div>      
                 </div>
@@ -1395,6 +1395,7 @@ export default {
           thClass: "text-left",
           tdClass: "text-left",
         },
+        /*
         {
           label: "Puntaje general",
           field: "whatsappFeedbackTotal",
@@ -1407,12 +1408,13 @@ export default {
           thClass: "text-left",
           tdClass: "text-left",
         },
+        */
         {
           label: "Comentario",
           field: "whatsappFeedbackSix",
           thClass: "text-left",
           tdClass: "text-left",
-          width: '300px'
+          //width: '300px'
         },
         {
           label: "",
