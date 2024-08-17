@@ -177,7 +177,7 @@ export default {
     } else {
       this.isZapote = false;
     }
-    if (localStorage.getItem('agentType') == 'admin' || localStorage.getItem('agentName') == 'Diana Jimenez' || localStorage.getItem('agentName') == 'Jose Estrada'){
+    if (localStorage.getItem('agentType') == 'admin' || localStorage.getItem('agentName') == 'Diana Jimenez' || localStorage.getItem('agentName') == 'Jose Estrada' || localStorage.getItem('agentName') == 'Emma Garcia'){
       this.isAdmin = true;
     }
     this.selectStoreMessageByStoreMessageStoreName();
