@@ -1785,11 +1785,11 @@ export default {
           this.loaderMotos = false;
           
         } else {
-          this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al consultar las órdenes', 'Ha ocurrido un error inesperado al consultar las órdenes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al consultar las órdenes', 'Ha ocurrido un error inesperado al consultar las órdenes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
       
     },
@@ -1893,22 +1893,22 @@ export default {
           this.$root.$emit('bv::hide::modal', 'localityWhatsappInvoiceInformationModal');
           this.$root.$emit('bv::hide::modal', 'updateWhatsappInvoiceInformation');
           this.loaderReturned = false;
-          this.showNotification('success', 'Comanda regresada al call center', 'Se ha regresado la comanda al call center. Para que la conversación se refleje en el sistema del usuario, recuerde actualizar la aplicación');
+          this.showNotification('success', 'Comanda regresada al call center', 'Se ha regresado la órden al call center. Para que la conversación se refleje en el sistema del usuario, recuerde actualizar la aplicación');
         } else {
           if (response.data.result == 1){
-            this.showNotification('danger', 'Error al regresar la comanda al call center', 'Ha ocurrido un error inesperado al regresar la comanda al call center. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            this.showNotification('danger', 'Error al regresar la órden al call center', 'Ha ocurrido un error inesperado al regresar la órden al call center. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           } else if (response.data.result == 2){
-            this.showNotification('danger', 'Error al regresar la comanda al call center', 'El cliente tiene una conversación activa en este momento. Si necesita regresar la comanda, por favor cierre la conversación activa con el cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            this.showNotification('danger', 'Error al regresar la órden al call center', 'El cliente tiene una conversación activa en este momento. Si necesita regresar la órden, por favor cierre la conversación activa con el cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           } else if (response.data.result == 3){
-            this.showNotification('danger', 'Error al eliminar la comanda', 'Ha ocurrido un error inesperado al regresar la eliminar la comanda. Si necesita regresar la comanda, por favor cierre la conversación activa con el cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            this.showNotification('danger', 'Error al eliminar la órden', 'Ha ocurrido un error inesperado al regresar la eliminar la órden. Si necesita regresar la órden, por favor cierre la conversación activa con el cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           } else if (response.data.result == 4){
-            this.showNotification('danger', 'Error al reactivar la conversación', 'Ha ocurrido un error inesperado al reactivar la conversación. Si necesita regresar la comanda, por favor cierre la conversación activa con el cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            this.showNotification('danger', 'Error al reactivar la conversación', 'Ha ocurrido un error inesperado al reactivar la conversación. Si necesita regresar la órden, por favor cierre la conversación activa con el cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           }
           this.loaderReturned = false;
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al regresar la comanda al call center', 'Ha ocurrido un error inesperado al regresar la comanda al call center. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al regresar la órden al call center', 'Ha ocurrido un error inesperado al regresar la órden al call center. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         this.loaderReturned = false;
       })
 
@@ -1925,12 +1925,12 @@ export default {
           this.loaderDelivered = false;
           this.deliveredInvoices = response.data.result;
         } else {
-          this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al consultar las órdenes', 'Ha ocurrido un error inesperado al consultar las órdenes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           this.loaderDelivered = false;
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al no entregar la comanda', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al no entregar la órden', 'Ha ocurrido un error inesperado al consultar las órdenes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         this.loaderDelivered = false;
       })
     },
@@ -1949,12 +1949,12 @@ export default {
           this.loaderDelivered = false;
           this.deliveredInvoices = response.data.result;
         } else {
-          this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al consultar las órdenes', 'Ha ocurrido un error inesperado al consultar las órdenes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           this.loaderDelivered = false;
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al no entregar la comanda', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al no entregar la órden', 'Ha ocurrido un error inesperado al consultar las órdenes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         this.loaderDelivered = false;
       })
     },
@@ -1970,12 +1970,12 @@ export default {
           this.loaderDelivered = false;
           this.deliveredInvoices = response.data.result;
         } else {
-          this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al consultar las órdenes', 'Ha ocurrido un error inesperado al consultar las órdenes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           this.loaderDelivered = false;
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al no entregar la comanda', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al no entregar la órden', 'Ha ocurrido un error inesperado al consultar las órdenes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         this.loaderDelivered = false;
       })
     },
@@ -1993,17 +1993,17 @@ export default {
         })
         .then((response) =>{
           if (response.data.success){
-            this.showNotification('success', 'Comanda marcada como no entregada', 'Se ha marcado la comanda como no entregada exitosamente.');
+            this.showNotification('success', 'Comanda marcada como no entregada', 'Se ha marcado la órden como no entregada exitosamente.');
             this.$root.$emit('bv::hide::modal', 'shippingModal');
           } else {
-            this.showNotification('danger', 'Error al no entregar la comanda', 'Ha ocurrido un error inesperado al no entregar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            this.showNotification('danger', 'Error al no entregar la órden', 'Ha ocurrido un error inesperado al no entregar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           }
         })
         .catch(() => {
-          this.showNotification('danger', 'Error al no entregar la comanda', 'Ha ocurrido un error inesperado al no entregar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al no entregar la órden', 'Ha ocurrido un error inesperado al no entregar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         })
       } else {
-        this.showNotification('danger', 'Error al no entregar la comanda', 'Por favor, coloque un motivo para no entregar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al no entregar la órden', 'Por favor, coloque un motivo para no entregar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       }
     },
 
@@ -2050,13 +2050,13 @@ export default {
         })
         .then((response) =>{
           if (response.data.success){
-            aux ? this.showNotification('success', 'Comanda retornada a la sucursal', 'Se ha retornado la comanda a la sucursal existosamente.') : this.showNotification('success', 'Comanda enviada', 'Se ha enviado la comanda existosamente.');
+            aux ? this.showNotification('success', 'Comanda retornada a la sucursal', 'Se ha retornado la órden a la sucursal existosamente.') : this.showNotification('success', 'Comanda enviada', 'Se ha enviado la órden existosamente.');
           } else {
-            this.showNotification('danger', 'Error al enviar la comanda', 'Ha ocurrido un error inesperado al enviar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            this.showNotification('danger', 'Error al enviar la órden', 'Ha ocurrido un error inesperado al enviar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           }
         })
         .catch(() => {
-          this.showNotification('danger', 'Error al enviar la comanda', 'Ha ocurrido un error inesperado al enviar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al enviar la órden', 'Ha ocurrido un error inesperado al enviar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         })
       }
     },
@@ -2090,14 +2090,14 @@ export default {
           })
           .then((response) =>{
             if (response.data.success){
-              this.showNotification('success', 'Comanda entregada', 'Se ha entregado la comanda existosamente.');
+              this.showNotification('success', 'Comanda entregada', 'Se ha entregado la órden existosamente.');
               this.$root.$emit('bv::hide::modal', 'shippingModal');
             } else {
-              this.showNotification('danger', 'Error al entregar la comanda', 'Ha ocurrido un error inesperado al entregar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+              this.showNotification('danger', 'Error al entregar la órden', 'Ha ocurrido un error inesperado al entregar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
             }
           })
           .catch(() => {
-            this.showNotification('danger', 'Error al entregar la comanda', 'Ha ocurrido un error inesperado al entregar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            this.showNotification('danger', 'Error al entregar la órden', 'Ha ocurrido un error inesperado al entregar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           })
         }
       }
@@ -2117,16 +2117,16 @@ export default {
         })
         .then((response) =>{
           if (response.data.success){
-            this.showNotification('success', 'Comanda asignada', 'Se ha asignado la comanda existosamente.');
+            this.showNotification('success', 'Comanda asignada', 'Se ha asignado la órden existosamente.');
           } else {
-            this.showNotification('danger', 'Error al asignar la comanda', 'Ha ocurrido un error inesperado al asignar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            this.showNotification('danger', 'Error al asignar la órden', 'Ha ocurrido un error inesperado al asignar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           }
         })
         .catch(() => {
-          this.showNotification('danger', 'Error al asignar la comanda', 'Ha ocurrido un error inesperado al asignar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al asignar la órden', 'Ha ocurrido un error inesperado al asignar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         })
       } else {
-        this.showNotification('danger', 'Error al asignar la comanda', 'Complete el mensajero asignado y el facturador e intente nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al asignar la órden', 'Complete el mensajero asignado y el facturador e intente nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       }
     },
 
@@ -2143,16 +2143,16 @@ export default {
         })
         .then((response) =>{
           if (response.data.success){
-            this.showNotification('success', 'Comanda entregada', 'Se ha entregado la comanda existosamente.');
+            this.showNotification('success', 'Comanda entregada', 'Se ha entregado la órden existosamente.');
           } else {
-            this.showNotification('danger', 'Error al entregar la comanda', 'Ha ocurrido un error inesperado al entregar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            this.showNotification('danger', 'Error al entregar la órden', 'Ha ocurrido un error inesperado al entregar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           }
         })
         .catch(() => {
-          this.showNotification('danger', 'Error al entregar la comanda', 'Ha ocurrido un error inesperado al entregar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al entregar la órden', 'Ha ocurrido un error inesperado al entregar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         })
       } else {
-        this.showNotification('danger', 'Error al entregar la comanda', 'Complete el facturador e intente nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al entregar la órden', 'Complete el facturador e intente nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       }
     },
 
@@ -2165,13 +2165,13 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Nombre modificado', 'Se ha modificado el nombre de la comanda existosamente.');
+          this.showNotification('success', 'Nombre modificado', 'Se ha modificado el nombre de la órden existosamente.');
         } else {
-          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
@@ -2183,13 +2183,13 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Número modificado', 'Se ha modificado el número de la comanda existosamente.');
+          this.showNotification('success', 'Número modificado', 'Se ha modificado el número de la órden existosamente.');
         } else {
-          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
@@ -2201,13 +2201,13 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Monto modificado', 'Se ha modificado el monto de la comanda existosamente.');
+          this.showNotification('success', 'Monto modificado', 'Se ha modificado el monto de la órden existosamente.');
         } else {
-          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
@@ -2219,13 +2219,13 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Agente modificado', 'Se ha modificado el agente de la comanda existosamente.');
+          this.showNotification('success', 'Agente modificado', 'Se ha modificado el agente de la órden existosamente.');
         } else {
-          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
@@ -2239,13 +2239,13 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Estado modificado', 'Se ha modificado el estado de la comanda existosamente.');
+          this.showNotification('success', 'Estado modificado', 'Se ha modificado el estado de la órden existosamente.');
         } else {
-          this.showNotification('danger', 'Error al cambiar el estado de la comanda', 'Ha ocurrido un error inesperado al cambiar el estado de la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al cambiar el estado de la órden', 'Ha ocurrido un error inesperado al cambiar el estado de la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al cambiar el estado de la comanda', 'Ha ocurrido un error inesperado al cambiar el estado de la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al cambiar el estado de la órden', 'Ha ocurrido un error inesperado al cambiar el estado de la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
@@ -2257,13 +2257,13 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Estado de la comanda modificada', 'Se ha modificado el estado de la comanda existosamente.');
+          this.showNotification('success', 'Estado de la órden modificada', 'Se ha modificado el estado de la órden existosamente.');
         } else {
-          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
@@ -2275,13 +2275,13 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Estado de la comanda modificada', 'Se ha modificado el estado de la comanda existosamente.');
+          this.showNotification('success', 'Estado de la órden modificada', 'Se ha modificado el estado de la órden existosamente.');
         } else {
-          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
@@ -2293,13 +2293,13 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Localidad modificada', 'Se ha modificado la localidad de la comanda existosamente.');
+          this.showNotification('success', 'Localidad modificada', 'Se ha modificado la localidad de la órden existosamente.');
         } else {
-          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
@@ -2311,13 +2311,13 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Método de envío modificado', 'Se ha modificado el método de envío de la comanda existosamente.');
+          this.showNotification('success', 'Método de envío modificado', 'Se ha modificado el método de envío de la órden existosamente.');
         } else {
-          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
@@ -2329,13 +2329,13 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Método de pago modificado', 'Se ha modificado el método de pago de la comanda existosamente.');
+          this.showNotification('success', 'Método de pago modificado', 'Se ha modificado el método de pago de la órden existosamente.');
         } else {
-          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
@@ -2347,13 +2347,13 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Estado de pago modificado', 'Se ha modificado el estado de pago de la comanda existosamente.');
+          this.showNotification('success', 'Estado de pago modificado', 'Se ha modificado el estado de pago de la órden existosamente.');
         } else {
-          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
@@ -2365,13 +2365,13 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Nota de la dirección modificada', 'Se ha modificado la nota de la dirección de la comanda existosamente.');
+          this.showNotification('success', 'Nota de la dirección modificada', 'Se ha modificado la nota de la dirección de la órden existosamente.');
         } else {
-          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
@@ -2383,13 +2383,13 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Nota de la ubicación modificada', 'Se ha modificado la nota de la ubicación de la comanda existosamente.');
+          this.showNotification('success', 'Nota de la ubicación modificada', 'Se ha modificado la nota de la ubicación de la órden existosamente.');
         } else {
-          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
@@ -2401,13 +2401,13 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Mensajero reasignado', 'Se ha reasignado el mensajero de la comanda existosamente.');
+          this.showNotification('success', 'Mensajero reasignado', 'Se ha reasignado el mensajero de la órden existosamente.');
         } else {
-          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
@@ -2432,13 +2432,13 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Ubicación modificada', 'Se ha modificado la ubicación de la comanda existosamente.');
+          this.showNotification('success', 'Ubicación modificada', 'Se ha modificado la ubicación de la órden existosamente.');
         } else {
-          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
 
@@ -2450,13 +2450,13 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Enlace de ubicación modificada', 'Se ha modificado el enlace de la ubicación de la comanda existosamente.');
+          this.showNotification('success', 'Enlace de ubicación modificada', 'Se ha modificado el enlace de la ubicación de la órden existosamente.');
         } else {
-          this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
       .catch(() => {
-        this.showNotification('danger', 'Error al modificar la comanda', 'Ha ocurrido un error inesperado al modificar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        this.showNotification('danger', 'Error al modificar la órden', 'Ha ocurrido un error inesperado al modificar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
     
@@ -2618,13 +2618,13 @@ export default {
         } else {
           this.errorCount = this.errorCount + 1;
           if (this.errorCount >= 3){
-            this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            this.showNotification('danger', 'Error al consultar las órdenes', 'Ha ocurrido un error inesperado al consultar las órdenes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           }        }
       })
       .catch(() => {
         this.errorCount = this.errorCount + 1;
         if (this.errorCount >= 3){
-          this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al consultar las órdenes', 'Ha ocurrido un error inesperado al consultar las órdenes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
     },
@@ -2684,14 +2684,14 @@ export default {
         } else {
           this.errorCount = this.errorCount + 1;
           if (this.errorCount >= 3){
-            this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            this.showNotification('danger', 'Error al consultar las órdenes', 'Ha ocurrido un error inesperado al consultar las órdenes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           }        
         }
       })
       .catch(() => {
         this.errorCount = this.errorCount + 1;
         if (this.errorCount >= 3){
-          this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al consultar las órdenes', 'Ha ocurrido un error inesperado al consultar las órdenes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }  
       })
     },
@@ -2745,14 +2745,14 @@ export default {
         } else {
           this.errorCount = this.errorCount + 1;
           if (this.errorCount >= 3){
-            this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+            this.showNotification('danger', 'Error al consultar las órdenes', 'Ha ocurrido un error inesperado al consultar las órdenes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           }  
         }
       })
       .catch(() => {
         this.errorCount = this.errorCount + 1;
         if (this.errorCount >= 3){
-          this.showNotification('danger', 'Error al consultar las comandas', 'Ha ocurrido un error inesperado al consultar las comandas. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          this.showNotification('danger', 'Error al consultar las órdenes', 'Ha ocurrido un error inesperado al consultar las órdenes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }      
       })
     },
