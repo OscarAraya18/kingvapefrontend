@@ -153,6 +153,20 @@
 
     </b-modal>
 
+
+    <b-modal id="deliverModal" size="sm" centered hide-header @ok="deliverInvoice()">
+      <h5><strong>Seleccione un facturador: </strong></h5>
+      <b-form-select v-model="assignedLocalityAgentBiller">
+        <b-form-select-option
+         v-for="(localityAgentOption, localityAgentOptionIndex) in localityAgentBillerOptions"
+         :key="localityAgentOptionIndex"
+         :value="localityAgentOption.value"
+         :title="localityAgentOption.title"> 
+          <p>{{localityAgentOption.text}}</p>
+        </b-form-select-option>
+      </b-form-select>
+    </b-modal>
+
     
     <b-modal id="updateWhatsappInvoiceClientNameModal" size="sm" centered hide-header @ok="updateWhatsappInvoiceClientName()">
       <b-form-input v-model="updatedWhatsappInvoiceClientName" placeholder="Coloque un nombre"></b-form-input>
@@ -217,40 +231,23 @@
 
       <div style="display: flex;">
         <div style="width: 50%; margin-right: 50px;">
-          <h5><strong>Estado: </strong></h5>
-          <div style="display: flex;">
-            <b-form-select v-model="updatedWhatsappInvoice.whatsappInvoiceState" :options="updateWhatsappInvoiceStateOptions"></b-form-select>
-            <div class="flex-grow-1"></div>
-            <i @click="updateWhatsappInvoiceState()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
-          </div>
-          <br>
 
-          <h5><strong>Método de envío: </strong></h5>
           <div style="display: flex;">
-            <b-form-select v-model="updatedWhatsappInvoice.whatsappInvoiceShippingMethod" :options="updateWhatsappInvoiceShippingMethodOptions"></b-form-select>
-            <div class="flex-grow-1"></div>
-            <i @click="updateWhatsappInvoiceShippingMethod()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
-            <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceShippingMethod'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
+            <h5><strong>Estado: </strong> {{ updatedWhatsappInvoice.whatsappInvoiceState }}</h5>
           </div>
-          <br>
-
-          <h5><strong>Método de pago: </strong></h5>
           <div style="display: flex;">
-            <b-form-select v-model="updatedWhatsappInvoice.whatsappInvoicePaymentMethod" :options="updateWhatsappInvoicePaymentMethodOptions"></b-form-select>
-            <div class="flex-grow-1"></div>
-            <i @click="updateWhatsappInvoicePaymentMethod()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
-            <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoicePaymentMethod'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
+            <h5><strong>Método de envío: </strong> {{ updatedWhatsappInvoice.whatsappInvoiceShippingMethod }}</h5>
+            <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceShippingMethod'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: auto; left: 10px; top:-5px; position: relative;"/>
           </div>
-          <br>
-
-          <h5><strong>Estado de pago: </strong></h5>
           <div style="display: flex;">
-            <b-form-select v-model="updatedWhatsappInvoice.whatsappInvoicePaymentState" :options="updateWhatsappInvoicePaymentStateOptions"></b-form-select>
-            <div class="flex-grow-1"></div>
-            <i @click="updateWhatsappInvoicePaymentState()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
-            <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoicePaymentState'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
-
+            <h5><strong>Método de pago: </strong> {{updatedWhatsappInvoice.whatsappInvoicePaymentMethod}}</h5>
+            <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoicePaymentMethod'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: auto; left: 10px; top:-5px; position: relative;"/>
           </div>
+          <div style="display: flex;">
+            <h5><strong>Estado de pago: </strong> {{ updatedWhatsappInvoice.whatsappInvoicePaymentState }}</h5>
+            <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoicePaymentState'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: auto; left: 10px; top:-5px; position: relative;"/>
+          </div>
+
           <br>
 
           <h5><strong>Nota de la dirección: </strong></h5>
@@ -2066,10 +2063,17 @@ export default {
 
     clickOnLocalityInvoice(whatsappInvoice){
       if (this.agentType == 'locality'){
-        this.$root.$emit('bv::show::modal', 'assignLocalityAgentModal');
-        this.assignedWhatsappInvoice = whatsappInvoice;
-        this.assignedLocalityAgent = null;
-        this.assignedLocalityAgentBiller = null;
+        if (whatsappInvoice.whatsappInvoiceShippingMethod == 'Retiro en sucursal' || whatsappInvoice.whatsappInvoiceShippingMethod == 'Uber Flash'){
+          this.$root.$emit('bv::show::modal', 'deliverModal');
+          this.assignedWhatsappInvoice = whatsappInvoice;
+          this.assignedLocalityAgent = null;
+          this.assignedLocalityAgentBiller = null;
+        } else {
+          this.$root.$emit('bv::show::modal', 'assignLocalityAgentModal');
+          this.assignedWhatsappInvoice = whatsappInvoice;
+          this.assignedLocalityAgent = null;
+          this.assignedLocalityAgentBiller = null;
+        }
       }
     },
     
@@ -2125,6 +2129,33 @@ export default {
         this.showNotification('danger', 'Error al asignar la comanda', 'Complete el mensajero asignado y el facturador e intente nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       }
     },
+
+
+    deliverInvoice(){
+      if (this.assignedLocalityAgentBiller != null){        
+        axios.post(this.backendURL+'/updateWhatsappInvoiceState', 
+        {
+          whatsappInvoiceID: this.assignedWhatsappInvoice.whatsappInvoiceID,
+          whatsappInvoiceState: 'E',
+          whatsappInvoiceLocalityID: this.assignedWhatsappInvoice.whatsappInvoiceLocalityID,
+          whatsappInvoiceLocalityAgentID: null,
+          whatsappInvoiceLocalityAgentBillerID: this.assignedLocalityAgentBiller
+        })
+        .then((response) =>{
+          if (response.data.success){
+            this.showNotification('success', 'Comanda entregada', 'Se ha entregado la comanda existosamente.');
+          } else {
+            this.showNotification('danger', 'Error al entregar la comanda', 'Ha ocurrido un error inesperado al entregar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }
+        })
+        .catch(() => {
+          this.showNotification('danger', 'Error al entregar la comanda', 'Ha ocurrido un error inesperado al entregar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        })
+      } else {
+        this.showNotification('danger', 'Error al entregar la comanda', 'Complete el facturador e intente nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      }
+    },
+
 
     updateWhatsappInvoiceClientName(){
       axios.post(this.backendURL+'/updateWhatsappInvoiceClientName', 
