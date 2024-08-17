@@ -71,7 +71,7 @@
           </li>
           
           <li
-            v-if="(agentName != 'Mile Cruz')"
+            v-if="(agentName != 'Mile Cruz') && (localityName != 'King Vape Metro Plaza')"
             @mouseenter="toggleSubMenu"
             class="nav-item"
             data-item="centralInvoice"
@@ -913,6 +913,7 @@ export default {
       isMobile,
       isAdmin: '',
       agentName: '',
+      localityName: '',
       ranking: false,
 
       locality: false,
@@ -948,6 +949,8 @@ export default {
     if (localStorage.getItem('locality') == 'yes'){
       this.locality = true;
       this.ranking = false;
+      this.localityName = localStorage.getItem('localityName');
+
     }
 
     if (localStorage.getItem('agentType') == 'localityAgent'){

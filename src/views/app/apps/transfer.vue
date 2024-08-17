@@ -239,6 +239,8 @@ export default {
           storeMessageStoreName = 'Zapote';
         } else if (localStorage.getItem('localityName') == 'King Vape Heredia'){
           storeMessageStoreName = 'Heredia';
+        } else if (localStorage.getItem('localityName') == 'King Vape Metro Plaza'){
+          storeMessageStoreName = 'Metro Plaza';
         } 
       }
       
@@ -289,6 +291,8 @@ export default {
             storeMessageStoreName = this.transferZapoteLocality;
           } else if (localStorage.getItem('localityName') == 'King Vape Heredia'){
             storeMessageStoreName = 'Heredia';
+          } else if (localStorage.getItem('localityName') == 'King Vape Metro Plaza'){
+            storeMessageStoreName = 'Metro Plaza';
           } else {
             storeMessageStoreName = this.transferLocality;
           }

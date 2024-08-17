@@ -210,7 +210,6 @@ export default {
           localStorage.setItem('localityID', response.data.result['localityID']);
           localStorage.setItem('localityName', response.data.result['localityName']);
           localStorage.setItem('localityPassword', response.data.result['localityPassword']);
-
           router.push('/app/apps/transfer');
         } else {
           this.loaderTienda = false;
