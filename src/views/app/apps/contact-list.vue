@@ -14,8 +14,14 @@
       </div>
       
       <div v-else>
-        <img v-if="IDModalType == 'image'" style="width: 1000px;" :src="IDModalSource">
-        <iframe v-else :src="IDModalSource" width="100%" height="600px"></iframe>
+        <div v-if="IDModalSource">
+          <img v-if="IDModalType == 'image'" style="width: 1000px;" :src="IDModalSource">
+          <iframe v-else :src="IDModalSource" width="100%" height="600px"></iframe>
+        </div>
+        <div v-else>
+          Sin cédula
+        </div>
+        
       </div>
     </b-modal>
 
@@ -737,21 +743,26 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          if (response.data.result.type == 'image'){
-            this.IDModalSource = `data:image/png;base64,${response.data.result.source}`;
-            this.IDModalType = response.data.result.type;
-            this.loaderID = false;
-          } else {
-            const binaryString = window.atob(response.data.result.source);
-            const len = binaryString.length;
-            const bytes = new Uint8Array(len);
-            for (let i = 0; i < len; i++) {
-              bytes[i] = binaryString.charCodeAt(i);
+          if (response.data.result.source){
+            if (response.data.result.type == 'image'){
+              this.IDModalSource = `data:image/png;base64,${response.data.result.source}`;
+              this.IDModalType = response.data.result.type;
+              this.loaderID = false;
+            } else {
+              const binaryString = window.atob(response.data.result.source);
+              const len = binaryString.length;
+              const bytes = new Uint8Array(len);
+              for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+              }
+              const blob = new Blob([bytes], { type: 'application/pdf' });
+              this.IDModalSource = URL.createObjectURL(blob);
+              this.IDModalType = response.data.result.type;
+              this.loaderID = false;
             }
-            const blob = new Blob([bytes], { type: 'application/pdf' });
-            this.IDModalSource = URL.createObjectURL(blob);
-            this.IDModalType = response.data.result.type;
+          } else {
             this.loaderID = false;
+
           }
         } else {
           this.showNotification('danger', 'Error al abrir la cédula del cliente', 'Ha ocurrido un error inesperado abrir la cédula del cliente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
@@ -1164,7 +1175,7 @@ export default {
             locationDetails: response.data.result[contact].contactLocationDetails,
             note: response.data.result[contact].contactNote,
             button: contact,
-            clientID: response.data.result[contact].clientIDSPhoneNumber
+            clientID: true
           })
         }
         this.loaderContact = false;
