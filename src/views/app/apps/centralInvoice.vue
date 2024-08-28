@@ -13,23 +13,31 @@
       </div>
       
       <div v-else>
-        <div v-if="insertIDModalSource" style="text-align: center;">
-          <img v-if="insertIDModalType == 'image'" style="width: 200px;" :src="insertIDModalSource">
-          <iframe v-else :src="insertIDModalSource" width="50%" height="300px"></iframe>
-        </div>
-        <div v-else style="text-align: center;">
-          <div v-if="insertIDModalSource2">
-            <img style="width: 200px;" :src="insertIDModalSource2">
-            <br>
-            <br>
-          </div>
-          <button @click="uploadImage()" class="btn btn-success mr-2" type="button" id="sendFiles">Cargar archivo de la cédula</button>
-          <input type="file" accept="image/png, image/jpeg, application/pdf" @change="changeImage()" ref="imageFile" style="display: none;" id="imageUploader">
-        </div>
-        <div style="text-align: center" v-if="insertIDModalSource2">
+        <div v-if="currentClientSource" style="text-align: center;">
+          <p style="margin: 0; font-size: 15px;">
+            <strong>Cédula del cliente:</strong>
+          </p>
           <br>
-          <button @click="insertClientIDS()" class="btn btn-info mr-2" type="button">Registrar cédula</button>
+          <img v-if="currentClientType == 'image'" style="width: 200px;" :src="currentClientSource">
+          <iframe v-else :src="currentClientSource" width="50%" height="300px"></iframe>
+          <br><br>
+          <button @click="uploadImage(true)" class="btn btn-success mr-2" type="button" id="sendFiles">Cambiar cédula del cliente</button>
+          <input type="file" accept="image/png, image/jpeg, application/pdf" @change="changeImage()" ref="imageFile1" style="display: none;" id="imageUploader1">
         </div>
+        
+        <div v-if="currentAuthorizedSource" style="text-align: center;">
+          <br><br><br><br>
+          <p style="margin: 0; font-size: 15px;">
+            <strong>Cédula del autorizado del cliente:</strong>
+          </p>
+          <br>
+          <img v-if="currentAuthorizedType == 'image'" style="width: 200px;" :src="currentAuthorizedSource">
+          <iframe v-else :src="currentAuthorizedSource" width="50%" height="300px"></iframe>
+          <br><br>
+          <button @click="uploadImage(false)" class="btn btn-warning mr-2" type="button" id="sendFiles">Cargar cédula del autorizado del cliente</button>
+          <input type="file" accept="image/png, image/jpeg, application/pdf" @change="changeImage()" ref="imageFile2" style="display: none;" id="imageUploader2">
+        </div>
+        
       </div>
     </b-modal>
     
@@ -1514,14 +1522,18 @@ export default {
 
 
       insertIDModalLoader: false,
-      insertIDModalSource: null,
-      insertIDModalType: null,
+      
+      currentClientSource: null,
+      currentClientType: null,
+
+      currentAuthorizedSource: null,
+      currentAuthorizedType: null,
 
       file: null,
 
-      insertIDModalSource2: null,
-      idphone: null
-
+      newSource: null,
+      idphone: null,
+      isClient: false
     };
   },
 
@@ -1542,9 +1554,10 @@ export default {
       this.insertIDModalLoader = true;
       axios.post(constants.routes.backendAPI+'/insertClientIDS',
       {
+        'idIsClient': this.isClient,
         'clientIDSPhoneNumber': this.idphone,
         'clientIDSType': 'image',
-        'clientIDSImage': this.insertIDModalSource2
+        'clientIDSImage': this.newSource
       })
       .then((response) =>{
         if (response.data.success){
@@ -1563,27 +1576,39 @@ export default {
     },
 
     changeImage(){
-      this.file = this.$refs.imageFile.files[0];
+      console.log(this.$refs.imageFile2);
+      this.file = this.isClient ? this.$refs.imageFile1.files[0] : this.$refs.imageFile2.files[0];
       var reader = new FileReader();
+      console.log(this.file)
       reader.readAsDataURL(this.file);
       reader.onload = () => {
-        this.insertIDModalSource2 = reader.result;
+        this.newSource = reader.result;
+        this.insertClientIDS();
       };
       reader.onerror = function (error) {
         this.showNotification('danger', 'Error al cargar la imagen', 'Ha ocurrido un error inesperado al cargar la imagen. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       };
     },
 
-    uploadImage(){
-      document.getElementById('imageUploader').click();
+    uploadImage(isClient){
+      this.isClient = isClient;
+      if (this.isClient){
+        document.getElementById('imageUploader1').click();
+      } else {
+        document.getElementById('imageUploader2').click();
+      }
     },
 
     openInsertClientIDSImage(phoneNumber){
       this.idphone = phoneNumber;
       this.insertIDModalLoader = true;
-      this.insertIDModalSource = null;
-      this.insertIDModalType = null;
-      this.insertIDModalSource2 = null;
+      
+      this.currentClientSource = null;
+      this.currentClientType = null;
+      this.currentAuthorizedSource = null;
+      this.currentAuthorizedType = null;
+
+      this.newSource = null;
 
       this.$root.$emit('bv::show::modal', 'insertIDModal');
       
@@ -1595,8 +1620,8 @@ export default {
         if (response.data.success){
           if (response.data.result.source){
             if (response.data.result.type == 'image'){
-              this.insertIDModalSource = `data:image/png;base64,${response.data.result.source}`;
-              this.insertIDModalType = response.data.result.type;
+              this.currentClientSource = `data:image/png;base64,${response.data.result.source}`;
+              this.currentClientType = response.data.result.type;
             } else {
               const binaryString = window.atob(response.data.result.source);
               const len = binaryString.length;
@@ -1605,8 +1630,24 @@ export default {
                 bytes[i] = binaryString.charCodeAt(i);
               }
               const blob = new Blob([bytes], { type: 'application/pdf' });
-              this.insertIDModalSource = URL.createObjectURL(blob);
-              this.insertIDModalType = response.data.result.type;
+              this.currentClientSource = URL.createObjectURL(blob);
+              this.currentClientType = response.data.result.type;
+            }
+          }
+          if (response.data.result.secondarySource){
+            if (response.data.result.secondaryType == 'image'){
+              this.currentAuthorizedSource = `data:image/png;base64,${response.data.result.secondarySource}`;
+              this.currentAuthorizedType = response.data.result.secondaryType;
+            } else {
+              const binaryString = window.atob(response.data.result.secondarySource);
+              const len = binaryString.length;
+              const bytes = new Uint8Array(len);
+              for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+              }
+              const blob = new Blob([bytes], { type: 'application/pdf' });
+              this.currentAuthorizedSource = URL.createObjectURL(blob);
+              this.currentAuthorizedType = response.data.result.secondaryType;
             }
           }
           this.insertIDModalLoader = false;
