@@ -21,9 +21,9 @@
           <img v-if="currentClientType == 'image'" style="width: 200px;" :src="currentClientSource">
           <iframe v-else :src="currentClientSource" width="50%" height="300px"></iframe>
           <br><br>
-          <button @click="uploadImage(true)" class="btn btn-success mr-2" type="button" id="sendFiles">Cambiar cédula del cliente</button>
-          <input type="file" accept="image/png, image/jpeg, application/pdf" @change="changeImage()" ref="imageFile1" style="display: none;" id="imageUploader1">
         </div>
+        <button @click="uploadImage(true)" class="btn btn-success mr-2" type="button" id="sendFiles">Cambiar cédula del cliente</button>
+        <input type="file" accept="image/png, image/jpeg, application/pdf" @change="changeImage()" ref="imageFile1" style="display: none;" id="imageUploader1">
         
         <div v-if="currentAuthorizedSource" style="text-align: center;">
           <br><br><br><br>
@@ -34,9 +34,9 @@
           <img v-if="currentAuthorizedType == 'image'" style="width: 200px;" :src="currentAuthorizedSource">
           <iframe v-else :src="currentAuthorizedSource" width="50%" height="300px"></iframe>
           <br><br>
-          <button @click="uploadImage(false)" class="btn btn-warning mr-2" type="button" id="sendFiles">Cargar cédula del autorizado del cliente</button>
-          <input type="file" accept="image/png, image/jpeg, application/pdf" @change="changeImage()" ref="imageFile2" style="display: none;" id="imageUploader2">
         </div>
+        <button @click="uploadImage(false)" class="btn btn-warning mr-2" type="button" id="sendFiles">Cargar cédula del autorizado del cliente</button>
+        <input type="file" accept="image/png, image/jpeg, application/pdf" @change="changeImage()" ref="imageFile2" style="display: none;" id="imageUploader2">
         
       </div>
     </b-modal>
