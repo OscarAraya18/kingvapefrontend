@@ -289,6 +289,7 @@
           </div>
 
           <div v-if="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason">
+            <br>
             <h5><strong>Motivo del fallo en la entrega: </strong></h5>
             <div style="display: flex;">
               <b-form-textarea no-resize rows="5" class="form-control" disabled v-model="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason"/>    
@@ -374,6 +375,7 @@
       <br>
 
       <div v-if="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason">
+        <br>
         <h5><strong>Motivo del fallo en la entrega: </strong></h5>
         <div style="display: flex;">
           <b-form-textarea no-resize rows="3" class="form-control" disabled v-model="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason"/>    
@@ -580,6 +582,7 @@
 
 
           <div v-if="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason">
+            <br>
             <h5><strong>Motivo del fallo en la entrega: </strong></h5>
             <div style="display: flex;">
               <b-form-textarea no-resize rows="3" class="form-control" disabled v-model="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason"/>
