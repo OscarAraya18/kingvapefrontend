@@ -321,6 +321,10 @@ const routes = [
             component: () => import("./views/app/apps/centralInvoice"),
           },
           {
+            path: "storeOrders",
+            component: () => import("./views/app/apps/storeOrders"),
+          },
+          {
             path: "contact-details",
             component: () => import("./views/app/apps/contact-details"),
           },

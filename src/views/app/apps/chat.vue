@@ -4596,6 +4596,7 @@ export default {
           this.longitud = 0;
           this.whatsappInvoiceClientLocationURL = '';
           this.whatsappInvoiceIsForToday = true;
+          this.currentActiveConversation.whatsappConversationPin = true;
         }
         this.scrollDown();
 
