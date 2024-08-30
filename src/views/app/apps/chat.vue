@@ -1961,7 +1961,7 @@ export default {
       historyLoader: false,
       historyConversations: [],
 
-      historyConversationsColumns: [ {label: "", field: "whatsappConversationActions", thClass: "text-left", tdClass: "text-left"}, {label: "Atendido por", field: "agentName", thClass: "text-left", tdClass: "text-left"}, {label: "Resultado", field: "whatsappConversationCloseComment", thClass: "text-left", tdClass: "text-left"}, {label: "Fecha de inicio", field: "whatsappConversationStartDateTime", thClass: "text-left", tdClass: "text-left"}, {label: "Fecha de finalización", field: "whatsappConversationEndDateTime", thClass: "text-left", tdClass: "text-left"}],
+      historyConversationsColumns: [{label: "Atendido por", field: "agentName", thClass: "text-left", tdClass: "text-left"}, {label: "Resultado", field: "whatsappConversationCloseComment", thClass: "text-left", tdClass: "text-left"}, {label: "Fecha de inicio", field: "whatsappConversationStartDateTime", thClass: "text-left", tdClass: "text-left"}, {label: "Fecha de finalización", field: "whatsappConversationEndDateTime", thClass: "text-left", tdClass: "text-left"}, {label: "", field: "whatsappConversationActions", thClass: "text-right", tdClass: "text-right"}],
 
 
       currentHistoryConversation: {},
