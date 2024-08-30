@@ -392,7 +392,7 @@
                   </div>
                   <div v-else-if="props.column.field == 'whatsappConversationActions'">
                     <i v-if='props.row.whatsappConversationAmount != 0' :id="'productos'+props.row.whatsappConversationID" class="i-Shopping-Cart text-25 text-info" @click="rememberCart(props.row)" style="cursor: pointer; margin-right: 10px;"></i>
-                    <b-tooltip v-if='props.row.productos.length != 0' :target="'productos'+props.row.whatsappConversationID" triggers="hover" variant="info">
+                    <b-tooltip v-if='props.row.productos.length != 0' :target="'productos'+props.row.whatsappConversationID" triggers="hover" variant="info" placement="left">
                       <div v-for="element in props.row.productos">
                         <p><strong>{{ element.descripcion }}: </strong>{{element.cantidad}}</p>
                       </div>
