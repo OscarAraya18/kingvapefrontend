@@ -391,7 +391,12 @@
                     <p>{{parseHour(props.row.whatsappConversationEndDateTime)}}</p>
                   </div>
                   <div v-else-if="props.column.field == 'whatsappConversationActions'">
-                    <i v-if='props.row.whatsappConversationAmount != 0' class="i-Shopping-Cart text-25 text-info" @click="rememberCart(props.row)" style="cursor: pointer; margin-right: 10px;"></i>
+                    <i v-if='props.row.whatsappConversationAmount != 0' :id="'productos'+props.row.whatsappConversationID" class="i-Shopping-Cart text-25 text-info" @click="rememberCart(props.row)" style="cursor: pointer; margin-right: 10px;"></i>
+                    <b-tooltip v-if='props.row.productos.length != 0' :target="'productos'+props.row.whatsappConversationID" triggers="hover" variant="info">
+                      <div v-for="element in props.row.productos">
+                        <p><strong>{{ element.descripcion }}: </strong>{{element.cantidad}}</p>
+                      </div>
+                    </b-tooltip>
                     <i class="i-Notepad text-25 text-warning" @click="openHistoryConversation(props.row)" v-b-modal.historyOpenModal style="cursor: pointer; margin-right: 7px;"></i>
                   </div>
                 </template>
@@ -1956,7 +1961,7 @@ export default {
       historyLoader: false,
       historyConversations: [],
 
-      historyConversationsColumns: [{label: "Atendido por", field: "agentName", thClass: "text-left", tdClass: "text-left"}, {label: "Resultado", field: "whatsappConversationCloseComment", thClass: "text-left", tdClass: "text-left"}, {label: "Fecha de inicio", field: "whatsappConversationStartDateTime", thClass: "text-left", tdClass: "text-left"}, {label: "Fecha de finalización", field: "whatsappConversationEndDateTime", thClass: "text-left", tdClass: "text-left"}, {label: "", field: "whatsappConversationActions", thClass: "text-right", tdClass: "text-right"}],
+      historyConversationsColumns: [ {label: "", field: "whatsappConversationActions", thClass: "text-left", tdClass: "text-left"}, {label: "Atendido por", field: "agentName", thClass: "text-left", tdClass: "text-left"}, {label: "Resultado", field: "whatsappConversationCloseComment", thClass: "text-left", tdClass: "text-left"}, {label: "Fecha de inicio", field: "whatsappConversationStartDateTime", thClass: "text-left", tdClass: "text-left"}, {label: "Fecha de finalización", field: "whatsappConversationEndDateTime", thClass: "text-left", tdClass: "text-left"}],
 
 
       currentHistoryConversation: {},
@@ -3100,6 +3105,9 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
+          response.data.result.forEach((objeto) => {
+            objeto.productos = JSON.parse(objeto.whatsappConversationProducts);
+          });
           this.historyConversations = response.data.result;
           this.historyLoader = false;
         } else {
