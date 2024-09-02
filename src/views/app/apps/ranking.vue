@@ -194,6 +194,7 @@ export default {
         'Ricardo Chacon': '#e86800',
         'Emma Garcia': '#b5e3eb',
         'Diana Jimenez': '#ffa8b8',
+        'Clara Salablanca': '#b338ff',
         'Kathy Gonzalez': '#b0a1ff',
         'Rafat J.': '#000000',
         'Abigail Vindas': '#fa5eff'
