@@ -1063,7 +1063,7 @@
                   </div><br>
                 </div>
                 <div class="form-group" style="display: flex; align-items: center;" v-if="availableConversation == true">
-                  <b-form-textarea ref="textoEnviar" :disabled='sendingMessageDisable' class="form-control" placeholder="Escribe un mensaje" @keyup.enter="sendWhatsappTextMessage()" @keyup="detectShortcuts()" v-model="currentActiveConversation.textoEnviar" style="margin-bottom: 20px; width: 100%" no-resize rows="3"/>
+                  <b-form-textarea ref="textoEnviar" :disabled='sendingMessageDisable' class="form-control" placeholder="Escribe un mensaje" @keyup.enter="handleEnter" @keyup="detectShortcuts()" v-model="currentActiveConversation.textoEnviar" style="margin-bottom: 20px; width: 100%" no-resize rows="3"/>
                   
                 </div>
 
@@ -2011,8 +2011,6 @@ export default {
       currentActiveConversation: null,
       updatedActiveConversationID: '',
       
-      newTextMessageContent: '',
-
       createNewConversationDialog: false,
       newConversationRecipientPhoneNumber: '',
       newConversationTextMessageContent: '',
@@ -2186,6 +2184,12 @@ export default {
   },
 
   methods: {
+
+    handleEnter(event){
+      if (!event.shiftKey) {
+        this.sendWhatsappTextMessage();
+      }
+    },
 
     insertClientIDS(){
       this.insertIDLoader = true;
@@ -3883,30 +3887,54 @@ export default {
     },
 
 
+
     sendWhatsappTextMessage(){
-      const envio = this.currentActiveConversation['textoEnviar'];
-      this.sendingMessageDisable = true;
-      var repliedMessageID = '';
-      if (this.repliedMessage != null){
-        repliedMessageID = this.repliedMessage.whatsappGeneralMessageID;
+      const whatsappTextMessageBody = this.currentActiveConversation['textoEnviar'];
+
+      if (/\S/.test(whatsappTextMessageBody)){
+        const whatsappConversationID = this.currentActiveConversationID;
+      const whatsappGeneralMessageRepliedMessageID = this.repliedMessage ? this.repliedMessage.whatsappGeneralMessageID : '';
+      const whatsappGeneralMessagePromiseID = Math.floor(Math.random() * 9000000000) + 1000000000;
+      
+      if (this.activeConversationsAsJSON[whatsappConversationID]){
+        
+        const newWhatsappTextMessage = 
+        {
+          'whatsappGeneralMessageCreationDateTime': new Date().toString(),
+          'whatsappGeneralMessageDeliveringDateTime': null,
+          'whatsappGeneralMessageID': null,
+          'whatsappGeneralMessageIndex': this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.length + 1,
+          'whatsappGeneralMessageOwnerPhoneNumber': null,
+          'whatsappGeneralMessageRepliedMessageID': this.repliedMessage ? this.repliedMessage.whatsappGeneralMessageID : null,
+          'whatsappGeneralMessageSendingDateTime': new Date().toString(),
+          'whatsappGeneralMessageType': 'text',
+          'whatsappTextMessageBody': whatsappTextMessageBody,
+          'whatsappGeneralMessagePromiseID': whatsappGeneralMessagePromiseID,
+        };
+        
+        this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(newWhatsappTextMessage);
+        this.currentActiveConversation['textoEnviar'] = '';
+        this.scrollDown();
+        this.sortConversations();
+      } else {
+
       }
+
       this.repliedMessage = null;
+
+
+
       axios.post(constants.routes.backendAPI+'/sendWhatsappTextMessage',
       {
-        whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
-        whatsappGeneralMessageRepliedMessageID: repliedMessageID,
-        whatsappTextMessageBody: envio
+        'whatsappConversationRecipientPhoneNumber': this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+        'whatsappGeneralMessageRepliedMessageID': whatsappGeneralMessageRepliedMessageID,
+        'whatsappTextMessageBody': whatsappTextMessageBody,
+        'whatsappGeneralMessagePromiseID': whatsappGeneralMessagePromiseID
       }) 
       .then((response) =>{ 
-        if (response.data.success){          
-          this.currentActiveConversation['textoEnviar'] = '';
-          this.sendingMessageDisable = false;
-          this.repliedMessage = null;
-          this.newTextMessageContent = '';
-          const whatsappConversationID = response.data.result.whatsappConversationID;
-
-          this.activeConversationsAsJSON[whatsappConversationID].textoEnviar = '';
-          this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);          
+        if (response.data.success){
+          const whatsappTextMessage = this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.find(whatsappConversationMessage => whatsappConversationMessage.whatsappGeneralMessagePromiseID == whatsappGeneralMessagePromiseID);
+          whatsappTextMessage.whatsappGeneralMessageID = response.data.result.whatsappGeneralMessageID;
           this.scrollDown();
           this.sortConversations();
           const intervalId = setInterval(() => {
@@ -3922,15 +3950,20 @@ export default {
             }
           }, 1);
         } else {
-          this.sendingMessageDisable = false;
           this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
-      .catch((error) =>{
-        this.sendingMessageDisable = false;
+      .catch((e) =>{
+        console.log(e)
         this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
+      }
+
+      
     },
+
+
+
 
     sendWhatsappFavoriteTextMessage(whatsappTextMessageContent){
       this.sendingMessageDisable = true;
