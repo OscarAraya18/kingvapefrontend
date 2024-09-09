@@ -980,7 +980,9 @@
                           </div>
                           
                           <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
-                            <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                            <img v-b-modal.bigImageModal v-if="currentActiveConversationMessage.whatsappImageMessageFileIsURL" @click="openBigImage(currentActiveConversationMessage.whatsappImageMessageFile)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappImageMessageFile">
+                            <img v-b-modal.bigImageModal v-else @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+
                             <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
                           </div>
                           
@@ -4435,23 +4437,55 @@ export default {
       })
     },
 
+
     async sendWhatsappProductMessage(product){
       this.repliedMessageID = null;
-      this.enviandoProductoLoader = true;
-      const whatsappProductImageMessageCaption = `*Nombre:* ` + product.descripcion + `. *Precio:* ₡` + product.precioVenta + `. *Descripción:* ` + product.datosAdicionales;
+
+      const whatsappImageMessageFile = product.localizacion;
+
+      const whatsappConversationID = this.currentActiveConversationID;
+      const whatsappGeneralMessagePromiseID = Math.floor(Math.random() * 9000000000) + 1000000000;
+      const whatsappProductImageMessageCaption = `*Nombre:* ` + product.descripcion + `.\n\n*Precio:* ₡` + product.precioVenta + `.\n\n*Descripción:* ` + product.datosAdicionales;
+
+      if (this.activeConversationsAsJSON[whatsappConversationID]){
+        
+        const newWhatsappTextMessage = 
+        {
+          'whatsappGeneralMessageCreationDateTime': new Date().toString(),
+          'whatsappGeneralMessageDeliveringDateTime': null,
+          'whatsappGeneralMessageID': null,
+          'whatsappGeneralMessageIndex': this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.length + 1,
+          'whatsappGeneralMessageOwnerPhoneNumber': null,
+          'whatsappGeneralMessageRepliedMessageID': this.repliedMessage ? this.repliedMessage.whatsappGeneralMessageID : null,
+          'whatsappGeneralMessageSendingDateTime': new Date().toString(),
+          'whatsappGeneralMessageType': 'image',
+          'whatsappImageMessageFile': whatsappImageMessageFile,
+          'whatsappImageMessageCaption': whatsappProductImageMessageCaption,
+          'whatsappImageMessageFileIsURL': true,
+          'whatsappGeneralMessagePromiseID': whatsappGeneralMessagePromiseID
+        };
+        this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(newWhatsappTextMessage);
+        this.scrollDown();
+        this.sortConversations();
+      } else {
+
+      }
+
       axios.post(constants.routes.backendAPI+'/sendWhatsappProductImageMessage', 
       {
         'whatsappConversationRecipientPhoneNumber': this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
         'whatsappProductImageMessageURL': product.localizacion,
-        'whatsappProductImageMessageCaption': whatsappProductImageMessageCaption
+        'whatsappProductImageMessageCaption': whatsappProductImageMessageCaption,
+        'whatsappGeneralMessagePromiseID': whatsappGeneralMessagePromiseID
       })
       .then((response) =>{
         if (response.data.success){
-          const whatsappConversationID = response.data.result.whatsappConversationID;
-          this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
-          this.enviandoProductoLoader = false;
+          this.showNotification('info', 'Producto enviado', 'Se ha enviado el producto al cliente');
+          const whatsappImageMessage = this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.find(whatsappConversationMessage => whatsappConversationMessage.whatsappGeneralMessagePromiseID == whatsappGeneralMessagePromiseID);
+          whatsappImageMessage.whatsappGeneralMessageID = response.data.result.whatsappGeneralMessageID;
           this.scrollDown();
           this.sortConversations();
+
         } else {
           this.showNotification('danger', 'Error al enviar el producto al cliente', 'Ha ocurrido un error inesperado al enviar el producto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
