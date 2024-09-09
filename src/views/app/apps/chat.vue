@@ -799,7 +799,9 @@
                                   </div>
                                   
                                   <div v-if="answeredMessage.whatsappGeneralMessageType == 'image'"> 
-                                    <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`">
+                                    <img v-b-modal.bigImageModal v-if="answeredMessage.whatsappImageMessageFileIsURL" @click="openBigImage(answeredMessage.whatsappImageMessageFile)" style="width: 250px;" :src="answeredMessage.whatsappImageMessageFile">
+
+                                    <img v-b-modal.bigImageModal v-else @click="openBigImage(`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`">
                                     <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappImageMessageCaption}}</p>
                                   </div>
                                   
@@ -934,7 +936,9 @@
                                   </div>
                                   
                                   <div v-if="answeredMessage.whatsappGeneralMessageType == 'image'"> 
-                                    <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`">
+                                    <img v-b-modal.bigImageModal v-if="answeredMessage.whatsappImageMessageFileIsURL" @click="openBigImage(answeredMessage.whatsappImageMessageFile)" style="width: 250px;" :src="answeredMessage.whatsappImageMessageFile">
+
+                                    <img v-b-modal.bigImageModal v-else @click="openBigImage(`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`">
                                     <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappImageMessageCaption}}</p>
                                   </div>
                                   
@@ -1029,7 +1033,10 @@
                     </div>
                     
                     <div v-if="repliedMessage.whatsappGeneralMessageType == 'image'"> 
-                      <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${repliedMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${repliedMessage.whatsappImageMessageFile}`">
+                      
+                      <img v-b-modal.bigImageModal v-if="repliedMessage.whatsappImageMessageFileIsURL" @click="openBigImage(repliedMessage.whatsappImageMessageFile)" style="width: 250px;" :src="repliedMessage.whatsappImageMessageFile">
+
+                      <img v-b-modal.bigImageModal v-else @click="openBigImage(`data:image/png;base64,${repliedMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${repliedMessage.whatsappImageMessageFile}`">
                       <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="repliedMessage.whatsappImageMessageCaption != null">{{repliedMessage.whatsappImageMessageCaption}}</p>
                     </div>
                     
