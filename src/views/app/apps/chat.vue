@@ -4080,6 +4080,8 @@ export default {
             this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result); 
             this.scrollDown();
             this.sortConversations();
+
+            
           } else {
             this.showNotification('danger', 'Error al enviar la imagen al cliente', 'Ha ocurrido un error inesperado al enviar la imagen. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
           }
@@ -4094,24 +4096,52 @@ export default {
     },
 
     sendWhatsappAudioMessage(){
-      var repliedMessageID = '';
-      if (this.repliedMessage != null){
-        repliedMessageID = this.repliedMessage.whatsappGeneralMessageID;
+
+      const whatsappConversationID = this.currentActiveConversationID;
+      const whatsappGeneralMessageRepliedMessageID = this.repliedMessage ? this.repliedMessage.whatsappGeneralMessageID : '';
+      const whatsappGeneralMessagePromiseID = Math.floor(Math.random() * 9000000000) + 1000000000;
+      
+
+      console.log(this.recordedAudioFile);
+
+      if (this.activeConversationsAsJSON[whatsappConversationID]){
+        
+        const newWhatsappTextMessage = 
+        {
+          'whatsappGeneralMessageCreationDateTime': new Date().toString(),
+          'whatsappGeneralMessageDeliveringDateTime': null,
+          'whatsappGeneralMessageID': null,
+          'whatsappGeneralMessageIndex': this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.length + 1,
+          'whatsappGeneralMessageOwnerPhoneNumber': null,
+          'whatsappGeneralMessageRepliedMessageID': this.repliedMessage ? this.repliedMessage.whatsappGeneralMessageID : null,
+          'whatsappGeneralMessageSendingDateTime': new Date().toString(),
+          'whatsappGeneralMessageType': 'audio',
+          'whatsappAudioMessageFile': this.recordedAudioFile.split(',')[1],
+          'whatsappGeneralMessagePromiseID': whatsappGeneralMessagePromiseID,
+        };
+        
+        this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(newWhatsappTextMessage);
+        this.scrollDown();
+        this.sortConversations();
+        this.$root.$emit('bv::hide::modal','recordAudioModal');
+      } else {
+
       }
-      this.loaderAudio = true;
+
       axios.post(constants.routes.backendAPI+'/sendWhatsappAudioMessage', 
       {
         'whatsappConversationRecipientPhoneNumber': this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
-        'whatsappGeneralMessageRepliedMessageID': repliedMessageID,
-        'whatsappAudioMessageFile': this.recordedAudioFile
+        'whatsappGeneralMessageRepliedMessageID': whatsappGeneralMessageRepliedMessageID,
+        'whatsappAudioMessageFile': this.recordedAudioFile,
+        'whatsappGeneralMessagePromiseID': whatsappGeneralMessagePromiseID
       }).then((response) =>{
         if (response.data.success){
-          this.loaderAudio = false;
-          this.repliedMessage = null;
-          const whatsappConversationID = response.data.result.whatsappConversationID;
-          this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
-          this.$root.$emit('bv::hide::modal','recordAudioModal');
+          const whatsappAudioMessage = this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.find(whatsappConversationMessage => whatsappConversationMessage.whatsappGeneralMessagePromiseID == whatsappGeneralMessagePromiseID);
+          whatsappAudioMessage.whatsappGeneralMessageID = response.data.result.whatsappGeneralMessageID;
+          
+         
           this.scrollDown();
+          
           this.sortConversations();
         } else {
           this.showNotification('danger', 'Error al enviar el audio', 'Ha ocurrido un error inesperado al enviar el audio. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
@@ -4478,6 +4508,8 @@ export default {
 
       }
 
+      this.showNotification('info', 'Producto enviado', 'Se ha enviado el producto al cliente');
+
       axios.post(constants.routes.backendAPI+'/sendWhatsappProductImageMessage', 
       {
         'whatsappConversationRecipientPhoneNumber': this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
@@ -4487,7 +4519,6 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('info', 'Producto enviado', 'Se ha enviado el producto al cliente');
           const whatsappImageMessage = this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.find(whatsappConversationMessage => whatsappConversationMessage.whatsappGeneralMessagePromiseID == whatsappGeneralMessagePromiseID);
           whatsappImageMessage.whatsappGeneralMessageID = response.data.result.whatsappGeneralMessageID;
           this.scrollDown();
