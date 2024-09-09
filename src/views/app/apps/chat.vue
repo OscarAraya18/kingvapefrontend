@@ -3906,6 +3906,77 @@ export default {
 
       if (/\S/.test(whatsappTextMessageBody)){
         const whatsappConversationID = this.currentActiveConversationID;
+        const whatsappGeneralMessageRepliedMessageID = this.repliedMessage ? this.repliedMessage.whatsappGeneralMessageID : '';
+        const whatsappGeneralMessagePromiseID = Math.floor(Math.random() * 9000000000) + 1000000000;
+        
+        if (this.activeConversationsAsJSON[whatsappConversationID]){
+          
+          const newWhatsappTextMessage = 
+          {
+            'whatsappGeneralMessageCreationDateTime': new Date().toString(),
+            'whatsappGeneralMessageDeliveringDateTime': null,
+            'whatsappGeneralMessageID': null,
+            'whatsappGeneralMessageIndex': this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.length + 1,
+            'whatsappGeneralMessageOwnerPhoneNumber': null,
+            'whatsappGeneralMessageRepliedMessageID': this.repliedMessage ? this.repliedMessage.whatsappGeneralMessageID : null,
+            'whatsappGeneralMessageSendingDateTime': new Date().toString(),
+            'whatsappGeneralMessageType': 'text',
+            'whatsappTextMessageBody': whatsappTextMessageBody,
+            'whatsappGeneralMessagePromiseID': whatsappGeneralMessagePromiseID,
+          };
+        
+          this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(newWhatsappTextMessage);
+          this.currentActiveConversation['textoEnviar'] = '';
+          this.scrollDown();
+          this.sortConversations();
+        } else {
+
+        }
+        this.repliedMessage = null;
+
+        axios.post(constants.routes.backendAPI+'/sendWhatsappTextMessage',
+        {
+          'whatsappConversationRecipientPhoneNumber': this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+          'whatsappGeneralMessageRepliedMessageID': whatsappGeneralMessageRepliedMessageID,
+          'whatsappTextMessageBody': whatsappTextMessageBody,
+          'whatsappGeneralMessagePromiseID': whatsappGeneralMessagePromiseID
+        }) 
+        .then((response) =>{ 
+          if (response.data.success){
+            const whatsappTextMessage = this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.find(whatsappConversationMessage => whatsappConversationMessage.whatsappGeneralMessagePromiseID == whatsappGeneralMessagePromiseID);
+            whatsappTextMessage.whatsappGeneralMessageID = response.data.result.whatsappGeneralMessageID;
+            this.scrollDown();
+            this.sortConversations();
+            const intervalId = setInterval(() => {
+              if (this.$refs.textoEnviar){
+                if (document.activeElement !== this.$refs.textoEnviar) {
+                  this.$refs.textoEnviar.focus();
+                  clearInterval(intervalId);
+                } else {
+                  clearInterval(intervalId);
+                }
+              } else {
+                clearInterval(intervalId);
+              }
+            }, 1);
+          } else {
+            this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          }
+      })
+      .catch(() =>{
+        this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+      }
+
+      
+    },
+
+
+
+
+    sendWhatsappFavoriteTextMessage(whatsappTextMessageContent){
+
+      const whatsappConversationID = this.currentActiveConversationID;
       const whatsappGeneralMessageRepliedMessageID = this.repliedMessage ? this.repliedMessage.whatsappGeneralMessageID : '';
       const whatsappGeneralMessagePromiseID = Math.floor(Math.random() * 9000000000) + 1000000000;
       
@@ -3921,80 +3992,31 @@ export default {
           'whatsappGeneralMessageRepliedMessageID': this.repliedMessage ? this.repliedMessage.whatsappGeneralMessageID : null,
           'whatsappGeneralMessageSendingDateTime': new Date().toString(),
           'whatsappGeneralMessageType': 'text',
-          'whatsappTextMessageBody': whatsappTextMessageBody,
+          'whatsappTextMessageBody': whatsappTextMessageContent,
           'whatsappGeneralMessagePromiseID': whatsappGeneralMessagePromiseID,
         };
-        
+      
         this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(newWhatsappTextMessage);
         this.currentActiveConversation['textoEnviar'] = '';
         this.scrollDown();
         this.sortConversations();
+        this.$root.$emit('bv::hide::modal','favoriteModal');
       } else {
 
       }
-
       this.repliedMessage = null;
 
-
-
-      axios.post(constants.routes.backendAPI+'/sendWhatsappTextMessage',
-      {
-        'whatsappConversationRecipientPhoneNumber': this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
-        'whatsappGeneralMessageRepliedMessageID': whatsappGeneralMessageRepliedMessageID,
-        'whatsappTextMessageBody': whatsappTextMessageBody,
-        'whatsappGeneralMessagePromiseID': whatsappGeneralMessagePromiseID
-      }) 
-      .then((response) =>{ 
-        if (response.data.success){
-          const whatsappTextMessage = this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.find(whatsappConversationMessage => whatsappConversationMessage.whatsappGeneralMessagePromiseID == whatsappGeneralMessagePromiseID);
-          whatsappTextMessage.whatsappGeneralMessageID = response.data.result.whatsappGeneralMessageID;
-          this.scrollDown();
-          this.sortConversations();
-          const intervalId = setInterval(() => {
-            if (this.$refs.textoEnviar){
-              if (document.activeElement !== this.$refs.textoEnviar) {
-                this.$refs.textoEnviar.focus();
-                clearInterval(intervalId);
-              } else {
-                clearInterval(intervalId);
-              }
-            } else {
-              clearInterval(intervalId);
-            }
-          }, 1);
-        } else {
-          this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        }
-      })
-      .catch(() =>{
-        this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-      })
-      }
-
-      
-    },
-
-
-
-
-    sendWhatsappFavoriteTextMessage(whatsappTextMessageContent){
-      this.sendingMessageDisable = true;
-      var repliedMessageID = '';
-      if (this.repliedMessage != null){
-        repliedMessageID = this.repliedMessage.whatsappGeneralMessageID
-      }
       axios.post(constants.routes.backendAPI+'/sendWhatsappTextMessage',
       {
         whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
-        whatsappGeneralMessageRepliedMessageID: repliedMessageID,
-        whatsappTextMessageBody: whatsappTextMessageContent
+        'whatsappGeneralMessageRepliedMessageID': whatsappGeneralMessageRepliedMessageID,
+        'whatsappTextMessageBody': whatsappTextMessageContent
       }) 
       .then((response) =>{ 
         if (response.data.success){
-          this.sendingMessageDisable = false;
-          this.repliedMessage = null;
-          const whatsappConversationID = response.data.result.whatsappConversationID;
-          this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);      
+          
+          const whatsappTextMessage = this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.find(whatsappConversationMessage => whatsappConversationMessage.whatsappGeneralMessagePromiseID == whatsappGeneralMessagePromiseID);
+          whatsappTextMessage.whatsappGeneralMessageID = response.data.result.whatsappGeneralMessageID;
           this.scrollDown();
           this.sortConversations();
           this.$root.$emit('bv::hide::modal','favoriteModal');
@@ -4101,9 +4123,6 @@ export default {
       const whatsappGeneralMessageRepliedMessageID = this.repliedMessage ? this.repliedMessage.whatsappGeneralMessageID : '';
       const whatsappGeneralMessagePromiseID = Math.floor(Math.random() * 9000000000) + 1000000000;
       
-
-      console.log(this.recordedAudioFile);
-
       if (this.activeConversationsAsJSON[whatsappConversationID]){
         
         const newWhatsappTextMessage = 
