@@ -1114,6 +1114,8 @@
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Escazu')">Escazu</b-dropdown-item>
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Cartago')">Cartago</b-dropdown-item>
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Heredia')">Heredia</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Metro Plaza')">Metro Plaza</b-dropdown-item>
+
                   </b-dropdown>
                   <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-right: 10px;" v-if="availableConversation == true">
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('CASA')">CASA</b-dropdown-item>
@@ -1520,6 +1522,8 @@
                       <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Escazu')">Escazu</b-dropdown-item>
                       <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Cartago')">Cartago</b-dropdown-item>
                       <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Heredia')">Heredia</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Metro Plaza')">Metro Plaza</b-dropdown-item>
+
                     </b-dropdown>
                     <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-left: 10px;" v-if="availableConversation == true">
                       <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('CASA')">CASA</b-dropdown-item>
@@ -3953,8 +3957,7 @@ export default {
           this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
-      .catch((e) =>{
-        console.log(e)
+      .catch(() =>{
         this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
       }
@@ -4161,6 +4164,9 @@ export default {
       } else if (locationName == 'Heredia') {
         var latitud = 9.99168;
         var longitud = -84.135;
+      } else if (locationName == 'Metro Plaza'){
+        var latitud = 9.94173;
+        var longitud = -84.1544995;
       }
       var repliedMessageID = '';
       if (this.repliedMessage != null){
