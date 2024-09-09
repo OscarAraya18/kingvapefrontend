@@ -4000,7 +4000,6 @@ export default {
         this.currentActiveConversation['textoEnviar'] = '';
         this.scrollDown();
         this.sortConversations();
-        this.$root.$emit('bv::hide::modal','favoriteModal');
       } else {
 
       }
@@ -4019,7 +4018,6 @@ export default {
           whatsappTextMessage.whatsappGeneralMessageID = response.data.result.whatsappGeneralMessageID;
           this.scrollDown();
           this.sortConversations();
-          this.$root.$emit('bv::hide::modal','favoriteModal');
         } else {
           this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
