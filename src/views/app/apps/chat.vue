@@ -1127,9 +1127,23 @@
 
                   </b-dropdown>
                   <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-right: 10px;" v-if="availableConversation == true">
-                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('CASA')">CASA</b-dropdown-item>
-                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('TRABAJO')">TRABAJO</b-dropdown-item>
-                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('OTRO')">OTRO</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('CASA')">
+                      <h5><strong>CASA</strong></h5>
+                      <MapComponent v-if="showMap && currentActiveConversation.whatsappConversationRecipientLocations['CASA'].latitude != '0'"  mapHeight="200px" mapWidth="300px" :clientLongitude="currentActiveConversation.whatsappConversationRecipientLocations['CASA'].longitude" :clientLatitude="currentActiveConversation.whatsappConversationRecipientLocations['CASA'].latitude"></MapComponent>
+                      <p v-else>Sin ubicación registrada</p>
+                    </b-dropdown-item>
+                    <br>
+                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('TRABAJO')">
+                      <h5><strong>TRABAJO</strong></h5>
+                      <MapComponent v-if="showMap && currentActiveConversation.whatsappConversationRecipientLocations['TRABAJO'].latitude != '0'"  mapHeight="200px" mapWidth="300px" :clientLongitude="currentActiveConversation.whatsappConversationRecipientLocations['TRABAJO'].longitude" :clientLatitude="currentActiveConversation.whatsappConversationRecipientLocations['TRABAJO'].latitude"></MapComponent>
+                      <p v-else>Sin ubicación registrada</p>
+                    </b-dropdown-item>
+                    <br>
+                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('OTRO')">
+                      <h5><strong>OTRO</strong></h5>
+                      <MapComponent v-if="showMap && currentActiveConversation.whatsappConversationRecipientLocations['OTRO'].latitude != '0'"  mapHeight="200px" mapWidth="300px" :clientLongitude="currentActiveConversation.whatsappConversationRecipientLocations['OTRO'].longitude" :clientLatitude="currentActiveConversation.whatsappConversationRecipientLocations['OTRO'].latitude"></MapComponent>
+                      <p v-else>Sin ubicación registrada</p>
+                    </b-dropdown-item>
                   </b-dropdown>
                   <button v-if="availableConversation == true" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="uploadImage()" id="sendFiles"><i class="i-Folder-With-Document"></i></button>
                   <input v-if="availableConversation == true" type="file" accept="image/png, image/jpeg, application/pdf" @change="sendWhatsappImageMessage()" ref="imageFile" style="display: none;" id="imageUploader">
@@ -1138,7 +1152,18 @@
                   <button v-if="availableConversation == true" id="sendDisposables" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.disposablesModal @click="deselectImages()">
                     <i class="i-Shopping-Bag"></i>
                   </button>
-                  <b-tooltip target="sendDisposables">Desechables</b-tooltip>
+
+                  <b-tooltip :show.sync="disposablesTooltip" target="sendDisposables" location="start">
+                    <div style="display: flex">
+                      <img :src="agentFavoriteImages[Math.floor(Math.random() * agentFavoriteImages.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
+                      <img :src="agentFavoriteImages[Math.floor(Math.random() * agentFavoriteImages.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                    </div>
+                    <br>
+                    <div style="display: flex">
+                      <img :src="agentFavoriteImages[Math.floor(Math.random() * agentFavoriteImages.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
+                      <img :src="agentFavoriteImages[Math.floor(Math.random() * agentFavoriteImages.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                    </div>
+                  </b-tooltip>
                   
                  
                   <b-modal @ok="sendWhatsappFavoriteImageMessage()" scrollable title="Catálogo de desechables" size="m" centered id="disposablesModal">
@@ -1182,7 +1207,18 @@
                   <button v-if="availableConversation == true" id="sendLiquids" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.liquidsModal @click="deselectImages()">
                     <i class="i-Drop"></i>
                   </button>
-                  <b-tooltip target="sendLiquids">Líquidos</b-tooltip>
+                  <b-tooltip :show.sync="liquidsTooltip" target="sendLiquids" location="start">
+                    <div style="display: flex">
+                      <img :src="liquids1[Math.floor(Math.random() * liquids1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
+                      <img :src="liquids1[Math.floor(Math.random() * liquids1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                    </div>
+                    <br>
+                    <div style="display: flex">
+                      <img :src="liquids1[Math.floor(Math.random() * liquids1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
+                      <img :src="liquids1[Math.floor(Math.random() * liquids1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                    </div>
+                  </b-tooltip>
+                  
                   <b-modal @ok="sendWhatsappFavoriteImageMessageLiquid()" scrollable title="Catálogo de líquidos" size="m" centered id="liquidsModal">
                     <b-nav tabs justified>
                       <b-nav-item :active="getActiveNavItemLiquid('Ice')" @click="changeActiveNavItemLiquid('Ice')">Ice</b-nav-item>
@@ -1221,7 +1257,18 @@
                   <button v-if="availableConversation == true" id="sendSalts" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.saltsModal @click="deselectImages()">
                     <i class="i-Delicious"></i>
                   </button>
-                  <b-tooltip target="sendSalts">Sales</b-tooltip>
+                  <b-tooltip :show.sync="saltsTooltip" target="sendSalts" location="start">
+                    <div style="display: flex">
+                      <img :src="liquids1[Math.floor(Math.random() * salts1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
+                      <img :src="liquids1[Math.floor(Math.random() * salts1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                    </div>
+                    <br>
+                    <div style="display: flex">
+                      <img :src="liquids1[Math.floor(Math.random() * salts1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
+                      <img :src="liquids1[Math.floor(Math.random() * salts1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                    </div>
+                  </b-tooltip>
+
                   <b-modal @ok="sendWhatsappFavoriteImageMessageSalt()" scrollable title="Catálogo de sales" size="m" centered id="saltsModal">
                     <b-nav tabs justified>
                       <b-nav-item :active="getActiveNavItemSalt('saltIce')" @click="changeActiveNavItemSalt('saltIce')">Ice</b-nav-item>
@@ -1315,7 +1362,17 @@
                   <button v-if="availableConversation == true" id="sendDisposables" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.disposablesModal @click="deselectImages()">
                     <i class="i-Shopping-Bag"></i>
                   </button>
-                  <b-tooltip target="sendDisposables">Desechables</b-tooltip>
+                  <b-tooltip :show.sync="disposablesTooltip" target="sendDisposables" location="start">
+                    <div style="display: flex">
+                      <img :src="agentFavoriteImages[Math.floor(Math.random() * agentFavoriteImages.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
+                      <img :src="agentFavoriteImages[Math.floor(Math.random() * agentFavoriteImages.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                    </div>
+                    <br>
+                    <div style="display: flex">
+                      <img :src="agentFavoriteImages[Math.floor(Math.random() * agentFavoriteImages.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
+                      <img :src="agentFavoriteImages[Math.floor(Math.random() * agentFavoriteImages.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                    </div>
+                  </b-tooltip>
   
                   <b-modal @ok="sendWhatsappFavoriteImageMessage()" scrollable title="Catálogo de desechables" size="m" centered id="disposablesModal">
                     <b-nav tabs justified>
@@ -1359,7 +1416,19 @@
                   <button v-if="availableConversation == true" id="sendLiquids" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.liquidsModal @click="deselectImages()">
                     <i class="i-Drop"></i>
                   </button>
-                  <b-tooltip target="sendLiquids">Líquidos</b-tooltip>
+                  
+                  <b-tooltip :show.sync="liquidsTooltip" target="sendLiquids" location="start">
+                    <div style="display: flex">
+                      <img :src="liquids1[Math.floor(Math.random() * liquids1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
+                      <img :src="liquids1[Math.floor(Math.random() * liquids1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                    </div>
+                    <br>
+                    <div style="display: flex">
+                      <img :src="liquids1[Math.floor(Math.random() * liquids1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
+                      <img :src="liquids1[Math.floor(Math.random() * liquids1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                    </div>
+                  </b-tooltip>
+
                   <b-modal @ok="sendWhatsappFavoriteImageMessageLiquid()" scrollable title="Catálogo de líquidos" size="m" centered id="liquidsModal">
                     <b-nav tabs justified>
                       <b-nav-item :active="getActiveNavItemLiquid('Ice')" @click="changeActiveNavItemLiquid('Ice')">Ice</b-nav-item>
@@ -1398,7 +1467,18 @@
                   <button v-if="availableConversation == true" id="sendSalts" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.saltsModal @click="deselectImages()">
                     <i class="i-Delicious"></i>
                   </button>
-                  <b-tooltip target="sendSalts">Sales</b-tooltip>
+                  <b-tooltip :show.sync="saltsTooltip" target="sendSalts" location="start">
+                    <div style="display: flex">
+                      <img :src="liquids1[Math.floor(Math.random() * salts1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
+                      <img :src="liquids1[Math.floor(Math.random() * salts1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                    </div>
+                    <br>
+                    <div style="display: flex">
+                      <img :src="liquids1[Math.floor(Math.random() * salts1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
+                      <img :src="liquids1[Math.floor(Math.random() * salts1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                    </div>
+                  </b-tooltip>
+
                   <b-modal @ok="sendWhatsappFavoriteImageMessageSalt()" scrollable title="Catálogo de sales" size="m" centered id="saltsModal">
                     <b-nav tabs justified>
                       <b-nav-item :active="getActiveNavItemSalt('saltIce')" @click="changeActiveNavItemSalt('saltIce')">Ice</b-nav-item>
@@ -2192,7 +2272,11 @@ export default {
 
       loaderPromos: false,
       promos: [],
-      allPromoSelected: false
+      allPromoSelected: false,
+
+      disposablesTooltip: false,
+      liquidsTooltip: false,
+      saltsTooltip: false
     };
   },
 
@@ -5425,6 +5509,13 @@ export default {
   },
 
   mounted(){    
+    this.disposablesTooltip = true;
+    this.disposablesTooltip = false;
+    this.liquidsTooltip = true;
+    this.liquidsTooltip = false;
+    this.saltsTooltip = true;
+    this.saltsTooltip = false;
+    
     this.cartagoMap = constants.routes.cartagoMap;
     this.cartagoMapOptions = constants.routes.cartagoMapOptions;
     this.herediaMap = constants.routes.herediaMap;
