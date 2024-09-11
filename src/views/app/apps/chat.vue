@@ -1152,21 +1152,39 @@
 
                   </b-dropdown>
                   <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-right: 10px;" v-if="availableConversation == true">
-                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('CASA')">
-                      <h5><strong>CASA</strong></h5>
-                      <MapComponent v-if="showMap && currentActiveConversation.whatsappConversationRecipientLocations['CASA'].latitude != '0'"  mapHeight="200px" mapWidth="300px" :clientLongitude="currentActiveConversation.whatsappConversationRecipientLocations['CASA'].longitude" :clientLatitude="currentActiveConversation.whatsappConversationRecipientLocations['CASA'].latitude"></MapComponent>
+                    <b-dropdown-item style="z-index: 2000;">
+                      <div style="display: flex;">
+                        <h5><strong>CASA</strong></h5>
+                        <div class="flex-grow-1"></div>
+                        <i v-if="showMap && currentActiveConversation.whatsappConversationRecipientLocations['CASA'].latitude != '0'" @click="deleteLocation('CASA')" class="icon-regular i-Eraser-2" style="color: red; cursor: pointer;"></i>
+                      </div>
+                      <div v-if="showMap && currentActiveConversation.whatsappConversationRecipientLocations['CASA'].latitude != '0'" @click="sendWhatsappLocationMessage('CASA')">
+                        <MapComponent mapHeight="200px" mapWidth="300px" :clientLongitude="currentActiveConversation.whatsappConversationRecipientLocations['CASA'].longitude" :clientLatitude="currentActiveConversation.whatsappConversationRecipientLocations['CASA'].latitude"></MapComponent>
+                      </div>
                       <p v-else>Sin ubicación registrada</p>
                     </b-dropdown-item>
                     <br>
-                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('TRABAJO')">
-                      <h5><strong>TRABAJO</strong></h5>
-                      <MapComponent v-if="showMap && currentActiveConversation.whatsappConversationRecipientLocations['TRABAJO'].latitude != '0'"  mapHeight="200px" mapWidth="300px" :clientLongitude="currentActiveConversation.whatsappConversationRecipientLocations['TRABAJO'].longitude" :clientLatitude="currentActiveConversation.whatsappConversationRecipientLocations['TRABAJO'].latitude"></MapComponent>
+                    <b-dropdown-item style="z-index: 2000;">
+                      <div style="display: flex;">
+                        <h5><strong>TRABAJO</strong></h5>
+                        <div class="flex-grow-1"></div>
+                        <i v-if="showMap && currentActiveConversation.whatsappConversationRecipientLocations['TRABAJO'].latitude != '0'" @click="deleteLocation('TRABAJO')" class="icon-regular i-Eraser-2" style="color: red; cursor: pointer;"></i>
+                      </div>
+                      <div v-if="showMap && currentActiveConversation.whatsappConversationRecipientLocations['TRABAJO'].latitude != '0'" @click="sendWhatsappLocationMessage('TRABAJO')">
+                        <MapComponent mapHeight="200px" mapWidth="300px" :clientLongitude="currentActiveConversation.whatsappConversationRecipientLocations['TRABAJO'].longitude" :clientLatitude="currentActiveConversation.whatsappConversationRecipientLocations['TRABAJO'].latitude"></MapComponent>
+                      </div>
                       <p v-else>Sin ubicación registrada</p>
                     </b-dropdown-item>
                     <br>
-                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappLocationMessage('OTRO')">
-                      <h5><strong>OTRO</strong></h5>
-                      <MapComponent v-if="showMap && currentActiveConversation.whatsappConversationRecipientLocations['OTRO'].latitude != '0'"  mapHeight="200px" mapWidth="300px" :clientLongitude="currentActiveConversation.whatsappConversationRecipientLocations['OTRO'].longitude" :clientLatitude="currentActiveConversation.whatsappConversationRecipientLocations['OTRO'].latitude"></MapComponent>
+                    <b-dropdown-item style="z-index: 2000;">
+                      <div style="display: flex;">
+                        <h5><strong>OTRO</strong></h5>
+                        <div class="flex-grow-1"></div>
+                        <i v-if="showMap && currentActiveConversation.whatsappConversationRecipientLocations['OTRO'].latitude != '0'" @click="deleteLocation('OTRO')" class="icon-regular i-Eraser-2" style="color: red; cursor: pointer;"></i>
+                      </div>
+                      <div v-if="showMap && currentActiveConversation.whatsappConversationRecipientLocations['OTRO'].latitude != '0'" @click="sendWhatsappLocationMessage('OTRO')">
+                        <MapComponent mapHeight="200px" mapWidth="300px" :clientLongitude="currentActiveConversation.whatsappConversationRecipientLocations['OTRO'].longitude" :clientLatitude="currentActiveConversation.whatsappConversationRecipientLocations['OTRO'].latitude"></MapComponent>
+                      </div>
                       <p v-else>Sin ubicación registrada</p>
                     </b-dropdown-item>
                   </b-dropdown>
@@ -2384,6 +2402,10 @@ export default {
   },
 
   methods: {
+    deleteLocation(locationName){
+      this.currentActiveConversation.whatsappConversationRecipientLocations[locationName].latitude = '0';
+      this.currentActiveConversation.whatsappConversationRecipientLocations[locationName].longitude = '0';   
+    },
 
     handleEnter(event){
       if (!event.shiftKey) {
