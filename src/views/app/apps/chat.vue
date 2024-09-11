@@ -1153,17 +1153,7 @@
                     <i class="i-Shopping-Bag"></i>
                   </button>
 
-                  <b-tooltip :show.sync="disposablesTooltip" target="sendDisposables" location="start">
-                    <div style="display: flex">
-                      <img :src="agentFavoriteImages[Math.floor(Math.random() * agentFavoriteImages.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
-                      <img :src="agentFavoriteImages[Math.floor(Math.random() * agentFavoriteImages.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
-                    </div>
-                    <br>
-                    <div style="display: flex">
-                      <img :src="agentFavoriteImages[Math.floor(Math.random() * agentFavoriteImages.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
-                      <img :src="agentFavoriteImages[Math.floor(Math.random() * agentFavoriteImages.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
-                    </div>
-                  </b-tooltip>
+                  <b-tooltip target="sendDisposables">Desechables</b-tooltip>
                   
                  
                   <b-modal @ok="sendWhatsappFavoriteImageMessage()" scrollable title="Catálogo de desechables" size="m" centered id="disposablesModal">
@@ -1207,17 +1197,8 @@
                   <button v-if="availableConversation == true" id="sendLiquids" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.liquidsModal @click="deselectImages()">
                     <i class="i-Drop"></i>
                   </button>
-                  <b-tooltip :show.sync="liquidsTooltip" target="sendLiquids" location="start">
-                    <div style="display: flex">
-                      <img :src="liquids1[Math.floor(Math.random() * liquids1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
-                      <img :src="liquids1[Math.floor(Math.random() * liquids1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
-                    </div>
-                    <br>
-                    <div style="display: flex">
-                      <img :src="liquids1[Math.floor(Math.random() * liquids1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
-                      <img :src="liquids1[Math.floor(Math.random() * liquids1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
-                    </div>
-                  </b-tooltip>
+                  <b-tooltip target="sendLiquids">Líquidos</b-tooltip>
+
                   
                   <b-modal @ok="sendWhatsappFavoriteImageMessageLiquid()" scrollable title="Catálogo de líquidos" size="m" centered id="liquidsModal">
                     <b-nav tabs justified>
@@ -1257,17 +1238,8 @@
                   <button v-if="availableConversation == true" id="sendSalts" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.saltsModal @click="deselectImages()">
                     <i class="i-Delicious"></i>
                   </button>
-                  <b-tooltip :show.sync="saltsTooltip" target="sendSalts" location="start">
-                    <div style="display: flex">
-                      <img :src="liquids1[Math.floor(Math.random() * salts1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
-                      <img :src="liquids1[Math.floor(Math.random() * salts1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
-                    </div>
-                    <br>
-                    <div style="display: flex">
-                      <img :src="liquids1[Math.floor(Math.random() * salts1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto; margin-right: 10px;"/>
-                      <img :src="liquids1[Math.floor(Math.random() * salts1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
-                    </div>
-                  </b-tooltip>
+                  <b-tooltip target="sendSalts">Sales</b-tooltip>
+
 
                   <b-modal @ok="sendWhatsappFavoriteImageMessageSalt()" scrollable title="Catálogo de sales" size="m" centered id="saltsModal">
                     <b-nav tabs justified>
@@ -1630,88 +1602,95 @@
       </div>
 
       <div class="col-md-3 scrollable-container" v-if="(currentActiveConversation != null) && (availableConversation == true)">
-          <b-card v-if="vistaItems == 'Productos'" style="background-color: #e8e8e8">
-            
-            <b-form-input
-                @keyup="selectProductos()"
-                v-model="producto"
-                id="buscador" 
-                type="text"
-                required
-                placeholder="Coloque el nombre del producto"
-                :class="{'loading-effect': loading}"
-              ></b-form-input>
-            
-            <div v-if="loading == true" style="text-align: center;">
-              <br><br>
+         <div v-if="vistaItems == 'Productos'">
+          <b-card style="background-color: #e8e8e8">
+
+<b-form-input
+    @keyup="selectProductos()"
+    v-model="producto"
+    id="buscador" 
+    type="text"
+    required
+    placeholder="Coloque el nombre del producto"
+    :class="{'loading-effect': loading}"
+  ></b-form-input>
+
+<div v-if="loading == true" style="text-align: center;">
+  <br><br>
+  <span class="spinner-glow spinner-glow-primary"></span>
+</div>
+
+<div class="ul-widget__body" v-else>
+  <br v-if="productos.length != 0">
+  <div class="ul-widget1" v-for="producto in productos" :key="producto.codigoProducto" style="margin-top: 10px; margin-bottom: 10px;">
+    
+    <div class="ul-widget__item ul-widget4__users" style="background-color: white; border-radius: 20px; border: 2px solid #d6d6d6;">
+      <div class="ul-widget4__img">
+        <div style="display: flex; margin-left: 15px;">
+          <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Extra Ice')" :src="iceLogoSRC"/>
+          <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('ICE')" :src="iceLogoSRC"/>
+          <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Postre')" :src="postreLogoSRC"/>
+          <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Tabaco')" :src="tabacoLogoSRC"/>
+          <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Wax')" :src="waxLogoSRC"/>
+          <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Hierba')" :src="hierbaLogoSRC"/>
+        </div>
+        <img style="cursor: pointer; margin-left: 15px;" v-b-modal.bigImageModal @click="openBigImage(producto.localizacion)" :src="producto.localizacion" alt="N/A"/>
+      </div>
+      <div class="ul-widget2__info ul-widget4__users-info">
+        <a href="#" variant="info" v-if="producto.productosAsociados.length==0" @click="AgregarItem(producto,'info')" class="ul-widget2__title">{{ producto.descripcion }}</a>
+        <a href="#" variant="info" v-if="producto.productosAsociados.length!=0" style="cursor: default;" class="ul-widget2__title">{{ producto.descripcion }}</a>
+
+        <span class="ul-widget2__username">{{ producto.codigoProducto }}</span>
+        <span style="font-size:8px" class="ul-widget2__username">{{ producto.subFamilia }}</span>
+        <span class="ul-widget4__number text-success">₡{{ producto.precioVenta }}</span>
+        
+        <div v-if="producto.productosAsociados.length != 0">
+          <div v-for="nivelNicotina in producto.productosAsociados" :key="producto.codigoAsoiado" style="display: inline;"> 
+            <b-badge variant="dark" style="cursor:pointer; margin: 3px;" @click="AgregarItemVariacion(producto, nivelNicotina.codigoAsoiado, nivelNicotina.descripcion,'info')">{{nivelNicotina.nicotina}} MG</b-badge>
+          </div>
+        </div>
+
+        <div style="display: flex">
+          
+          <button class="btn btn-icon btn-success mr-2" @click="sendWhatsappProductMessage(producto)">
+            Enviar
+          </button>
+          <button v-b-modal.stockModal v-if="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistencia(producto.codigoProducto)">
+            Stock
+          </button>
+
+          <button v-b-modal.stockModal  v-else class="btn btn-icon btn-warning mr-2" @click="cargarExistenciaNicotina(producto.productosAsociados)">
+            Stock
+          </button>
+        </div> 
+
+
+       
+
+      </div>
+    </div>
+  </div>
+</div> 
+
+<b-modal scrollable size="sm" centered hide-header hide-footer id="stockModal">
+          <div>
+            <div v-if="stockLoader == true" style="text-align: center;">
+              <br>
               <span class="spinner-glow spinner-glow-primary"></span>
             </div>
+            <div v-else>
+              <p class="m-0" style="white-space: pre-line; font-size: medium;">{{stockContent}}</p>
+            </div>
+          </div>
+        </b-modal>
 
-            <div class="ul-widget__body" v-else>
-              <br v-if="productos.length != 0">
-              <div class="ul-widget1" v-for="producto in productos" :key="producto.codigoProducto" style="margin-top: 10px; margin-bottom: 10px;">
-                
-                <div class="ul-widget__item ul-widget4__users" style="background-color: white; border-radius: 20px; border: 2px solid #d6d6d6;">
-                  <div class="ul-widget4__img">
-                    <div style="display: flex; margin-left: 15px;">
-                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Extra Ice')" :src="iceLogoSRC"/>
-                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('ICE')" :src="iceLogoSRC"/>
-                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Postre')" :src="postreLogoSRC"/>
-                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Tabaco')" :src="tabacoLogoSRC"/>
-                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Wax')" :src="waxLogoSRC"/>
-                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Hierba')" :src="hierbaLogoSRC"/>
-                    </div>
-                    <img style="cursor: pointer;" v-b-modal.bigImageModal @click="openBigImage(producto.localizacion)" :src="producto.localizacion" alt="N/A"/>
-                  </div>
-                  <div class="ul-widget2__info ul-widget4__users-info">
-                    <a href="#" variant="info" v-if="producto.productosAsociados.length==0" @click="AgregarItem(producto,'info')" class="ul-widget2__title">{{ producto.descripcion }}</a>
-                    <a href="#" variant="info" v-if="producto.productosAsociados.length!=0" style="cursor: default;" class="ul-widget2__title">{{ producto.descripcion }}</a>
+</b-card>
+          <br>
 
-                    <span class="ul-widget2__username">{{ producto.codigoProducto }}</span>
-                    <span style="font-size:8px" class="ul-widget2__username">{{ producto.subFamilia }}</span>
-                    <span class="ul-widget4__number text-success">₡{{ producto.precioVenta }}</span>
-                    
-                    <div v-if="producto.productosAsociados.length != 0">
-                      <div v-for="nivelNicotina in producto.productosAsociados" :key="producto.codigoAsoiado" style="display: inline;"> 
-                        <b-badge variant="dark" style="cursor:pointer; margin: 3px;" @click="AgregarItemVariacion(producto, nivelNicotina.codigoAsoiado, nivelNicotina.descripcion,'info')">{{nivelNicotina.nicotina}} MG</b-badge>
-                      </div>
-                    </div>
+         </div>   
+        
 
-                    <div style="display: flex">
-                      
-                      <button class="btn btn-icon btn-success mr-2" @click="sendWhatsappProductMessage(producto)">
-                        Enviar
-                      </button>
-                      <button v-b-modal.stockModal v-if="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistencia(producto.codigoProducto)">
-                        Stock
-                      </button>
-
-                      <button v-b-modal.stockModal  v-else class="btn btn-icon btn-warning mr-2" @click="cargarExistenciaNicotina(producto.productosAsociados)">
-                        Stock
-                      </button>
-                    </div> 
-
-
-                   
-
-                  </div>
-                </div>
-              </div>
-            </div> 
-
-            <b-modal scrollable size="sm" centered hide-header hide-footer id="stockModal">
-                      <div>
-                        <div v-if="stockLoader == true" style="text-align: center;">
-                          <br>
-                          <span class="spinner-glow spinner-glow-primary"></span>
-                        </div>
-                        <div v-else>
-                          <p class="m-0" style="white-space: pre-line; font-size: medium;">{{stockContent}}</p>
-                        </div>
-                      </div>
-                    </b-modal>
-
-          </b-card>
+          
 
           <div v-else-if="vistaItems == 'Orden'">
             
@@ -1911,6 +1890,8 @@
                                 <b-button block @click="saveContact()" variant="info">Guardar contacto</b-button>
                                 
                               </b-card>
+
+                              <br>
                             </div>
 
                             <div v-else style="text-align: center;">
