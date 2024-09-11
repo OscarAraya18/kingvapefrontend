@@ -1183,38 +1183,74 @@
                  
                   <b-modal @ok="sendWhatsappFavoriteImageMessage()" scrollable title="Catálogo de desechables" size="m" centered id="disposablesModal">
                     <b-nav tabs justified>
-                      <b-nav-item :active="getActiveNavItem('Nicotina')" @click="changeActiveNavItem('Nicotina')">Nicotina</b-nav-item>
-                      <b-nav-item :active="getActiveNavItem('Zero')" @click="changeActiveNavItem('Zero')">Zero</b-nav-item>
+                      <b-nav-item :active="getActiveNavItem('Nicotina')" @click="changeActiveNavItem('Nicotina')">Desechables con nicotina</b-nav-item>
+                      <b-nav-item :active="getActiveNavItem('Zero')" @click="changeActiveNavItem('Zero')">Desechables sin nicotina</b-nav-item>
                     </b-nav>
                     <br>
                     
                     <div v-if="currentNavItem == 'Nicotina'">
                       <b-form-input @keyup="buscarCatalogoNicotina()" v-model="catalogoNicotinaBuscado" placeholder="Nombre del catálogo a buscar"></b-form-input>
                       <br>
+                      
+
                       <b-list-group style="height: 700px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()" v-if="agentFavoriteImages.length != 0">Seleccionar todo el catálogo</b-list-group-item>
-                        <b-list-group-item style="cursor: pointer;" @click="selectAllFavoriteImage()" v-else>No se ha encontrado ningún catálogo con el nombre "{{ catalogoNicotinaBuscado }}"</b-list-group-item>
-                        <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
-                          <div style="display:flex; ">
-                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
-                            <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
-                              <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
-                            </div>
+                        <b-list-group-item style="cursor: pointer;" v-else>No se ha encontrado ningún catálogo con el nombre "{{ catalogoNicotinaBuscado }}"</b-list-group-item>
+                        
+                        <div style="display: flex;">
+                          <div style="width: 50%">
+                            <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages" v-if="index % 2 == 0" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
+                              <div style="text-align: center;">
+                                <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                                <br><br>
+                                <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
+                              </div>
+                            </b-list-group-item>
                           </div>
-                        </b-list-group-item>
+                          <div style="width: 50%">
+                            <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages" v-if="index % 2 != 0" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
+                              <div style="text-align: center;">
+                                <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                                <br><br>
+                                <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
+                              </div>
+                            </b-list-group-item>
+                          </div>
+                        </div>
+                        
                       </b-list-group>
+
                     </div>
                     <div v-else>
+                      <b-form-input @keyup="buscarCatalogoSinNicotina()" v-model="catalogoSinNicotinaBuscado" placeholder="Nombre del catálogo a buscar"></b-form-input>
+                      <br>
+
                       <b-list-group style="height: 700px; overflow-y: auto;">
-                        <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
-                        <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages2" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
-                          <div style="display:flex; ">
-                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
-                            <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
-                              <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
-                            </div>
+                        <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()" v-if="agentFavoriteImages2.length != 0">Seleccionar todo el catálogo</b-list-group-item>
+                        <b-list-group-item style="cursor: pointer;" v-else>No se ha encontrado ningún catálogo con el nombre "{{ catalogoSinNicotinaBuscado }}"</b-list-group-item>
+
+
+                        <div style="display: flex;">
+                          <div style="width: 50%">
+                            <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages2" v-if="index % 2 == 0" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
+                              <div style="text-align: center;">
+                                <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                                <br><br>
+                                <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
+                              </div>
+                            </b-list-group-item>
                           </div>
-                        </b-list-group-item>
+                          <div style="width: 50%">
+                            <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages2" v-if="index % 2 != 0" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
+                              <div style="text-align: center;">
+                                <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                                <br><br>
+                                <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
+                              </div>
+                            </b-list-group-item>
+                          </div>
+                        </div>
+
                       </b-list-group>
                     </div>
                   </b-modal>
@@ -1227,34 +1263,69 @@
                   
                   <b-modal @ok="sendWhatsappFavoriteImageMessageLiquid()" scrollable title="Catálogo de líquidos" size="m" centered id="liquidsModal">
                     <b-nav tabs justified>
-                      <b-nav-item :active="getActiveNavItemLiquid('Ice')" @click="changeActiveNavItemLiquid('Ice')">Ice</b-nav-item>
-                      <b-nav-item :active="getActiveNavItemLiquid('noIce')" @click="changeActiveNavItemLiquid('noIce')">No Ice</b-nav-item>
+                      <b-nav-item :active="getActiveNavItemLiquid('Ice')" @click="changeActiveNavItemLiquid('Ice')">Líquidos con ice</b-nav-item>
+                      <b-nav-item :active="getActiveNavItemLiquid('noIce')" @click="changeActiveNavItemLiquid('noIce')">Líquidos sin ice</b-nav-item>
                     </b-nav>
                     <br>
                     <div v-if="currentNavItemLiquid == 'Ice'">
+                      <b-form-input @keyup="buscarCatalogoLiquidoIce()" v-model="catalogoLiquidoIceBuscado" placeholder="Nombre del catálogo a buscar"></b-form-input>
+                      <br>
+
                       <b-list-group style="height: 400px; overflow-y: auto;">
-                        <b-list-group-item :variant="getAllFavoriteVariantLiquid()" style="cursor: pointer;" @click="selectAllFavoriteImageLiquid()">Seleccionar todo el catálogo</b-list-group-item>
-                        <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in liquids1" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImageLiquid(index)">
-                          <div style="display:flex; ">
-                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
-                            <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
-                              <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
-                            </div>
+
+                        <b-list-group-item :variant="getAllFavoriteVariantLiquid()" style="cursor: pointer;" @click="selectAllFavoriteImageLiquid()" v-if="liquids1.length != 0">Seleccionar todo el catálogo</b-list-group-item>
+                        <b-list-group-item style="cursor: pointer;" v-else>No se ha encontrado ningún catálogo con el nombre "{{ catalogoLiquidoIceBuscado }}"</b-list-group-item>
+
+                        <div style="display: flex;">
+                          <div style="width: 50%">
+                            <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in liquids1" v-if="index % 2 == 0" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImageLiquid(index)">
+                              <div style="text-align: center;">
+                                <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                                <br><br>
+                                <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
+                              </div>
+                            </b-list-group-item>
                           </div>
-                        </b-list-group-item>
+                          <div style="width: 50%">
+                            <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in liquids1" v-if="index % 2 != 0" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImageLiquid(index)">
+                              <div style="text-align: center;">
+                                <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                                <br><br>
+                                <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
+                              </div>
+                            </b-list-group-item>
+                          </div>
+                        </div>
                       </b-list-group>
                     </div>
                     <div v-else>
+                      <b-form-input @keyup="buscarCatalogoLiquidoSinIce()" v-model="catalogoLiquidoSinIceBuscado" placeholder="Nombre del catálogo a buscar"></b-form-input>
+                      <br>
+
                       <b-list-group style="height: 400px; overflow-y: auto;">
-                        <b-list-group-item :variant="getAllFavoriteVariantLiquid()" style="cursor: pointer;" @click="selectAllFavoriteImageLiquid()">Seleccionar todo el catálogo</b-list-group-item>
-                        <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in liquids2" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImageLiquid(index)">
-                          <div style="display:flex; ">
-                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
-                            <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
-                              <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
-                            </div>
+                        <b-list-group-item :variant="getAllFavoriteVariantLiquid()" style="cursor: pointer;" @click="selectAllFavoriteImageLiquid()" v-if="liquids2.length != 0">Seleccionar todo el catálogo</b-list-group-item>
+                        <b-list-group-item style="cursor: pointer;" v-else>No se ha encontrado ningún catálogo con el nombre "{{ catalogoLiquidoSinIceBuscado }}"</b-list-group-item>
+
+                        <div style="display: flex;">
+                          <div style="width: 50%">
+                            <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in liquids2" v-if="index % 2 == 0" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImageLiquid(index)">
+                              <div style="text-align: center;">
+                                <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                                <br><br>
+                                <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
+                              </div>
+                            </b-list-group-item>
                           </div>
-                        </b-list-group-item>
+                          <div style="width: 50%">
+                            <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in liquids2" v-if="index % 2 != 0" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImageLiquid(index)">
+                              <div style="text-align: center;">
+                                <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                                <br><br>
+                                <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
+                              </div>
+                            </b-list-group-item>
+                          </div>
+                        </div>
                       </b-list-group>
                     </div>
                   </b-modal>
@@ -1268,34 +1339,68 @@
 
                   <b-modal @ok="sendWhatsappFavoriteImageMessageSalt()" scrollable title="Catálogo de sales" size="m" centered id="saltsModal">
                     <b-nav tabs justified>
-                      <b-nav-item :active="getActiveNavItemSalt('saltIce')" @click="changeActiveNavItemSalt('saltIce')">Ice</b-nav-item>
-                      <b-nav-item :active="getActiveNavItemSalt('saltNoIce')" @click="changeActiveNavItemSalt('saltNoIce')">No Ice</b-nav-item>
+                      <b-nav-item :active="getActiveNavItemSalt('saltIce')" @click="changeActiveNavItemSalt('saltIce')">Sales con ice</b-nav-item>
+                      <b-nav-item :active="getActiveNavItemSalt('saltNoIce')" @click="changeActiveNavItemSalt('saltNoIce')">Sales sin ice</b-nav-item>
                     </b-nav>
                     <br>
                     <div v-if="currentNavItemSalt == 'saltIce'">
+                      <b-form-input @keyup="buscarCatalogoSalIce()" v-model="catalogoSalIceBuscado" placeholder="Nombre del catálogo a buscar"></b-form-input>
+                      <br>
+
                       <b-list-group style="height: 400px; overflow-y: auto;">
-                        <b-list-group-item :variant="getAllFavoriteVariantSalt()" style="cursor: pointer;" @click="selectAllFavoriteImageSalt()">Seleccionar todo el catálogo</b-list-group-item>
-                        <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in salts1" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImageSalt(index)">
-                          <div style="display:flex; ">
-                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
-                            <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
-                              <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
-                            </div>
+                        <b-list-group-item :variant="getAllFavoriteVariantSalt()" style="cursor: pointer;" @click="selectAllFavoriteImageSalt()" v-if="salts1.length != 0">Seleccionar todo el catálogo</b-list-group-item>
+                        <b-list-group-item style="cursor: pointer;" v-else>No se ha encontrado ningún catálogo con el nombre "{{ catalogoSalIceBuscado }}"</b-list-group-item>
+
+                        <div style="display: flex;">
+                          <div style="width: 50%">
+                            <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in salts1" v-if="index % 2 == 0" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImageSalt(index)">
+                              <div style="text-align: center;">
+                                <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                                <br><br>
+                                <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
+                              </div>
+                            </b-list-group-item>
                           </div>
-                        </b-list-group-item>
+                          <div style="width: 50%">
+                            <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in salts1" v-if="index % 2 != 0" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImageSalt(index)">
+                              <div style="text-align: center;">
+                                <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                                <br><br>
+                                <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
+                              </div>
+                            </b-list-group-item>
+                          </div>
+                        </div>
                       </b-list-group>
                     </div>
                     <div v-else>
+                      <b-form-input @keyup="buscarCatalogoSalSinIce()" v-model="catalogoSalSinIceBuscado" placeholder="Nombre del catálogo a buscar"></b-form-input>
+                      <br>
+
                       <b-list-group style="height: 400px; overflow-y: auto;">
-                        <b-list-group-item :variant="getAllFavoriteVariantLiquid()" style="cursor: pointer;" @click="selectAllFavoriteImageSalt()">Seleccionar todo el catálogo</b-list-group-item>
-                        <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in salts2" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImageSalt(index)">
-                          <div style="display:flex; ">
-                            <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 80px; height: auto;"/>
-                            <div style="margin: 0; left: 40%; position: absolute; top: 50%; transform: translate(-50%, -50%);">
-                              <h6>{{agentFavoriteImage.whatsappFavoriteImageName}}</h6>
-                            </div>
+                        <b-list-group-item :variant="getAllFavoriteVariantSalt()" style="cursor: pointer;" @click="selectAllFavoriteImageSalt()" v-if="salts2.length != 0">Seleccionar todo el catálogo</b-list-group-item>
+                        <b-list-group-item style="cursor: pointer;" v-else>No se ha encontrado ningún catálogo con el nombre "{{ catalogoSalSinIceBuscado }}"</b-list-group-item>
+
+                        <div style="display: flex;">
+                          <div style="width: 50%">
+                            <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in salts2" v-if="index % 2 == 0" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImageSalt(index)">
+                              <div style="text-align: center;">
+                                <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                                <br><br>
+                                <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
+                              </div>
+                            </b-list-group-item>
                           </div>
-                        </b-list-group-item>
+                          <div style="width: 50%">
+                            <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in salts2" v-if="index % 2 != 0" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImageSalt(index)">
+                              <div style="text-align: center;">
+                                <img :src="agentFavoriteImage.whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
+                                <br><br>
+                                <h6><strong>{{agentFavoriteImage.whatsappFavoriteImageName}}</strong></h6>
+                              </div>
+                            </b-list-group-item>
+                          </div>
+                        </div>
                       </b-list-group>
                     </div>
                   </b-modal>
@@ -1396,6 +1501,9 @@
                       </b-list-group>
                     </div>
                     <div v-else>
+                      <b-form-input @keyup="buscarCatalogoSinNicotina()" v-model="catalogoSinNicotinaBuscado" placeholder="Nombre del catálogo a buscar"></b-form-input>
+                      <br>
+
                       <b-list-group style="height: 700px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariant()" style="cursor: pointer;" @click="selectAllFavoriteImage()">Seleccionar todo el catálogo</b-list-group-item>
                         <b-list-group-item style="cursor: pointer;" v-for="(agentFavoriteImage, index) in agentFavoriteImages2" :variant="getImageVariant(agentFavoriteImage)" button @click="selectFavoriteImage(index)">
@@ -1980,6 +2088,11 @@ export default {
       showMap: false,
 
       catalogoNicotinaBuscado: '',
+      catalogoSinNicotinaBuscado: '',
+      catalogoLiquidoIceBuscado: '',
+      catalogoLiquidoSinIceBuscado: '',
+      catalogoSalIceBuscado: '',
+      catalogoSalSinIceBuscado: '',
 
       db: null,
 
@@ -2172,12 +2285,19 @@ export default {
       agentFavoriteImages: [],
       agentFavoriteImagesBackup: [],
       agentFavoriteImages2: [],
+      agentFavoriteImages2Backup: [],
+
       agentFavoriteImages3: [],
+
       liquids1: [],
+      liquids1Backup: [],
       liquids2: [],
+      liquids2Backup: [],
 
       salts1: [],
+      salts1Backup: [],
       salts2: [],
+      salts2Backup: [],
 
       recordAudioDialog: false,
       isRecording: false,
@@ -2444,6 +2564,36 @@ export default {
     buscarCatalogoNicotina(){
       this.agentFavoriteImages = this.agentFavoriteImagesBackup.filter(item =>
         item.whatsappFavoriteImageName.toLowerCase().startsWith(this.catalogoNicotinaBuscado.toLowerCase())
+      );
+    },
+
+    buscarCatalogoSinNicotina(){
+      this.agentFavoriteImages2 = this.agentFavoriteImages2Backup.filter(item =>
+        item.whatsappFavoriteImageName.toLowerCase().startsWith(this.catalogoSinNicotinaBuscado.toLowerCase())
+      );
+    },
+
+    buscarCatalogoLiquidoIce(){
+      this.liquids1 = this.liquids1Backup.filter(item =>
+        item.whatsappFavoriteImageName.toLowerCase().startsWith(this.catalogoLiquidoIceBuscado.toLowerCase())
+      );
+    },
+
+    buscarCatalogoLiquidoSinIce(){
+      this.liquids2 = this.liquids2Backup.filter(item =>
+        item.whatsappFavoriteImageName.toLowerCase().startsWith(this.catalogoLiquidoSinIceBuscado.toLowerCase())
+      );
+    },
+
+    buscarCatalogoSalIce(){
+      this.salts1 = this.salts1Backup.filter(item =>
+        item.whatsappFavoriteImageName.toLowerCase().startsWith(this.catalogoSalIceBuscado.toLowerCase())
+      );
+    },
+
+    buscarCatalogoSalSinIce(){
+      this.salts2 = this.salts2.filter(item =>
+        item.whatsappFavoriteImageName.toLowerCase().startsWith(this.catalogoSalSinIceBuscado.toLowerCase())
       );
     },
     
@@ -3218,16 +3368,21 @@ export default {
                 this.agentFavoriteImagesBackup.push(response.data.result[agentFavoriteImageIndex]);
               } else if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'zero'){
                 this.agentFavoriteImages2.push(response.data.result[agentFavoriteImageIndex]);
+                this.agentFavoriteImages2Backup.push(response.data.result[agentFavoriteImageIndex]);
               } else if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'message'){
                 this.agentFavoriteImages3.push(response.data.result[agentFavoriteImageIndex]);
               } else if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'ice'){
                 this.liquids1.push(response.data.result[agentFavoriteImageIndex]);
+                this.liquids1Backup.push(response.data.result[agentFavoriteImageIndex]);
               } else if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'noIce'){
                 this.liquids2.push(response.data.result[agentFavoriteImageIndex]);
+                this.liquids2Backup.push(response.data.result[agentFavoriteImageIndex]);
               } else if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'saltIce'){
                 this.salts1.push(response.data.result[agentFavoriteImageIndex]);
+                this.salts1Backup.push(response.data.result[agentFavoriteImageIndex]);
               } else if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'saltNoIce'){
                 this.salts2.push(response.data.result[agentFavoriteImageIndex]);
+                this.salts2Backup.push(response.data.result[agentFavoriteImageIndex]);
               } else if (response.data.result[agentFavoriteImageIndex].whatsappFavoriteImageCatalog == 'promo'){
                 this.promos.push(response.data.result[agentFavoriteImageIndex]);
               }
@@ -3264,7 +3419,19 @@ export default {
 
     deselectImages(){
       this.catalogoNicotinaBuscado = '';
+      this.catalogoSinNicotinaBuscado = '';
+      this.catalogoLiquidoIceBuscado = '';
+      this.catalogoLiquidoSinIceBuscado = '';
+      this.catalogoSalIceBuscado = '';
+      this.catalogoSalSinIceBuscado = '';
+
       this.agentFavoriteImages = this.agentFavoriteImagesBackup;
+      this.agentFavoriteImages2 = this.agentFavoriteImages2Backup;
+      this.liquids1 = this.liquids1Backup;
+      this.liquids2 = this.liquids2Backup;
+      this.salts1 = this.salts1Backup;
+      this.salts2 = this.salts2Backup;
+
       for (var agentFavoriteImageIndex in this.agentFavoriteImages){
         this.agentFavoriteImages[agentFavoriteImageIndex]['selected'] = false;
       }
