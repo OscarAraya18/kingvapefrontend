@@ -2592,7 +2592,7 @@ export default {
     },
 
     buscarCatalogoSalSinIce(){
-      this.salts2 = this.salts2.filter(item =>
+      this.salts2 = this.salts2Backup.filter(item =>
         item.whatsappFavoriteImageName.toLowerCase().startsWith(this.catalogoSalSinIceBuscado.toLowerCase())
       );
     },
