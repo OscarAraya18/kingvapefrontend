@@ -1894,10 +1894,11 @@
                             <p style="font-size: medium; margin: 0;"><strong>Subtotal:</strong> {{ calcularSubTotal }}</p>
                             <p style="font-size: medium; margin: 0;"><strong>Descuento:</strong> {{ calcularDescuento }}</p>
                             <p style="font-size: medium; margin: 0;"><strong>Total:</strong> {{ calcularTotal }}</p>
-
-
                          
                         </b-card>
+
+                        <br>
+
 
 
                             <div style="text-align: center;" v-if="loaderOrdenEnviada == false">
@@ -3349,7 +3350,7 @@ export default {
     cargarTesting(codigo){
       return new Promise((cargarTestingPromiseResolve) => {
         var me = this;
-        axios.get('https://noah.cr/BackendKingVape/api/ProductosWebs/'+codigo).then(function(response){
+        axios.get('https://backend.kingvape.cr/api/ProductosWebs/'+codigo).then(function(response){
           var textoExistencia = '';
           for (var indice in response.data){
             if (textoExistencia == ''){
@@ -3381,7 +3382,7 @@ export default {
     cargarExistencia(codigoProducto){
       this.stockLoader = true;
       let me = this;
-      axios.get('https://noah.cr/BackendKingVape/api/ProductosWebs/'+codigoProducto).then(function(response){
+      axios.get('https://backend.kingvape.cr/api/ProductosWebs/'+codigoProducto).then(function(response){
         var textoExistencia = '';
         for (var indice in response.data){
           if (textoExistencia == ''){
