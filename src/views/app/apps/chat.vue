@@ -1672,7 +1672,7 @@
                     <span class="ul-widget4__number text-success">₡{{ producto.precioVenta }}</span>
                     
                     <div v-if="producto.productosAsociados.length != 0">
-                      <div v-for="nivelNicotina in producto.productosAsociados.sort((a,b) => a.nicotina - b.nicotina)" :key="producto.codigoAsoiado" style="display: inline;"> 
+                      <div v-for="nivelNicotina in producto.productosAsociados" :key="producto.codigoAsoiado" style="display: inline;"> 
                         <b-badge variant="dark" style="cursor:pointer; margin: 3px;" @click="AgregarItemVariacion(producto, nivelNicotina.codigoAsoiado, nivelNicotina.descripcion,'info')">{{nivelNicotina.nicotina}} MG</b-badge>
                       </div>
                     </div>
@@ -1897,8 +1897,7 @@
                          
                         </b-card>
 
-                        <br>
-
+                        
 
 
                             <div style="text-align: center;" v-if="loaderOrdenEnviada == false">
@@ -3911,8 +3910,7 @@ export default {
           this.timeouts.push(
             setTimeout( () => {
               this.loading = true;
-              
-              axios.get('https://backend.kingvape.cr/api/Productos/BuscadorEnter5/King%20Vape/'+myInput).then( response => {
+              axios.get('https://bakend2king.kingvape.cr/api/Productos/BuscadorEnter5/King%20Vape/'+myInput).then( response => {
                 me.productos = [];
                 Objeto = response.data
                   Objeto.map(function(x){
