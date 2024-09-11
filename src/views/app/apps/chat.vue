@@ -3722,7 +3722,7 @@ export default {
           
           
 
-          /*
+          
           axios.post(constants.routes.backendAPI+'/insertWhatsappInvoice',
           {
             whatsappInvoiceWhatsappConversationID: this.currentActiveConversationID,
@@ -3801,7 +3801,7 @@ export default {
             this.loaderOrdenEnviada = false;
             this.showNotification('danger', 'Error al generar la órden', 'Ha ocurrido un error inesperado al generar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           })
-          */
+          
 
         }
       } catch (e) {
