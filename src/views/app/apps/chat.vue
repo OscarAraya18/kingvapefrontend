@@ -3774,18 +3774,18 @@ export default {
             this.$set(this.salts1, imageIndex, { ...this.salts1[imageIndex], selected: true });
           }
         } else {
-          for (var imageIndex in this.salts2) {
-            this.$set(this.salts2, imageIndex, { ...this.salts2[imageIndex], selected: false });
+          for (var imageIndex in this.salts1) {
+            this.$set(this.salts1, imageIndex, { ...this.salts1[imageIndex], selected: false });
           }
         }
       } else {
         if (this.allImageSelectedSalt == false){
-          for (var imageIndex in this.liquids2) {
-            this.$set(this.liquids2, imageIndex, { ...this.liquids2[imageIndex], selected: true });
+          for (var imageIndex in this.salts2) {
+            this.$set(this.salts2, imageIndex, { ...this.salts2[imageIndex], selected: true });
           }
         } else {
-          for (var imageIndex in this.liquids2) {
-            this.$set(this.liquids2, imageIndex, { ...this.liquids2[imageIndex], selected: false });
+          for (var imageIndex in this.salts2) {
+            this.$set(this.salts2, imageIndex, { ...this.salts2[imageIndex], selected: false });
           }
         }
       }
