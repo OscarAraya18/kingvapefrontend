@@ -1721,19 +1721,9 @@
                     </b-modal>
 
           </b-card>
-          <b-card v-else-if="vistaItems == 'Orden'">
-            <b-tabs  
-                    active-nav-item-class="nav nav-tabs"
-                    content-class="width:100%"
-                    style="width:100%"
-                    >
-                        <b-tab active>
-                            <template slot="title">
-                                <i class="i-File-Clipboard-File--Text ul-tab__icon text-muted mr-1"> </i>
-                                Datos del cliente
-                            </template>
 
-                            <br>
+          <div v-else-if="vistaItems == 'Orden'">
+            
 
                             <b-card style="background-color: #e8e8e8">
                               <div style="text-align: center">
@@ -1756,7 +1746,7 @@
                               </b-form-group>
                             </b-card>
 
-                            <br>
+                            <br><br>
                             
                             <b-card style="background-color: #e8e8e8">
                               <div style="text-align: center">
@@ -1848,40 +1838,21 @@
                               </b-form-group>
                             </b-card>
 
+                            <br><br>
+                            <b-card style="background-color: #e8e8e8">
+                              <div style="text-align: center">
+                                <p style="font-size: medium;"><strong>CARRITO:</strong></p>
+                              </div>
 
-                            <div style="text-align: center;" v-if="loaderOrdenEnviada == false">
-                              <br>
-                              
-                              <b-card style="background-color: #e8e8e8">
-                                <b-button block @click="insertWhatsappInvoice()" variant="primary">Finalizar venta</b-button>
-                                <br>
-                                <b-button block @click="sendWhatsappOrderTextMessage()" variant="warning">Compartir carrito</b-button>
-                                <br>
-                                <b-button block @click="saveContact()" variant="info">Guardar contacto</b-button>
-                                
-                              </b-card>
-                            </div>
-
-                            <div v-else style="text-align: center;">
-                              <br>
-                              <span class="spinner-glow spinner-glow-primary"></span>
-                            </div>
-                        </b-tab>
-                        <b-tab>
-                            <template slot="title"> 
-                                <i class="i-Shopping-Cart  ul-tab__icon mr-1"> </i>
-                                Carrito
-                            </template>
-                            <b-row class="">
-                              <vue-good-table
+                                <vue-good-table
                                   :columns="columns"
                                   styleClass="tableOne vgt-table description-content"
                                   :rows="currentActiveConversation.whatsappConversationProducts"
                                   mode="remote"
                                   :key="id"
                                   compactMode
-                                  style="width:100%"
-                              >
+                                  style="width:100%;"
+                                >
                                   <template slot="table-row" slot-scope="props">
                                       <!-- Descripción - Dropdown -->
                                       <span v-if="props.column.field == 'descripcion'">
@@ -1923,30 +1894,40 @@
                                   </template>
                               </vue-good-table>
                             
-                            
-                            <p class="font-weight-bold text-muted" style="font-size: medium;"> 
-                                <br><br>
-                                Subtotal: {{calcularSubTotal}}  <br>
-                                Descuento: {{calcularDescuento}} <br>
-                                Total: {{calcularTotal}}  
-                            </p>                            
-                            
-                          </b-row>
-
-                          <h5 v-if="displayCodigoDescuento" style="background-color: #18d100">Se ha aprobado el código de descuento '{{ displayCodigoDescuento }}' para esta conversación</h5>
-                          <br>
-                          <button v-b-modal.modalCodigoDescuento @click="openModalCodigoDescuento()" class="btn btn-icon btn-primary"><i class="i-Check"></i>Canjear código de descuento</button>
-
-                        </b-tab>
-                    </b-tabs> 
+                            <br><br>
+                            <p style="font-size: medium; margin: 0;"><strong>Subtotal:</strong> {{ calcularSubTotal }}</p>
+                            <p style="font-size: medium; margin: 0;"><strong>Descuento:</strong> {{ calcularDescuento }}</p>
+                            <p style="font-size: medium; margin: 0;"><strong>Total:</strong> {{ calcularTotal }}</p>
 
 
+                         
+                        </b-card>
 
-          </b-card> 
+
+                            <div style="text-align: center;" v-if="loaderOrdenEnviada == false">
+                              <br><br>
+                              
+                              <b-card style="background-color: #e8e8e8">
+                                <b-button block @click="insertWhatsappInvoice()" variant="primary">Finalizar venta</b-button>
+                                <br>
+                                <b-button block @click="sendWhatsappOrderTextMessage()" variant="warning">Compartir carrito</b-button>
+                                <br>
+                                <b-button block @click="saveContact()" variant="info">Guardar contacto</b-button>
+                                
+                              </b-card>
+                            </div>
+
+                            <div v-else style="text-align: center;">
+                              <br>
+                              <span class="spinner-glow spinner-glow-primary"></span>
+                            </div>
+                        
+
+
+
+                  </div> 
       </div>
     </div>
-
-    
   </div>
 </template>
 
@@ -3738,7 +3719,10 @@ export default {
           amount = Math.round(amount / 5) * 5;
 
           this.saveContact();
+          
+          
 
+          /*
           axios.post(constants.routes.backendAPI+'/insertWhatsappInvoice',
           {
             whatsappInvoiceWhatsappConversationID: this.currentActiveConversationID,
@@ -3808,15 +3792,17 @@ export default {
             } else {
               this.loading = false;
               this.loaderOrdenEnviada = false;
-              this.showNotification('danger', 'Error al generar la comanda', 'Ha ocurrido un error inesperado al generar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+              this.showNotification('danger', 'Error al generar la órden', 'Ha ocurrido un error inesperado al generar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
             }
           })
           .catch((e) =>{
             console.log(e);
             this.loading = false;
             this.loaderOrdenEnviada = false;
-            this.showNotification('danger', 'Error al generar la comanda', 'Ha ocurrido un error inesperado al generar la comanda. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-          })    
+            this.showNotification('danger', 'Error al generar la órden', 'Ha ocurrido un error inesperado al generar la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          })
+          */
+
         }
       } catch (e) {
         console.log(e);
@@ -4872,6 +4858,8 @@ export default {
       } else {
         const regularExpressionChecker = /\S/;
         if (regularExpressionChecker.test(this.closeConversationReason)){
+          
+          
           axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
           {
             whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
@@ -4882,6 +4870,7 @@ export default {
             whatsappConversationLocalityName: this.selectedCloseLocality,
             sendAgentEndMessage: this.sendEndMessage
           })
+
           .then((response) =>{ 
             if (response.data.success){
               const whatsappConversationID = response.data.result;
