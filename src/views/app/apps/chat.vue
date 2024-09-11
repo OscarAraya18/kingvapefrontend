@@ -2616,7 +2616,6 @@ export default {
           this.websocketIsConnected = false;
           this.websocketConnection = null;
         } else {
-          alert('Se ha cerrado el websocket por desconexion. Reconectando...');
           this.websocketIsConnected = false;
           this.websocketConnection = null;
           clearInterval(this.websocketPingInterval);
@@ -2627,7 +2626,6 @@ export default {
       };
 
       this.websocketConnection.onerror = (error) => {
-        alert('Se ha cerrado el websocket por error. Reconectando...');
         this.websocketIsConnected = false;
         this.websocketConnection = null;
         clearInterval(this.websocketPingInterval);
