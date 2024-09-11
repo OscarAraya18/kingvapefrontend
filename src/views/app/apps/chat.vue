@@ -4013,6 +4013,20 @@ export default {
           this.currentActiveConversation['textoEnviar'] = '';
           this.scrollDown();
           this.sortConversations();
+
+          const intervalId = setInterval(() => {
+            if (this.$refs.textoEnviar){
+              if (document.activeElement !== this.$refs.textoEnviar) {
+                this.$refs.textoEnviar.focus();
+                clearInterval(intervalId);
+              } else {
+                clearInterval(intervalId);
+              }
+            } else {
+              clearInterval(intervalId);
+            }
+          }, 1);
+
         } else {
 
         }
@@ -4031,18 +4045,6 @@ export default {
             whatsappTextMessage.whatsappGeneralMessageID = response.data.result.whatsappGeneralMessageID;
             this.scrollDown();
             this.sortConversations();
-            const intervalId = setInterval(() => {
-              if (this.$refs.textoEnviar){
-                if (document.activeElement !== this.$refs.textoEnviar) {
-                  this.$refs.textoEnviar.focus();
-                  clearInterval(intervalId);
-                } else {
-                  clearInterval(intervalId);
-                }
-              } else {
-                clearInterval(intervalId);
-              }
-            }, 1);
           } else {
             this.showNotification('danger', 'Error al enviar el mensaje al cliente', 'Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
           }
