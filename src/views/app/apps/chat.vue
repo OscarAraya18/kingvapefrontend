@@ -766,9 +766,9 @@
                 <input type="checkbox" v-if="currentActiveConversation.whatsappConversationRecipientID != 0" :checked="true" style="accent-color: #FFD733; margin-right: 10px;" onclick="return false;">
                 <p class="m-0 text-title text-16"><strong>{{currentActiveConversation.whatsappConversationRecipientProfileName}}</strong> {{parsePhone(currentActiveConversation.whatsappConversationRecipientPhoneNumber)}}</p>
                 <div class="flex-grow-1"></div>
-                <button @click="getHistoryConversations()" class="btn btn-icon btn-primary mr-2" v-b-modal.historyConversationsModal><i class="i-Clock"></i>Historial</button>
-                <button @click="vistaItems = 'Productos'" class="btn btn-icon btn-primary mr-2" v-if="availableConversation == true"><i class="i-Shopping-Cart"></i>Buscar productos</button>
-                <button @click="vistaItems = 'Orden'" class="btn btn-icon btn-primary" v-if="availableConversation == true"><i class="i-Check"></i>Resumen de la orden</button>
+                <button @click="getHistoryConversations()" class="btn btn-icon btn-primary mr-2" v-b-modal.historyConversationsModal><i class="i-Clock" style="margin-right: 10px;"></i>Historial</button>
+                <button @click="vistaItems = 'Productos'" class="btn btn-icon btn-primary mr-2" v-if="availableConversation == true"><i class="i-Shopping-Cart" style="margin-right: 10px;"></i>Productos</button>
+                <button @click="vistaItems = 'Orden'" class="btn btn-icon btn-primary" v-if="availableConversation == true"><i class="i-Check" style="margin-right: 10px;"></i>Órden</button>
               </div>
             </div>
 
@@ -1630,21 +1630,15 @@
       </div>
 
       <div class="col-md-3 scrollable-container" v-if="(currentActiveConversation != null) && (availableConversation == true)">
-          <b-card v-if="vistaItems == 'Productos'">
-            <div class="d-flex" style="align-items: center;">
-              <h3 class="ul-widget__head-title">
-                Buscar productos
-              </h3>
-              <div class="flex-grow-1"></div>
-            </div>
-            <br>
+          <b-card v-if="vistaItems == 'Productos'" style="background-color: #e8e8e8">
+            
             <b-form-input
                 @keyup="selectProductos()"
                 v-model="producto"
                 id="buscador" 
                 type="text"
                 required
-                placeholder="Coloca el nombre del producto"
+                placeholder="Coloque el nombre del producto"
                 :class="{'loading-effect': loading}"
               ></b-form-input>
             
@@ -1653,16 +1647,13 @@
               <span class="spinner-glow spinner-glow-primary"></span>
             </div>
 
-            <div v-if="enviandoProductoLoader == true" style="text-align: center;">
-              <br><br>
-              <span class="spinner-glow spinner-glow-primary"></span>
-            </div>
-
             <div class="ul-widget__body" v-else>
-              <div class="ul-widget1" v-for="producto in productos" :key="producto.codigoProducto">
-                <div class="ul-widget__item ul-widget4__users">
+              <br v-if="productos.length != 0">
+              <div class="ul-widget1" v-for="producto in productos" :key="producto.codigoProducto" style="margin-top: 10px; margin-bottom: 10px;">
+                
+                <div class="ul-widget__item ul-widget4__users" style="background-color: white; border-radius: 20px; border: 2px solid #d6d6d6;">
                   <div class="ul-widget4__img">
-                    <div style="display: flex;">
+                    <div style="display: flex; margin-left: 15px;">
                       <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Extra Ice')" :src="iceLogoSRC"/>
                       <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('ICE')" :src="iceLogoSRC"/>
                       <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Postre')" :src="postreLogoSRC"/>
@@ -1681,7 +1672,7 @@
                     <span class="ul-widget4__number text-success">₡{{ producto.precioVenta }}</span>
                     
                     <div v-if="producto.productosAsociados.length != 0">
-                      <div v-for="nivelNicotina in producto.productosAsociados" :key="producto.codigoAsoiado" style="display: inline;"> 
+                      <div v-for="nivelNicotina in producto.productosAsociados.sort((a,b) => a.nicotina - b.nicotina)" :key="producto.codigoAsoiado" style="display: inline;"> 
                         <b-badge variant="dark" style="cursor:pointer; margin: 3px;" @click="AgregarItemVariacion(producto, nivelNicotina.codigoAsoiado, nivelNicotina.descripcion,'info')">{{nivelNicotina.nicotina}} MG</b-badge>
                       </div>
                     </div>
@@ -1695,7 +1686,7 @@
                         Stock
                       </button>
 
-                      <button v-b-modal.stockModal  v-else="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistenciaNicotina(producto.productosAsociados)">
+                      <button v-b-modal.stockModal  v-else class="btn btn-icon btn-warning mr-2" @click="cargarExistenciaNicotina(producto.productosAsociados)">
                         Stock
                       </button>
                     </div> 
@@ -1727,7 +1718,7 @@
 
                             <b-card style="background-color: #e8e8e8">
                               <div style="text-align: center">
-                                <p style="font-size: medium;"><strong>INFORMACIÓN PERSONAL:</strong></p>
+                                <p style="font-size: medium;"><strong>INFORMACIÓN DEL CLIENTE:</strong></p>
                               </div>
                               <b-form-group style="width:100%;">
                                 <b-form-input v-model="currentActiveConversation.whatsappConversationRecipientProfileName" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientName', currentActiveConversation.whatsappConversationRecipientProfileName)" placeholder='Nombre del cliente' style='margin-bottom: 10px;'></b-form-input>
@@ -1872,7 +1863,11 @@
                                               @input="updateFieldCant('cantidad', $event, props.row)"
                                               required
                                               onfocus="this.select();"
-                                              placeholder="Nombre"
+                                              placeholder=""
+                                              style="width: 60px;"
+                                              type="number"
+                                              min="0"  
+                                              step="1" 
                                           ></b-form-input>
                                       </span>
                                       <span v-if="props.column.field == 'descuento'">
@@ -1882,6 +1877,7 @@
                                               required
                                               onfocus="this.select();"
                                               placeholder="Descuento"
+                                              style="width: 75px;"
                                           ></b-form-input>
                                       </span>
 
