@@ -377,30 +377,55 @@
               <br><span class="spinner-glow spinner-glow-primary"></span>
             </div>
             
-            <div v-else style="height: 60vh; overflow-y: auto;" ref='historyScroll'>
-              <vue-good-table
-                :columns="historyConversationsColumns"
-                :line-numbers="false"
-                styleClass="order-table vgt-table"
-                :rows="historyConversations">
-                <template slot="table-row" slot-scope="props">  
-                  <div v-if="props.column.field == 'whatsappConversationStartDateTime'">
-                    <p>{{parseHour(props.row.whatsappConversationStartDateTime)}}</p>
-                  </div>
-                  <div v-else-if="props.column.field == 'whatsappConversationEndDateTime'">
-                    <p>{{parseHour(props.row.whatsappConversationEndDateTime)}}</p>
-                  </div>
-                  <div v-else-if="props.column.field == 'whatsappConversationActions'">
-                    <i v-if='props.row.whatsappConversationAmount != 0' :id="'productos'+props.row.whatsappConversationID" class="i-Shopping-Cart text-25 text-info" @click="rememberCart(props.row)" style="cursor: pointer; margin-right: 10px;"></i>
-                    <b-tooltip v-if='props.row.productos.length != 0' :target="'productos'+props.row.whatsappConversationID" triggers="hover" variant="info" placement="left">
-                      <div v-for="element in props.row.productos">
-                        <p><strong>{{ element.descripcion }}: </strong>{{element.cantidad}}</p>
+            <div v-else>
+
+              <b-card style="background-color: #e8e8e8">
+
+                <div ref='historyScroll' style="max-height: 500px; overflow-y: auto;">
+                  <vue-good-table
+                    :columns="historyConversationsColumns"
+                    :line-numbers="false"
+                    styleClass="order-table vgt-table"
+                    :rows="historyConversations"
+                    >
+                    <template slot="table-row" slot-scope="props">
+
+                      <div v-if="props.column.field == 'agentName'">
+                        <div :style="{backgroundColor: props.row.agentColor}" style="text-align: center; border-radius: 10px;">
+                          <p :style="{color: props.row.agentFontColor}">{{props.row.agentName}}</p>
+
+                        </div>
                       </div>
-                    </b-tooltip>
-                    <i class="i-Notepad text-25 text-warning" @click="openHistoryConversation(props.row)" v-b-modal.historyOpenModal style="cursor: pointer; margin-right: 7px;"></i>
-                  </div>
-                </template>
-              </vue-good-table>
+
+                      <div v-else-if="props.column.field == 'whatsappConversationStartDateTime'">
+                        <p>{{parseHour(props.row.whatsappConversationStartDateTime)}}</p>
+                      </div>
+                      <div v-else-if="props.column.field == 'whatsappConversationEndDateTime'">
+                        <p>{{parseHour(props.row.whatsappConversationEndDateTime)}}</p>
+                      </div>
+                      <div v-else-if="props.column.field == 'whatsappConversationActions'">
+                        <i v-if='props.row.whatsappConversationAmount != 0' :id="'productos'+props.row.whatsappConversationID" class="i-Shopping-Cart text-25 text-info" @click="rememberCart(props.row)" style="cursor: pointer; margin-right: 10px;"></i>
+                        <b-tooltip v-if='props.row.productos.length != 0' :target="'productos'+props.row.whatsappConversationID" triggers="hover" variant="info" placement="left">
+                          <div v-for="element in props.row.productos">
+                            <p><strong>{{ element.descripcion }}: </strong>{{element.cantidad}}</p>
+                          </div>
+                        </b-tooltip>
+                        <i class="i-Notepad text-25 text-warning" @click="openHistoryConversation(props.row)" v-b-modal.historyOpenModal style="cursor: pointer; margin-right: 7px;"></i>
+                      </div>
+                    </template>
+                  </vue-good-table>
+                </div>
+                
+              </b-card>
+
+              <br>
+              <b-card style="background-color: #e8e8e8">
+                <p v-if="historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length != 0" style="font-size: medium; margin: 0;"><strong>Primera compra: </strong> {{parseHour(historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 )[0].whatsappConversationEndDateTime)}}</p>
+                <p v-if="historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length != 0" style="font-size: medium; margin: 0;"><strong>Última compra: </strong> {{parseHour(historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 )[historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length - 1].whatsappConversationEndDateTime)}}</p>
+                <p style="font-size: medium; margin: 0;"><strong>Cantidad de compras: </strong> {{historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length}}</p>
+              </b-card>
+              
+
             </div>  
           </b-modal>
 
@@ -2012,7 +2037,7 @@ export default {
       historyLoader: false,
       historyConversations: [],
 
-      historyConversationsColumns: [{label: "Atendido por", field: "agentName", thClass: "text-left", tdClass: "text-left"}, {label: "Resultado", field: "whatsappConversationCloseComment", thClass: "text-left", tdClass: "text-left"}, {label: "Fecha de inicio", field: "whatsappConversationStartDateTime", thClass: "text-left", tdClass: "text-left"}, {label: "Fecha de finalización", field: "whatsappConversationEndDateTime", thClass: "text-left", tdClass: "text-left"}, {label: "", field: "whatsappConversationActions", thClass: "text-right", tdClass: "text-right"}],
+      historyConversationsColumns: [{label: "Agente", field: "agentName", thClass: "text-left", tdClass: "text-left"}, {label: "Resultado", field: "whatsappConversationCloseComment", thClass: "text-left", tdClass: "text-left"}, {label: "Inicio", field: "whatsappConversationStartDateTime", thClass: "text-left", tdClass: "text-left"}, {label: "Fin", field: "whatsappConversationEndDateTime", thClass: "text-left", tdClass: "text-left"}, {label: "", field: "whatsappConversationActions", thClass: "text-right", tdClass: "text-right"}],
 
 
       currentHistoryConversation: {},
