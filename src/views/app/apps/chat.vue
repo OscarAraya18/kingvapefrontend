@@ -2670,14 +2670,27 @@ export default {
       }, 1);
     },
 
-    scrollDown(){
-      let scrollInterval = setInterval(() => {
-        if (this.$refs.scrollRef) {
-          const psContainer = this.$refs.scrollRef;
-          psContainer.scrollTop = psContainer.scrollHeight;
-          clearInterval(scrollInterval);
+    scrollDown(aux = null){
+      if (aux){
+        if (aux == this.currentActiveConversationID){
+          let scrollInterval = setInterval(() => {
+            if (this.$refs.scrollRef) {
+              const psContainer = this.$refs.scrollRef;
+              psContainer.scrollTop = psContainer.scrollHeight;
+              clearInterval(scrollInterval);
+            }
+          }, 1);
         }
-      }, 1);
+      } else {
+        let scrollInterval = setInterval(() => {
+          if (this.$refs.scrollRef) {
+            const psContainer = this.$refs.scrollRef;
+            psContainer.scrollTop = psContainer.scrollHeight;
+            clearInterval(scrollInterval);
+          }
+        }, 1);
+      }
+      
     },
 
     saveInvoiceLocation(){
@@ -4525,7 +4538,8 @@ export default {
 
     async sendWhatsappFavoriteImageMessage(){
       const currentConversation = this.currentActiveConversation;
-      
+      const aux = this.currentActiveConversationID;
+
       if (this.currentNavItem == 'Nicotina'){
 
         for (var image in this.agentFavoriteImages){
@@ -4542,7 +4556,7 @@ export default {
                 this.repliedMessage = null;
                 const whatsappConversationID = response.data.result.whatsappConversationID;
                 this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
-                this.scrollDown();
+                this.scrollDown(aux);
               } else {
                 this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
               }
@@ -4568,7 +4582,7 @@ export default {
                 this.repliedMessage = null;
                 const whatsappConversationID = response.data.result.whatsappConversationID;
                 this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
-                this.scrollDown();
+                this.scrollDown(aux);
               } else {
                 this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
               }
@@ -4584,7 +4598,8 @@ export default {
 
     async sendWhatsappFavoriteImageMessageLiquid(){
       const currentConversation = this.currentActiveConversation;
-      
+      const aux = this.currentActiveConversationID;
+
       if (this.currentNavItemLiquid == 'Ice'){
         for (var image in this.liquids1){
           if (this.liquids1[image].selected){       
@@ -4600,7 +4615,7 @@ export default {
                 this.repliedMessage = null;
                 const whatsappConversationID = response.data.result.whatsappConversationID;
                 this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
-                this.scrollDown();
+                this.scrollDown(aux);
               } else {
                 this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
               }
@@ -4625,7 +4640,7 @@ export default {
                 this.repliedMessage = null;
                 const whatsappConversationID = response.data.result.whatsappConversationID;
                 this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
-                this.scrollDown();
+                this.scrollDown(aux);
               } else {
                 this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
               }
@@ -4642,7 +4657,8 @@ export default {
 
     async sendWhatsappFavoriteImageMessageSalt(){
       const currentConversation = this.currentActiveConversation;
-      
+      const aux = this.currentActiveConversationID;
+
       if (this.currentNavItemSalt == 'saltIce'){
         for (var image in this.salts1){
           if (this.salts1[image].selected){       
@@ -4658,7 +4674,7 @@ export default {
                 this.repliedMessage = null;
                 const whatsappConversationID = response.data.result.whatsappConversationID;
                 this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
-                this.scrollDown();
+                this.scrollDown(aux);
               } else {
                 this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
               }
@@ -4683,7 +4699,7 @@ export default {
                 this.repliedMessage = null;
                 const whatsappConversationID = response.data.result.whatsappConversationID;
                 this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);
-                this.scrollDown();
+                this.scrollDown(aux);
               } else {
                 this.showNotification('danger', 'Error al enviar el catálogo al cliente', 'Ha ocurrido un error inesperado al enviar el catálogo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
               }
