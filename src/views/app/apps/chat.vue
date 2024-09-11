@@ -3912,7 +3912,7 @@ export default {
             setTimeout( () => {
               this.loading = true;
               
-              axios.get('https://backend.kingvape.cr/api/Productos/BuscadorEnter5/King Vape/'+myInput).then( response => {
+              axios.get('https://backend.kingvape.cr/api/Productos/BuscadorEnter5/King%20Vape/'+myInput).then( response => {
                 me.productos = [];
                 Objeto = response.data
                   Objeto.map(function(x){
