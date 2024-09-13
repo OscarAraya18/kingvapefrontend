@@ -91,7 +91,7 @@
       <span class="spinner-glow spinner-glow-primary"></span>
     </div>
 
-    <b-card v-else>
+    <b-card v-else style="background-color: #e8e8e8; max-height: 750px; overflow-y: auto;">
       <vue-good-table
         :columns="contactColumns"
         :line-numbers="false"
@@ -125,7 +125,7 @@
               <p style="color: white;">{{ props.row.contactID }}</p>
             </div>
             <div v-else style="background-color: #942121; text-align: center; border-radius: 10px; width: 100px; margin-top: 15px;">
-              <p style="color: white;">Sin cédula</p>
+              <p style="color: white;">No registrada</p>
             </div>
           </div>
 
@@ -221,22 +221,6 @@
             </div>  
           </b-modal>
 
-
-      
-
-      <b-modal scrollable size="m" centered hide-footer id="openSell" hide-header>
-        <b-list-group>
-          <b-list-group-item v-for="product in currentSell">
-            <div>
-              <strong>Código:</strong> {{product.CodigoP}}<br>
-              <strong>Nombre:</strong> {{product.descripcion}}<br>
-              <strong>Cantidad:</strong> {{product.cantidad}}<br>
-              <strong>Precio:</strong> {{product.precio}}<br>
-              <strong>Descuento:</strong> {{product.descuento}}<br>
-            </div>
-          </b-list-group-item>
-        </b-list-group>
-      </b-modal>
 
       <b-modal scrollable size="lg" centered hide-footer id="historyOpenModal" hide-header v-if="currentHistoryConversation != null">
         <div v-if="openHistoryLoader == true" style="text-align: center;">
@@ -592,14 +576,6 @@ export default {
       displayedContactRows: [],
       originalContactRows: [],
 
-      originalEditingPhoneNumber: '',
-      editingPhoneNumber: '',
-      editingID: '',
-      editingName: '',
-      editingEmail: '',
-      editingLocationDetails: '',
-      editingNote: '',
-
       creatingPhoneNumber: '',
       creatingID: '',
       creatingName: '',
@@ -607,12 +583,10 @@ export default {
       creatingLocationDetails: '',
       creatingNote: '',
 
-      sendingID: '',
       agentType: '',
 
       currentHistoryConversation: null,
       zoom: 15,
-      currentSell: [],
       
       bigImageSource: null,
 
@@ -753,10 +727,6 @@ export default {
       return phoneNumber;
     },
 
-    openSell(historySell){
-      this.currentSell = historySell;
-      this.$root.$emit('bv::hide::modal','historyConversationsModal');
-    },
 
     getLocation(whatsappGeneralMessage){
       return {lat: whatsappGeneralMessage.whatsappLocationMessageLatitude, lng: whatsappGeneralMessage.whatsappLocationMessageLongitude}
