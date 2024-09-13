@@ -101,21 +101,6 @@
           </li>
 
 
-          <li
-            @mouseenter="toggleSubMenu"
-            class="nav-item"
-            data-item="shippers"
-            :class="{ active: selectedParentMenu == 'shippers' }"
-            :data-submenu="false"
-            v-if="isAdmin == true && locality == false"
-          >
-            <router-link tag="a" class="nav-item-hold" to="/app/apps/delivery">
-              <i class="nav-icon i-Motorcycle"></i>
-              <span class="nav-text"><strong>MENSAJEROS</strong></span>
-            </router-link>
-            <div class="triangle"></div>
-          </li>
-
 
           <li
             @mouseenter="toggleSubMenu"
