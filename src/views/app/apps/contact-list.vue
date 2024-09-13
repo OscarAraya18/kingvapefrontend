@@ -152,7 +152,7 @@
 
           <span v-else-if="props.column.field == 'contactActions'">
               <i v-if="props.row.contactHasIDImage" @click="selectClientIDSImage(props.row.contactPhoneNumber)" class="i-ID-Card text-25 text-black"  style="cursor: pointer; margin-right: 10px;"></i>
-              <i class="i-Clock text-25 text-info" @click="getHistoryConversations(props.row.contactPhoneNumber)" v-b-modal.modalHistorial style="cursor: pointer; margin-right: 10px;"></i>
+              <i class="i-Clock text-25 text-info" @click="getHistoryConversations(props.row.contactPhoneNumber)" v-b-modal.historyConversationsModal style="cursor: pointer; margin-right: 10px;"></i>
               <i class="i-Notepad text-25 text-warning" @click="openSendContactMessageModal(props.row)" v-b-modal.sendContactMessageModal style="cursor: pointer; margin-right: 7px;"></i>
           </span>
 
@@ -160,46 +160,68 @@
         </template>
       </vue-good-table>
 
-      <b-modal scrollable size="m" centered hide-footer id="modalHistorial" title="Historial de conversaciones">
-        <div v-if="historyLoader == false">
-          <div style="display: flex;">
-            
-            <b-list-group style="width: 80%">
-              <b-list-group-item v-if="historyConversations.length == 0">
-                No hay conversaciones en el historial
-              </b-list-group-item>
-              <b-list-group-item v-b-modal.historyOpenModal style="cursor: pointer" v-for="historyConversation in historyConversations" @click="openHistoryConversation(historyConversation)" button>
-                <div style="height: 100px; display: flex; align-items: center;">
-                  <div>
-                    <strong>Atendido por:</strong> {{historyConversation.agentName}}<br>
-                    <strong>Resultado:</strong> {{historyConversation.whatsappConversationCloseComment}}<br>
-                    <strong>Inicio:</strong> {{parseHour(historyConversation.whatsappConversationStartDateTime)}}<br>
-                    <strong>Fin:</strong> {{parseHour(historyConversation.whatsappConversationEndDateTime)}}<br>
-                  </div>
-                </div>
-              </b-list-group-item>
-            </b-list-group>
 
-            <b-list-group style="width: 20%">
-              <b-list-group-item v-if="historySells.length == 0">
-                NA
-              </b-list-group-item>
-              <b-list-group-item style="cursor: pointer;" v-for="historySell in historySells" button>
-                <div v-b-modal.openSell @click="openSell(historySell)" v-if="historySell.length != 0" style="height: 100px; display: flex; justify-content: center; align-items: center;">
-                  <p style="font-size: 30px;">🛒</p>
-                </div>
-                <div v-else style="height: 100px; display: flex; justify-content: center; align-items: center;">
-                  <p style="font-size: 30px;">❌</p>
-                </div>              
-              </b-list-group-item>
-            </b-list-group>
 
-          </div>
-        </div>
-        <div v-else style="text-align: center;">
-          <br><span class="spinner-glow spinner-glow-primary"></span>
-        </div>
-      </b-modal>
+      <b-modal scrollable size="lg" centered hide-footer hide-header id="historyConversationsModal">
+            <div v-if="historyLoader == true" style="text-align: center;">
+              <br><span class="spinner-glow spinner-glow-primary"></span>
+            </div>
+            <div v-else>
+
+              <b-card style="background-color: #e8e8e8">
+
+                <div ref='historyScroll' style="max-height: 500px; overflow-y: auto;">
+                  <vue-good-table
+                    :columns="historyConversationsColumns"
+                    :line-numbers="false"
+                    styleClass="order-table vgt-table"
+                    :rows="historyConversations"
+                    >
+                    <template slot="table-row" slot-scope="props">
+
+                      <div v-if="props.column.field == 'agentName'">
+                        <div :style="{backgroundColor: props.row.agentColor}" style="text-align: center; border-radius: 10px;">
+                          <p :style="{color: props.row.agentFontColor}">{{props.row.agentName}}</p>
+
+                        </div>
+                      </div>
+
+                      <div v-else-if="props.column.field == 'whatsappConversationStartDateTime'">
+                        <p>{{parseHour(props.row.whatsappConversationStartDateTime)}}</p>
+                      </div>
+                      <div v-else-if="props.column.field == 'whatsappConversationEndDateTime'">
+                        <p>{{parseHour(props.row.whatsappConversationEndDateTime)}}</p>
+                      </div>
+                      <div v-else-if="props.column.field == 'whatsappConversationActions'">
+                        <i v-if='props.row.whatsappConversationAmount != 0' :id="'productos'+props.row.whatsappConversationID" class="i-Shopping-Cart text-25 text-info" style="cursor: pointer; margin-right: 10px;"></i>
+                        
+                        <b-tooltip v-if='JSON.parse(props.row.whatsappConversationProducts).length != 0' :target="'productos'+props.row.whatsappConversationID" triggers="hover" variant="info" placement="left">
+                          <div v-for="whatsappConversationProduct in JSON.parse(props.row.whatsappConversationProducts)">
+                            <p><strong>{{ whatsappConversationProduct.descripcion }}: </strong>{{whatsappConversationProduct.cantidad}}</p>
+                          </div>
+                        </b-tooltip>
+
+                        <i class="i-Notepad text-25 text-warning" @click="openHistoryConversation(props.row)" v-b-modal.historyOpenModal style="cursor: pointer; margin-right: 7px;"></i>
+                      </div>
+                    </template>
+                  </vue-good-table>
+                </div>
+                
+              </b-card>
+
+              <br>
+              <b-card style="background-color: #e8e8e8">
+                <p v-if="historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length != 0" style="font-size: medium; margin: 0;"><strong>Primera compra: </strong> {{parseHour(historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 )[0].whatsappConversationEndDateTime)}}</p>
+                <p v-if="historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length != 0" style="font-size: medium; margin: 0;"><strong>Última compra: </strong> {{parseHour(historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 )[historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length - 1].whatsappConversationEndDateTime)}}</p>
+                <p style="font-size: medium; margin: 0;"><strong>Cantidad de compras: </strong> {{historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length}}</p>
+              </b-card>
+              
+
+            </div>  
+          </b-modal>
+
+
+      
 
       <b-modal scrollable size="m" centered hide-footer id="openSell" hide-header>
         <b-list-group>
@@ -526,6 +548,7 @@ export default {
 
       historyLoader: false,
       historyConversations: [],
+      historyConversationsColumns: [{label: "Agente", field: "agentName", thClass: "text-left", tdClass: "text-left"}, {label: "Resultado", field: "whatsappConversationCloseComment", thClass: "text-left", tdClass: "text-left"}, {label: "Inicio", field: "whatsappConversationStartDateTime", thClass: "text-left", tdClass: "text-left"}, {label: "Fin", field: "whatsappConversationEndDateTime", thClass: "text-left", tdClass: "text-left"}, {label: "", field: "whatsappConversationActions", thClass: "text-right", tdClass: "text-right"}],
       historySells: [],
 
       contactLetter: null,
@@ -782,7 +805,6 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
-          this.$root.$emit('bv::hide::modal','historyConversationsModal');
           this.currentHistoryConversation = response.data.result[historyConversation.whatsappConversationID];
           this.openHistoryLoader = false;
         } else {
