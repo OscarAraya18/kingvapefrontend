@@ -82,7 +82,7 @@
     <b-form-input v-model="contactPhoneNumber" @keyup.enter="openContactFromPhoneNumber()" placeholder='Número de teléfono' style='margin-bottom: 10px;'></b-form-input>
     <br>
 
-    <b-form-select v-model="contactLetter" class="mb-3" :options="contactLettersOptions" @change="getContacts">
+    <b-form-select v-model="contactLetter" class="mb-3" :options="contactLettersOptions" :disabled="loaderContact" @change="displayContacts()">
     </b-form-select>
     <br><br>
 
@@ -97,10 +97,11 @@
         :line-numbers="false"
         :search-options="{
           enabled: true,
-          placeholder: 'Coloca el nombre o número del contacto',
+          placeholder: 'Nombre o número del contacto',
+
         }"
         styleClass="tableOne vgt-table"
-        :rows="contactRows"
+        :rows="displayedContactRows"
       >
       
         <div slot="table-actions" class="m-3">
@@ -588,7 +589,8 @@ export default {
           thClass: "text-right",
         },
       ],
-      contactRows: [],
+      displayedContactRows: [],
+      originalContactRows: [],
 
       originalEditingPhoneNumber: '',
       editingPhoneNumber: '',
@@ -643,9 +645,18 @@ export default {
     this.getContactAmount();
     this.sendingMessage = localStorage.getItem('agentStartMessage');
     this.agentType = localStorage.getItem('agentType');
+
+    this.getContacts();
   },
 
   methods: {
+    displayContacts(){
+      this.displayedContactRows = this.originalContactRows.filter(contact => {
+        const contactName = contact.contactName.trim(); 
+        return contactName.toLowerCase().startsWith(this.contactLetter.toLowerCase());
+      });
+    },
+
     openContactLocationsModal(contactLocations){
       this.contactLocations = contactLocations;
     },
@@ -816,7 +827,7 @@ export default {
 
     openContactFromPhoneNumber(){
       this.loaderContact = true;
-      this.contactRows.length = 0;
+      this.displayedContactRows.length = 0;
 
       axios.post(constants.routes.backendAPI+'/selectContact', 
       {
@@ -825,7 +836,7 @@ export default {
       .then((response) =>{
         if (response.data.success){
           if (response.data.result.length != 0){
-            this.contactRows = response.data.result.map(contact => ({
+            this.displayedContactRows = response.data.result.map(contact => ({
               'contactID': contact.contactID,
               'contactName': contact.contactName,
               'contactPhoneNumber': contact.contactPhoneNumber,
@@ -972,7 +983,8 @@ export default {
             this.creatingEmail = '';
             this.creatingLocationDetails = '';
             this.creatingNote = '';
-            this.contactRows = [];
+            this.displayedContactRows.length = 0;
+            this.originalContactRows.length = 0;
             this.$refs['modalCrear'].hide();
             this.getContacts();
           } else {
@@ -1008,14 +1020,17 @@ export default {
 
     getContacts(){
       this.loaderContact = true;
-      this.contactRows.length = 0;
+      this.originalContactRows.length = 0;
 
       axios.post(constants.routes.backendAPI+'/selectContactsFromStartingLetter', 
       {
-        'startingLetter': this.contactLetter
+        'startingLetter': 'Todo'
       })
       .then((response) =>{ 
-        this.contactRows = response.data.result.map(contact => ({
+
+        console.log(response.data.result);
+
+        this.originalContactRows = response.data.result.map(contact => ({
           'contactID': contact.i,
           'contactName': contact.n,
           'contactPhoneNumber': contact.p,
@@ -1036,4 +1051,5 @@ export default {
   },
 };
 </script>
+
 <style></style>
