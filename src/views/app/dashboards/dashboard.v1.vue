@@ -508,36 +508,16 @@
         <br><br>
 
         <div style="display: flex;">
-          <b-card style="width: 65%; margin-right: 1.5%; background-color: rgb(214, 214, 214);">
+          <b-card style="margin-right: 1%; background-color: #ebebeb; height: 480px; width: 300px;">
             <br>
-            <div style="display: flex;">
-              
-              <div>
-                <p style="font-size: 40px; margin-top: 10px;"><strong>TOTAL:</strong></p>
-                <br><br>
-                <p style="font-size: 25px;"><strong>Conversaciones totales:</strong> {{whatsappTotalConversations}}</p>
-                <p style="font-size: 25px;"><strong>Conversaciones vendidas:</strong> {{whatsappSelledConversations}}</p>
-                <p style="font-size: 25px;"><strong>Conversaciones no vendidas:</strong> {{whatsappNotSelledConversations}}</p>
-                <p style="font-size: 25px;"><strong>Conversaciones pendientes:</strong> {{whatsappPendingConversations}}</p>
-                <p style="font-size: 25px;"><strong>Ventas totales:</strong> ₡{{whatsappTotalSells}}</p>
-              </div>
-
-              <div class="flex-grow-1"></div>
-              
-              <div style="text-align: center;">
-                
-                <div v-if="opcionesGraficoPaquetes != null">
-                  
-                  <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoPaquetes"></apexchart>
-                  <br>
-                  <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoDinero"></apexchart>
-                </div>
-              </div>
+            <div v-if="opcionesGraficoPaquetes != null" style="text-align: center;">
+              <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoPaquetes"></apexchart>
+              <br>
+              <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoDinero"></apexchart>
             </div>
-            
           </b-card>
 
-          <div style="width: 35%; margin-left: 1.5%;">
+          <div style="width: 40%; margin-left: 1%;">
             <div style="display: flex; margin-bottom: 25px;">
               <b-card style="width: 50%; margin-right: 1.5%; background-color: #fed330;">
                 <div style="display: flex;">
@@ -548,7 +528,11 @@
                 <p @click="selectTodayConversationsByLocalityNameAndType('1', 3)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{zapoteSelled + zapoteNotSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('1', 1)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{zapoteSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('1', 2)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{zapoteNotSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{zapoteSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
+                <div style="display: flex">
+                  <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong></p>
+                  <i v-if="!zapoteAmountVisible" @click="seeAmount('zapoteAmountVisible', 'zapoteAmountInterval')" class="i-Eye" style="cursor: pointer; font-size: 2em; margin: 5px;"></i>
+                  <p v-else style="font-size: 18px; margin: 3px;"> ₡{{zapoteSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
+                </div>
               </b-card>
               <b-card style="width: 50%; margin-left: 1.5%; background-color: #db67a3;">
                 <div style="display: flex;">
@@ -559,7 +543,11 @@
                 <p @click="selectTodayConversationsByLocalityNameAndType('4', 3)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{escazuSelled + escazuNotSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('4', 1)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{escazuSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('4', 2)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{escazuNotSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{escazuSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
+                <div style="display: flex">
+                  <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong></p>
+                  <i v-if="!escazuAmountVisible" @click="seeAmount('escazuAmountVisible', 'escazuAmountInterval')" class="i-Eye" style="cursor: pointer; font-size: 2em; margin: 5px;"></i>
+                  <p v-else style="font-size: 18px; margin: 3px;"> ₡{{escazuSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
+                </div>
               </b-card>
             </div>
 
@@ -573,7 +561,11 @@
                 <p @click="selectTodayConversationsByLocalityNameAndType('3', 3)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{cartagoNotSelled + cartagoSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('3', 1)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{cartagoSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('3', 2)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{cartagoNotSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
+                <div style="display: flex">
+                  <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong></p>
+                  <i v-if="!cartagoAmountVisible" @click="seeAmount('cartagoAmountVisible', 'cartagoAmountInterval')" class="i-Eye" style="cursor: pointer; font-size: 2em; margin: 5px;"></i>
+                  <p v-else style="font-size: 18px; margin: 3px;"> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
+                </div>
               </b-card>
               <b-card style="width: 50%; margin-left: 1.5%; background-color: #a78dcc;">
                 <div style="display: flex;">
@@ -584,16 +576,41 @@
                 <p @click="selectTodayConversationsByLocalityNameAndType('5', 3)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{herediaSelled + herediaNotSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('5', 1)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{herediaSelled}}</p>
                 <p @click="selectTodayConversationsByLocalityNameAndType('5', 2)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{herediaNotSelled}}</p>
-                <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong> ₡{{herediaSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
+                <div style="display: flex">
+                  <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong></p>
+                  <i v-if="!herediaAmountVisible" @click="seeAmount('herediaAmountVisible', 'herediaAmountInterval')" class="i-Eye" style="cursor: pointer; font-size: 2em; margin: 5px;"></i>
+                  <p v-else style="font-size: 18px; margin: 3px;"> ₡{{herediaSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
+                </div>
               </b-card>
             </div>
             
           </div>
+
+
+
+
+          <div style="width: 40%; margin-left: 2%;">
+            <b-card style="width: 100%; height: 100%; background-color: #ebebeb">
+              
+            </b-card>
+              
+            
+          </div>
+
+
         </div>
+
+        <br><br>
+
+        <b-card style="background-color: rgb(214, 214, 214); text-align: center; padding: auto;">
+          <i v-if="!totalAmountVisible" @click="seeAmount('totalAmountVisible', 'totalAmountInterval')" class="i-Eye" style="cursor: pointer; font-size: 2em; position: relative; top: 5px;"></i>
+          <h5 v-if="totalAmountVisible" style="margin-bottom: 0px;"><strong>Total de ventas:</strong> ₡{{ whatsappTotalSells }} </h5>
+
+        </b-card>
         
         <div v-if="feedbackRows.length != 0">
           <br><br>
-          <b-card style="background-color: rgb(214, 214, 214);">
+          <b-card style="background-color: #ebebeb">
             <vue-good-table
               :columns="feedbackColumns"
               :line-numbers="false"
@@ -688,9 +705,12 @@
           </b-card>
         </div>
 
-        <br><br><br>
 
-        <b-card style="background-color: rgb(214, 214, 214);">
+
+        <br><br>
+        
+
+        <b-card style="background-color: #ebebeb">
           <h4><strong>Búsqueda por número:</strong></h4>
             <div style="display: flex;">  
               <b-form-input style="width: 90%;" v-model="numberSearched" class="mb-2" placeholder="Coloque un número para buscar" @keyup="searchByNumber()"></b-form-input>
@@ -712,14 +732,23 @@
       <div class="card mb-30">
 
         
-        <div class="card-body p-0">
+        <div class="card-body p-0" style="background-color: #ebebeb;">
           
-          <h2 v-if="view == 'activeConversations'" style="margin: 30px;"><strong>Conversaciones actuales:</strong> {{ activeConversationsRows.length }}</h2>
+          <div v-if="view == 'activeConversations'" style="margin-top: 30px; margin-bottom: 30px; display: flex">
+            <div style="width: 50%; text-align: center;">
+              <h2><strong>Conversaciones actuales:</strong> {{ activeConversationsRows.length }}</h2>
+            </div>
+            <div style="width: 50%; text-align: center">
+              <h2><strong>Conversaciones pendientes:</strong> {{ whatsappPendingConversations }}</h2>
+            </div>
+          </div>
+          
 
           <vue-good-table
             :columns="activeConversationsColumns"
             :line-numbers="false"
             styleClass="order-table vgt-table"
+            style="padding: 20px;"
             :rows="activeConversationsRows"
             v-if="view == 'activeConversations'"
           >
@@ -802,14 +831,13 @@
             <h3><strong>{{openedName}}</strong></h3>
             <div class="flex-grow-1"></div>
             <div v-if="openedAgent != null" :style="getAgentColor(openedAgent)" style="width: 200px">
-              <h4 style="position: relative; top: 5px;"><strong>{{openedAgent.agentName}}</strong></h4>
+              <h4 :style="{color: openedAgent.agentFontColor}" style="position: relative; top: 5px;"><strong>{{openedAgent.agentName}}</strong></h4>
             </div>
           </div>
           <h3>{{parseNumber(openedNumber)}}</h3>
-
-          
-
         </div>
+
+
         <div ref="scrollHistory" style="max-height: 80vh; overflow-y: auto;">
           <div v-for="currentActiveConversationMessage in currentConversation.whatsappConversationMessages">
             
@@ -1069,6 +1097,7 @@
   .alertAnimation{
     animation: alertAnimationAnimate 1s infinite;
   }
+
 </style>
 
 
@@ -1292,8 +1321,6 @@ export default {
       whatsappSelledConversations: 0,
       whatsappNotSelledConversations: 0,
       whatsappPendingConversations: 0,
-      whatsappReceivedMessages: 0,
-      whatsappSendedMessages: 0,
       whatsappTotalSells: 0,
 
       todayReport: {},
@@ -1672,6 +1699,21 @@ export default {
 
       locations: [],
 
+
+      totalAmountVisible: false,
+      totalAmountInterval: null,
+
+      zapoteAmountVisible: false,
+      zapoteAmountInterval: null,
+
+      escazuAmountVisible: false,
+      escazuAmountInterval: null,
+
+      cartagoAmountVisible: false,
+      cartagoAmountInterval: null,
+
+      herediaAmountVisible: false,
+      herediaAmountInterval: null
     };
   },
 
@@ -1770,6 +1812,13 @@ export default {
   },
 
   methods: {
+    seeAmount(visible, interval){
+      this[visible] = true;
+      this[interval] = setInterval(() => {
+        this[visible] = false;
+        clearInterval(this[interval]);
+      }, 8000);
+    },
     
     getLocalityAgentLabels(names, amounts){
       var agentLabels = [];
@@ -2555,7 +2604,7 @@ export default {
           this.herediaSales = 0;
         }
 
-        this.opcionesGraficoPaquetes = {chart: {width: 330, type: 'pie', fontSize: 20}, tooltip: {enabled: true}, labels: ['Zapote', 'Escazú', 'Cartago', 'Heredia'], colors: ['#fed330', '#db67a3', '#55b5ab', '#a78dcc']};
+        this.opcionesGraficoPaquetes = {chart: {width: 250, type: 'pie', height: 220}, legend: {show: false}, tooltip: {enabled: true}, labels: ['Zapote', 'Escazú', 'Cartago', 'Heredia'], colors: ['#fed330', '#db67a3', '#55b5ab', '#a78dcc']};
         this.datosGraficoPaquetes = [this.zapoteSelled, this.escazuSelled, this.cartagoSelled, this.herediaSelled];
         this.datosGraficoDinero = [this.zapoteSales, this.escazuSales, this.cartagoSales, this.herediaSales];
 
@@ -2673,8 +2722,6 @@ export default {
               this.whatsappNotSelledConversations = response.data.result.whatsappNotSelledConversations;
               this.whatsappPendingConversations = response.data.result.whatsappPendingConversations;
               this.whatsappTotalSells = response.data.result.whatsappTotalSells.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
-              this.whatsappSendedMessages = response.data.result.whatsappSendedMessages;
-              this.whatsappReceivedMessages = response.data.result.whatsappReceivedMessages;
             })
             .catch((error) =>{
               console.log(error);
