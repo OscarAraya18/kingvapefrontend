@@ -455,7 +455,7 @@
               <br>
               <MapComponent mapHeight="300px" mapWidth="100%" :clientLongitude="contactLocations['CASA'].longitude" :clientLatitude="contactLocations['CASA'].latitude"></MapComponent>
             </div>
-            <p v-else>Sin ubicación registrada</p>
+            <p v-else style="margin-bottom: 0px;">Sin ubicación registrada</p>
           </b-card>
           <br><br>
           <b-card style="background-color: #e8e8e8">
@@ -464,7 +464,7 @@
               <br>
               <MapComponent mapHeight="300px" mapWidth="100%" :clientLongitude="contactLocations['TRABAJO'].longitude" :clientLatitude="contactLocations['TRABAJO'].latitude"></MapComponent>
             </div>
-            <p v-else>Sin ubicación registrada</p>
+            <p v-else style="margin-bottom: 0px;">Sin ubicación registrada</p>
           </b-card>
           <br><br>
           <b-card style="background-color: #e8e8e8">
@@ -473,7 +473,7 @@
               <br>
               <MapComponent mapHeight="300px" mapWidth="100%" :clientLongitude="contactLocations['OTRO'].longitude" :clientLatitude="contactLocations['OTRO'].latitude"></MapComponent>
             </div>
-            <p v-else>Sin ubicación registrada</p>
+            <p v-else style="margin-bottom: 0px;">Sin ubicación registrada</p>
           </b-card>
         </div>
       </b-modal>
