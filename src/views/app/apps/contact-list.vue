@@ -93,14 +93,14 @@
 
     <b-card v-else>
       <vue-good-table
-        :columns="columns"
+        :columns="contactColumns"
         :line-numbers="false"
         :search-options="{
           enabled: true,
           placeholder: 'Coloca el nombre o número del contacto',
         }"
         styleClass="tableOne vgt-table"
-        :rows="rows"
+        :rows="contactRows"
       >
       
         <div slot="table-actions" class="m-3">
@@ -116,31 +116,46 @@
 
 
         <template slot="table-row" slot-scope="props">
-          <span v-if="props.column.field == 'button'">
-
-              <i v-if="props.row.clientID" @click="selectClientIDSImage(props.row.phone)" class="i-ID-Card text-25 text-black"  style="cursor: pointer; margin-right: 10px;"></i>
-
-              <i class="i-Clock text-25 text-info" @click="getHistoryConversations(props.row.phone)" v-b-modal.modalHistorial style="cursor: pointer; margin-right: 10px;"></i>
-
-              <i class="i-Notepad text-25 text-warning" @click="openContact(props.row.button)" v-b-modal.modalContactar style="cursor: pointer; margin-right: 7px;"></i>
-              
-              <i class="i-Eraser-2 text-25 text-success mr-2" @click="openEdit(props.row.button)" v-b-modal.modalEditar style="cursor: pointer"></i>
-            
-              <i class="i-Close-Window text-25 text-danger" @click="deleteContact(props.row.button)" style="cursor: pointer"></i>
-
-          </span>
           
 
-          <span v-else-if="props.column.field == 'location'">
-            <div style="width: 150px; overflow: hidden;">
-              <b-button @click="openContactLocation(props.row.location)" variant="primary" class="btn d-sm-block" v-b-modal.modalOpenContact>Abrir ubicación</b-button>
+          
+          <div v-if="props.column.field == 'contactID'">
+            <div v-if="props.row.contactID != '0' && props.row.contactID != '1'" style="background-color: #337a46; text-align: center; border-radius: 10px; width: 100px; margin-top: 15px;">
+              <p style="color: white;">{{ props.row.contactID }}</p>
             </div>
+            <div v-else style="background-color: #942121; text-align: center; border-radius: 10px; width: 100px; margin-top: 15px;">
+              <p style="color: white;">Sin cédula</p>
+            </div>
+          </div>
+
+          <div v-else-if="props.column.field == 'contactName'" style="width: 300px;">
+            {{ props.row.contactName }}
+          </div>
+
+          <div v-else-if="props.column.field == 'contactPhoneNumber'">
+            {{ parseNumber(props.row.contactPhoneNumber) }}
+          </div>
+
+          <div v-if="props.column.field == 'contactEmail'" style="width: 300px;">
+            <div v-if="props.row.contactEmail.includes('@')" style="background-color: #e39e59; text-align: center; border-radius: 10px; width: 300px; margin-top: 15px;">
+              <p style="color: white;">{{ props.row.contactEmail }}</p>
+            </div>
+            <div v-else style="background-color: #942121; text-align: center; border-radius: 10px; width: 100px; margin-top: 15px;">
+              <p style="color: white;">Sin correo</p>
+            </div>
+          </div>
+
+          <span v-else-if="props.column.field == 'contactLocations'">
+            <button @click="openContactLocationsModal(props.row.contactLocations)" v-b-modal.contactLocationsModal class="btn btn-success" type="button">Ver ubicaciones</button>
+
           </span>
 
-          <span v-else-if="props.column.field == 'id'">
-            <p v-if="props.row.id != '0'">✔️</p>
-            <p v-else>❌</p>
+          <span v-else-if="props.column.field == 'contactActions'">
+              <i v-if="props.row.contactHasIDImage" @click="selectClientIDSImage(props.row.contactPhoneNumber)" class="i-ID-Card text-25 text-black"  style="cursor: pointer; margin-right: 10px;"></i>
+              <i class="i-Clock text-25 text-info" @click="getHistoryConversations(props.row.contactPhoneNumber)" v-b-modal.modalHistorial style="cursor: pointer; margin-right: 10px;"></i>
+              <i class="i-Notepad text-25 text-warning" @click="openSendContactMessageModal(props.row)" v-b-modal.sendContactMessageModal style="cursor: pointer; margin-right: 7px;"></i>
           </span>
+
 
         </template>
       </vue-good-table>
@@ -409,14 +424,38 @@
         </div>
       </b-modal>
 
-      <b-modal id="modalOpenContact" size="lg" hide-footer hide-header centered>
-        <div class="p-2" style="text-align: center;">
-          <MapComponent mapHeight="500px" mapWidth="740px" :clientLongitude="selectedContactLocation.lng" :clientLatitude="selectedContactLocation.lat"></MapComponent>
-          
+      <b-modal id="contactLocationsModal" size="lg" hide-footer hide-header centered>
+        <div v-if="contactLocations" style="text-align: center; padding: 20px;">
+          <b-card style="background-color: #e8e8e8">
+            <h4><strong>CASA:</strong></h4>
+            <div v-if="contactLocations['CASA'].latitude != '0'" style="text-align: center;">
+              <br>
+              <MapComponent mapHeight="300px" mapWidth="100%" :clientLongitude="contactLocations['CASA'].longitude" :clientLatitude="contactLocations['CASA'].latitude"></MapComponent>
+            </div>
+            <p v-else>Sin ubicación registrada</p>
+          </b-card>
+          <br><br>
+          <b-card style="background-color: #e8e8e8">
+            <h4><strong>TRABAJO:</strong></h4>
+            <div v-if="contactLocations['TRABAJO'].latitude != '0'" style="text-align: center;">
+              <br>
+              <MapComponent mapHeight="300px" mapWidth="100%" :clientLongitude="contactLocations['TRABAJO'].longitude" :clientLatitude="contactLocations['TRABAJO'].latitude"></MapComponent>
+            </div>
+            <p v-else>Sin ubicación registrada</p>
+          </b-card>
+          <br><br>
+          <b-card style="background-color: #e8e8e8">
+            <h4><strong>OTRO:</strong></h4>
+            <div v-if="contactLocations['OTRO'].latitude != '0'" style="text-align: center;">
+              <br>
+              <MapComponent mapHeight="300px" mapWidth="100%" :clientLongitude="contactLocations['OTRO'].longitude" :clientLatitude="contactLocations['OTRO'].latitude"></MapComponent>
+            </div>
+            <p v-else>Sin ubicación registrada</p>
+          </b-card>
         </div>
       </b-modal>
 
-      <b-modal id="modalContactar" title="Enviar mensaje al contacto" @ok="sendWhatsappTextMessage()" ref="modalContactar" centered>
+      <b-modal id="sendContactMessageModal" title="Enviar mensaje al contacto" @ok="sendWhatsappTextMessage()" centered>
         <div class="p-2">
             <b-form-select v-model="selectedMessageType" :options="messageTypes"></b-form-select>
             <br><br>
@@ -426,152 +465,14 @@
         </div>
       </b-modal>
 
-
-      <b-modal id="modalEditar" title="Editar contacto" hide-footer ref="modalEditar" centered> 
+      <b-modal @ok="createContact()" id="modalCrear" title="Crear contacto" ref="modalCrear" centered>
         <div class="p-3">
-          <b-form @submit.prevent="submit">
-            <b-form-group label="Número del contacto:" style="font-size: medium;" class="pb-2">
-              <b-form-input
-                class="form-control"
-                label="ID"
-                v-model="editingPhoneNumber"
-              >
-              </b-form-input>
-            </b-form-group>
-            
-            <b-form-group label="Nombre del contacto:" style="font-size: medium;" class="pb-2">
-              <b-form-input
-                class="form-control"
-                label="Name"
-                v-model="editingName"
-              >
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group label="Cédula del contacto:" style="font-size: medium;" class="pb-2">
-              <b-form-input
-                class="form-control"
-                label="ID"
-                v-model="editingID"
-              >
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group label="Correo electrónico del contacto:" style="font-size: medium;" class="pb-2">
-              <b-form-input
-                class="form-control"
-                label="email"
-                v-model="editingEmail"
-              >
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group label="Nota de la dirección del contacto:" style="font-size: medium;" class="pb-2">
-              <b-form-textarea
-                class="form-control"
-                label="locationDetails"
-                v-model="editingLocationDetails"
-                rows="3"
-              >
-              </b-form-textarea>
-            </b-form-group>
-
-            <b-form-group label="Nota del envío del contacto:" style="font-size: medium;">
-              <b-form-textarea
-                class="form-control"
-                label="note"
-                v-model="editingNote"
-                rows="3"
-              >
-              </b-form-textarea>
-              <br>
-            </b-form-group>
-
-            <b-button
-              type="submit"
-              block
-              variant="primary"
-              class="btn-icon btn"
-              >Guardar cambios</b-button
-            >
-
-          </b-form>
+          <b-form-input v-model="creatingPhoneNumber" placeholder="Número de teléfono del contacto"></b-form-input>
+          <br>
+          <b-form-input v-model="creatingName" placeholder="Nombre del contacto"></b-form-input>
         </div>
       </b-modal>
 
-
-
-      <b-modal id="modalCrear" title="Crear contacto" hide-footer ref="modalCrear" centered>
-        <div class="p-3">
-          <b-form @submit.prevent="createContact">
-            
-            <b-form-group label="Número del contacto:" style="font-size: medium;" class="pb-2">
-              <b-form-input
-                class="form-control"
-                label="ID"
-                v-model="creatingPhoneNumber"
-              >
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group label="Nombre del contacto:" style="font-size: medium;" class="pb-2">
-              <b-form-input
-                class="form-control"
-                label="Name"
-                v-model="creatingName"
-              >
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group label="Cédula del cliente:" style="font-size: medium;" class="pb-2">
-              <b-form-input
-                class="form-control"
-                label="ID"
-                v-model="creatingID"
-              >
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group label="Correo electrónico del contacto:" style="font-size: medium;" class="pb-2">
-              <b-form-input
-                class="form-control"
-                label="email"
-                v-model="creatingEmail"
-              >
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group label="Nota de la dirección del contacto:" style="font-size: medium;" class="pb-2">
-              <b-form-textarea
-                class="form-control"
-                label="locationDetails"
-                v-model="creatingLocationDetails"
-                rows="3"
-              >
-              </b-form-textarea>
-            </b-form-group>
-
-            <b-form-group label="Nota del envío del contacto:" style="font-size: medium;">
-              <b-form-textarea
-                class="form-control"
-                label="note"
-                v-model="creatingNote"
-                rows="3"
-              >
-              </b-form-textarea>
-            </b-form-group>
-            <br>
-            <b-button
-              type="submit"
-              block
-              variant="primary"
-              class="btn-icon btn"
-              >Guardar cambios</b-button
-            >
-
-          </b-form>
-        </div>
-      </b-modal>
     </b-card>
   </div>
 </template>
@@ -637,45 +538,36 @@ export default {
 
       sendingMessage: '',
 
-      columns: [
+      contactColumns: [
         {
           label: "Cédula",
-          field: "id",
+          field: "contactID",
         },
         {
           label: "Nombre",
-          field: "name",
+          field: "contactName",
         },
         {
           label: "Número",
-          field: "displayedPhone",
-        },
-        {
-          label: "Ubicación",
-          field: "location",
-          html: true,
+          field: "contactPhoneNumber"
         },
         {
           label: "Correo electrónico",
-          field: "email",
+          field: "contactEmail",
         },
         {
-          label: "Nota de la dirección",
-          field: "locationDetails",
+          label: "Ubicación",
+          field: "contactLocations"
         },
         {
-          label: "Nota del envío",
-          field: "note",
-        },
-        {
-          label: "Opciones",
-          field: "button",
+          label: "",
+          field: "contactActions",
           html: true,
           tdClass: "text-right",
           thClass: "text-right",
         },
       ],
-      rows: [],
+      contactRows: [],
 
       originalEditingPhoneNumber: '',
       editingPhoneNumber: '',
@@ -703,7 +595,10 @@ export default {
 
       loaderID: false,
       IDModalSource: null,
-      IDModalType: null
+      IDModalType: null,
+
+      contactLocations: null,
+      sendingContact: null
     };
 
     
@@ -730,6 +625,9 @@ export default {
   },
 
   methods: {
+    openContactLocationsModal(contactLocations){
+      this.contactLocations = contactLocations;
+    },
 
     selectClientIDSImage(clientIDSPhoneNumber){
       this.loaderID = true;
@@ -961,12 +859,11 @@ export default {
     },
 
     openContactLocation(location){
-      console.log(location);
       this.selectedContactLocation = location;
     },
 
     openCreateContactModal(){
-      this.creatingPhoneNumber = '';
+      this.creatingPhoneNumber = '506';
       this.creatingID = '';
       this.creatingName = '';
       this.creatingEmail = '';
@@ -975,8 +872,8 @@ export default {
     },
 
     sendWhatsappTextMessage(){
-      const whatsappConversationRecipientPhoneNumber = this.allContactsInformation[this.sendingID].contactPhoneNumber;
-      const whatsappConversationRecipientProfileName = this.allContactsInformation[this.sendingID].contactName;
+      const whatsappConversationRecipientPhoneNumber = this.sendingContact.contactPhoneNumber;
+      const whatsappConversationRecipientProfileName = this.sendingContact.contactName;
 
       axios.post(constants.routes.backendAPI+'/sendWhatsappTextMessageFromContactList',
       {
@@ -1001,7 +898,7 @@ export default {
           });
         }
       })
-      .catch((error) =>{
+      .catch(() =>{
         this.$bvToast.toast("Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
           title: "Error al enviar el mensaje",
           variant: "danger",
@@ -1012,7 +909,7 @@ export default {
 
     createContact(){
       const regularExpressionChecker = /\S/;
-      if (regularExpressionChecker.test(this.creatingPhoneNumber) && regularExpressionChecker.test(this.creatingID) && regularExpressionChecker.test(this.creatingName) && regularExpressionChecker.test(this.creatingEmail) && regularExpressionChecker.test(this.creatingLocationDetails) && regularExpressionChecker.test(this.creatingNote)) {
+      if (regularExpressionChecker.test(this.creatingPhoneNumber) && regularExpressionChecker.test(this.creatingName)) {
         axios.post(constants.routes.backendAPI+'/insertContact', 
         {
           'contactPhoneNumber': this.creatingPhoneNumber, 
@@ -1034,7 +931,7 @@ export default {
             this.creatingEmail = '';
             this.creatingLocationDetails = '';
             this.creatingNote = '';
-            this.rows = [];
+            this.contactRows = [];
             this.$refs['modalCrear'].hide();
             this.getContacts();
           } else {
@@ -1061,127 +958,38 @@ export default {
       }
     },
 
-    deleteContact(contactID){
-      axios.post(constants.routes.backendAPI+'/deleteContact', {'contactPhoneNumber': this.allContactsInformation[contactID].contactPhoneNumber})
-      .then((response) =>{ 
-        console.log(response.data);
-        if (response.data.success){
-          this.$bvToast.toast("Se ha eliminado exitosamente el contacto con el número '" + this.allContactsInformation[contactID].contactPhoneNumber + "'.", {
-            title: "Contacto eliminado",
-            variant: "success",
-            solid: true
-          });
-          this.rows = [];
-          this.getContacts();
-        } else {
-          this.$bvToast.toast("Ha ocurrido un error inesperado al eliminar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-            title: "Error al eliminar el contacto",
-            variant: "danger",
-            solid: true
-          });
-        }
-      })
-      .catch((error) =>{
-        this.$bvToast.toast("Ha ocurrido un error inesperado al eliminar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-          title: "Error al eliminar el contacto",
-          variant: "danger",
-          solid: true
-        });
-      })
-    },
 
-    openEdit(contactID){
-      this.originalEditingPhoneNumber = this.allContactsInformation[contactID].contactPhoneNumber;
-      this.editingPhoneNumber = this.allContactsInformation[contactID].contactPhoneNumber;
-      this.editingID = this.allContactsInformation[contactID].contactID;
-      this.editingName = this.allContactsInformation[contactID].contactName;
-      this.editingEmail = this.allContactsInformation[contactID].contactEmail;
-      this.editingLocationDetails = this.allContactsInformation[contactID].contactLocationDetails;
-      this.editingNote = this.allContactsInformation[contactID].contactNote;
-    },
-
-    openContact(contactID){
+    openSendContactMessageModal(contact){
       this.sendingMessage = localStorage.getItem('agentStartMessage');
-      this.sendingID = contactID;
+      this.sendingContact = contact;
     },
 
-    submit(){
-      const regularExpressionChecker = /\S/;
-      if (regularExpressionChecker.test(this.editingPhoneNumber) && regularExpressionChecker.test(this.editingID) && regularExpressionChecker.test(this.editingName) && regularExpressionChecker.test(this.editingEmail) && regularExpressionChecker.test(this.editingLocationDetails) && regularExpressionChecker.test(this.editingNote)) {
-        axios.post(constants.routes.backendAPI+'/updateContact', 
-        {
-          'originalContactPhoneNumber': this.originalEditingPhoneNumber,
-          'editedContactPhoneNumber': this.editingPhoneNumber,
-          'contactID': this.editingID,
-          'contactName': this.editingName, 
-          'contactEmail': this.editingEmail, 
-          'contactLocationDetails': this.editingLocationDetails, 
-          'contactNote': this.editingNote
-        }).then((response) =>{ 
-          if (response.data.success){
-            this.$bvToast.toast("Se ha editado exitosamente el contacto con el número '" + this.editingPhoneNumber + "'.", {
-              title: "Contacto editado",
-              variant: "success",
-              solid: true
-            });
-            this.rows = [];
-            this.$refs['modalEditar'].hide();
-            this.getContacts();
-          } else {
-            this.$bvToast.toast("Ya existe un cliente asociado al número '" + this.editingPhoneNumber + "', por favor modifique la información e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-              title: "Número de contacto duplicado",
-              variant: "danger",
-              solid: true
-            });
-          }
-        })
-        .catch(error =>{
-          this.$bvToast.toast("Ha ocurrido un error inesperado al editar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-            title: "Error al editar el contacto",
-            variant: "danger",
-            solid: true
-          });
-        })
-      } else {
-        this.$bvToast.toast('El contenido de la información del cliente no puede estar vacío. Por favor complete los espacios requeridos e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
-          title: 'Error al editar el cliente',
-          variant: 'danger',
-          solid: true
-        });
-      }
-    },
 
     getContacts(){
       this.loaderContact = true;
+      this.contactRows.length = 0;
+      this.allContactsInformation.length = 0;
+
       axios.post(constants.routes.backendAPI+'/selectContactsFromStartingLetter', 
       {
         'startingLetter': this.contactLetter
       })
       .then((response) =>{ 
-        this.allContactsInformation = [];
-        this.rows = [];
         this.allContactsInformation = response.data.result;
-        for (var contact in response.data.result){
-          const locations = JSON.parse(response.data.result[contact].contactLocations);
-          var center = {lat: parseInt(locations['CASA'].latitude), lng: parseInt(locations['CASA'].longitude)}
-          this.rows.push
-          ({
-            name: response.data.result[contact].contactName,
-            location: center,
-            email: response.data.result[contact].contactEmail,
-            phone: response.data.result[contact].contactPhoneNumber,
-            displayedPhone: this.parseNumber(response.data.result[contact].contactPhoneNumber),
-            id: response.data.result[contact].contactID,
-            locationDetails: response.data.result[contact].contactLocationDetails,
-            note: response.data.result[contact].contactNote,
-            button: contact,
-            clientID: true
-          })
-        }
+
+        console.log(response.data.result);
+
+        this.contactRows = response.data.result.map(contact => ({
+          'contactID': contact.i,
+          'contactName': contact.n,
+          'contactPhoneNumber': contact.p,
+          'contactEmail': contact.e,
+          'contactLocations': JSON.parse(contact.l),
+          'contactHasIDImage': contact.ip
+        }));
         this.loaderContact = false;
       })
-      .catch((error) =>{
-        console.log(error);
+      .catch(() =>{
         this.$bvToast.toast("Ha ocurrido un error inesperado al consultar la lista de clientes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
           title: "Error al consultar la lista de clientes",
           variant: "danger",
