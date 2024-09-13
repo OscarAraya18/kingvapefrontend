@@ -557,8 +557,6 @@ export default {
       selectedContactLocation: '',
       loaderContact: false,
 
-      allContactsInformation: [],
-
       sendingMessage: '',
 
       contactColumns: [
@@ -817,21 +815,42 @@ export default {
     },
 
     openContactFromPhoneNumber(){
+      this.loaderContact = true;
+      this.contactRows.length = 0;
+
       axios.post(constants.routes.backendAPI+'/selectContact', 
       {
         contactPhoneNumber: this.contactPhoneNumber
       })
       .then((response) =>{
         if (response.data.success){
-          this.showNotification('success', 'Contacto encontrado', 'El nombre del cliente es "' + response.data.result[0].contactName + '".');
+          if (response.data.result.length != 0){
+            this.contactRows = response.data.result.map(contact => ({
+              'contactID': contact.contactID,
+              'contactName': contact.contactName,
+              'contactPhoneNumber': contact.contactPhoneNumber,
+              'contactEmail': contact.contactEmail,
+              'contactLocations': JSON.parse(contact.contactLocations),
+              'contactHasIDImage': contact.ip
+            }));
+            this.loaderContact = false;
+            this.contactPhoneNumber = '';
+          } else {
+            this.loaderContact = false;
+            this.contactPhoneNumber = '';
+            this.showNotification('warning', 'Contacto no encontrado', 'No se ha encontrado ningún contacto con el número ' + this.contactPhoneNumber + '. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+          }
         } else {
+          this.loaderContact = false;
+          this.contactPhoneNumber = '';
           this.showNotification('danger', 'Error al buscar el contacto', 'Ha ocurrido un error inesperado al buscar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(() => {
+        this.loaderContact = false;
         this.showNotification('danger', 'Error al buscar el contacto', 'Ha ocurrido un error inesperado al buscar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
+
     },
 
     openHistoryConversationFromConversationID(){
@@ -990,17 +1009,12 @@ export default {
     getContacts(){
       this.loaderContact = true;
       this.contactRows.length = 0;
-      this.allContactsInformation.length = 0;
 
       axios.post(constants.routes.backendAPI+'/selectContactsFromStartingLetter', 
       {
         'startingLetter': this.contactLetter
       })
       .then((response) =>{ 
-        this.allContactsInformation = response.data.result;
-
-        console.log(response.data.result);
-
         this.contactRows = response.data.result.map(contact => ({
           'contactID': contact.i,
           'contactName': contact.n,
