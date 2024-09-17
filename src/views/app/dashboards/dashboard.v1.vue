@@ -594,11 +594,11 @@
               <div v-for="notification in notifications">
                 <div style="background-color: #d9d9d9; margin-bottom: 20px; border-radius: 10px; padding: 10px;">
                   <div v-if="notification.notificationType == 1">
-                    <div style="display: flex;">
+                    <div style="display: flex; cursor: pointer" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
                       <div :style="{backgroundColor: notification.agent1Color}" style="border-radius: 10px; padding: 10px; width: fit-content; text-align: center;">
                         <p style="margin: 0px;" :style="{color: notification.agent1FontColor }">{{ notification.agent1Name }}</p>
                       </div>
-                      <p style="margin-top: 10px; margin-bottom: 0px; margin-left: 10px; margin-right: 10px;">ha transferido un chat a</p>
+                      <p style="margin-top: 10px; margin-bottom: 0px; margin-left: 10px; margin-right: 10px;">ha transferido una conversación a</p>
                       <div :style="{backgroundColor: notification.agent2Color}" style="border-radius: 10px; padding: 10px; width: fit-content; text-align: center;">
                         <p style="margin: 0px;" :style="{color: notification.agent2FontColor }">{{ notification.agent2Name }}</p>
                       </div>
