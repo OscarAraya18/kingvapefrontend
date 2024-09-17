@@ -594,7 +594,7 @@
               <div v-for="notification in notifications">
                 <div style="background-color: #d9d9d9; margin-bottom: 20px; border-radius: 10px; padding: 10px;">
                   <div v-if="notification.notificationType == 1">
-                    <div style="display: flex;">
+                    <div style="display: flex;" v-b-modal.conversationModal>
                       <div :style="{backgroundColor: notification.agent1Color}" style="border-radius: 10px; padding: 10px; width: fit-content; text-align: center;">
                         <p style="margin: 0px;" :style="{color: notification.agent1FontColor }">{{ notification.agent1Name }}</p>
                       </div>
@@ -602,6 +602,8 @@
                       <div :style="{backgroundColor: notification.agent2Color}" style="border-radius: 10px; padding: 10px; width: fit-content; text-align: center;">
                         <p style="margin: 0px;" :style="{color: notification.agent2FontColor }">{{ notification.agent2Name }}</p>
                       </div>
+                      <div class="flex-grow-1"></div>
+                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(notification.notificationDatetime).toISOString().slice(11, 19) }}</p>
                     </div>
                   </div>
                   <div v-if="notification.notificationType == 2">
@@ -610,6 +612,8 @@
                         <p style="margin: 0px;" :style="{color: notification.whatsappConversationFontColor }">{{ notification.whatsappConversationAgentName }}</p>
                       </div>
                       <p style="margin-top: 10px; margin-bottom: 0px;">Ha cerrado la conversación {{ notification.whatsappConversationID }} como "{{ notification.whatsappConversationCloseComment }}"</p>
+                      <div class="flex-grow-1"></div>
+                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(notification.notificationDatetime).toISOString().slice(11, 19) }}</p>
                     </div>
                   </div>
                   <div v-if="notification.notificationType == 3">
@@ -618,6 +622,8 @@
                         <p style="margin: 0px;" :style="{color: notification.whatsappInvoiceAgentFontColor }">{{ notification.whatsappInvoiceAgentName }}</p>
                       </div>
                       <p style="margin-top: 10px; margin-bottom: 0px;">Ha vendido la órden {{ notification.whatsappInvoiceID }} por ₡{{ notification.whatsappInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
+                      <div class="flex-grow-1"></div>
+                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(notification.notificationDatetime).toISOString().slice(11, 19) }}</p>
                     </div>
                   </div>
                   <div v-if="notification.notificationType == 4">
@@ -626,6 +632,8 @@
                         <p style="margin: 0px;" :style="{color: notification.whatsappConversationFontColor }">{{ notification.whatsappConversationAgentName }}</p>
                       </div>
                       <p style="margin-top: 10px; margin-bottom: 0px;">Ha regresado la órden {{ notification.whatsappInvoiceID }} al Call Center</p>
+                      <div class="flex-grow-1"></div>
+                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(notification.notificationDatetime).toISOString().slice(11, 19) }}</p>
                     </div>
                   </div>
                   <div v-if="notification.notificationType == 5">
@@ -634,6 +642,8 @@
                         <p style="margin: 0px;" :style="{color: notification.agent1FontColor }">{{ notification.agent1Name }}</p>
                       </div>
                       <p style="margin-top: 10px; margin-bottom: 0px;">Ha aprobado el SINPE de la órden {{ notification.whatsappInvoiceID }} por ₡{{ notification.whatsappInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
+                      <div class="flex-grow-1"></div>
+                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(notification.notificationDatetime).toISOString().slice(11, 19) }}</p>
                     </div>
                   </div>
                 </div>
@@ -2608,7 +2618,7 @@ export default {
 
     selectNotifications(){
       axios.post(constants.routes.backendAPI+'/selectNotifications').then((response) =>{
-        this.notifications = response.data.result;
+        this.notifications = response.data.result.reverse();
 
       });
     },

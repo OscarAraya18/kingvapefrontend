@@ -4836,7 +4836,7 @@ export default {
       if (whatsappConversationID != null){
         axios.post(constants.routes.backendAPI+'/requestTransferWhatsappConversation',
         {
-          currentAgentDI: parseInt(localStorage.getItem('agentID')),
+          currentAgentID: parseInt(localStorage.getItem('agentID')),
           currentAgentName: localStorage.getItem('agentName'),
           newAgentID: transferedAgent.agentID,
           whatsappConversationID: whatsappConversationID,
@@ -4859,6 +4859,8 @@ export default {
     },
 
     acceptTransferWhatsappConversation(){
+      console.log(this.transferFromAgentID);
+
       axios.post(constants.routes.backendAPI+'/acceptTransferWhatsappConversation',
       {
         currentAgentID: this.transferFromAgentID,
@@ -5513,6 +5515,9 @@ export default {
 
     receiveRequestTransferWhatsappConversation(websocketMessageContent){
       if (websocketMessageContent.newAgentID == parseInt(localStorage.getItem('agentID'))){
+
+        console.log(websocketMessageContent);
+
         this.transferRequestName = websocketMessageContent.currentAgentName;
         this.transferFromAgentID = websocketMessageContent['currentAgentID'];
         this.transferConversationID = websocketMessageContent.whatsappConversationID;
