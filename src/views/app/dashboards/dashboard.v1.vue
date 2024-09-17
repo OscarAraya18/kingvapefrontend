@@ -589,9 +589,47 @@
 
 
 
-          <div style="width: 40%; margin-left: 2%;">
-            <b-card style="width: 100%; height: 100%; background-color: #ebebeb">
-              
+          <div style="width: 40%; margin-left: 2%; max-height: 485px; overflow-y: auto">
+            <b-card style="width: 100%; max-height: 485px; background-color: #ebebeb; overflow-y: auto">
+              <div v-for="notification in notifications">
+                <div style="background-color: #d9d9d9; margin-bottom: 20px; border-radius: 10px; padding: 10px;">
+                  <div v-if="notification.notificationType == 1">
+                    <div style="display: flex;">
+                      <div :style="{backgroundColor: notification.agent1Color}" style="border-radius: 10px; padding: 10px; width: fit-content;">
+                        <p style="margin: 0px;" :style="{color: notification.agent1FontColor }">{{ notification.agent1Name }}</p>
+                      </div>
+                      <p style="margin-top: 10px; margin-bottom: 0px; margin-left: 10px; margin-right: 10px;">ha transferido un chat a</p>
+                      <div :style="{backgroundColor: notification.agent2Color}" style="border-radius: 10px; padding: 10px; width: fit-content;">
+                        <p style="margin: 0px;" :style="{color: notification.agent2FontColor }">{{ notification.agent2Name }}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-if="notification.notificationType == 2">
+                    <div :style="{backgroundColor: notification.whatsappConversationAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content;">
+                      <p style="margin: 0px;" :style="{color: notification.whatsappConversationAgentFontColor }">{{ notification.whatsappConversationAgentName }}</p>
+                    </div>
+                    <p style="margin-top: 10px; margin-bottom: 0px;">Ha cerrado la conversación {{ notification.whatsappConversationID }} como "{{ notification.whatsappConversationCloseComment }}"</p>
+                  </div>
+                  <div v-if="notification.notificationType == 3">
+                    <div :style="{backgroundColor: notification.whatsappInvoiceAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content;">
+                      <p style="margin: 0px;" :style="{color: notification.whatsappInvoiceAgentFontColor }">{{ notification.whatsappInvoiceAgentName }}</p>
+                    </div>
+                    <p style="margin-top: 10px; margin-bottom: 0px;">Ha vendido la órden {{ notification.whatsappInvoiceID }} por ₡{{ notification.whatsappInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
+                  </div>
+                  <div v-if="notification.notificationType == 4">
+                    <div :style="{backgroundColor: notification.whatsappConversationAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content;">
+                      <p style="margin: 0px;" :style="{color: notification.whatsappConversationAgentFontColor }">{{ notification.whatsappConversationAgentName }}</p>
+                    </div>
+                    <p style="margin-top: 10px; margin-bottom: 0px;">Ha regresado la órden {{ notification.whatsappInvoiceID }} al Call Center</p>
+                  </div>
+                  <div v-if="notification.notificationType == 5">
+                    <div :style="{backgroundColor: notification.agent1Color}" style="border-radius: 10px; padding: 10px; width: fit-content;">
+                      <p style="margin: 0px;" :style="{color: notification.agent1FontColor }">{{ notification.agent1Name }}</p>
+                    </div>
+                    <p style="margin-top: 10px; margin-bottom: 0px;">Ha aprobado el SINPE de la órden {{ notification.whatsappInvoiceID }} por ₡{{ notification.whatsappInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
+                  </div>
+                </div>
+              </div>
             </b-card>
               
             
@@ -1713,7 +1751,9 @@ export default {
       cartagoAmountInterval: null,
 
       herediaAmountVisible: false,
-      herediaAmountInterval: null
+      herediaAmountInterval: null,
+
+      notifications: []
     };
   },
 
@@ -1773,6 +1813,9 @@ export default {
     this.selectTodayInformation(true);
     this.selectAgentNames();
     this.selectTransferableAgents();
+
+    this.selectNotifications();
+
     this.getInformation();
     this.selectNotResolvedWhatsappFeedbacks();
 
@@ -2546,6 +2589,13 @@ export default {
 
     openBigImage(bigImageSource){
       this.bigImageSource = bigImageSource;
+    },
+
+    selectNotifications(){
+      axios.post(constants.routes.backendAPI+'/selectNotifications').then((response) =>{
+        this.notifications = response.data.result;
+
+      });
     },
 
     getInformation(){

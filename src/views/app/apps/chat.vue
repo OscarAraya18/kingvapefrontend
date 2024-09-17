@@ -393,7 +393,6 @@
                       <div v-if="props.column.field == 'agentName'">
                         <div :style="{backgroundColor: props.row.agentColor}" style="text-align: center; border-radius: 10px;">
                           <p :style="{color: props.row.agentFontColor}">{{props.row.agentName}}</p>
-
                         </div>
                       </div>
 
