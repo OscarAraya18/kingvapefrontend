@@ -594,7 +594,7 @@
               <div v-for="notification in notifications">
                 <div style="background-color: #d9d9d9; margin-bottom: 20px; border-radius: 10px; padding: 10px;">
                   <div v-if="notification.notificationType == 1">
-                    <div style="display: flex;" v-b-modal.conversationModal>
+                    <div style="display: flex;">
                       <div :style="{backgroundColor: notification.agent1Color}" style="border-radius: 10px; padding: 10px; width: fit-content; text-align: center;">
                         <p style="margin: 0px;" :style="{color: notification.agent1FontColor }">{{ notification.agent1Name }}</p>
                       </div>
@@ -603,47 +603,47 @@
                         <p style="margin: 0px;" :style="{color: notification.agent2FontColor }">{{ notification.agent2Name }}</p>
                       </div>
                       <div class="flex-grow-1"></div>
-                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(notification.notificationDatetime).toISOString().slice(11, 19) }}</p>
+                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
                     </div>
                   </div>
                   <div v-if="notification.notificationType == 2">
-                    <div style="display: flex;">
+                    <div style="display: flex; cursor: pointer" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
                       <div :style="{backgroundColor: notification.whatsappConversationAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px; text-align: center;">
                         <p style="margin: 0px;" :style="{color: notification.whatsappConversationFontColor }">{{ notification.whatsappConversationAgentName }}</p>
                       </div>
                       <p style="margin-top: 10px; margin-bottom: 0px;">Ha cerrado la conversación {{ notification.whatsappConversationID }} como "{{ notification.whatsappConversationCloseComment }}"</p>
                       <div class="flex-grow-1"></div>
-                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(notification.notificationDatetime).toISOString().slice(11, 19) }}</p>
+                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
                     </div>
                   </div>
                   <div v-if="notification.notificationType == 3">
-                    <div style="display: flex">
+                    <div style="display: flex; cursor: pointer" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
                       <div :style="{backgroundColor: notification.whatsappInvoiceAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px; text-align: center;">
                         <p style="margin: 0px;" :style="{color: notification.whatsappInvoiceAgentFontColor }">{{ notification.whatsappInvoiceAgentName }}</p>
                       </div>
                       <p style="margin-top: 10px; margin-bottom: 0px;">Ha vendido la órden {{ notification.whatsappInvoiceID }} por ₡{{ notification.whatsappInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
                       <div class="flex-grow-1"></div>
-                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(notification.notificationDatetime).toISOString().slice(11, 19) }}</p>
+                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
                     </div>
                   </div>
                   <div v-if="notification.notificationType == 4">
-                    <div style="display: flex">
+                    <div style="display: flex; cursor: pointer" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
                       <div :style="{backgroundColor: notification.whatsappConversationAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px; text-align: center;">
                         <p style="margin: 0px;" :style="{color: notification.whatsappConversationFontColor }">{{ notification.whatsappConversationAgentName }}</p>
                       </div>
                       <p style="margin-top: 10px; margin-bottom: 0px;">Ha regresado la órden {{ notification.whatsappInvoiceID }} al Call Center</p>
                       <div class="flex-grow-1"></div>
-                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(notification.notificationDatetime).toISOString().slice(11, 19) }}</p>
+                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
                     </div>
                   </div>
                   <div v-if="notification.notificationType == 5">
-                    <div style="display: flex">
+                    <div style="display: flex; cursor: pointer" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
                       <div :style="{backgroundColor: notification.agent1Color}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px; text-align: center;">
                         <p style="margin: 0px;" :style="{color: notification.agent1FontColor }">{{ notification.agent1Name }}</p>
                       </div>
                       <p style="margin-top: 10px; margin-bottom: 0px;">Ha aprobado el SINPE de la órden {{ notification.whatsappInvoiceID }} por ₡{{ notification.whatsappInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
                       <div class="flex-grow-1"></div>
-                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(notification.notificationDatetime).toISOString().slice(11, 19) }}</p>
+                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
                     </div>
                   </div>
                 </div>
@@ -886,7 +886,7 @@
           <div style="display: flex;">
             <h3><strong>{{openedName}}</strong></h3>
             <div class="flex-grow-1"></div>
-            <div v-if="openedAgent != null" :style="getAgentColor(openedAgent)" style="width: 200px">
+            <div v-if="openedAgent != null && openedAgent.agentFontColor" :style="getAgentColor(openedAgent)" style="width: 200px">
               <h4 :style="{color: openedAgent.agentFontColor}" style="position: relative; top: 5px;"><strong>{{openedAgent.agentName}}</strong></h4>
             </div>
           </div>
@@ -3021,6 +3021,9 @@ export default {
       };
 
       var whatsappConversationID = whatsappConversation.whatsappConversationID;
+
+      console.log(whatsappConversationID);
+      
       this.openConversationLoader = true;
       this.currentConversation = {};
       axios.post(constants.routes.backendAPI+'/selectAgentConversation', 
@@ -3028,6 +3031,7 @@ export default {
         whatsappConversationID: whatsappConversationID
       })
       .then((response) =>{
+        console.log(response.data)
         if (response.data.success){
           this.currentConversation = response.data.result[whatsappConversationID];
           this.openConversationLoader = false;
