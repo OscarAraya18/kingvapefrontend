@@ -5514,7 +5514,7 @@ export default {
     receiveRequestTransferWhatsappConversation(websocketMessageContent){
       if (websocketMessageContent.newAgentID == parseInt(localStorage.getItem('agentID'))){
         this.transferRequestName = websocketMessageContent.currentAgentName;
-        this.transferFromAgentID = websocketMessageContent['previousAgentID'];
+        this.transferFromAgentID = websocketMessageContent['currentAgentID'];
         this.transferConversationID = websocketMessageContent.whatsappConversationID;
         this.transferConversationProducts = websocketMessageContent.whatsappConversationProducts;
         this.$refs.buttonTransfer.click();
