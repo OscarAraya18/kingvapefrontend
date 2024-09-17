@@ -637,7 +637,7 @@
                     </div>
                   </div>
                   <div v-if="notification.notificationType == 5">
-                    <div style="display: flex; cursor: pointer" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
+                    <div style="display: flex;">
                       <div :style="{backgroundColor: notification.agent1Color}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px; text-align: center;">
                         <p style="margin: 0px;" :style="{color: notification.agent1FontColor }">{{ notification.agent1Name }}</p>
                       </div>
