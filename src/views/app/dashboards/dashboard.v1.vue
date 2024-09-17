@@ -605,28 +605,36 @@
                     </div>
                   </div>
                   <div v-if="notification.notificationType == 2">
-                    <div :style="{backgroundColor: notification.whatsappConversationAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content;">
-                      <p style="margin: 0px;" :style="{color: notification.whatsappConversationAgentFontColor }">{{ notification.whatsappConversationAgentName }}</p>
+                    <div style="display: flex;">
+                      <div :style="{backgroundColor: notification.whatsappConversationAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px;">
+                        <p style="margin: 0px;" :style="{color: notification.whatsappConversationFontColor }">{{ notification.whatsappConversationAgentName }}</p>
+                      </div>
+                      <p style="margin-top: 10px; margin-bottom: 0px;">Ha cerrado la conversación {{ notification.whatsappConversationID }} como "{{ notification.whatsappConversationCloseComment }}"</p>
                     </div>
-                    <p style="margin-top: 10px; margin-bottom: 0px;">Ha cerrado la conversación {{ notification.whatsappConversationID }} como "{{ notification.whatsappConversationCloseComment }}"</p>
                   </div>
                   <div v-if="notification.notificationType == 3">
-                    <div :style="{backgroundColor: notification.whatsappInvoiceAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content;">
-                      <p style="margin: 0px;" :style="{color: notification.whatsappInvoiceAgentFontColor }">{{ notification.whatsappInvoiceAgentName }}</p>
+                    <div style="display: flex">
+                      <div :style="{backgroundColor: notification.whatsappInvoiceAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px;">
+                        <p style="margin: 0px;" :style="{color: notification.whatsappInvoiceAgentFontColor }">{{ notification.whatsappInvoiceAgentName }}</p>
+                      </div>
+                      <p style="margin-top: 10px; margin-bottom: 0px;">Ha vendido la órden {{ notification.whatsappInvoiceID }} por ₡{{ notification.whatsappInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
                     </div>
-                    <p style="margin-top: 10px; margin-bottom: 0px;">Ha vendido la órden {{ notification.whatsappInvoiceID }} por ₡{{ notification.whatsappInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
                   </div>
                   <div v-if="notification.notificationType == 4">
-                    <div :style="{backgroundColor: notification.whatsappConversationAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content;">
-                      <p style="margin: 0px;" :style="{color: notification.whatsappConversationAgentFontColor }">{{ notification.whatsappConversationAgentName }}</p>
+                    <div style="display: flex">
+                      <div :style="{backgroundColor: notification.whatsappConversationAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px;">
+                        <p style="margin: 0px;" :style="{color: notification.whatsappConversationFontColor }">{{ notification.whatsappConversationAgentName }}</p>
+                      </div>
+                      <p style="margin-top: 10px; margin-bottom: 0px;">Ha regresado la órden {{ notification.whatsappInvoiceID }} al Call Center</p>
                     </div>
-                    <p style="margin-top: 10px; margin-bottom: 0px;">Ha regresado la órden {{ notification.whatsappInvoiceID }} al Call Center</p>
                   </div>
                   <div v-if="notification.notificationType == 5">
-                    <div :style="{backgroundColor: notification.agent1Color}" style="border-radius: 10px; padding: 10px; width: fit-content;">
-                      <p style="margin: 0px;" :style="{color: notification.agent1FontColor }">{{ notification.agent1Name }}</p>
+                    <div style="display: flex">
+                      <div :style="{backgroundColor: notification.agent1Color}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px;">
+                        <p style="margin: 0px;" :style="{color: notification.agent1FontColor }">{{ notification.agent1Name }}</p>
+                      </div>
+                      <p style="margin-top: 10px; margin-bottom: 0px;">Ha aprobado el SINPE de la órden {{ notification.whatsappInvoiceID }} por ₡{{ notification.whatsappInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
                     </div>
-                    <p style="margin-top: 10px; margin-bottom: 0px;">Ha aprobado el SINPE de la órden {{ notification.whatsappInvoiceID }} por ₡{{ notification.whatsappInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
                   </div>
                 </div>
               </div>
