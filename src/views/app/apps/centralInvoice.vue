@@ -242,6 +242,8 @@
 
           <div style="display: flex;">
             <h5><strong>Estado: </strong> {{ updatedWhatsappInvoice.whatsappInvoiceState }}</h5>
+            <button v-if="updatedWhatsappInvoice.whatsappInvoiceState == 'R'" @click="clickOnCentralInvoice(updatedWhatsappInvoice, true)" class="btn btn-info ml-2" style="position: relative; top: -10px;" type="button">Retornar a sucursal</button>
+
           </div>
           <div style="display: flex;">
             <h5><strong>Método de envío: </strong> {{ updatedWhatsappInvoice.whatsappInvoiceShippingMethod }}</h5>
