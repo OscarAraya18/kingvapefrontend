@@ -1195,6 +1195,7 @@ export default {
 
       queryInterval: null,
       notificationInterval: null,
+      messageInterval: null,
 
       openedName: '',
       openedNumber: '',
@@ -1843,6 +1844,10 @@ export default {
       this.selectNotifications();
     }, 5000);
 
+    this.messageInterval = setInterval(() => {
+      this.selectTodayInformation();
+    }, 5000);
+
     this.queryInterval = setInterval(() => {
       if (this.todayInitialDate == null && this.todayEndDate == null){
         this.getInformation();
@@ -1877,6 +1882,7 @@ export default {
   beforeDestroy(){
     clearInterval(this.queryInterval);
     clearInterval(this.notificationInterval);
+    clearInterval(this.messageInterval);
   },
 
   methods: {
