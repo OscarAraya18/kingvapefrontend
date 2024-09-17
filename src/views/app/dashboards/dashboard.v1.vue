@@ -1176,6 +1176,7 @@ export default {
       live: null,
 
       queryInterval: null,
+      notificationInterval: null,
 
       openedName: '',
       openedNumber: '',
@@ -1819,6 +1820,11 @@ export default {
     this.getInformation();
     this.selectNotResolvedWhatsappFeedbacks();
 
+
+    this.notificationInterval = setInterval(() => {
+      this.selectNotifications();
+    }, 5000);
+
     this.queryInterval = setInterval(() => {
       if (this.todayInitialDate == null && this.todayEndDate == null){
         this.getInformation();
@@ -1852,6 +1858,7 @@ export default {
 
   beforeDestroy(){
     clearInterval(this.queryInterval);
+    clearInterval(this.notificationInterval);
   },
 
   methods: {
