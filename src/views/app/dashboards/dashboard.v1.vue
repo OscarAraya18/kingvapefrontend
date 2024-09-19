@@ -592,48 +592,72 @@
           <div style="width: 40%; margin-left: 2%; max-height: 485px; overflow-y: auto">
             <b-card style="width: 100%; max-height: 485px; background-color: #ebebeb; overflow-y: auto">
               <div v-for="notification in notifications">
-                <div style="background-color: #d9d9d9; margin-bottom: 20px; border-radius: 10px; padding: 10px;">
+                <div style="margin-bottom: 20px; border-radius: 10px; padding: 10px;" :style="notification.notificationPersistent ? 'background-color: #f0ea97' : 'background-color: #d9d9d9'">
                   <div v-if="notification.notificationType == 1">
-                    <div style="display: flex; cursor: pointer" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
-                      <div :style="{backgroundColor: notification.agent1Color}" style="border-radius: 10px; padding: 10px; width: fit-content; text-align: center;">
-                        <p style="margin: 0px;" :style="{color: notification.agent1FontColor }">{{ notification.agent1Name }}</p>
-                      </div>
-                      <p style="margin-top: 10px; margin-bottom: 0px; margin-left: 10px; margin-right: 10px;">ha transferido una conversación a</p>
-                      <div :style="{backgroundColor: notification.agent2Color}" style="border-radius: 10px; padding: 10px; width: fit-content; text-align: center;">
-                        <p style="margin: 0px;" :style="{color: notification.agent2FontColor }">{{ notification.agent2Name }}</p>
+                    <div style="display: flex; cursor: pointer">
+                      <div style="display: flex;" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
+                        <div :style="{backgroundColor: notification.agent1Color}" style="border-radius: 10px; padding: 10px; width: fit-content; text-align: center;">
+                          <p style="margin: 0px;" :style="{color: notification.agent1FontColor }">{{ notification.agent1Name }}</p>
+                        </div>
+                        <p style="margin-top: 10px; margin-bottom: 0px; margin-left: 10px; margin-right: 10px;">ha transferido una conversación a</p>
+                        <div :style="{backgroundColor: notification.agent2Color}" style="border-radius: 10px; padding: 10px; width: fit-content; text-align: center;">
+                          <p style="margin: 0px;" :style="{color: notification.agent2FontColor }">{{ notification.agent2Name }}</p>
+                        </div>
                       </div>
                       <div class="flex-grow-1"></div>
-                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
+                      <div>
+                        <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
+                        <i v-if="notification.notificationPersistent == false" @click="updateNotificationPersistent(notification.notificationID, true)" class="i-Data-Save"></i>
+                        <i v-else @click="updateNotificationPersistent(notification.notificationID, false)" class="i-Close"></i>
+                      </div>
                     </div>
                   </div>
                   <div v-if="notification.notificationType == 2">
-                    <div style="display: flex; cursor: pointer" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
-                      <div :style="{backgroundColor: notification.whatsappConversationAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px; text-align: center;">
-                        <p style="margin: 0px;" :style="{color: notification.whatsappConversationFontColor }">{{ notification.whatsappConversationAgentName }}</p>
+                    <div style="display: flex; cursor: pointer">
+                      <div style="display: flex;" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
+                        <div :style="{backgroundColor: notification.whatsappConversationAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px; text-align: center;">
+                          <p style="margin: 0px;" :style="{color: notification.whatsappConversationFontColor }">{{ notification.whatsappConversationAgentName }}</p>
+                        </div>
+                        <p style="margin-top: 10px; margin-bottom: 0px;">Ha cerrado la conversación {{ notification.whatsappConversationID }} como "{{ notification.whatsappConversationCloseComment }}"</p>
                       </div>
-                      <p style="margin-top: 10px; margin-bottom: 0px;">Ha cerrado la conversación {{ notification.whatsappConversationID }} como "{{ notification.whatsappConversationCloseComment }}"</p>
                       <div class="flex-grow-1"></div>
-                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
+                      <div>
+                        <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
+                        <i v-if="notification.notificationPersistent == false" @click="updateNotificationPersistent(notification.notificationID, true)" class="i-Data-Save"></i>
+                        <i v-else @click="updateNotificationPersistent(notification.notificationID, false)" class="i-Close"></i>
+                      </div>
                     </div>
                   </div>
                   <div v-if="notification.notificationType == 3">
-                    <div style="display: flex; cursor: pointer" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
-                      <div :style="{backgroundColor: notification.whatsappInvoiceAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px; text-align: center;">
-                        <p style="margin: 0px;" :style="{color: notification.whatsappInvoiceAgentFontColor }">{{ notification.whatsappInvoiceAgentName }}</p>
+                    <div style="display: flex; cursor: pointer">
+                      <div style="display: flex;" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
+                        <div :style="{backgroundColor: notification.whatsappInvoiceAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px; text-align: center;">
+                          <p style="margin: 0px;" :style="{color: notification.whatsappInvoiceAgentFontColor }">{{ notification.whatsappInvoiceAgentName }}</p>
+                        </div>
+                        <p style="margin-top: 10px; margin-bottom: 0px;">Ha vendido la órden {{ notification.whatsappInvoiceID }} por ₡{{ notification.whatsappInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
                       </div>
-                      <p style="margin-top: 10px; margin-bottom: 0px;">Ha vendido la órden {{ notification.whatsappInvoiceID }} por ₡{{ notification.whatsappInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
                       <div class="flex-grow-1"></div>
-                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
+                      <div>
+                        <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
+                        <i v-if="notification.notificationPersistent == false" @click="updateNotificationPersistent(notification.notificationID, true)" class="i-Data-Save"></i>
+                        <i v-else @click="updateNotificationPersistent(notification.notificationID, false)" class="i-Close"></i>
+                      </div>
                     </div>
                   </div>
                   <div v-if="notification.notificationType == 4">
-                    <div style="display: flex; cursor: pointer" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
-                      <div :style="{backgroundColor: notification.whatsappConversationAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px; text-align: center;">
-                        <p style="margin: 0px;" :style="{color: notification.whatsappConversationFontColor }">{{ notification.whatsappConversationAgentName }}</p>
+                    <div style="display: flex; cursor: pointer">
+                      <div style="display: flex;" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
+                        <div :style="{backgroundColor: notification.whatsappConversationAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px; text-align: center;">
+                          <p style="margin: 0px;" :style="{color: notification.whatsappConversationFontColor }">{{ notification.whatsappConversationAgentName }}</p>
+                        </div>
+                        <p style="margin-top: 10px; margin-bottom: 0px;">Ha regresado la órden {{ notification.whatsappInvoiceID }} al Call Center</p>
                       </div>
-                      <p style="margin-top: 10px; margin-bottom: 0px;">Ha regresado la órden {{ notification.whatsappInvoiceID }} al Call Center</p>
                       <div class="flex-grow-1"></div>
-                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
+                      <div>
+                        <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
+                        <i v-if="notification.notificationPersistent == false" @click="updateNotificationPersistent(notification.notificationID, true)" class="i-Data-Save"></i>
+                        <i v-else @click="updateNotificationPersistent(notification.notificationID, false)" class="i-Close"></i>
+                      </div>
                     </div>
                   </div>
                   <div v-if="notification.notificationType == 5">
@@ -643,7 +667,11 @@
                       </div>
                       <p style="margin-top: 10px; margin-bottom: 0px;">Ha aprobado el SINPE de la órden {{ notification.whatsappInvoiceID }} por ₡{{ notification.whatsappInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
                       <div class="flex-grow-1"></div>
-                      <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
+                      <div>
+                        <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
+                        <i v-if="notification.notificationPersistent == false" @click="updateNotificationPersistent(notification.notificationID, true)" class="i-Data-Save"></i>
+                        <i v-else @click="updateNotificationPersistent(notification.notificationID, false)" class="i-Close"></i>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1919,6 +1947,24 @@ export default {
       return agentLabels;
     },
 
+    updateNotificationPersistent(notificationID, notificationPersistent){
+      axios.post(constants.routes.backendAPI+'/updateNotificationPersistent', 
+      {
+        'notificationID': notificationID,
+        'notificationPersistent': notificationPersistent
+      }).then((response) =>{
+        if (response.data.success){
+          this.selectNotifications();
+          this.showNotification('success', 'Éxito', 'La notificación ha sido actualizado exitosamente.');
+        } else {
+          this.showNotification('danger', 'Error al fijar la notificación', 'Ha ocurrido un error inesperado al fijar la notificación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        }
+      })
+      .catch(() =>{
+        this.showNotification('danger', 'Error al fijar la notificación', 'Ha ocurrido un error inesperado al fijar la notificación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      })
+    },
+
     generateReport(){
       this.loaderReport = true;
       this.topSalesReport = null;
@@ -1958,7 +2004,6 @@ export default {
           }
         })
         .catch(() =>{
-          this.$root.$emit('bv::hide::modal', 'commentsModal');
           this.showNotification('danger', 'Error al generar el reporte', 'Ha ocurrido un error inesperado al generar el reporte. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         })
       } else {
