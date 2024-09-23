@@ -197,7 +197,7 @@ export default {
         'Clara Salablanca': '#b338ff',
         'Kathy Gonzalez': '#b0a1ff',
         'Rafat J.': '#000000',
-        'Abigail Vindas': '#ffa530'
+        'Fiorella Jimenez': '#ffa530'
       };
       for (var agentIndex in agentNames){
         const agentName = agentNames[agentIndex];
