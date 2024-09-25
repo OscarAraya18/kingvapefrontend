@@ -3556,11 +3556,12 @@ export default {
         var me = this;
         axios.get('https://backend.kingvape.cr/api/ProductosWebs/'+codigo).then(function(response){
           var textoExistencia = '';
+          console.log(response.data)
           for (var indice in response.data){
             if (textoExistencia == ''){
-              textoExistencia = response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
+              textoExistencia = response.data[indice].localidad + ': ' + response.data[indice].cantidadInvActual;
             } else {
-              textoExistencia = textoExistencia + '\n' + response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
+              textoExistencia = textoExistencia + '\n' + response.data[indice].localidad + ': ' + response.data[indice].cantidadInvActual;
             }
           }
           cargarTestingPromiseResolve(textoExistencia + '\n\n');
@@ -3590,9 +3591,9 @@ export default {
         var textoExistencia = '';
         for (var indice in response.data){
           if (textoExistencia == ''){
-            textoExistencia = response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
+            textoExistencia = response.data[indice].localidad + ': ' + response.data[indice].cantidadInvActual;
           } else {
-            textoExistencia = textoExistencia + '\n' + response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
+            textoExistencia = textoExistencia + '\n' + response.data[indice].localidad + ': ' + response.data[indice].cantidadInvActual;
           }
         }
         me.stockLoader = false;
