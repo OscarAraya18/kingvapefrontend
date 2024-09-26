@@ -370,13 +370,23 @@
           <div v-if="reportSelectType == 'Productos más vendidos' || reportSelectType == 'Entregas por mensajero'">
             <div v-if="reportSelectType == 'Productos más vendidos'">
               <h4><strong>Cantidad de productos:</strong></h4>
-                <b-form-select v-model="reportProductAmount" class="mb-3" :options="productAmountOptions"></b-form-select>
+              <b-form-select v-model="reportProductAmount" class="mb-3" :options="productAmountOptions"></b-form-select>
               <br>
+              <h4><strong>Nombre del producto:</strong></h4>
+              <b-form-input v-model="reportProductName" class="mb-3" :options="productAmountOptions"></b-form-input>
             </div>
             <h4><strong>Filtro por localidad:</strong></h4>
             <b-form-select v-model="reportSelectedLocality" class="mb-3" :options="storeOptions"></b-form-select>
             <br>
           </div>
+
+          <div v-if="reportSelectType == 'Reclamo de producto'">
+            <h4><strong>Nombre del producto:</strong></h4>
+            <b-form-input v-model="reportProductName" class="mb-3" :options="productAmountOptions"></b-form-input>
+            <br>
+          </div>
+
+
           <button v-if="loaderReport == false" class="btn btn-icon" style="background-color: #F9E530; font-size: 15px" @click="generateReport()"><i class="i-Search-People"></i>Generar reporte</button>
           <div v-else style="text-align: center;">
             <span class="spinner-glow spinner-glow-primary"></span>
@@ -386,6 +396,9 @@
             <br>
             <br>
             <div>
+              <h4><strong>Total:</strong> {{ reportTotal }}</h4>
+              <br>
+
               <vue-good-table
               :columns="topSalesReportTable"
               :line-numbers="false"
@@ -405,6 +418,35 @@
               styleClass="order-table vgt-table"
               :rows="agentReport"
             >
+            </vue-good-table>
+          </div>
+
+
+          <div v-if="reportSelectType == 'Reclamo de producto' && productChangeReport">
+            <br><br>
+
+            <h4><strong>Total:</strong> {{ productChangeReport.length }}</h4>
+
+            <br>
+            <vue-good-table
+              :columns="productChangeTable"
+              :line-numbers="false"
+              styleClass="order-table vgt-table"
+              :rows="productChangeReport"
+            >
+              <template slot="table-row" slot-scope="props">
+                <div v-if="props.column.field == 'whatsappConversationRecipientPhoneNumber'">{{ parseNumber(props.row.whatsappConversationRecipientPhoneNumber) }}</div>
+                <div v-else-if="props.column.field == 'whatsappConversationEndDateTime'">{{ parseHour(props.row.whatsappConversationEndDateTime) }}</div>
+                <div v-else-if="props.column.field == 'whatsappConversationAction'">
+                  <button v-b-modal.conversationModal class="btn btn-outline-primary text-black btn-rounded" @click="whatsappConversationOpenAction(props.row)">Abrir</button>
+                </div>
+
+                <div v-else-if="props.column.field == 'agentName'" :style="{backgroundColor: props.row.agentColor}" style="border-radius: 10px; padding: 10px; width: fit-content; text-align: center;">
+                  <p style="margin: 0px;" :style="{color: props.row.agentFontColor }">{{ props.row.agentName }}</p>
+                </div>
+
+              </template>
+
             </vue-good-table>
           </div>
 
@@ -1310,13 +1352,15 @@ export default {
 
 
       loaderReport: false,
-      reportTypeOptions: ['Productos más vendidos', 'Ventas recuperadas por agente', 'Entregas por mensajero'],
+      reportTypeOptions: ['Productos más vendidos', 'Reclamo de producto', 'Ventas recuperadas por agente', 'Entregas por mensajero'],
       reportLocalityOptions: [{value:'1', text:'King Vape Zapote'}, {value:'4', text:'King Vape Escazú'}, {value:'5', text:'King Vape Heredia'}, {value:'3', text:'King Vape Cartago'}, {value:'King Vape Center', text:'King Vape Center'}],
       reportSelectType: null,
       reportInitialDate: null,
       reportEndDate: null,
       reportSelectedLocality: null,
       reportProductAmount: 5,
+      reportTotal: 0,
+      reportProductName: null,
       productAmountOptions: [5, 10, 25, 50, 100, 150, 200, 250, 500, {value:100000, text:'Todos'}],
       topSalesReport: null, 
       topSalesReportTable: [
@@ -1340,6 +1384,7 @@ export default {
         }
       ],
       agentReport: null,
+      
       agentReportTable: [
         {
           label: "Agente",
@@ -1366,6 +1411,50 @@ export default {
           tdClass: "text-left",
         }
       ],
+
+      productChangeTable: [
+        {
+          label: "ID de la conversación",
+          field: "whatsappConversationID",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Agente",
+          field: "agentName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Nombre del cliente",
+          field: "whatsappConversationRecipientProfileName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Número del cliente",
+          field: "whatsappConversationRecipientPhoneNumber",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Fecha",
+          field: "whatsappConversationEndDateTime",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Abrir",
+          field: "whatsappConversationAction",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+      ],
+
+
+      productChangeReport: null,
+
+
       localityAgentOptions: [],
       datosGraficoCircular: [],
       opcionesGraficoCircular: null,
@@ -1819,8 +1908,11 @@ export default {
       this.reportEndDate = null;
       this.reportSelectedLocality = null;
       this.reportProductAmount = 5;
+      this.reportProductName = null;
+      this.reportTotal = 0;
       this.topSalesReport = null;
       this.agentReport = null;
+      this.productChangeReport = null;
       this.datosGraficoCircular = [];
 
       this.loaderReport = false;
@@ -1969,6 +2061,7 @@ export default {
       this.loaderReport = true;
       this.topSalesReport = null;
       this.agentReport = null;
+      this.productChangeReport = null;
       this.datosGraficoCircular = [];
 
       if (this.reportSelectType == 'Productos más vendidos'){
@@ -1977,17 +2070,24 @@ export default {
           'reportInitialDate': this.reportInitialDate,
           'reportEndDate': this.reportEndDate,
           'reportLocality': this.reportSelectedLocality,
-          'productAmount': this.reportProductAmount
+          'productAmount': this.reportProductAmount,
+          'productName': this.reportProductName
         }).then((response) =>{
           if (response.data.success){
             this.topSalesReport = response.data.result;
+            var total = 0;
+            for (var index in response.data.result){
+              console.log(response.data.result[index])
+              total = total + response.data.result[index].productAmount;
+            }
+            this.reportTotal = total;
             this.loaderReport = false;
           } else {
             this.showNotification('danger', 'Error al generar el reporte', 'Ha ocurrido un error inesperado al generar el reporte. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
           }
         })
-        .catch(() =>{
-          this.$root.$emit('bv::hide::modal', 'commentsModal');
+        .catch((e) =>{
+          console.log(e);
           this.showNotification('danger', 'Error al generar el reporte', 'Ha ocurrido un error inesperado al generar el reporte. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         })
       } else if (this.reportSelectType == 'Ventas recuperadas por agente'){
@@ -2006,7 +2106,7 @@ export default {
         .catch(() =>{
           this.showNotification('danger', 'Error al generar el reporte', 'Ha ocurrido un error inesperado al generar el reporte. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         })
-      } else {
+      } else if (this.reportSelectedLocality == 'Entregas por mensajero') {
         axios.post(constants.routes.backendAPI+'/selectLocalityAgentNames', 
         {
           localityAgentLocalityID: this.reportSelectedLocality
@@ -2029,7 +2129,6 @@ export default {
             .then(async (response) =>{
               if (response.data.success){
                 
-                console.log(response.data.result);
                 const deliveredInvoices = response.data.result;
 
                 var aux1 = [];
@@ -2068,7 +2167,25 @@ export default {
         .catch(() =>{
           this.showNotification('danger', 'Error al solicitar la lista de agentes', 'Ha ocurrido un error inesperado al solicitar la lista de agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         })
+      }
 
+      else if (this.reportSelectType == 'Reclamo de producto'){
+        axios.post(constants.routes.backendAPI+'/generateChangeReport', 
+        {
+          'reportInitialDate': this.reportInitialDate,
+          'reportEndDate': this.reportEndDate,
+          'productName': this.reportProductName
+        }).then((response) =>{
+          if (response.data.success){
+            this.productChangeReport = response.data.result;
+            this.loaderReport = false;
+          } else {
+            this.showNotification('danger', 'Error al generar el reporte', 'Ha ocurrido un error inesperado al generar el reporte. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }
+        })
+        .catch(() =>{
+          this.showNotification('danger', 'Error al generar el reporte', 'Ha ocurrido un error inesperado al generar el reporte. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+        })
       }
     },
 
@@ -3016,9 +3133,11 @@ export default {
       this.reportEndDate = null;
       this.reportSelectedLocality = null;
       this.reportProductAmount = 5;
+      this.reportTotal = 0;
       this.topSalesReport = null;
       this.agentReport = null;
       this.loaderReport = null;
+      this.productChangeReport = null;
     },
 
 

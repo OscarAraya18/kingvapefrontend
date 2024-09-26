@@ -1,5 +1,5 @@
 const state = {
-  backendURL: 'https://payitcr.com',
+  backendURL: 'http://localhost:8081',
   websocketURL: 'wss:payitcr.com',
   applicationVersion: '1.3.0B'
 };
