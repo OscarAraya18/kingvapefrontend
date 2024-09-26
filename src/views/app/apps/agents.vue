@@ -403,7 +403,6 @@ export default {
           'agentName': this.editingName
         }
         ).then((response) =>{ 
-          console.log(response)
           if (response.data.success){
             this.getAllAgents();
             this.$refs['modalEditar'].hide();
@@ -499,7 +498,6 @@ export default {
           } else {
             working = 'OFF';
           }
-          console.log(agentsInformation[agentIndex]);
           this.agents.push(
           { 
             name: agentsInformation[agentIndex].agentName,

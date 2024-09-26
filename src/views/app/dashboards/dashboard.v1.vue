@@ -2077,7 +2077,6 @@ export default {
             this.topSalesReport = response.data.result;
             var total = 0;
             for (var index in response.data.result){
-              console.log(response.data.result[index])
               total = total + response.data.result[index].productAmount;
             }
             this.reportTotal = total;
@@ -2405,7 +2404,6 @@ export default {
       }
       this.stockLoader = false;
       this.stockContent = texto;
-      console.log(this.stockContent)
     },
 
     cargarExistencia(codigoProducto){
@@ -2422,7 +2420,6 @@ export default {
         }
         me.stockLoader = false;
         me.stockContent = textoExistencia;
-        console.log(me.stockContent);
       }).catch(function(error){
         me.$bvToast.toast("Ha ocurrido un error inesperado al consultar el stock. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
           title: "Error al consultar stock",
@@ -3191,8 +3188,6 @@ export default {
       };
 
       var whatsappConversationID = whatsappConversation.whatsappConversationID;
-
-      console.log(whatsappConversationID);
       
       this.openConversationLoader = true;
       this.currentConversation = {};

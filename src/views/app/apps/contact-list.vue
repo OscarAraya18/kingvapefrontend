@@ -137,7 +137,14 @@
             {{ parseNumber(props.row.contactPhoneNumber) }}
           </div>
 
-          <div v-if="props.column.field == 'contactEmail'" style="width: 300px;">
+          <div v-else-if="props.column.field == 'totalInvoiceAmount'">
+            ₡{{props.row.totalInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}
+          </div>
+          
+          
+          
+
+          <div v-else-if="props.column.field == 'contactEmail'" style="width: 300px;">
             <div v-if="props.row.contactEmail.includes('@')" style="background-color: #e39e59; text-align: center; border-radius: 10px; width: 300px; margin-top: 15px;">
               <p style="color: white;">{{ props.row.contactEmail }}</p>
             </div>
@@ -215,6 +222,7 @@
                 <p v-if="historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length != 0" style="font-size: medium; margin: 0;"><strong>Primera compra: </strong> {{parseHour(historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 )[0].whatsappConversationEndDateTime)}}</p>
                 <p v-if="historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length != 0" style="font-size: medium; margin: 0;"><strong>Última compra: </strong> {{parseHour(historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 )[historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length - 1].whatsappConversationEndDateTime)}}</p>
                 <p style="font-size: medium; margin: 0;"><strong>Cantidad de compras: </strong> {{historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length}}</p>
+                
               </b-card>
               
 
@@ -544,35 +552,7 @@ export default {
 
       sendingMessage: '',
 
-      contactColumns: [
-        {
-          label: "Cédula",
-          field: "contactID",
-        },
-        {
-          label: "Nombre",
-          field: "contactName",
-        },
-        {
-          label: "Número",
-          field: "contactPhoneNumber"
-        },
-        {
-          label: "Correo electrónico",
-          field: "contactEmail",
-        },
-        {
-          label: "Ubicación",
-          field: "contactLocations"
-        },
-        {
-          label: "",
-          field: "contactActions",
-          html: true,
-          tdClass: "text-right",
-          thClass: "text-right",
-        },
-      ],
+      contactColumns: [],
       displayedContactRows: [],
       originalContactRows: [],
 
@@ -621,6 +601,39 @@ export default {
     this.agentType = localStorage.getItem('agentType');
 
     this.getContacts();
+
+    this.contactColumns = 
+    [
+      {
+        label: "Cédula",
+        field: "contactID",
+      },
+      {
+        label: "Nombre",
+        field: "contactName",
+      },
+      {
+        label: "Número",
+        field: "contactPhoneNumber"
+      },
+      ... (this.agentType == 'admin' ? [{label: 'Total', field: 'totalInvoiceAmount'}] : []), 
+      {
+        label: "Correo electrónico",
+        field: "contactEmail",
+      },
+      {
+        label: "Ubicación",
+        field: "contactLocations"
+      },
+      {
+        label: "",
+        field: "contactActions",
+        html: true,
+        tdClass: "text-right",
+        thClass: "text-right",
+      },
+    ];
+
   },
 
   methods: {
@@ -871,6 +884,12 @@ export default {
             const historySell = JSON.parse(this.historyConversations[historyConversation].whatsappConversationProducts);
             this.historySells.push(historySell);
           }
+          var contactMoneyValue = 0;
+          this.contactMoneyValue = 0;
+          for (var index in response.data.result){
+            contactMoneyValue = contactMoneyValue + parseInt(response.data.result[index].whatsappConversationAmount);
+          }
+          this.contactMoneyValue = contactMoneyValue;
         } else {
           this.showNotification('danger', 'Error al consultar las conversaciones del historial', 'Ha ocurrido un error inesperado al consultar las conversaciones del historial. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
@@ -998,7 +1017,6 @@ export default {
       })
       .then((response) =>{ 
 
-        console.log(response.data.result);
 
         this.originalContactRows = response.data.result.map(contact => ({
           'contactID': contact.i,
@@ -1006,7 +1024,8 @@ export default {
           'contactPhoneNumber': contact.p,
           'contactEmail': contact.e,
           'contactLocations': JSON.parse(contact.l),
-          'contactHasIDImage': contact.ip
+          'contactHasIDImage': contact.ip,
+          'totalInvoiceAmount': contact.totalInvoiceAmount
         }));
         this.loaderContact = false;
       })

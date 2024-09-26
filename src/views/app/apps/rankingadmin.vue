@@ -865,7 +865,6 @@ export default {
             color: '#d10015'
           }
         ];
-        console.log(response.data.result.map(agent => agent.agentName));
       });
 
       axios.post(constants.routes.backendAPI+'/selectTodayInformation', 
@@ -873,7 +872,6 @@ export default {
         initialDate: null,
         endDate: null
       }).then((response) =>{
-        console.log(constants.routes.backendAPI)
         this.conversacionesTotales = response.data.result.total.whatsappTotalConversations;
         this.conversacionesVendidas = response.data.result.total.whatsappSelledConversations;
         this.conversacionesNoVendidas = response.data.result.total.whatsappNotSelledConversations;

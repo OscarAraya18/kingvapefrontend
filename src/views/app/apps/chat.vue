@@ -3556,7 +3556,6 @@ export default {
         var me = this;
         axios.get('https://backend.kingvape.cr/api/ProductosWebs/'+codigo).then(function(response){
           var textoExistencia = '';
-          console.log(response.data)
           for (var indice in response.data){
             if (textoExistencia == ''){
               textoExistencia = response.data[indice].localidad + ': ' + response.data[indice].cantidadInvActual;
@@ -4132,7 +4131,6 @@ export default {
                       productosAsociados: x.productosAsociados
                     });
                   });
-                  console.log(me.productos);
                   //me.productos= Objeto;
                   me.loading = false;
                 } )
@@ -4861,7 +4859,6 @@ export default {
     },
 
     acceptTransferWhatsappConversation(){
-      console.log(this.transferFromAgentID);
 
       axios.post(constants.routes.backendAPI+'/acceptTransferWhatsappConversation',
       {
@@ -5252,7 +5249,6 @@ export default {
               respondedActiveConversations[activeConversationID]['longitude'] = 0;
               respondedActiveConversations[activeConversationID]['whatsappConversationIsForToday'] = true;
 
-              console.log(respondedActiveConversations[activeConversationID])
             }    
           }
           this.activeConversationsAsJSON = {};
@@ -5517,8 +5513,6 @@ export default {
 
     receiveRequestTransferWhatsappConversation(websocketMessageContent){
       if (websocketMessageContent.newAgentID == parseInt(localStorage.getItem('agentID'))){
-
-        console.log(websocketMessageContent);
 
         this.transferRequestName = websocketMessageContent.currentAgentName;
         this.transferFromAgentID = websocketMessageContent['currentAgentID'];

@@ -1581,10 +1581,8 @@ export default {
     },
 
     changeImage(){
-      console.log(this.$refs.imageFile2);
       this.file = this.isClient ? this.$refs.imageFile1.files[0] : this.$refs.imageFile2.files[0];
       var reader = new FileReader();
-      console.log(this.file)
       reader.readAsDataURL(this.file);
       reader.onload = () => {
         this.newSource = reader.result;
