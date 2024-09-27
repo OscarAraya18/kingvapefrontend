@@ -2576,8 +2576,8 @@ export default {
     },
 
     searchByNumber(){
-      this.activeConversationsRows = this.originalActiveConversationsRows;
-      this.activeConversationsRows = this.originalActiveConversationsRows.filter(activeConversationRow => activeConversationRow.whatsappConversationRecipientPhoneNumber.includes(this.numberSearched.split(' ').join('')));
+      this.activeConversationsRows = JSON.parse(JSON.stringify(this.originalActiveConversationsRows));
+      this.activeConversationsRows = this.activeConversationsRows.filter(activeConversationRow => activeConversationRow.whatsappConversationRecipientPhoneNumber.includes(this.numberSearched.split(' ').join('')));
     },
 
     closeFeedback(feedback){
@@ -2852,9 +2852,9 @@ export default {
     },
 
     filterByAgent(){
-      this.activeConversationsRows = this.originalActiveConversationsRows;
+      this.activeConversationsRows = JSON.parse(JSON.stringify(this.originalActiveConversationsRows));
       if (this.agentFiltered != null){
-        this.activeConversationsRows = this.originalActiveConversationsRows.filter(activeConversationRow => activeConversationRow.agentID == this.agentFiltered);
+        this.activeConversationsRows = this.activeConversationsRows.filter(activeConversationRow => activeConversationRow.agentID == this.agentFiltered);
         this.activeConversationsRows.sort((a, b) => a.whatsappConversationState.localeCompare(b.whatsappConversationState));
       }
     },
@@ -2943,8 +2943,9 @@ export default {
             });
             this.activeConversationsRows.sort((a, b) => a.whatsappConversationState.localeCompare(b.whatsappConversationState));
 
-            this.originalActiveConversationsRows = this.activeConversationsRows;
+            this.originalActiveConversationsRows = JSON.parse(JSON.stringify(this.activeConversationsRows));
             this.filterByAgent();
+            this.searchByNumber();
           }
 
           setInterval(() => {

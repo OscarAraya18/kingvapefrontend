@@ -1,6 +1,39 @@
 <template>
   
   <div class="main-content">
+
+
+    <b-row v-if="agentType == 'admin'">
+
+      <b-col lg="6" md="6" sm="12">
+        <b-card
+          class="card-icon-bg card-icon-bg-primary o-hidden mb-30 text-center"
+          :style="getTagStyle(1)"
+          @click="view='Lista de contactos'"
+        >
+          <i class="i-Search-People"></i>
+          <div class="content">
+            <p class="text-muted mt-2 mb-0">Lista de contactos</p>
+          </div>
+        </b-card>
+      </b-col>
+
+      <b-col lg="6" md="6" sm="12">
+        <b-card
+          class="card-icon-bg card-icon-bg-primary o-hidden mb-30 text-center"
+          :style="getTagStyle(2)"
+          @click="view='Seguimiento de clientes'"
+        >
+          <i class="i-Money-2"></i>
+          <div class="content">
+            <p class="text-muted mt-2 mb-0">Seguimiento de clientes</p>
+          </div>
+        </b-card>
+      </b-col>
+
+
+    </b-row>
+    
     <br>
     <b-modal scrollable size="lg" centered id="bigImageModal" hide-footer hide-header>
       <img style="width: 1000px;" :src="bigImageSource">
@@ -73,6 +106,8 @@
         <br><span class="spinner-glow spinner-glow-primary"></span>
       </div>
     </b-modal>
+
+    <div v-if="view == 'Lista de contactos'">
 
     <div v-if="agentType == 'admin'">
       <h3><strong>Cantidad de contactos:</strong> {{contactAmount}}</h3>
@@ -490,6 +525,9 @@
 
     </b-card>
   </div>
+
+    <br><br>
+  </div>
 </template>
 
 <script>
@@ -575,7 +613,9 @@ export default {
       IDModalType: null,
 
       contactLocations: null,
-      sendingContact: null
+      sendingContact: null,
+
+      view: 'Lista de contactos'
     };
 
     
@@ -616,7 +656,7 @@ export default {
         label: "Número",
         field: "contactPhoneNumber"
       },
-      ... (this.agentType == 'admin' ? [{label: 'Total', field: 'totalInvoiceAmount'}] : []), 
+      ... (this.agentType == 'admin' ? [{label: 'Total', field: 'totalInvoiceAmount', type: 'number'}] : []), 
       {
         label: "Correo electrónico",
         field: "contactEmail",
@@ -637,6 +677,20 @@ export default {
   },
 
   methods: {
+    getTagStyle(tagID){
+      var style = 'cursor: pointer;';
+      if (tagID == 1){
+        if (this.view == 'Lista de contactos'){
+          style = style + 'background-color: #e0e0e0;'
+        }
+      } else if (tagID == 2){
+        if (this.view == 'Seguimiento de clientes'){
+          style = style + 'background-color: #e0e0e0;'
+        }
+      }
+      return style;
+    },
+    
     displayContacts(){
       this.displayedContactRows = this.originalContactRows.filter(contact => {
         const contactName = contact.contactName.trim(); 
@@ -1025,7 +1079,7 @@ export default {
           'contactEmail': contact.e,
           'contactLocations': JSON.parse(contact.l),
           'contactHasIDImage': contact.ip,
-          'totalInvoiceAmount': contact.totalInvoiceAmount
+          'totalInvoiceAmount': parseInt(contact.totalInvoiceAmount)
         }));
         this.loaderContact = false;
       })
