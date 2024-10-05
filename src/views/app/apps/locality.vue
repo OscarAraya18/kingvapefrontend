@@ -481,9 +481,7 @@ export default {
       } else if (formattedDate.slice(-2) == 'pm') {
         formattedDate = formattedDate.slice(0,-2) + 'PM'
       }
-      if (formattedDate.includes('00') && formattedDate.includes('PM')){
-        formattedDate = formattedDate.replace('00', '12');
-      }
+
       return formattedDate;
     },
     
@@ -503,9 +501,6 @@ export default {
         formattedDate = formattedDate.slice(0,-2) + 'AM'
       } else if (formattedDate.slice(-2) == 'pm') {
         formattedDate = formattedDate.slice(0,-2) + 'PM'
-      }
-      if (formattedDate.includes('00') && formattedDate.includes('PM')){
-        formattedDate = formattedDate.replace('00', '12');
       }
       return formattedDate;
     },

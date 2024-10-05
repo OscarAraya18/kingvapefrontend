@@ -1288,7 +1288,7 @@
                       <b-form-input @keyup="buscarCatalogoLiquidoIce()" v-model="catalogoLiquidoIceBuscado" placeholder="Nombre del catálogo a buscar"></b-form-input>
                       <br>
 
-                      <b-list-group style="height: 400px; overflow-y: auto;">
+                      <b-list-group style="height: 700px; overflow-y: auto;">
 
                         <b-list-group-item :variant="getAllFavoriteVariantLiquid()" style="cursor: pointer;" @click="selectAllFavoriteImageLiquid()" v-if="liquids1.length != 0">Seleccionar todo el catálogo</b-list-group-item>
                         <b-list-group-item style="cursor: pointer;" v-else>No se ha encontrado ningún catálogo con el nombre "{{ catalogoLiquidoIceBuscado }}"</b-list-group-item>
@@ -1319,7 +1319,7 @@
                       <b-form-input @keyup="buscarCatalogoLiquidoSinIce()" v-model="catalogoLiquidoSinIceBuscado" placeholder="Nombre del catálogo a buscar"></b-form-input>
                       <br>
 
-                      <b-list-group style="height: 400px; overflow-y: auto;">
+                      <b-list-group style="height: 700px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariantLiquid()" style="cursor: pointer;" @click="selectAllFavoriteImageLiquid()" v-if="liquids2.length != 0">Seleccionar todo el catálogo</b-list-group-item>
                         <b-list-group-item style="cursor: pointer;" v-else>No se ha encontrado ningún catálogo con el nombre "{{ catalogoLiquidoSinIceBuscado }}"</b-list-group-item>
 
@@ -1364,7 +1364,7 @@
                       <b-form-input @keyup="buscarCatalogoSalIce()" v-model="catalogoSalIceBuscado" placeholder="Nombre del catálogo a buscar"></b-form-input>
                       <br>
 
-                      <b-list-group style="height: 400px; overflow-y: auto;">
+                      <b-list-group style="height: 700px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariantSalt()" style="cursor: pointer;" @click="selectAllFavoriteImageSalt()" v-if="salts1.length != 0">Seleccionar todo el catálogo</b-list-group-item>
                         <b-list-group-item style="cursor: pointer;" v-else>No se ha encontrado ningún catálogo con el nombre "{{ catalogoSalIceBuscado }}"</b-list-group-item>
 
@@ -1394,7 +1394,7 @@
                       <b-form-input @keyup="buscarCatalogoSalSinIce()" v-model="catalogoSalSinIceBuscado" placeholder="Nombre del catálogo a buscar"></b-form-input>
                       <br>
 
-                      <b-list-group style="height: 400px; overflow-y: auto;">
+                      <b-list-group style="height: 700px; overflow-y: auto;">
                         <b-list-group-item :variant="getAllFavoriteVariantSalt()" style="cursor: pointer;" @click="selectAllFavoriteImageSalt()" v-if="salts2.length != 0">Seleccionar todo el catálogo</b-list-group-item>
                         <b-list-group-item style="cursor: pointer;" v-else>No se ha encontrado ningún catálogo con el nombre "{{ catalogoSalSinIceBuscado }}"</b-list-group-item>
 
@@ -3335,9 +3335,6 @@ export default {
         formattedDate = formattedDate.slice(0,-2) + 'AM'
       } else if (formattedDate.slice(-2) == 'pm') {
         formattedDate = formattedDate.slice(0,-2) + 'PM'
-      }
-      if (formattedDate.includes('00') && formattedDate.includes('PM')){
-        formattedDate = formattedDate.replace('00', '12');
       }
       return formattedDate;
     },
