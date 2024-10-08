@@ -1777,12 +1777,12 @@
     <div class="ul-widget__item ul-widget4__users" style="background-color: white; border-radius: 20px; border: 2px solid #d6d6d6;">
       <div class="ul-widget4__img">
         <div style="display: flex; margin-left: 15px;">
-          <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Extra Ice')" :src="iceLogoSRC"/>
-          <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('ICE')" :src="iceLogoSRC"/>
-          <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Postre')" :src="postreLogoSRC"/>
-          <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Tabaco')" :src="tabacoLogoSRC"/>
-          <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Wax')" :src="waxLogoSRC"/>
-          <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Hierba')" :src="hierbaLogoSRC"/>
+          <img style="width: 30px; height: auto;" v-if="producto.consignacion && producto.consignacion.includes('Extra Ice')" :src="iceLogoSRC"/>
+          <img style="width: 30px; height: auto;" v-if="producto.consignacion && producto.consignacion.includes('ICE')" :src="iceLogoSRC"/>
+          <img style="width: 30px; height: auto;" v-if="producto.consignacion && producto.consignacion.includes('Postre')" :src="postreLogoSRC"/>
+          <img style="width: 30px; height: auto;" v-if="producto.consignacion && producto.consignacion.includes('Tabaco')" :src="tabacoLogoSRC"/>
+          <img style="width: 30px; height: auto;" v-if="producto.consignacion && producto.consignacion.includes('Wax')" :src="waxLogoSRC"/>
+          <img style="width: 30px; height: auto;" v-if="producto.consignacion && producto.consignacion.includes('Hierba')" :src="hierbaLogoSRC"/>
         </div>
         <img style="cursor: pointer; margin-left: 15px;" v-b-modal.bigImageModal @click="openBigImage(producto.localizacion)" :src="producto.localizacion" alt="N/A"/>
       </div>
