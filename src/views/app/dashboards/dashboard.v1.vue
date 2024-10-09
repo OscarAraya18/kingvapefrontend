@@ -296,9 +296,9 @@
           @click="getClosedConversations()"
           :style="getTagStyle(2)"
         >
-          <i class="i-Checkout"></i>
+          <i class="i-Clock"></i>
           <div class="content">
-            <p class="text-muted mt-2 mb-0">Reportes</p>
+            <p class="text-muted mt-2 mb-0">Historial</p>
           </div>
         </b-card>
       </b-col>
@@ -309,9 +309,9 @@
           @click="getEstadisticas()"
           :style="getTagStyle(3)"
         >
-          <i class="i-Clock"></i>
+          <i class="i-Notepad"></i>
           <div class="content">
-            <p class="text-muted mt-2 mb-0">Conversaciones</p>
+            <p class="text-muted mt-2 mb-0">Reportes</p>
           </div>
         </b-card>
       </b-col>
