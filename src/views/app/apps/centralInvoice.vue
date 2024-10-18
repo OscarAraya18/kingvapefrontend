@@ -1687,6 +1687,7 @@ export default {
           });
         }
       }
+      console.log(this.locations);
       this.$root.$emit('bv::show::modal', 'mapModal');
     },
 

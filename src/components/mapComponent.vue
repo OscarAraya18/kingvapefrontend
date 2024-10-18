@@ -424,7 +424,6 @@ export default {
     }
 
     if (this.multipleClients){
-
       if (this.localityMap){
 
         const colorPins = 
@@ -441,7 +440,11 @@ export default {
 
         for (var clientIndex in this.multipleClients){
           const client = this.multipleClients[clientIndex];
-          const color = client.localityAgentColor ? colorPins[client.localityAgentColor.substr(1)] : 'https://i.postimg.cc/ncgWWjcP/1.webp'
+          console.log(client)
+          const color = client.localityAgentColor ? (colorPins[client.localityAgentColor.substr(1)] ? colorPins[client.localityAgentColor.substr(1)] : 'https://i.postimg.cc/ncgWWjcP/1.webp') : 'https://i.postimg.cc/ncgWWjcP/1.webp'
+
+          console.log(client.localityAgentColor)
+
           let clientLocationImage = new Icon({
             anchor: [0.5, 1],
             src: color
