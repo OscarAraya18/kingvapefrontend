@@ -117,7 +117,7 @@
     <b-form-input v-model="contactPhoneNumber" @keyup.enter="openContactFromPhoneNumber()" placeholder='Número de teléfono' style='margin-bottom: 10px;'></b-form-input>
     <br>
 
-    <b-form-select v-model="contactLetter" class="mb-3" :options="contactLettersOptions" :disabled="loaderContact" @change="displayContacts()">
+    <b-form-select v-model="contactLetter" class="mb-3" :options="contactLettersOptions" :disabled="loaderContact" @change="getContacts()">
     </b-form-select>
     <br><br>
 
@@ -153,7 +153,11 @@
 
         <template slot="table-row" slot-scope="props">
           
+          <div v-if="props.column.field == 'contactFollowup'">
+            <i v-if="isMoreThan30Days(props.row.lastDate)" class="i-Close text-25 text-danger"></i>
+            <i v-else class="i-Check text-25 text-success"></i>
 
+          </div>
           
           <div v-if="props.column.field == 'contactID'">
             <div v-if="props.row.contactID != '0' && props.row.contactID != '1'" style="background-color: #337a46; text-align: center; border-radius: 10px; width: 100px; margin-top: 15px;">
@@ -645,6 +649,10 @@ export default {
     this.contactColumns = 
     [
       {
+        label: null,
+        field: "contactFollowup",
+      },
+      {
         label: "Cédula",
         field: "contactID",
       },
@@ -677,6 +685,22 @@ export default {
   },
 
   methods: {
+    isMoreThan30Days(lastDate) {
+      if (!lastDate) return false; // Si no hay una fecha, no se muestra el icono
+      
+      const currentDate = new Date(); // Fecha actual
+      const parsedLastDate = new Date(lastDate); // Convertir lastDate a objeto Date
+
+      // Calcular la diferencia en milisegundos
+      const diffInMs = currentDate - parsedLastDate;
+
+      // Convertir la diferencia a días
+      const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+      // Comprobar si han pasado 30 días o más
+      return diffInDays >= 30;
+    },
+
     getTagStyle(tagID){
       var style = 'cursor: pointer;';
       if (tagID == 1){
@@ -1064,7 +1088,7 @@ export default {
 
       axios.post(constants.routes.backendAPI+'/selectContactsFromStartingLetter', 
       {
-        'startingLetter': 'Todo'
+        'startingLetter': this.contactLetter
       })
       .then((response) =>{ 
 
@@ -1076,9 +1100,11 @@ export default {
           'contactEmail': contact.e,
           'contactLocations': JSON.parse(contact.l),
           'contactHasIDImage': contact.ip,
-          'totalInvoiceAmount': parseInt(contact.totalInvoiceAmount)
+          'totalInvoiceAmount': parseInt(contact.totalInvoiceAmount),
+          'lastDate': contact.ld
         }));
         this.loaderContact = false;
+        this.displayedContactRows = this.originalContactRows;
       })
       .catch(() =>{
         this.$bvToast.toast("Ha ocurrido un error inesperado al consultar la lista de clientes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
