@@ -154,8 +154,12 @@
         <template slot="table-row" slot-scope="props">
           
           <div v-if="props.column.field == 'contactFollowup'">
-            <i v-if="isMoreThan30Days(props.row.lastDate)" class="i-Close text-25 text-danger"></i>
-            <i v-else class="i-Check text-25 text-success"></i>
+            <i v-if="isMoreThan30Days(props.row.lastDate)" class="i-Loading-2 text-25 text-danger"></i>
+            <div v-else>
+              <i v-if="props.row.lastDate" class="i-Check text-25 text-success"></i>
+              <i v-else class="i-Close text-25 text-gray"></i>
+
+            </div>
 
           </div>
           
