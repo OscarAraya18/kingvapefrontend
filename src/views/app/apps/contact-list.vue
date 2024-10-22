@@ -205,6 +205,7 @@
               <i  @click="selectClientIDSImage(props.row.contactPhoneNumber)" class="i-ID-Card text-25 text-black"  style="cursor: pointer; margin-right: 10px;"></i>
               <i class="i-Clock text-25 text-info" @click="getHistoryConversations(props.row.contactPhoneNumber)" v-b-modal.historyConversationsModal style="cursor: pointer; margin-right: 10px;"></i>
               <i class="i-Notepad text-25 text-warning" @click="openSendContactMessageModal(props.row)" v-b-modal.sendContactMessageModal style="cursor: pointer; margin-right: 7px;"></i>
+              <i class="i-Eraser-2 text-25 text-success mr-2" @click="openEdit(props.row.contactPhoneNumber)" v-b-modal.modalEditar style="cursor: pointer"></i>
           </span>
 
 
@@ -531,6 +532,59 @@
         </div>
       </b-modal>
 
+      <b-modal id="modalEditar" title="Editar contacto" hide-footer ref="modalEditar" centered> 
+        <div class="p-3">
+          <b-form @submit.prevent="submit">
+            <b-form-group label="Número del contacto:" style="font-size: medium;" class="pb-2">
+              <b-form-input
+                class="form-control"
+                label="ID"
+                v-model="editingPhoneNumber"
+              >
+              </b-form-input>
+            </b-form-group>
+            
+            <b-form-group label="Nombre del contacto:" style="font-size: medium;" class="pb-2">
+              <b-form-input
+                class="form-control"
+                label="Name"
+                v-model="editingName"
+              >
+              </b-form-input>
+            </b-form-group>
+
+            <b-form-group label="Cédula del contacto:" style="font-size: medium;" class="pb-2">
+              <b-form-input
+                class="form-control"
+                label="ID"
+                v-model="editingID"
+              >
+              </b-form-input>
+            </b-form-group>
+
+            <b-form-group label="Correo electrónico del contacto:" style="font-size: medium;" class="pb-2">
+              <b-form-input
+                class="form-control"
+                label="email"
+                v-model="editingEmail"
+              >
+              </b-form-input>
+            </b-form-group>
+
+            <br>
+
+            <b-button
+              type="submit"
+              block
+              variant="primary"
+              class="btn-icon btn"
+              >Guardar cambios</b-button
+            >
+
+          </b-form>
+        </div>
+      </b-modal>
+
     </b-card>
   </div>
 
@@ -623,7 +677,14 @@ export default {
       contactLocations: null,
       sendingContact: null,
 
-      view: 'Lista de contactos'
+      view: 'Lista de contactos',
+
+
+      originalEditingPhoneNumber: '',
+      editingPhoneNumber: '',
+      editingID: '',
+      editingName: '',
+      editingEmail: ''
     };
 
     
@@ -689,6 +750,61 @@ export default {
   },
 
   methods: {
+    openEdit(contactPhoneNumber){
+      const contact = this.displayedContactRows.find(contactRow => contactRow.contactPhoneNumber == contactPhoneNumber);
+      this.originalEditingPhoneNumber = contact.contactPhoneNumber;
+      this.editingPhoneNumber = contact.contactPhoneNumber;
+      this.editingID = contact.contactID;
+      this.editingName = contact.contactName;
+      this.editingEmail = contact.contactEmail;
+    },
+
+    submit(){
+      const regularExpressionChecker = /\S/;
+      if (regularExpressionChecker.test(this.editingPhoneNumber) && regularExpressionChecker.test(this.editingID) && regularExpressionChecker.test(this.editingName) && regularExpressionChecker.test(this.editingEmail) && regularExpressionChecker.test(this.editingLocationDetails) && regularExpressionChecker.test(this.editingNote)) {
+        axios.post(constants.routes.backendAPI+'/updateContact', 
+        {
+          'originalContactPhoneNumber': this.originalEditingPhoneNumber,
+          'editedContactPhoneNumber': this.editingPhoneNumber,
+          'contactID': this.editingID,
+          'contactName': this.editingName, 
+          'contactEmail': this.editingEmail, 
+          'contactLocationDetails': this.editingLocationDetails, 
+          'contactNote': this.editingNote
+        }).then((response) =>{ 
+          if (response.data.success){
+            this.$bvToast.toast("Se ha editado exitosamente el contacto con el número '" + this.editingPhoneNumber + "'.", {
+              title: "Contacto editado",
+              variant: "success",
+              solid: true
+            });
+            this.rows = [];
+            this.$refs['modalEditar'].hide();
+            this.getContacts();
+          } else {
+            this.$bvToast.toast("Ya existe un cliente asociado al número '" + this.editingPhoneNumber + "', por favor modifique la información e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+              title: "Número de contacto duplicado",
+              variant: "danger",
+              solid: true
+            });
+          }
+        })
+        .catch(error =>{
+          this.$bvToast.toast("Ha ocurrido un error inesperado al editar el contacto. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+            title: "Error al editar el contacto",
+            variant: "danger",
+            solid: true
+          });
+        })
+      } else {
+        this.$bvToast.toast('El contenido de la información del cliente no puede estar vacío. Por favor complete los espacios requeridos e intentelo nuevamente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.', {
+          title: 'Error al editar el cliente',
+          variant: 'danger',
+          solid: true
+        });
+      }
+    },
+
     isMoreThan30Days(lastDate) {
       if (!lastDate) return false; // Si no hay una fecha, no se muestra el icono
       
