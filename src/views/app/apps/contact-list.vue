@@ -127,6 +127,9 @@
     </div>
 
     <b-card v-else style="background-color: #e8e8e8; max-height: 750px; overflow-y: auto;">
+
+      {{  }}
+
       <vue-good-table
         :columns="contactColumns"
         :line-numbers="false"
@@ -265,10 +268,8 @@
                 <p v-if="historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length != 0" style="font-size: medium; margin: 0;"><strong>Primera compra: </strong> {{parseHour(historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 )[0].whatsappConversationEndDateTime)}}</p>
                 <p v-if="historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length != 0" style="font-size: medium; margin: 0;"><strong>Última compra: </strong> {{parseHour(historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 )[historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length - 1].whatsappConversationEndDateTime)}}</p>
                 <p style="font-size: medium; margin: 0;"><strong>Cantidad de compras: </strong> {{historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length}}</p>
-                
               </b-card>
               
-
             </div>  
           </b-modal>
 
@@ -589,6 +590,7 @@
 
   
   <div v-else>
+    
     <b-modal scrollable size="lg" centered hide-footer id="historyOpenModal" hide-header v-if="currentHistoryConversation != null">
         <div v-if="openHistoryLoader == true" style="text-align: center;">
           <br><span class="spinner-glow spinner-glow-primary"></span>
@@ -800,12 +802,12 @@
       
     <div style="display: flex; justify-content: center; align-items: center;">
       <div style="display: flex; width: 33%; justify-content: center; align-items: center;">
-        <i class="i-Loading-2 text-50 text-danger"></i>
-        <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate != null).filter(client => isMoreThan30Days(client.lastDate) == true).length }}</p>
-      </div>
-      <div style="display: flex; width: 33%; justify-content: center; align-items: center;">
         <i class="i-Check text-50 text-success"></i>
         <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate != null).filter(client => isMoreThan30Days(client.lastDate) == false).length }}</p>
+      </div>
+      <div style="display: flex; width: 33%; justify-content: center; align-items: center;">
+        <i class="i-Loading-2 text-50 text-danger"></i>
+        <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate != null).filter(client => isMoreThan30Days(client.lastDate) == true).length }}</p>
       </div>
       <div style="display: flex; width: 33%; justify-content: center; align-items: center;">
         <i class="i-Close text-50 text-gray"></i>
@@ -926,6 +928,7 @@ export default {
   data() {
     return {
       agentFiltered: null,
+      contactHint: null,
 
       loaderReport: true,
       initialDateFiltered: null,
@@ -1527,12 +1530,14 @@ export default {
         if (response.data.success){
           if (response.data.result.length != 0){
             this.displayedContactRows = response.data.result.map(contact => ({
-              'contactID': contact.contactID,
-              'contactName': contact.contactName,
-              'contactPhoneNumber': contact.contactPhoneNumber,
-              'contactEmail': contact.contactEmail,
-              'contactLocations': JSON.parse(contact.contactLocations),
-              'contactHasIDImage': contact.ip
+              'contactID': contact.i,
+              'contactName': contact.n,
+              'contactPhoneNumber': contact.p,
+              'contactEmail': contact.e,
+              'contactLocations': JSON.parse(contact.l),
+              'contactHasIDImage': contact.ip,
+              'lastDate': contact.ld,
+              'totalInvoiceAmount': contact.totalInvoiceAmount
             }));
             this.loaderContact = false;
             this.contactPhoneNumber = '';
