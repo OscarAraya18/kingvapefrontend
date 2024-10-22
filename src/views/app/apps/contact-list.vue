@@ -812,7 +812,7 @@
         <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate == null).length }}</p>
       </div>
     </div>
-    <br><br>
+    <br><br><br>
 
     <div style="display: flex;">
       <div style="width: 40%; margin-right: 5%;">
@@ -824,8 +824,8 @@
       </div>
 
       <div style="width: 55%; display: flex;">
-        <apexchart v-if="opcionesGraficoTotal != null && datosGraficoTotal.length != 0" type="pie" width="500" :options="opcionesGraficoTotal" :series="datosGraficoTotal"></apexchart>
-        <apexchart v-if="opcionesGraficoVenta != null && datosGraficoVenta.length != 0" type="pie" width="500" :options="opcionesGraficoVenta" :series="datosGraficoVenta"></apexchart>
+        <apexchart v-if="opcionesGraficoTotal != null && datosGraficoTotal.length != 0" type="pie" width="400" :options="opcionesGraficoTotal" :series="datosGraficoTotal"></apexchart>
+        <apexchart v-if="opcionesGraficoVenta != null && datosGraficoVenta.length != 0" type="pie" width="400" :options="opcionesGraficoVenta" :series="datosGraficoVenta"></apexchart>
        </div>
     </div>
     
@@ -841,7 +841,7 @@
 
         <br>
         <h3><strong>Total de seguimientos:</strong> {{ clientReport.length }}</h3>
-        <h3><strong>Recuperado:</strong> ₡{{ this.clientReport.reduce((total, item) => {return total + item.whatsappConversationAmount}, 0).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h3>
+        <h3><strong>Recuperado:</strong> ₡ {{ this.clientReport.reduce((total, item) => {return total + item.whatsappConversationAmount}, 0).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h3>
         <br>
         <vue-good-table
           :line-numbers="false"
@@ -863,6 +863,11 @@
           <div v-else-if="props.column.field == 'whatsappConversationEndDatetime'">
             <p style="margin: 0px;">{{ parseHour(props.row.whatsappConversationEndDatetime) }}</p>
           </div>
+
+          <div v-else-if="props.column.field == 'whatsappConversationAmount'">
+            <p style="margin: 0px;">₡ {{ props.row.whatsappConversationAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
+          </div>
+
           <div v-else-if="props.column.field == 'whatsappConversationAction'">
             <i class="i-Notepad text-25 text-warning" @click="openHistoryConversation(props.row)" v-b-modal.historyOpenModal style="cursor: pointer; margin-right: 7px;"></i>
           </div>
@@ -1002,6 +1007,23 @@ export default {
     
   },
 
+  watch: {
+    initialDateFiltered(){
+      if (this.initialDateFiltered != null){
+        this.selectClientReport();
+
+      }
+    },
+
+
+    endDateFiltered(){
+      if (this.endDateFiltered != null){
+        this.selectClientReport();
+
+      }
+    }
+  },
+
   mounted(){
     this.cartagoMap = constants.routes.cartagoMap;
     this.cartagoMapOptions = constants.routes.cartagoMapOptions;
@@ -1017,6 +1039,10 @@ export default {
     if (localStorage.getItem('agentID') == null){
       router.push("/app/sessions/signIn");
     }
+
+    this.initialDateFiltered = new Date();
+    this.endDateFiltered = new Date();
+
     this.getContactAmount();
     this.selectClientFollowupReport();
     this.selectClientReport();
@@ -1275,7 +1301,7 @@ export default {
           const labels = this.getLabels();
           this.opcionesGraficoVenta = 
           {
-            chart: {width: 600, type: 'pie', fontSize: 20}, 
+            chart: {width: 45, type: 'pie', fontSize: 20}, 
             tooltip: {enabled: true}, 
             labels: labels,
             legend: {fontSize: '15px'},
@@ -1285,7 +1311,7 @@ export default {
 
           this.opcionesGraficoTotal = 
           {
-            chart: {width: 600, type: 'pie', fontSize: 20}, 
+            chart: {width: 400, type: 'pie', fontSize: 20}, 
             tooltip: {enabled: true}, 
             labels: ['Vendido', 'No vendido'],
             legend: {fontSize: '15px'},
