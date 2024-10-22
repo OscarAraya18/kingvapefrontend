@@ -158,7 +158,6 @@
             <div v-else>
               <i v-if="props.row.lastDate" class="i-Check text-25 text-success"></i>
               <i v-else class="i-Close text-25 text-gray"></i>
-
             </div>
 
           </div>
@@ -273,8 +272,7 @@
             </div>  
           </b-modal>
 
-
-      <b-modal scrollable size="lg" centered hide-footer id="historyOpenModal" hide-header v-if="currentHistoryConversation != null">
+          <b-modal scrollable size="lg" centered hide-footer id="historyOpenModal" hide-header v-if="currentHistoryConversation != null">
         <div v-if="openHistoryLoader == true" style="text-align: center;">
           <br><span class="spinner-glow spinner-glow-primary"></span>
         </div>
@@ -482,6 +480,7 @@
           </div>
         </div>
       </b-modal>
+      
 
       <b-modal id="contactLocationsModal" size="lg" hide-footer hide-header centered>
         <div v-if="contactLocations" style="text-align: center; padding: 20px;">
@@ -588,6 +587,295 @@
     </b-card>
   </div>
 
+  
+  <div v-else>
+    <b-modal scrollable size="lg" centered hide-footer id="historyOpenModal" hide-header v-if="currentHistoryConversation != null">
+        <div v-if="openHistoryLoader == true" style="text-align: center;">
+          <br><span class="spinner-glow spinner-glow-primary"></span>
+        </div>
+        <div v-else>
+          <div v-for="currentActiveConversationMessage in currentHistoryConversation.whatsappConversationMessages">
+            
+            <div class="d-flex mb-30" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
+              <div :style="getMessageOwnerColor(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)" class="message flex-grow-1">
+                <div class="d-flex">
+                  <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber != null">
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
+                      <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                        
+                        <div v-if="currentHistoryConversation.whatsappConversationMessages.map(whatsappGeneralMessage => whatsappGeneralMessage.whatsappGeneralMessageID).includes(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID) == false">
+                          <button @click="getHistoryMessage(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID)" class="btn btn-icon btn-primary mr-2" v-b-modal.historyMessageModal><i class="i-Clock"></i>Abrir mensaje del historial</button>
+                        </div>
+                        
+                        <div v-for="answeredMessage in currentHistoryConversation.whatsappConversationMessages">
+                          <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
+                            
+                            <p v-if="answeredMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'contact'"> 
+                              <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.whatsappContactMessageName}}</p>
+                              <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.whatsappContactMessagePhoneNumber}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'image'"> 
+                              <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`">
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappImageMessageCaption}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='video'"> 
+                              <video controls width="400" :src="`data:video/mp4;base64,${answeredMessage.whatsappVideoMessageFile}`"></video>
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappVideoMessageCaption}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                              <MapComponent mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
+
+                              <br>
+                              <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
+                              <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                              <a style="color: black;" :href="`data:${answeredMessage.whatsappDocumentMessageMimeType};base64,${answeredMessage.whatsappDocumentMessageFile}`" :download="answeredMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{answeredMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                            </div>
+                            
+                            <audio controls v-if="answeredMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${answeredMessage.whatsappAudioMessageFile}`"></audio>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                              <img v-b-modal.bigImageModal @click="openBigImage(answeredMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="answeredMessage.whatsappFavoriteImageMessageDriveURL">
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappFavoriteImageMessageCaption != null">{{answeredMessage.whatsappFavoriteImageMessageCaption}}</p>
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'contact'"> 
+                      <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{currentActiveConversationMessage.whatsappContactMessageName}}</p>
+                      <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{currentActiveConversationMessage.whatsappContactMessagePhoneNumber}}</p>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
+                      <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='video'"> 
+                      <video controls width="400" :src="`data:video/mp4;base64,${currentActiveConversationMessage.whatsappVideoMessageFile}`"></video>
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappVideoMessageCaption}}</p>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                      <MapComponent mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
+
+                      <br>
+                      <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
+                      <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                      <a style="color: black;" :href="`data:${currentActiveConversationMessage.whatsappDocumentMessageMimeType};base64,${currentActiveConversationMessage.whatsappDocumentMessageFile}`" :download="currentActiveConversationMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{currentActiveConversationMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                    </div>
+                    
+                    <audio controls v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${currentActiveConversationMessage.whatsappAudioMessageFile}`"></audio>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                      <img v-b-modal.bigImageModal @click="openBigImage(currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL">
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappFavoriteImageMessageCaption != null">{{currentActiveConversationMessage.whatsappFavoriteImageMessageCaption}}</p>
+
+                    </div>
+                  
+                  </div>
+                  <span v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null" style="display:flex; margin-left: 0; margin-right:auto;" class="text-small text-muted">
+                    <img :id="'r'+currentActiveConversationMessage.whatsappGeneralMessageID" v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null" style="cursor: pointer; width: 25px; height: 25px; margin-right: 5px;" src="@/assets/read.png">
+                    <img :id="'d'+currentActiveConversationMessage.whatsappGeneralMessageID" v-else-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null" style="cursor: pointer; width: 25px; height: 25px; margin-right: 5px;" src="@/assets/delivered.png">
+                    <img :id="'s'+currentActiveConversationMessage.whatsappGeneralMessageID" v-else style="cursor: pointer; width: 25px; height: 25px; margin-right: 5px;" src="@/assets/send.png">
+                    <b-tooltip :target="'r'+currentActiveConversationMessage.whatsappGeneralMessageID">
+                      <p>Envíado: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null">Recibido: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null">Leído: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime)}}</p>
+                    </b-tooltip>
+                    <b-tooltip :target="'d'+currentActiveConversationMessage.whatsappGeneralMessageID">
+                      <p>Envíado: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null">Recibido: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null">Leído: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime)}}</p>
+                    </b-tooltip>
+                    <b-tooltip :target="'s'+currentActiveConversationMessage.whatsappGeneralMessageID">
+                      <p>Envíado: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null">Recibido: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null">Leído: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime)}}</p>
+                    </b-tooltip>
+                    {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}
+                  </span>                 
+                  <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
+                  <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null">
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
+                      <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                        
+                        <div v-if="currentHistoryConversation.whatsappConversationMessages.map(whatsappGeneralMessage => whatsappGeneralMessage.whatsappGeneralMessageID).includes(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID) == false">
+                          <button @click="getHistoryMessage(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID)" class="btn btn-icon btn-primary mr-2" v-b-modal.historyMessageModal><i class="i-Clock"></i>Abrir mensaje del historial</button>
+                        </div>
+                        
+                        <div v-for="answeredMessage in currentHistoryConversation.whatsappConversationMessages">
+
+                          <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
+                            
+                            <p v-if="answeredMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'contact'"> 
+                              <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.whatsappContactMessageName}}</p>
+                              <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.whatsappContactMessagePhoneNumber}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'image'"> 
+                              <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`">
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappImageMessageCaption}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='video'"> 
+                              <video controls width="400" :src="`data:video/mp4;base64,${answeredMessage.whatsappVideoMessageFile}`"></video>
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappVideoMessageCaption}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                              <MapComponent mapHeight="250px" mapWidth="600px" :clientLongitude="getLocation(answeredMessage).lng" :clientLatitude="getLocation(answeredMessage).lat"></MapComponent>
+
+                              <br>
+                              <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
+                              <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                              <a style="color: black;" :href="`data:${answeredMessage.whatsappDocumentMessageMimeType};base64,${answeredMessage.whatsappDocumentMessageFile}`" :download="answeredMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{answeredMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                            </div>
+                            
+                            <audio controls v-if="answeredMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${answeredMessage.whatsappAudioMessageFile}`"></audio>
+                          
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                              <img v-b-modal.bigImageModal @click="openBigImage(answeredMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="answeredMessage.whatsappFavoriteImageMessageDriveURL">
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappFavoriteImageMessageCaption != null">{{answeredMessage.whatsappFavoriteImageMessageCaption}}</p>
+                            </div>
+                          
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'contact'"> 
+                      <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{currentActiveConversationMessage.whatsappContactMessageName}}</p>
+                      <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{currentActiveConversationMessage.whatsappContactMessagePhoneNumber}}</p>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
+                      <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                      <MapComponent mapHeight="450px" mapWidth="600px" :clientLongitude="getLocation(currentActiveConversationMessage).lng" :clientLatitude="getLocation(currentActiveConversationMessage).lat"></MapComponent>
+
+                      <br>
+                      <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
+                      <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
+                    </div>
+                    
+                    <audio controls v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${currentActiveConversationMessage.whatsappAudioMessageFile}`"></audio>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                      <img v-b-modal.bigImageModal @click="openBigImage(currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL">
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappFavoriteImageMessageCaption != null">{{currentActiveConversationMessage.whatsappFavoriteImageMessageCaption}}</p>
+                    </div>
+                  
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </b-modal>
+      
+    <div style="display: flex; justify-content: center; align-items: center;">
+      <div style="display: flex; width: 33%; justify-content: center; align-items: center;">
+        <i class="i-Loading-2 text-50 text-danger"></i>
+        <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate != null).filter(client => isMoreThan30Days(client.lastDate) == true).length }}</p>
+      </div>
+      <div style="display: flex; width: 33%; justify-content: center; align-items: center;">
+        <i class="i-Check text-50 text-success"></i>
+        <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate != null).filter(client => isMoreThan30Days(client.lastDate) == false).length }}</p>
+      </div>
+      <div style="display: flex; width: 33%; justify-content: center; align-items: center;">
+        <i class="i-Close text-50 text-gray"></i>
+        <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate == null).length }}</p>
+      </div>
+    </div>
+    <br><br>
+
+    <div style="display: flex;">
+      <div style="width: 40%; margin-right: 5%;">
+        <h4><strong>Filtro por fecha inicial:</strong></h4>
+        <b-form-datepicker v-model="initialDateFiltered"></b-form-datepicker>
+        <br>
+        <h4><strong>Filtro por fecha final:</strong></h4>
+        <b-form-datepicker v-model="endDateFiltered"></b-form-datepicker>
+      </div>
+
+      <div style="width: 55%; display: flex;">
+        <apexchart v-if="opcionesGraficoTotal != null && datosGraficoTotal.length != 0" type="pie" width="500" :options="opcionesGraficoTotal" :series="datosGraficoTotal"></apexchart>
+        <apexchart v-if="opcionesGraficoVenta != null && datosGraficoVenta.length != 0" type="pie" width="500" :options="opcionesGraficoVenta" :series="datosGraficoVenta"></apexchart>
+       </div>
+    </div>
+    
+    <br><br>
+
+    <div v-if="loaderReport" style="text-align: center;">
+      <br>
+      <span class="spinner-glow spinner-glow-primary"></span>
+    </div>
+    <div v-else>
+
+      <b-card style="background-color: #e8e8e8; max-height: 750px; overflow-y: auto;">
+
+        <br>
+        <h3><strong>Total de seguimientos:</strong> {{ clientReport.length }}</h3>
+        <h3><strong>Recuperado:</strong> ₡{{ this.clientReport.reduce((total, item) => {return total + item.whatsappConversationAmount}, 0).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h3>
+        <br>
+        <vue-good-table
+          :line-numbers="false"
+          styleClass="tableOne vgt-table"
+          :rows="clientReport"
+          :columns="clientReportColumns"
+        >
+        
+        <template slot="table-row" slot-scope="props">
+            
+          <div v-if="props.column.field == 'agentName'" :style="{backgroundColor: props.row.agentColor}" style="border-radius: 10px; padding: 5px; width: fit-content; text-align: center;">
+            <p style="margin: 0px;" :style="{color: props.row.agentFontColor }">{{ props.row.agentName }}</p>
+          </div>
+
+          <div v-else-if="props.column.field == 'whatsappConversationRecipientPhoneNumber'">
+            <p style="margin: 0px;">{{ parseNumber(props.row.whatsappConversationRecipientPhoneNumber) }}</p>
+          </div>
+
+          <div v-else-if="props.column.field == 'whatsappConversationEndDatetime'">
+            <p style="margin: 0px;">{{ parseHour(props.row.whatsappConversationEndDatetime) }}</p>
+          </div>
+          <div v-else-if="props.column.field == 'whatsappConversationAction'">
+            <i class="i-Notepad text-25 text-warning" @click="openHistoryConversation(props.row)" v-b-modal.historyOpenModal style="cursor: pointer; margin-right: 7px;"></i>
+          </div>
+          
+
+          </template>
+        </vue-good-table>
+      </b-card>
+    </div>
+
+
+  </div>
+
     <br><br>
   </div>
 </template>
@@ -612,6 +900,28 @@ export default {
 
   data() {
     return {
+      loaderReport: true,
+      initialDateFiltered: null,
+      endDateFiltered: null,
+      clientReport: [],
+      clientReportColumns: 
+      [
+        {label: "ID", field: "whatsappConversationID"},
+        {label: "Agente", field: "agentName"}, 
+        {label: "Nombre", field: "whatsappConversationRecipientProfileName"}, 
+        {label: "Número", field: "whatsappConversationRecipientPhoneNumber"}, 
+        {label: "Fecha", field: "whatsappConversationEndDatetime"},
+        {label: "Resultado", field: "whatsappConversationCloseComment"},
+        {label: "Cantidad", field: "whatsappConversationAmount"},
+        {label: "Abrir", field: "whatsappConversationAction"}
+      ],
+
+
+      opcionesGraficoVenta: null,
+      datosGraficoVenta: [],
+      opcionesGraficoTotal: null,
+      datosGraficoTotal: [],
+
       messageTypes: 
       [
         { value: null, text: 'Seleccione un tipo de mensaje' },
@@ -684,7 +994,9 @@ export default {
       editingPhoneNumber: '',
       editingID: '',
       editingName: '',
-      editingEmail: ''
+      editingEmail: '',
+
+      clientFollowupReport: null
     };
 
     
@@ -706,6 +1018,8 @@ export default {
       router.push("/app/sessions/signIn");
     }
     this.getContactAmount();
+    this.selectClientFollowupReport();
+    this.selectClientReport();
     this.sendingMessage = localStorage.getItem('agentStartMessage');
     this.agentType = localStorage.getItem('agentType');
 
@@ -904,6 +1218,90 @@ export default {
         this.showNotification('danger', 'Error al consultar la cantidad de contactos', 'Ha ocurrido un error inesperado al consultar la cantidad de contactos. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
+
+    selectClientFollowupReport(){
+      axios.post(constants.routes.backendAPI+'/selectClientFollowupReport')
+      .then((response) => {
+        if (response.data.success){
+          this.clientFollowupReport = response.data.result;
+        } else {
+          this.showNotification('danger', 'Error al consultar la cantidad de contactos del reporte', 'Ha ocurrido un error inesperado al consultar la cantidad de contactos del reporte. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        this.showNotification('danger', 'Error al consultar la cantidad de contactos del reporte', 'Ha ocurrido un error inesperado al consultar la cantidad de contactos del reporte. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+    getLabels(){
+      var agentLabels = [];
+
+      for (var agentIndex in this.clientReport){
+        const agentName = this.clientReport[agentIndex].agentName;
+        if (agentLabels.includes(agentName) == false){
+          agentLabels.push(agentName);
+        }
+      }
+      return agentLabels;
+    },
+
+    getDatos(labels){
+      var datos = [];
+      for (var labelIndex in labels){
+        const amount = this.clientReport.filter(invoice => (invoice['agentName'] == labels[labelIndex] && invoice['whatsappConversationCloseComment'] == 'Venta')).length;
+        datos.push(amount);
+      }
+      console.log(datos)
+      return datos;
+    },
+
+    getColors(labels){
+      var colors = [];
+      for (var labelIndex in labels){
+        const color = this.clientReport.find(invoice => invoice['agentName'] == labels[labelIndex]).agentColor;
+        colors.push(color);
+      }
+      return colors;
+    },
+
+    selectClientReport(){
+      this.loaderReport = true;
+      axios.post(constants.routes.backendAPI+'/selectClientReport', {startDate: this.initialDateFiltered, endDate: this.endDateFiltered})
+      .then((response) => {
+        if (response.data.success){
+          this.loaderReport = false;
+          this.clientReport = response.data.result;
+
+          const labels = this.getLabels();
+          this.opcionesGraficoVenta = 
+          {
+            chart: {width: 600, type: 'pie', fontSize: 20}, 
+            tooltip: {enabled: true}, 
+            labels: labels,
+            legend: {fontSize: '15px'},
+            colors: this.getColors(labels)
+          };
+          this.datosGraficoVenta = this.getDatos(labels);
+
+          this.opcionesGraficoTotal = 
+          {
+            chart: {width: 600, type: 'pie', fontSize: 20}, 
+            tooltip: {enabled: true}, 
+            labels: ['Vendido', 'No vendido'],
+            legend: {fontSize: '15px'},
+            colors: ['#2c6b1f', '#bd0404']
+          };
+          this.datosGraficoTotal = [this.clientReport.filter(clientReport => clientReport.whatsappConversationCloseComment == 'Venta').length, this.clientReport.filter(clientReport => clientReport.whatsappConversationCloseComment != 'Venta').length];
+
+        } else {
+          this.showNotification('danger', 'Error al consultar el reporte de contactos', 'Ha ocurrido un error inesperado al consultar el reporte de contactos. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        this.showNotification('danger', 'Error al consultar el reporte de contactos', 'Ha ocurrido un error inesperado al consultar el reporte de contactos. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
 
     getHistoryMessage(whatsappGeneralMessageID){
       this.historyMessageLoader = true;
