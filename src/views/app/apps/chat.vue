@@ -1107,15 +1107,16 @@
                     <br><br><br>
                     
                     <b-dropdown variant="primary" text="Motivos frecuentes" style="width: 100%">
+                      <b-dropdown-item @click="addCloseConversationReason('Vuelve a escribir')">Vuelve a escribir</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Venta perdida')">Venta perdida</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Venta para otro día')">Venta para otro día</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Consulta sobre productos')">Consulta sobre productos</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('No contestó')">No contestó</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Pasa a tienda')">Pasa a tienda</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Consulta de horario/ubicación')">Consulta de horario/ubicación</b-dropdown-item>
-                      <b-dropdown-item @click="addCloseConversationReason('Vuelve a escribir')">Vuelve a escribir</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Reclamo o garantía')">Reclamo o garantía</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Menor de edad')">Menor de edad</b-dropdown-item>
+                      <b-dropdown-item @click="addCloseConversationReason('Seguimiento de producto')">Seguimiento de producto</b-dropdown-item>
                       <b-dropdown-item @click="addCloseConversationReason('Error')">Error</b-dropdown-item>
                     </b-dropdown><br><br>
                     <b-form-textarea no-resize rows="5" disabled="true" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
@@ -1693,15 +1694,16 @@
                       <br><br><br>
                       
                       <b-dropdown variant="primary" text="Motivos frecuentes" style="width: 100%">
+                        <b-dropdown-item @click="addCloseConversationReason('Vuelve a escribir')">Vuelve a escribir</b-dropdown-item>
                         <b-dropdown-item @click="addCloseConversationReason('Venta perdida')">Venta perdida</b-dropdown-item>
                         <b-dropdown-item @click="addCloseConversationReason('Venta para otro día')">Venta para otro día</b-dropdown-item>
                         <b-dropdown-item @click="addCloseConversationReason('Consulta sobre productos')">Consulta sobre productos</b-dropdown-item>
                         <b-dropdown-item @click="addCloseConversationReason('No contestó')">No contestó</b-dropdown-item>
                         <b-dropdown-item @click="addCloseConversationReason('Pasa a tienda')">Pasa a tienda</b-dropdown-item>
                         <b-dropdown-item @click="addCloseConversationReason('Consulta de horario/ubicación')">Consulta de horario/ubicación</b-dropdown-item>
-                        <b-dropdown-item @click="addCloseConversationReason('Vuelve a escribir')">Vuelve a escribir</b-dropdown-item>
                         <b-dropdown-item @click="addCloseConversationReason('Reclamo o garantía')">Reclamo o garantía</b-dropdown-item>
                         <b-dropdown-item @click="addCloseConversationReason('Menor de edad')">Menor de edad</b-dropdown-item>
+                        <b-dropdown-item @click="addCloseConversationReason('Seguimiento de producto')">Seguimiento de producto</b-dropdown-item>
                         <b-dropdown-item @click="addCloseConversationReason('Error')">Error</b-dropdown-item>
                       </b-dropdown><br><br>
                       <b-form-textarea no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/> 
