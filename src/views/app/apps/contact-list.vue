@@ -821,6 +821,9 @@
         <br>
         <h4><strong>Filtro por fecha final:</strong></h4>
         <b-form-datepicker v-model="endDateFiltered"></b-form-datepicker>
+        <br>
+        <h4><strong>Filtro por agente:</strong></h4>
+        <b-form-select v-model="agentFiltered" class="mb-3" :options="agentOptions"></b-form-select>
       </div>
 
       <div style="width: 45%; display: flex;">
@@ -922,10 +925,13 @@ export default {
 
   data() {
     return {
+      agentFiltered: null,
+
       loaderReport: true,
       initialDateFiltered: null,
       endDateFiltered: null,
       clientReport: [],
+      originalClientReport: [],
       clientReportColumns: 
       [
         {label: "ID", field: "whatsappConversationID"},
@@ -938,6 +944,7 @@ export default {
         {label: "Abrir", field: "whatsappConversationAction"}
       ],
 
+      agentOptions: [],
 
       opcionesGraficoVenta: null,
       datosGraficoVenta: [],
@@ -1049,6 +1056,16 @@ export default {
         }
       }
     },
+
+    agentFiltered(){
+      if (this.agentFiltered != null){
+        this.clientReport = this.originalClientReport.filter(report => report.agentName == this.agentFiltered);         
+      } else {
+        this.clientReport = this.originalClientReport;
+      }
+    },
+
+
   },
 
   mounted(){
@@ -1073,11 +1090,12 @@ export default {
     this.getContactAmount();
     this.selectClientFollowupReport();
     this.selectClientReport();
+    this.selectAgentNames();
     this.sendingMessage = localStorage.getItem('agentStartMessage');
     this.agentType = localStorage.getItem('agentType');
 
     this.getContacts();
-
+  
     this.contactColumns = 
     [
       {
@@ -1124,6 +1142,22 @@ export default {
       this.editingID = contact.contactID;
       this.editingName = contact.contactName;
       this.editingEmail = contact.contactEmail;
+    },
+
+    selectAgentNames(){
+      this.agentOptions = [{value: null, text: 'Todos'}];
+      axios.get(constants.routes.backendAPI+'/selectAgentNames').then((response) =>{
+        if (response.data.success){
+          for (var agentIndex in response.data.result){
+            this.agentOptions.push(response.data.result[agentIndex].agentName);
+          }
+        } else {
+          this.showNotification('danger', 'Error al solicitar la lista de agentes', 'Ha ocurrido un error inesperado al solicitar la lista de agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch(() =>{
+        this.showNotification('danger', 'Error al solicitar la lista de agentes', 'Ha ocurrido un error inesperado al solicitar la lista de agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
     },
 
     submit(){
@@ -1340,7 +1374,7 @@ export default {
         if (response.data.success){
           this.loaderReport = false;
           this.clientReport = response.data.result;
-
+          this.originalClientReport = response.data.result;
           const labels = this.getLabels();
           this.opcionesGraficoVenta = 
           {
