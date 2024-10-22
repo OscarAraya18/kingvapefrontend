@@ -825,7 +825,8 @@
 
       <div style="width: 45%; display: flex;">
         <apexchart v-if="opcionesGraficoTotal != null && datosGraficoTotal.length != 0" type="pie" width="400" :options="opcionesGraficoTotal" :series="datosGraficoTotal"></apexchart>
-        <apexchart v-if="opcionesGraficoVenta != null && datosGraficoVenta.length != 0" type="pie" width="400" :options="opcionesGraficoVenta" :series="datosGraficoVenta"></apexchart>
+        <apexchart v-if="opcionesGraficoVenta != null && datosGraficoVenta.length != 0" type="pie" width="300" :options="opcionesGraficoVenta" :series="datosGraficoVenta"></apexchart>
+        <apexchart v-if="opcionesGraficoContacto != null && datosGraficoContacto.length != 0" type="pie" width="400" :options="opcionesGraficoContacto" :series="datosGraficoContacto"></apexchart>
 
       </div>
     </div>
@@ -841,8 +842,23 @@
       <b-card style="background-color: #e8e8e8; max-height: 750px; overflow-y: auto;">
 
         <br>
-        <h3><strong>Total de seguimientos:</strong> {{ clientReport.length }}</h3>
-        <h3><strong>Recuperado:</strong> ₡ {{ this.clientReport.reduce((total, item) => {return total + item.whatsappConversationAmount}, 0).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h3>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h3><strong>Total de seguimientos:</strong> {{ clientReport.length }}</h3>
+            <h3><strong>Vendidos:</strong> {{ clientReport.filter(report => report.whatsappConversationCloseComment == 'Venta').length }}</h3>
+            <h3><strong>No vendidos:</strong> {{ clientReport.filter(report => report.whatsappConversationCloseComment != 'Venta').length }}</h3>
+            <h3><strong>Recuperado:</strong> ₡ {{ this.clientReport.reduce((total, item) => {return total + item.whatsappConversationAmount}, 0).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h3>
+          </div>
+          <div style="display: flex">
+            <div style="margin-right: 10px; padding: 10px; background-color: #fed330; border-radius: 30px; font-size: x-large; font-weight: bold;"> {{ this.clientReport.filter(client => client.whatsappConversationLocalityName == '1' && client.whatsappConversationAmount != 0).length}}</div>
+            <div style="margin-right: 10px; padding: 10px; background-color: #db67a3; border-radius: 30px; font-size: x-large; font-weight: bold;"> {{ this.clientReport.filter(client => client.whatsappConversationLocalityName == '4' && client.whatsappConversationAmount != 0).length}}</div>
+            <div style="margin-right: 10px; padding: 10px; background-color: #a78dcc; border-radius: 30px; font-size: x-large; font-weight: bold;"> {{ this.clientReport.filter(client => client.whatsappConversationLocalityName == '5' && client.whatsappConversationAmount != 0).length}}</div>
+            <div style="margin-right: 10px; padding: 10px; background-color: #55b5ab; border-radius: 30px; font-size: x-large; font-weight: bold;"> {{ this.clientReport.filter(client => client.whatsappConversationLocalityName == '3' && client.whatsappConversationAmount != 0).length}}</div>
+          </div>
+        </div>
+
+
         <br>
         <vue-good-table
           :line-numbers="false"
@@ -927,6 +943,8 @@ export default {
       datosGraficoVenta: [],
       opcionesGraficoTotal: null,
       datosGraficoTotal: [],
+      opcionesGraficoContacto: null,
+      datosGraficoContacto: [],
 
       messageTypes: 
       [
@@ -1290,6 +1308,16 @@ export default {
       return datos;
     },
 
+    getDatos2(labels){
+      var datos = [];
+      for (var labelIndex in labels){
+        const amount = this.clientReport.filter(invoice => (invoice['agentName'] == labels[labelIndex])).length;
+        datos.push(amount);
+      }
+      console.log(datos)
+      return datos;
+    },
+
     getColors(labels){
       var colors = [];
       for (var labelIndex in labels){
@@ -1303,8 +1331,10 @@ export default {
       this.loaderReport = true;
       this.datosGraficoTotal = [];
       this.datosGraficoVenta = [];
+      this.datosGraficoContacto = [];
       this.opcionesGraficoTotal = {};
       this.opcionesGraficoVenta = {};
+      this.opcionesGraficoContacto = {};
       axios.post(constants.routes.backendAPI+'/selectClientReport', {startDate: this.initialDateFiltered, endDate: this.endDateFiltered})
       .then((response) => {
         if (response.data.success){
@@ -1314,17 +1344,28 @@ export default {
           const labels = this.getLabels();
           this.opcionesGraficoVenta = 
           {
-            chart: {width: 45, type: 'pie', fontSize: 20}, 
+            chart: {width: 300, type: 'pie', fontSize: 20}, 
+            tooltip: {enabled: true}, 
+            labels: labels,
+            legend: {fontSize: '15px', show: false},
+            colors: this.getColors(labels)
+          };
+          this.datosGraficoVenta = this.getDatos(labels);
+
+          this.opcionesGraficoContacto = 
+          {
+            chart: {width: 450, type: 'pie', fontSize: 20}, 
             tooltip: {enabled: true}, 
             labels: labels,
             legend: {fontSize: '15px'},
             colors: this.getColors(labels)
           };
-          this.datosGraficoVenta = this.getDatos(labels);
+          this.datosGraficoContacto = this.getDatos2(labels);
+
 
           this.opcionesGraficoTotal = 
           {
-            chart: {width: 400, type: 'pie', fontSize: 20}, 
+            chart: {width: 450, type: 'pie', fontSize: 20}, 
             tooltip: {enabled: true}, 
             labels: ['Vendido', 'No vendido'],
             legend: {fontSize: '15px'},
