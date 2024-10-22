@@ -1807,11 +1807,11 @@
           <button class="btn btn-icon btn-success mr-2" @click="sendWhatsappProductMessage(producto)">
             Enviar
           </button>
-          <button v-b-modal.stockModal v-if="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistencia(producto.codigoProducto)">
+          <button v-b-modal.stockModal v-if="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistencia(producto.codigoProducto, producto.descripcion)">
             Stock
           </button>
 
-          <button v-b-modal.stockModal  v-else class="btn btn-icon btn-warning mr-2" @click="cargarExistenciaNicotina(producto.productosAsociados)">
+          <button v-b-modal.stockModal  v-else class="btn btn-icon btn-warning mr-2" @click="cargarExistenciaNicotina(producto.productosAsociados, producto.descripcion)">
             Stock
           </button>
         </div> 
@@ -1824,14 +1824,130 @@
   </div>
 </div> 
 
-<b-modal scrollable size="sm" centered hide-header hide-footer id="stockModal">
+        <b-modal scrollable size="m" centered hide-header hide-footer id="stockModal">
           <div>
             <div v-if="stockLoader == true" style="text-align: center;">
               <br>
               <span class="spinner-glow spinner-glow-primary"></span>
             </div>
             <div v-else>
-              <p class="m-0" style="white-space: pre-line; font-size: medium;">{{stockContent}}</p>
+              <div style="text-align: center;">
+                <p style="font-size: x-large;"><strong>{{stockContent.nombre}}</strong></p>
+              </div>
+              
+              
+              <div v-if="stockContent.tipo == 'unitario'">
+                <br>
+                <div v-if="stockContent.stock['King Vape'] != null" style="display: flex; margin-bottom: 20px;">
+                  <div style="background-color: #cccccc; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
+                    <p style="font-size: medium; margin: 0px;"><strong>Bodega: </strong></p>
+                  </div>
+                  <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ stockContent.stock['King Vape'] }}</p>
+                </div>
+
+                <div v-if="stockContent.stock['King Vape Zapote'] != null" style="display: flex; margin-bottom: 20px;">
+                  <div style="background-color: #fed330; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
+                    <p style="font-size: medium; margin: 0px;"><strong>King Vape Zapote: </strong></p>
+                  </div>
+                  <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ stockContent.stock['King Vape Zapote'] }}</p>
+                </div>
+
+                <div v-if="stockContent.stock['King Vape Escazu'] != null" style="display: flex; margin-bottom: 20px;">
+                  <div style="background-color: #db67a3; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
+                    <p style="font-size: medium; margin: 0px;"><strong>King Vape Escazú: </strong></p>
+                  </div>
+                  <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ stockContent.stock['King Vape Escazu'] }}</p>
+                </div>
+
+                <div v-if="stockContent.stock['King Vape Heredia'] != null" style="display: flex; margin-bottom: 20px;">
+                  <div style="background-color: #a78dcc; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
+                    <p style="font-size: medium; margin: 0px;"><strong>King Vape Heredia: </strong></p>
+                  </div>
+                  <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ stockContent.stock['King Vape Heredia'] }}</p>
+                </div>
+
+                <div v-if="stockContent.stock['King Vape Cartago'] != null" style="display: flex; margin-bottom: 20px;">
+                  <div style="background-color: #55b5ab; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
+                    <p style="font-size: medium; margin: 0px;"><strong>King Vape Cartago: </strong></p>
+                  </div>
+                  <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ stockContent.stock['King Vape Cartago'] }}</p>
+                </div>
+
+                <div v-if="stockContent.stock['King Vape MetroPlaza'] != null" style="display: flex; margin-bottom: 20px;">
+                  <div style="background-color: #49549c; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
+                    <p style="font-size: medium; margin: 0px;"><strong>King Vape Metro Plaza: </strong></p>
+                  </div>
+                  <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ stockContent.stock['King Vape MetroPlaza'] }}</p>
+                </div>
+
+                <div v-if="stockContent.stock['King Vape San Rafael'] != null" style="display: flex;">
+                  <div style="background-color: #ff933b; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
+                    <p style="font-size: medium; margin: 0px;"><strong>King Vape San Rafael: </strong></p>
+                  </div>
+                  <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ stockContent.stock['King Vape San Rafael'] }}</p>
+                </div>
+                
+              </div>
+
+              <div v-else>
+                <div v-for="(graduacion, key) in stockContent.stock" :key="key">
+                  <br><br>
+                  <div style="text-align: center;">
+                    <p style="font-size: large;"><strong>{{ key }}:</strong></p>
+                  </div>
+                  <br>
+
+                  <div v-if="graduacion.stock['King Vape'] != null" style="display: flex; margin-bottom: 20px;">
+                    <div style="background-color: #cccccc; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
+                      <p style="font-size: medium; margin: 0px;"><strong>Bodega: </strong></p>
+                    </div>
+                    <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ graduacion.stock['King Vape'] }}</p>
+                  </div>
+
+                  <div v-if="graduacion.stock['King Vape Zapote'] != null" style="display: flex; margin-bottom: 20px;">
+                    <div style="background-color: #fed330; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
+                      <p style="font-size: medium; margin: 0px;"><strong>King Vape Zapote: </strong></p>
+                    </div>
+                    <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ graduacion.stock['King Vape Zapote'] }}</p>
+                  </div>
+
+                  <div v-if="graduacion.stock['King Vape Escazu'] != null" style="display: flex; margin-bottom: 20px;">
+                    <div style="background-color: #db67a3; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
+                      <p style="font-size: medium; margin: 0px;"><strong>King Vape Escazú: </strong></p>
+                    </div>
+                    <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ graduacion.stock['King Vape Escazu'] }}</p>
+                  </div>
+
+                  <div v-if="graduacion.stock['King Vape Heredia'] != null" style="display: flex; margin-bottom: 20px;">
+                    <div style="background-color: #a78dcc; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
+                      <p style="font-size: medium; margin: 0px;"><strong>King Vape Heredia: </strong></p>
+                    </div>
+                    <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ graduacion.stock['King Vape Heredia'] }}</p>
+                  </div>
+
+                  <div v-if="graduacion.stock['King Vape Cartago'] != null" style="display: flex; margin-bottom: 20px;">
+                    <div style="background-color: #55b5ab; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
+                      <p style="font-size: medium; margin: 0px;"><strong>King Vape Cartago: </strong></p>
+                    </div>
+                    <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ graduacion.stock['King Vape Cartago'] }}</p>
+                  </div>
+
+                  <div v-if="graduacion.stock['King Vape MetroPlaza'] != null" style="display: flex; margin-bottom: 20px;">
+                    <div style="background-color: #49549c; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
+                      <p style="font-size: medium; margin: 0px;"><strong>King Vape Metro Plaza: </strong></p>
+                    </div>
+                    <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ graduacion.stock['King Vape MetroPlaza'] }}</p>
+                  </div>
+
+                  <div v-if="graduacion.stock['King Vape San Rafael'] != null" style="display: flex;">
+                    <div style="background-color: #ff933b; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
+                      <p style="font-size: medium; margin: 0px;"><strong>King Vape San Rafael: </strong></p>
+                    </div>
+                    <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ graduacion.stock['King Vape San Rafael'] }}</p>
+                  </div>
+                </div>
+              </div>
+              
             </div>
           </div>
         </b-modal>
@@ -3550,19 +3666,15 @@ export default {
 
     
 
-    cargarTesting(codigo){
+    async cargarExistenciaTesting(codigo){
       return new Promise((cargarTestingPromiseResolve) => {
         var me = this;
         axios.get('https://backend.kingvape.cr/api/ProductosWebs/'+codigo).then(function(response){
-          var textoExistencia = '';
+          var textoExistencia = {'stock': {}};
           for (var indice in response.data){
-            if (textoExistencia == ''){
-              textoExistencia = response.data[indice].localidad + ': ' + response.data[indice].cantidadInvActual;
-            } else {
-              textoExistencia = textoExistencia + '\n' + response.data[indice].localidad + ': ' + response.data[indice].cantidadInvActual;
-            }
+            textoExistencia['stock'][response.data[indice].localidad] = response.data[indice].cantidadInvActual;
           }
-          cargarTestingPromiseResolve(textoExistencia + '\n\n');
+          cargarTestingPromiseResolve(textoExistencia);
         }).catch(function(error){
           console.log(error);
           alert('Producto no encontrado');
@@ -3570,29 +3682,25 @@ export default {
       });
     },
 
-    async cargarExistenciaNicotina(productosPorNicotina){
+    async cargarExistenciaNicotina(productosPorNicotina, nombreProducto){
       this.stockLoader = true;
-      var texto = '';
+      var textoExistencia = {'tipo': 'multiple', 'nombre': nombreProducto, 'stock': {}};
       for (var indiceProducto in productosPorNicotina){
         var codigoProducto = productosPorNicotina[indiceProducto].codigoAsoiado;
-        var a = await this.cargarTesting(codigoProducto);
-        texto = texto + productosPorNicotina[indiceProducto].nicotina + 'MG:\n' + a;
+        var a = await this.cargarExistenciaTesting(codigoProducto);
+        textoExistencia['stock'][productosPorNicotina[indiceProducto].nicotina+'MG'] = a;
       }
       this.stockLoader = false;
-      this.stockContent = texto;
+      this.stockContent = textoExistencia;
     },
 
-    cargarExistencia(codigoProducto){
+    async cargarExistencia(codigoProducto, nombreProducto){
       this.stockLoader = true;
       let me = this;
       axios.get('https://backend.kingvape.cr/api/ProductosWebs/'+codigoProducto).then(function(response){
-        var textoExistencia = '';
+        var textoExistencia = {'tipo': 'unitario', 'nombre': nombreProducto, 'stock': {}};
         for (var indice in response.data){
-          if (textoExistencia == ''){
-            textoExistencia = response.data[indice].localidad + ': ' + response.data[indice].cantidadInvActual;
-          } else {
-            textoExistencia = textoExistencia + '\n' + response.data[indice].localidad + ': ' + response.data[indice].cantidadInvActual;
-          }
+          textoExistencia['stock'][response.data[indice].localidad] = response.data[indice].cantidadInvActual;
         }
         me.stockLoader = false;
         me.stockContent = textoExistencia;
