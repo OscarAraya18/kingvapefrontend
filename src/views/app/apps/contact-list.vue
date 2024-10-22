@@ -815,7 +815,7 @@
     <br><br><br>
 
     <div style="display: flex;">
-      <div style="width: 40%; margin-right: 5%;">
+      <div style="width: 30%; margin-right: 5%;">
         <h4><strong>Filtro por fecha inicial:</strong></h4>
         <b-form-datepicker v-model="initialDateFiltered"></b-form-datepicker>
         <br>
@@ -823,10 +823,11 @@
         <b-form-datepicker v-model="endDateFiltered"></b-form-datepicker>
       </div>
 
-      <div style="width: 55%; display: flex;">
+      <div style="width: 45%; display: flex;">
         <apexchart v-if="opcionesGraficoTotal != null && datosGraficoTotal.length != 0" type="pie" width="400" :options="opcionesGraficoTotal" :series="datosGraficoTotal"></apexchart>
         <apexchart v-if="opcionesGraficoVenta != null && datosGraficoVenta.length != 0" type="pie" width="400" :options="opcionesGraficoVenta" :series="datosGraficoVenta"></apexchart>
-       </div>
+
+      </div>
     </div>
     
     <br><br>
@@ -1021,7 +1022,15 @@ export default {
         this.selectClientReport();
 
       }
-    }
+    },
+
+    selectedMessageType(){
+      if (this.selectedMessageType == 'Seguimiento de producto'){
+        if (this.sendingContact.lastDate == null){
+          this.sendingMessage = `Hola ${this.sendingContact.contactName.split(' ')[0]}, como estás? Te escribe ${localStorage.getItem('agentName').split(' ')[0]} de King Vape. Nada más quería comentarte que tenemos un nuevo Call Center habilitado y hemos mejorado nuestros envíos muchisimo! Nuestros envíos se realizan lo más rápido posible y sin costo alguno! Quedo a la órden por si gustas realizar algún pedido 🫡`
+        }
+      }
+    },
   },
 
   mounted(){
@@ -1292,6 +1301,10 @@ export default {
 
     selectClientReport(){
       this.loaderReport = true;
+      this.datosGraficoTotal = [];
+      this.datosGraficoVenta = [];
+      this.opcionesGraficoTotal = {};
+      this.opcionesGraficoVenta = {};
       axios.post(constants.routes.backendAPI+'/selectClientReport', {startDate: this.initialDateFiltered, endDate: this.endDateFiltered})
       .then((response) => {
         if (response.data.success){
@@ -1623,6 +1636,7 @@ export default {
     openSendContactMessageModal(contact){
       this.sendingMessage = localStorage.getItem('agentStartMessage');
       this.sendingContact = contact;
+      this.selectedMessageType = null;
     },
 
 
