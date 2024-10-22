@@ -517,7 +517,7 @@
         <div class="p-2">
             <b-form-select v-model="selectedMessageType" :options="messageTypes"></b-form-select>
             <br><br>
-            <b-form-textarea class="form-control" label="note" v-model="sendingMessage" rows="3">
+            <b-form-textarea class="form-control" label="note" v-model="sendingMessage" rows="8">
             </b-form-textarea>
             
         </div>
