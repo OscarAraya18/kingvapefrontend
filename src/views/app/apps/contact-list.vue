@@ -1640,39 +1640,47 @@ export default {
     },
 
     sendWhatsappTextMessage(){
-      const whatsappConversationRecipientPhoneNumber = this.sendingContact.contactPhoneNumber;
-      const whatsappConversationRecipientProfileName = this.sendingContact.contactName;
+      if (this.selectedMessageType){
+        const whatsappConversationRecipientPhoneNumber = this.sendingContact.contactPhoneNumber;
+        const whatsappConversationRecipientProfileName = this.sendingContact.contactName;
 
-      axios.post(constants.routes.backendAPI+'/sendWhatsappTextMessageFromContactList',
-      {
-        whatsappConversationRecipientPhoneNumber: whatsappConversationRecipientPhoneNumber,
-        whatsappConversationRecipientProfileName: whatsappConversationRecipientProfileName,
-        whatsappTextMessageBody: this.sendingMessage,
-        whatsappConversationAssignedAgentID: parseInt(localStorage.getItem('agentID')),
-        messageType: this.selectedMessageType
-      })
-      .then((response) =>{ 
-        if (response.data.success){
-          this.$bvToast.toast("Se ha enviado exitosamente el mensaje al contacto con el número '" + whatsappConversationRecipientPhoneNumber + "'.", {
-            title: "Mensaje enviado",
-            variant: "success",
-            solid: true
-          });
-        } else {
-          this.$bvToast.toast("Ha ocurrido un error inesperado al enviar el mensaje. Esto puede deberse a que el contact ya tiene una conversación activa con un agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+        axios.post(constants.routes.backendAPI+'/sendWhatsappTextMessageFromContactList',
+        {
+          whatsappConversationRecipientPhoneNumber: whatsappConversationRecipientPhoneNumber,
+          whatsappConversationRecipientProfileName: whatsappConversationRecipientProfileName,
+          whatsappTextMessageBody: this.sendingMessage,
+          whatsappConversationAssignedAgentID: parseInt(localStorage.getItem('agentID')),
+          messageType: this.selectedMessageType
+        })
+        .then((response) =>{ 
+          if (response.data.success){
+            this.$bvToast.toast("Se ha enviado exitosamente el mensaje al contacto con el número '" + whatsappConversationRecipientPhoneNumber + "'.", {
+              title: "Mensaje enviado",
+              variant: "success",
+              solid: true
+            });
+          } else {
+            this.$bvToast.toast("Ha ocurrido un error inesperado al enviar el mensaje. Esto puede deberse a que el contact ya tiene una conversación activa con un agente. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+              title: "Error al enviar el mensaje",
+              variant: "danger",
+              solid: true
+            });
+          }
+        })
+        .catch(() =>{
+          this.$bvToast.toast("Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
             title: "Error al enviar el mensaje",
             variant: "danger",
             solid: true
           });
-        }
-      })
-      .catch(() =>{
-        this.$bvToast.toast("Ha ocurrido un error inesperado al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-          title: "Error al enviar el mensaje",
-          variant: "danger",
+        })
+      } else {
+        this.$bvToast.toast("Debe colocar un motivo al enviar el mensaje. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+          title: "Información faltante",
+          variant: "warning",
           solid: true
         });
-      })
+      }
     },
 
     createContact(){
