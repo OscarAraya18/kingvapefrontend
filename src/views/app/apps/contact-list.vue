@@ -1087,8 +1087,8 @@ export default {
       router.push("/app/sessions/signIn");
     }
 
-    this.initialDateFiltered = new Date();
-    this.endDateFiltered = new Date();
+    this.initialDateFiltered = null;
+    this.endDateFiltered = null;
 
     this.getContactAmount();
     this.selectClientFollowupReport();
@@ -1537,7 +1537,7 @@ export default {
               'contactLocations': JSON.parse(contact.l),
               'contactHasIDImage': contact.ip,
               'lastDate': contact.ld,
-              'totalInvoiceAmount': contact.totalInvoiceAmount
+              'totalInvoiceAmount': contact.totalInvoiceAmountz
             }));
             this.loaderContact = false;
             this.contactPhoneNumber = '';
