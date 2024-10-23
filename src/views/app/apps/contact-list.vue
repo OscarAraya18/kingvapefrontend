@@ -829,8 +829,8 @@
       </div>
 
       <div style="width: 45%; display: flex;">
-        <apexchart v-if="opcionesGraficoTotal != null && datosGraficoTotal.length != 0" type="pie" width="400" :options="opcionesGraficoTotal" :series="datosGraficoTotal"></apexchart>
-        <apexchart v-if="opcionesGraficoVenta != null && datosGraficoVenta.length != 0" type="pie" width="300" :options="opcionesGraficoVenta" :series="datosGraficoVenta"></apexchart>
+        <apexchart v-if="opcionesGraficoTotal != null && datosGraficoTotal.length != 0" type="pie" width="300" :options="opcionesGraficoTotal" :series="datosGraficoTotal"></apexchart>
+        <apexchart v-if="opcionesGraficoVenta != null && datosGraficoVenta.length != 0" type="pie" width="400" :options="opcionesGraficoVenta" :series="datosGraficoVenta"></apexchart>
         <apexchart v-if="opcionesGraficoContacto != null && datosGraficoContacto.length != 0" type="pie" width="400" :options="opcionesGraficoContacto" :series="datosGraficoContacto"></apexchart>
 
       </div>
@@ -1030,7 +1030,8 @@ export default {
       editingName: '',
       editingEmail: '',
 
-      clientFollowupReport: null
+      clientFollowupReport: null,
+      queryInterval: null
     };
 
     
@@ -1092,7 +1093,17 @@ export default {
 
     this.getContactAmount();
     this.selectClientFollowupReport();
-    this.selectClientReport();
+    this.selectClientReport(true);
+
+
+    this.queryInterval = setInterval(() => {
+      if (this.agentType == 'admin'){
+        this.selectClientFollowupReport();
+        this.selectClientReport(false);
+      }
+    }, 6000);
+
+
     this.selectAgentNames();
     this.sendingMessage = localStorage.getItem('agentStartMessage');
     this.agentType = localStorage.getItem('agentType');
@@ -1135,6 +1146,10 @@ export default {
       },
     ];
 
+  },
+
+  beforeDestroy(){
+    clearInterval(this.queryInterval);
   },
 
   methods: {
@@ -1364,14 +1379,14 @@ export default {
       return colors;
     },
 
-    selectClientReport(){
-      this.loaderReport = true;
-      this.datosGraficoTotal = [];
-      this.datosGraficoVenta = [];
-      this.datosGraficoContacto = [];
-      this.opcionesGraficoTotal = {};
-      this.opcionesGraficoVenta = {};
-      this.opcionesGraficoContacto = {};
+    selectClientReport(loader){
+      
+      if (loader){
+        this.loaderReport = true;
+
+      }
+
+      
       axios.post(constants.routes.backendAPI+'/selectClientReport', {startDate: this.initialDateFiltered, endDate: this.endDateFiltered})
       .then((response) => {
         if (response.data.success){
@@ -1391,7 +1406,7 @@ export default {
 
           this.opcionesGraficoContacto = 
           {
-            chart: {width: 450, type: 'pie', fontSize: 20}, 
+            chart: {width: 400, type: 'pie', fontSize: 20}, 
             tooltip: {enabled: true}, 
             labels: labels,
             legend: {fontSize: '15px'},
@@ -1402,7 +1417,7 @@ export default {
 
           this.opcionesGraficoTotal = 
           {
-            chart: {width: 450, type: 'pie', fontSize: 20}, 
+            chart: {width: 400, type: 'pie', fontSize: 20}, 
             tooltip: {enabled: true}, 
             labels: ['Vendido', 'No vendido'],
             legend: {fontSize: '15px'},
