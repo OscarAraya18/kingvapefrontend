@@ -128,8 +128,6 @@
 
     <b-card v-else style="background-color: #e8e8e8; max-height: 750px; overflow-y: auto;">
 
-      {{  }}
-
       <vue-good-table
         :columns="contactColumns"
         :line-numbers="false"
@@ -206,7 +204,7 @@
           <span v-else-if="props.column.field == 'contactActions'">
               <i  @click="selectClientIDSImage(props.row.contactPhoneNumber)" class="i-ID-Card text-25 text-black"  style="cursor: pointer; margin-right: 10px;"></i>
               <i class="i-Clock text-25 text-info" @click="getHistoryConversations(props.row.contactPhoneNumber)" v-b-modal.historyConversationsModal style="cursor: pointer; margin-right: 10px;"></i>
-              <i class="i-Notepad text-25 text-warning" @click="openSendContactMessageModal(props.row)" v-b-modal.sendContactMessageModal style="cursor: pointer; margin-right: 7px;"></i>
+              <i class="i-Notepad text-25 text-warning" @click="openSendContactMessageModal(props.row)" style="cursor: pointer; margin-right: 7px;"></i>
               <i class="i-Eraser-2 text-25 text-success mr-2" @click="openEdit(props.row.contactPhoneNumber)" v-b-modal.modalEditar style="cursor: pointer"></i>
           </span>
 
@@ -514,13 +512,12 @@
         </div>
       </b-modal>
 
-      <b-modal id="sendContactMessageModal" title="Enviar mensaje al contacto" @ok="sendWhatsappTextMessage()" centered>
+      <b-modal id="sendContactMessageModal" title="Enviar mensaje al contacto" @ok="sendWhatsappTextMessage()" @hidden="closeContactModal()" centered>
         <div class="p-2">
             <b-form-select v-model="selectedMessageType" :options="messageTypes"></b-form-select>
             <br><br>
-            <b-form-textarea class="form-control" label="note" v-model="sendingMessage" rows="8">
+            <b-form-textarea class="form-control" label="note" v-model="sendingMessage" rows="3">
             </b-form-textarea>
-            
         </div>
       </b-modal>
 
@@ -1052,7 +1049,7 @@ export default {
 
       }
     },
-
+    
     selectedMessageType(){
       if (this.selectedMessageType == 'Seguimiento de producto'){
         if (this.sendingContact.lastDate == null){
@@ -1083,6 +1080,8 @@ export default {
     this.escazuMapOptions = constants.routes.escazuMapOptions;
     this.redMap = constants.routes.redMap;
     this.redMapOptions = constants.routes.redMapOptions;
+    this.agentType = localStorage.getItem('agentType');
+
     
     if (localStorage.getItem('agentID') == null){
       router.push("/app/sessions/signIn");
@@ -1091,22 +1090,18 @@ export default {
     this.initialDateFiltered = null;
     this.endDateFiltered = null;
 
-    this.getContactAmount();
-    this.selectClientFollowupReport();
-    this.selectClientReport(true);
-
-
-    this.queryInterval = setInterval(() => {
-      if (this.agentType == 'admin'){
+    if (this.agentType == 'admin'){
+      this.getContactAmount();
+      this.selectClientFollowupReport();
+      this.selectClientReport(true);
+      this.queryInterval = setInterval(() => {
         this.selectClientFollowupReport();
         this.selectClientReport(false);
-      }
-    }, 6000);
-
+      }, 6000);
+    }
 
     this.selectAgentNames();
     this.sendingMessage = localStorage.getItem('agentStartMessage');
-    this.agentType = localStorage.getItem('agentType');
 
     this.getContacts();
   
@@ -1153,6 +1148,9 @@ export default {
   },
 
   methods: {
+    closeContactModal(){
+      this.displayedContactRows = this.originalContactRows;
+    },
     openEdit(contactPhoneNumber){
       const contact = this.displayedContactRows.find(contactRow => contactRow.contactPhoneNumber == contactPhoneNumber);
       this.originalEditingPhoneNumber = contact.contactPhoneNumber;
@@ -1740,6 +1738,8 @@ export default {
       this.sendingMessage = localStorage.getItem('agentStartMessage');
       this.sendingContact = contact;
       this.selectedMessageType = null;
+      this.displayedContactRows = [contact];
+      this.$root.$emit('bv::show::modal', 'sendContactMessageModal');
     },
 
 
