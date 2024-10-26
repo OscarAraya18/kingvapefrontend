@@ -406,7 +406,7 @@
 
 
 
-    <b-modal id="mensajeroModal" size="lg" centered hide-footer title="Información del pedido">
+    <b-modal id="mensajeroModal" size="lg" centered hide-footer hide-header>
       <div style="display: flex">
         <div v-if="updatedWhatsappInvoice">
           <h4><strong>ID:</strong> {{ updatedWhatsappInvoice.whatsappInvoiceID }}</h4>
@@ -416,6 +416,8 @@
         <div class="flex-grow-1" ></div>
 
         <div>
+          <i class="i-Close" style="font-size: 35px; margin-left: 30px;"></i>
+          <br><br>
           <button @click="openInsertClientIDSImage(updatedWhatsappInvoice.whatsappInvoiceClientPhoneNumber)" class="btn btn-icon btn-rounded btn-info ml-2" style="height: 40px;" type="button"><i class="i-ID-Card"></i></button>
         </div>
       </div>
