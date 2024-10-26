@@ -416,7 +416,7 @@
         <div class="flex-grow-1" ></div>
 
         <div>
-          <i class="i-Close" style="font-size: 35px; margin-left: 30px;"></i>
+          <i class="i-Close" @click="cerrarMensajeroModal()" style="font-size: 35px; margin-left: 30px;"></i>
           <br><br>
           <button @click="openInsertClientIDSImage(updatedWhatsappInvoice.whatsappInvoiceClientPhoneNumber)" class="btn btn-icon btn-rounded btn-info ml-2" style="height: 40px;" type="button"><i class="i-ID-Card"></i></button>
         </div>
@@ -1556,6 +1556,9 @@ export default {
   },
   
   methods: {
+    cerrarMensajeroModal(){
+      this.$root.$emit('bv::hide::modal', 'mensajeroModal');
+    },
 
     insertClientIDS(){
       this.insertIDModalLoader = true;
