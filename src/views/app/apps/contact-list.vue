@@ -1542,6 +1542,7 @@ export default {
       .then((response) =>{
         if (response.data.success){
           if (response.data.result.length != 0){
+            console.log(response.data.result);
             this.displayedContactRows = response.data.result.map(contact => ({
               'contactID': contact.i,
               'contactName': contact.n,
@@ -1550,7 +1551,7 @@ export default {
               'contactLocations': JSON.parse(contact.l),
               'contactHasIDImage': contact.ip,
               'lastDate': contact.ld,
-              'totalInvoiceAmount': contact.totalInvoiceAmountz
+              'totalInvoiceAmount': contact.totalInvoiceAmount
             }));
             this.loaderContact = false;
             this.contactPhoneNumber = '';
