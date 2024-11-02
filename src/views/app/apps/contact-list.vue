@@ -3,6 +3,7 @@
   <div class="main-content">
 
 
+
     <b-row v-if="agentType == 'admin'">
 
       <b-col lg="6" md="6" sm="12">
@@ -126,7 +127,7 @@
       <span class="spinner-glow spinner-glow-primary"></span>
     </div>
 
-    <b-card v-else style="background-color: #e8e8e8; max-height: 750px; overflow-y: auto;">
+    <b-card ref="contactContainer" v-else style="background-color: #e8e8e8; max-height: 750px; overflow-y: auto;">
 
       <vue-good-table
         :columns="contactColumns"
@@ -1028,7 +1029,9 @@ export default {
       editingEmail: '',
 
       clientFollowupReport: null,
-      queryInterval: null
+      queryInterval: null,
+
+      currentHeight: 0
     };
 
     
@@ -1070,6 +1073,11 @@ export default {
   },
 
   mounted(){
+
+      
+    
+
+
     this.cartagoMap = constants.routes.cartagoMap;
     this.cartagoMapOptions = constants.routes.cartagoMapOptions;
     this.herediaMap = constants.routes.herediaMap;
@@ -1150,6 +1158,14 @@ export default {
   methods: {
     closeContactModal(){
       this.displayedContactRows = this.originalContactRows;
+
+      let scrollInterval = setInterval(() => {
+        if (this.$refs.contactContainer) {
+          const scrollableDiv = this.$refs.contactContainer;
+          scrollableDiv.scrollTop = this.currentHeight;
+          clearInterval(scrollInterval);
+        }
+      }, 1);
     },
     openEdit(contactPhoneNumber){
       const contact = this.displayedContactRows.find(contactRow => contactRow.contactPhoneNumber == contactPhoneNumber);
@@ -1354,7 +1370,6 @@ export default {
         const amount = this.clientReport.filter(invoice => (invoice['agentName'] == labels[labelIndex] && invoice['whatsappConversationCloseComment'] == 'Venta')).length;
         datos.push(amount);
       }
-      console.log(datos)
       return datos;
     },
 
@@ -1364,7 +1379,6 @@ export default {
         const amount = this.clientReport.filter(invoice => (invoice['agentName'] == labels[labelIndex])).length;
         datos.push(amount);
       }
-      console.log(datos)
       return datos;
     },
 
@@ -1542,7 +1556,6 @@ export default {
       .then((response) =>{
         if (response.data.success){
           if (response.data.result.length != 0){
-            console.log(response.data.result);
             this.displayedContactRows = response.data.result.map(contact => ({
               'contactID': contact.i,
               'contactName': contact.n,
@@ -1736,11 +1749,26 @@ export default {
 
 
     openSendContactMessageModal(contact){
-      this.sendingMessage = localStorage.getItem('agentStartMessage');
-      this.sendingContact = contact;
-      this.selectedMessageType = null;
-      this.displayedContactRows = [contact];
-      this.$root.$emit('bv::show::modal', 'sendContactMessageModal');
+      
+
+
+       let scrollInterval = setInterval(() => {
+        if (this.$refs.contactContainer) {
+          const scrollableDiv = this.$refs.contactContainer;
+          this.currentHeight = scrollableDiv.scrollTop;
+          
+          this.sendingMessage = localStorage.getItem('agentStartMessage');
+          this.sendingContact = contact;
+          this.selectedMessageType = null;
+          this.displayedContactRows = [contact];
+          this.$root.$emit('bv::show::modal', 'sendContactMessageModal');
+
+          clearInterval(scrollInterval);
+        }
+      }, 1);
+
+      
+      
     },
 
 
@@ -1767,6 +1795,16 @@ export default {
         }));
         this.loaderContact = false;
         this.displayedContactRows = this.originalContactRows;
+
+        let scrollInterval = setInterval(() => {
+          if (this.$refs.contactContainer) {
+            const scrollableDiv = this.$refs.contactContainer;
+            scrollableDiv.scrollTop = 0;
+            clearInterval(scrollInterval);
+          }
+        }, 1);
+
+
       })
       .catch(() =>{
         this.$bvToast.toast("Ha ocurrido un error inesperado al consultar la lista de clientes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
