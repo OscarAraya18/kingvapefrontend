@@ -4,14 +4,19 @@
     
     <div style="display: flex; justify-content: center; align-items: center;">
       <b-card style="width: 30%; margin-right: 30px;">
-        <div style="display: flex;">
-          <b-card-text style="font-size: xx-large;">
-            Conversaciones totales:
-          </b-card-text>
-          <div class="flex-grow-1"></div>
-          <b-card-text style="font-size: xx-large; color: rgb(52, 52, 142);">
-            {{conversacionesTotales}}
-          </b-card-text>
+        <div v-if="clientFollowupReport" style="display: flex; justify-content: center; align-items: center;">
+          <div style="display: flex; width: 33%; justify-content: center; align-items: center;">
+            <i class="i-Check text-40 text-success"></i>
+            <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate != null).filter(client => isMoreThan30Days(client.lastDate) == false).length }}</p>
+          </div>
+          <div style="display: flex; width: 33%; justify-content: center; align-items: center;">
+            <i class="i-Loading-2 text-40 text-danger"></i>
+            <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate != null).filter(client => isMoreThan30Days(client.lastDate) == true).length }}</p>
+          </div>
+          <div style="display: flex; width: 33%; justify-content: center; align-items: center;">
+            <i class="i-Close text-40 text-gray"></i>
+            <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate == null).length }}</p>
+          </div>
         </div>
       </b-card>
 
@@ -173,7 +178,8 @@ export default {
       vendedoraDelDia: '',
       monthSell: '',
 
-      feedbackInformation: null
+      feedbackInformation: null,
+      clientFollowupReport: null
       
       
 
@@ -235,6 +241,20 @@ export default {
       });
       const sortedNames = sortedAgents.map(agent => agent.agentName);
       return sortedNames;
+    },
+
+    selectClientFollowupReport(){
+      axios.post(constants.routes.backendAPI+'/selectClientFollowupReport')
+      .then((response) => {
+        if (response.data.success){
+          this.clientFollowupReport = response.data.result;
+        } else {
+          this.showNotification('danger', 'Error al consultar la cantidad de contactos del reporte', 'Ha ocurrido un error inesperado al consultar la cantidad de contactos del reporte. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch((error) => {
+        this.showNotification('danger', 'Error al consultar la cantidad de contactos del reporte', 'Ha ocurrido un error inesperado al consultar la cantidad de contactos del reporte. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
     },
 
 
@@ -305,7 +325,23 @@ export default {
       });
 
 
-    }
+    },
+
+    isMoreThan30Days(lastDate) {
+      if (!lastDate) return false; // Si no hay una fecha, no se muestra el icono
+      
+      const currentDate = new Date(); // Fecha actual
+      const parsedLastDate = new Date(lastDate); // Convertir lastDate a objeto Date
+
+      // Calcular la diferencia en milisegundos
+      const diffInMs = currentDate - parsedLastDate;
+
+      // Convertir la diferencia a días
+      const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+      // Comprobar si han pasado 30 días o más
+      return diffInDays >= 30;
+    },
     
   },
 
@@ -320,9 +356,11 @@ export default {
 
 
     this.getInformation();
+    this.selectClientFollowupReport();
 
     setInterval(() => {
       this.getInformation();
+      this.selectClientFollowupReport();
     }, 30000);
 
     try {
@@ -331,6 +369,7 @@ export default {
         const websocketMessageID = websocketMessageJSON.websocketMessageID;
         if (websocketMessageID == '/updateRanking'){
           this.getInformation();
+          this.selectClientFollowupReport();
         }
       }
     } catch {
