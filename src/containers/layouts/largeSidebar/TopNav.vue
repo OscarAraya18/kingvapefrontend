@@ -351,6 +351,12 @@ export default {
   },
 
   mounted() {
+
+    if (localStorage.getItem('localityAgentID') == null && localStorage.getItem('localityID') == null && localStorage.getItem('agentID') == null){
+      router.push("/app/sessions/signIn");
+    }
+
+
     this.cartagoMap = constants.routes.cartagoMap;
     this.herediaMap = constants.routes.herediaMap;
     this.zapoteMap = constants.routes.zapoteMap;
