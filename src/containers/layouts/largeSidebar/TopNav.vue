@@ -352,7 +352,7 @@ export default {
 
   mounted() {
 
-    if (localStorage.getItem('localityAgentID') == null && localStorage.getItem('localityID') == null && localStorage.getItem('agentID') == null){
+    if (localStorage.getItem('localityAgentID') == null && localStorage.getItem('localityID') == null && localStorage.getItem('agentID') == null && localStorage.getItem('ranking') != 'yes'){
       router.push("/app/sessions/signIn");
     }
 
