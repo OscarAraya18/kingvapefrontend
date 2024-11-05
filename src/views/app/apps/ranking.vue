@@ -192,8 +192,6 @@ export default {
       const colorByAgent = 
       {
         'Sharon Espinoza': '#fae187',
-        'Mariana Mesen': '#daff8f',
-        'Daniela Murillo': '#fcac60',
         'Sergio Barrot': '#424880',
         'Jose Estrada': '#255c34',
         'Franco Chacon': '#8a8a8a',
@@ -201,9 +199,8 @@ export default {
         'Emma Garcia': '#b5e3eb',
         'Diana Jimenez': '#ffa8b8',
         'Clara Salablanca': '#b338ff',
-        'Kathy Gonzalez': '#b0a1ff',
         'Rafat J.': '#000000',
-        'Madheline Sierra': '#ffbe3d'
+        'Madheline Sierra': '#a0d995'
       };
       for (var agentIndex in agentNames){
         const agentName = agentNames[agentIndex];
