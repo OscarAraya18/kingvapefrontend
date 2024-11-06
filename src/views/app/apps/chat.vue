@@ -216,7 +216,7 @@
                   </div>
                   <div v-else style="min-height: 15px; min-width: 15px; background-color: rgb(0, 177, 0); border-radius: 100px;"></div>
                   
-                  <b-tooltip placement="top" :target="'hint'+activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber" v-if="hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]">{{hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]}}</b-tooltip>
+                  <b-tooltip placement="bottom" :target="'hint'+activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber" v-if="hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]">{{hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]}}</b-tooltip>
                 
                 </div>
 
