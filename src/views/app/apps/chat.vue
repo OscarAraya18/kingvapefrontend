@@ -195,6 +195,7 @@
                     <br><br>
                     {{ parseHour(activeConversationsAsJSON[activeConversationID].whatsappConversationMessages[activeConversationsAsJSON[activeConversationID].whatsappConversationMessages.length-1].whatsappGeneralMessageCreationDateTime) }}
                   </h6>
+
                   <div class="flex-grow-1"></div>
 
                   <div style="position: relative; left: -6px; top: -12px;">  
@@ -215,7 +216,7 @@
                   </div>
                   <div v-else style="min-height: 15px; min-width: 15px; background-color: rgb(0, 177, 0); border-radius: 100px;"></div>
                   
-                  <b-tooltip placement="right" :target="'hint'+activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber" v-if="hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]">{{hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]}}</b-tooltip>
+                  <b-tooltip placement="top" :target="'hint'+activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber" v-if="hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]">{{hints[activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber]}}</b-tooltip>
                 
                 </div>
 

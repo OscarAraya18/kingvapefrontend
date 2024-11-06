@@ -72,7 +72,7 @@
           
 
           <li
-            v-if="(agentName != 'Mile Cruz') && (localityName != 'King Vape Metro Plaza')"
+            v-if="(agentName != 'Mile Cruz') && (localityName != 'King Vape Metro Plaza') && (localityName != 'King Vape San Rafael')"
             @mouseenter="toggleSubMenu"
             class="nav-item"
             data-item="centralInvoice"
