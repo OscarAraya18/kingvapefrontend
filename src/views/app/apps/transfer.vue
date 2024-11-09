@@ -238,7 +238,9 @@ export default {
           storeMessageStoreName = 'Heredia';
         } else if (localStorage.getItem('localityName') == 'King Vape Metro Plaza'){
           storeMessageStoreName = 'Metro Plaza';
-        } 
+        } else if (localStorage.getItem('localityName') == 'King Vape San Rafael'){
+          storeMessageStoreName = 'San Rafael';
+        }
       }
       
       axios.post(this.backendURL+'/selectStoreMessageByStoreMessageStoreName', {
@@ -290,6 +292,8 @@ export default {
             storeMessageStoreName = 'Heredia';
           } else if (localStorage.getItem('localityName') == 'King Vape Metro Plaza'){
             storeMessageStoreName = 'Metro Plaza';
+          } else if (localStorage.getItem('localityName') == 'King Vape San Rafael'){
+            storeMessageStoreName = 'San Rafael';
           } else {
             storeMessageStoreName = this.transferLocality;
           }

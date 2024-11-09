@@ -232,6 +232,7 @@
                 <b-dropdown-item style="background-color: #db67a3" href="#" v-b-modal.escazuConversationsModal>Escazú ({{escazuConversations.length}})</b-dropdown-item>
                 <b-dropdown-item style="background-color: #a78dcc" href="#" v-b-modal.herediaConversationsModal>Heredia ({{herediaConversations.length}})</b-dropdown-item>
                 <b-dropdown-item style="background-color: #6473d1" href="#" v-b-modal.metroPlazaConversationsModal>Metro Plaza ({{metroPlazaConversations.length}})</b-dropdown-item>
+                <b-dropdown-item style="background-color: #6473d1" href="#" v-b-modal.sanRafaelConversationsModal>Metro Plaza ({{sanRafaelConversations.length}})</b-dropdown-item>
 
                 <b-dropdown-item style="background-color: #8fd2ff" href="#" v-b-modal.planetVapeConversationsModal>Planet Vape ({{planetVapeConversations.length}})</b-dropdown-item>
 
@@ -334,6 +335,25 @@
                   <div style="margin-left: 3px;" v-else>❌</div>
                 </div>
                 <strong>Fecha:</strong> {{parseHour(metroPlazaConversation.storeMessageStartDateTime)}}
+              </b-list-group-item>
+            </b-list-group>
+            <div v-else style="text-align: center;">
+              <br><span class="spinner-glow spinner-glow-primary"></span>
+            </div>
+          </b-modal>
+          <b-modal scrollable size="m" centered hide-footer id="sanRafaelConversationsModal" title="Conversaciones pendientes de San Rafael">
+            <b-list-group v-if="loaders.grabConversation == false">
+              <b-list-group-item v-if="sanRafaelConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
+              <b-list-group-item @contextmenu.prevent="openDeleteStoreMessageModal(metroPlazaConversation)" v-for="sanRafaelConversation in sanRafaelConversations" @click="grabStoreConversation(sanRafaelConversation)" button style="cursor: pointer;">
+                <strong>Nombre:</strong> {{sanRafaelConversation.storeMessageRecipientProfileName}}<br>
+                <strong>Número:</strong> {{parsePhone(sanRafaelConversation.storeMessageRecipientPhoneNumber)}}<br>
+                <strong>Pedido:</strong> {{sanRafaelConversation.storeMessageRecipientOrder}}<br>
+                <div style="display: flex;">
+                  <strong>Cédula:</strong>
+                  <div style="margin-left: 3px;" v-if="sanRafaelConversation.storeMessageRecipientID == 'S'">✔️</div>
+                  <div style="margin-left: 3px;" v-else>❌</div>
+                </div>
+                <strong>Fecha:</strong> {{parseHour(sanRafaelConversation.storeMessageStartDateTime)}}
               </b-list-group-item>
             </b-list-group>
             <div v-else style="text-align: center;">
@@ -2251,7 +2271,7 @@ export default {
       cartagoConversations: [],
       herediaConversations: [],
       metroPlazaConversations: [],
-
+      sanRafaelConversations: [],
       planetVapeConversations: [],
 
       localityOptions: [],
@@ -3100,6 +3120,7 @@ export default {
       this.$root.$emit('bv::hide::modal', 'cartagoConversationsModal');
       this.$root.$emit('bv::hide::modal', 'herediaConversationsModal');
       this.$root.$emit('bv::hide::modal', 'metroPlazaConversationsModal');
+      this.$root.$emit('bv::hide::modal', 'sanRafaelConversationsModal');
 
       this.$root.$emit('bv::hide::modal', 'planetVapeConversationsModal');
       this.$root.$emit('bv::show::modal', 'deleteStoreConversationModal');
@@ -4549,7 +4570,7 @@ export default {
         }
         this.recordedAudioFile = null;
       })
-      .catch((error) => {
+      .catch(() => {
         this.showNotification('danger', 'Error al enviar el audio', 'Ha ocurrido un error inesperado al enviar el audio. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
@@ -5255,6 +5276,9 @@ export default {
           } else if (storeMessage.storeMessageStoreName == 'Metro Plaza'){
             referenciaSucursales[storeMessage.storeMessageRecipientPhoneNumber] = 'MP';
             this.metroPlazaConversations = this.metroPlazaConversations.filter(metroPlazaConversation => metroPlazaConversation.storeMessageID != storeMessage.storeMessageID);
+          } else if (storeMessage.storeMessageStoreName == 'San Rafael'){
+            referenciaSucursales[storeMessage.storeMessageRecipientPhoneNumber] = 'SR';
+            this.sanRafaelConversations = this.sanRafaelConversations.filter(sanRafaelConversation => sanRafaelConversation.storeMessageID != storeMessage.storeMessageID);
           } else if (storeMessage.storeMessageStoreName == 'Planet Vape'){
             referenciaSucursales[storeMessage.storeMessageRecipientPhoneNumber] = 'P';
             this.planetVapeConversations = this.planetVapeConversations.filter(planetVapeConversation => planetVapeConversation.storeMessageID != storeMessage.storeMessageID);
@@ -5453,6 +5477,7 @@ export default {
         this.cartagoConversations = [];
         this.herediaConversations = [];
         this.metroPlazaConversations = [];
+        this.sanRafaelConversations = [];
 
         this.planetVapeConversations = [];
         if (response.data.success){
@@ -5479,6 +5504,8 @@ export default {
               this.herediaConversations.push(newStoreMessageInformation);
             } else if (selectAllStoreMessageResult[storeMessageIndex].storeMessageStoreName == 'Metro Plaza'){
               this.metroPlazaConversations.push(newStoreMessageInformation);
+            } else if (selectAllStoreMessageResult[storeMessageIndex].storeMessageStoreName == 'San Rafael'){
+              this.sanRafaelConversations.push(newStoreMessageInformation);
             } else if (selectAllStoreMessageResult[storeMessageIndex].storeMessageStoreName == 'Planet Vape'){
               this.planetVapeConversations.push(newStoreMessageInformation);
             }
@@ -5549,6 +5576,11 @@ export default {
         this.metroPlazaConversations = [];
         newMetroPlazaConversations.push(newWhatsappStoreMessageInformation);
         this.metroPlazaConversations = newMetroPlazaConversations;
+      } else if (websocketMessageContent.storeMessageStoreName == 'San Rafael'){
+        var newSanRafaelConversations = this.sanRafaelConversations;
+        this.sanRafaelConversations = [];
+        newSanRafaelConversations.push(newWhatsappStoreMessageInformation);
+        this.sanRafaelConversations = newSanRafaelConversations;
       } else if (websocketMessageContent.storeMessageStoreName == 'Planet Vape'){
         var newPlanetVapeConversations = this.planetVapeConversations;
         this.planetVapeConversations = [];
@@ -5620,6 +5652,8 @@ export default {
         this.herediaConversations = this.herediaConversations.filter(herediaConversation => herediaConversation.storeMessageID != storeMessageID);
       } else if (storeMessageStoreName == 'Metro Plaza'){
         this.metroPlazaConversations = this.metroPlazaConversations.filter(metroPlazaConversation => metroPlazaConversation.storeMessageID != storeMessageID);
+      } else if (storeMessageStoreName == 'San Rafael'){
+        this.sanRafaelConversations = this.sanRafaelConversations.filter(metroPlazaConversation => metroPlazaConversation.storeMessageID != storeMessageID);
       } else if (storeMessageStoreName == 'Planet Vape'){
         this.planetVapeConversations = this.planetVapeConversations.filter(planetVapeConversation => planetVapeConversation.storeMessageID != storeMessageID);
       }
@@ -5789,7 +5823,7 @@ export default {
 		},
 
     textoSucursalesCalcular: function(){
-      const total = this.escazuConversations.length + this.zapoteConversations.length + this.cartagoConversations.length + this.herediaConversations.length + this.metroPlazaConversations.length + this.planetVapeConversations.length + this.pendingConversations.length;
+      const total = this.escazuConversations.length + this.zapoteConversations.length + this.cartagoConversations.length + this.herediaConversations.length + this.metroPlazaConversations.length + + this.sanRafaelConversations.length + this.planetVapeConversations.length + this.pendingConversations.length;
       return this.textoSucursales + '(' + total + ')'
     }
 
