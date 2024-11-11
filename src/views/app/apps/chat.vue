@@ -231,10 +231,10 @@
                 <b-dropdown-item style="background-color: #55b5ab" href="#" v-b-modal.cartagoConversationsModal>Cartago ({{cartagoConversations.length}})</b-dropdown-item>
                 <b-dropdown-item style="background-color: #db67a3" href="#" v-b-modal.escazuConversationsModal>Escazú ({{escazuConversations.length}})</b-dropdown-item>
                 <b-dropdown-item style="background-color: #a78dcc" href="#" v-b-modal.herediaConversationsModal>Heredia ({{herediaConversations.length}})</b-dropdown-item>
-                <b-dropdown-item style="background-color: #6473d1" href="#" v-b-modal.metroPlazaConversationsModal>Metro Plaza ({{metroPlazaConversations.length}})</b-dropdown-item>
-                <b-dropdown-item style="background-color: #6473d1" href="#" v-b-modal.sanRafaelConversationsModal>Metro Plaza ({{sanRafaelConversations.length}})</b-dropdown-item>
+                <b-dropdown-item style="background-color: #6473d1" href="#" v-b-modal.metroPlazaConversationsModal>Metro Plaza ({{metroPlazaConversations.length}})</b-dropdown-item>kakaka
+                <b-dropdown-item style="background-color: #6473d1" href="#" v-b-modal.sanRafaelConversationsModal>San Rafael ({{sanRafaelConversations.length}})</b-dropdown-item>
 
-                <b-dropdown-item style="background-color: #8fd2ff" href="#" v-b-modal.planetVapeConversationsModal>Planet Vape ({{planetVapeConversations.length}})</b-dropdown-item>
+                <b-dropdown-item style="background-color: #ff933b" href="#" v-b-modal.planetVapeConversationsModal>Planet Vape ({{planetVapeConversations.length}})</b-dropdown-item>
 
                 <b-dropdown-item style="background-color: #dedede" href="#" v-b-modal.pendingConversationsModal>Pendientes ({{pendingConversations.length}})</b-dropdown-item>
               </b-dropdown>
