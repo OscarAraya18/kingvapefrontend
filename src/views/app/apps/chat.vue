@@ -479,7 +479,7 @@
           </b-modal>
 
 
-          <b-modal scrollable title="Promociones del día de la madre" size="m" centered id="promosModal" @ok="sendPromos()">   
+          <b-modal scrollable title="BLACK NOVEMBER" size="m" centered id="promosModal" @ok="sendPromos()">   
             <div v-if="loaderPromos == false">
               <b-list-group style="height: 700px; overflow-y: auto;">
 
@@ -1478,8 +1478,8 @@
                   </b-modal>
 
                   
-                  <button v-if="availableConversation == true" id="sendPromos" class="btn btn-icon btn-rounded mr-2" style="background-color: #faafed; display: none" type="button" @click="openPromosModal()" v-b-modal.promosModal><i class="i-Gift-Box"></i></button>
-                  <b-tooltip target="sendPromos">Promocioness</b-tooltip>
+                  <button v-if="availableConversation == true" id="sendPromos" class="btn btn-icon btn-rounded mr-2" style="background-color: #000000; color: white;" type="button" @click="openPromosModal()" v-b-modal.promosModal>BLACK</button>
+                  <b-tooltip target="sendPromos">BLACK NOVEMBER</b-tooltip>
 
                   <button v-if="availableConversation == true" id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>
                   <b-tooltip target="sendAudio">Audio</b-tooltip>
@@ -1572,6 +1572,7 @@
                       <img :src="liquids1[Math.floor(Math.random() * liquids1.length)].whatsappFavoriteImageDriveURL" style="width: 70px; height: auto;"/>
                     </div>
                   </b-tooltip>
+
 
                   <b-modal @ok="sendWhatsappFavoriteImageMessageLiquid()" scrollable title="Catálogo de líquidos" size="m" centered id="liquidsModal">
                     <b-nav tabs justified>
