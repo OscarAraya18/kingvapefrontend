@@ -4626,8 +4626,8 @@ export default {
         var latitud = 9.99168;
         var longitud = -84.135;
       } else if (locationName == 'Metro Plaza'){
-        var latitud = 9.94173;
-        var longitud = -84.1544995;
+        var latitud = 9.942106;
+        var longitud = -84.152116;
       } else if (locationName == 'San Rafael'){
         var latitud = 9.926916;
         var longitud = -84.134624;
