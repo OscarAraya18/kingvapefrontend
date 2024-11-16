@@ -10,6 +10,8 @@
         <br>
         <span class="spinner-glow spinner-glow-primary"></span>
       </div>
+
+      
       
       <div v-else style="display: flex;">
         <div>
@@ -39,6 +41,31 @@
         </div>
       </div>
     </b-modal>
+
+    <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación sin venta" @ok="closeWhatsappConversation()">
+        <b-form-select v-model="selectedCloseLocality" :options="closeLocalityOptions"></b-form-select>
+        <br><br><br>
+        
+        <b-dropdown variant="primary" text="Motivos frecuentes" style="width: 100%">
+          <b-dropdown-item @click="addCloseConversationReason('Vuelve a escribir')">Vuelve a escribir</b-dropdown-item>
+          <b-dropdown-item @click="addCloseConversationReason('Venta perdida')">Venta perdida</b-dropdown-item>
+          <b-dropdown-item @click="addCloseConversationReason('Venta para otro día')">Venta para otro día</b-dropdown-item>
+          <b-dropdown-item @click="addCloseConversationReason('Consulta sobre productos')">Consulta sobre productos</b-dropdown-item>
+          <b-dropdown-item @click="addCloseConversationReason('No contestó')">No contestó</b-dropdown-item>
+          <b-dropdown-item @click="addCloseConversationReason('Pasa a tienda')">Pasa a tienda</b-dropdown-item>
+          <b-dropdown-item @click="addCloseConversationReason('Consulta de horario/ubicación')">Consulta de horario/ubicación</b-dropdown-item>
+          <b-dropdown-item @click="addCloseConversationReason('Reclamo o garantía')">Reclamo o garantía</b-dropdown-item>
+          <b-dropdown-item @click="addCloseConversationReason('Menor de edad')">Menor de edad</b-dropdown-item>
+          <b-dropdown-item @click="addCloseConversationReason('Seguimiento de producto')">Seguimiento de producto</b-dropdown-item>
+          <b-dropdown-item @click="addCloseConversationReason('Error')">Error</b-dropdown-item>
+        </b-dropdown><br><br>
+        <b-form-textarea no-resize rows="5" disabled="true" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
+        <br>
+        <b-form-textarea v-if="closeConversationReason == 'Reclamo o garantía'" no-resize rows="3" class="form-control" placeholder="Productos relacionados al reclamo" v-model="wrongProducts"/>   
+
+        <br>
+        <b-form-checkbox id="checkbox-1" v-model="sendEndMessage">Enviar mensaje de despedida</b-form-checkbox>
+      </b-modal>
 
 
     <b-modal id="selectIDTypeModal" :size="m" hide-footer hide-header centered>
@@ -182,7 +209,8 @@
                   <br><br><br><span class="spinner-glow spinner-glow-primary"></span>
                 </div>
                 
-                <div v-else v-for="activeConversationID in sortedConversationsID" @click="changeCurrentActiveConversation(activeConversationsAsJSON[activeConversationID], activeConversationID)" :style="getConversationStyle(activeConversationID)" class="p-3 d-flex border-bottom align-items-center hoverTest" :id="'hint'+activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber">
+                <div @contextmenu.prevent="quickClose(activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber)" v-else v-for="activeConversationID in sortedConversationsID" @click="changeCurrentActiveConversation(activeConversationsAsJSON[activeConversationID], activeConversationID)" :style="getConversationStyle(activeConversationID)" class="p-3 d-flex border-bottom align-items-center hoverTest" :id="'hint'+activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber">
+                  
                   <h3 style="margin-right: 15px;">
                     <strong>
                       {{getReferenciaSucursal(activeConversationsAsJSON[activeConversationID].whatsappConversationRecipientPhoneNumber)}}
@@ -1121,31 +1149,8 @@
                 </div>
 
                 <div class="d-flex" v-if="agentType == 'agent'"> 
-                  <button class="btn btn-primary mr-2" type="button" @click="openEndConversationModal()" v-b-modal.endConversationModal>Finalizar</button>
-                  <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación sin venta" @ok="closeWhatsappConversation()">
-                    <b-form-select v-model="selectedCloseLocality" :options="closeLocalityOptions"></b-form-select>
-                    <br><br><br>
-                    
-                    <b-dropdown variant="primary" text="Motivos frecuentes" style="width: 100%">
-                      <b-dropdown-item @click="addCloseConversationReason('Vuelve a escribir')">Vuelve a escribir</b-dropdown-item>
-                      <b-dropdown-item @click="addCloseConversationReason('Venta perdida')">Venta perdida</b-dropdown-item>
-                      <b-dropdown-item @click="addCloseConversationReason('Venta para otro día')">Venta para otro día</b-dropdown-item>
-                      <b-dropdown-item @click="addCloseConversationReason('Consulta sobre productos')">Consulta sobre productos</b-dropdown-item>
-                      <b-dropdown-item @click="addCloseConversationReason('No contestó')">No contestó</b-dropdown-item>
-                      <b-dropdown-item @click="addCloseConversationReason('Pasa a tienda')">Pasa a tienda</b-dropdown-item>
-                      <b-dropdown-item @click="addCloseConversationReason('Consulta de horario/ubicación')">Consulta de horario/ubicación</b-dropdown-item>
-                      <b-dropdown-item @click="addCloseConversationReason('Reclamo o garantía')">Reclamo o garantía</b-dropdown-item>
-                      <b-dropdown-item @click="addCloseConversationReason('Menor de edad')">Menor de edad</b-dropdown-item>
-                      <b-dropdown-item @click="addCloseConversationReason('Seguimiento de producto')">Seguimiento de producto</b-dropdown-item>
-                      <b-dropdown-item @click="addCloseConversationReason('Error')">Error</b-dropdown-item>
-                    </b-dropdown><br><br>
-                    <b-form-textarea no-resize rows="5" disabled="true" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/>    
-                    <br>
-                    <b-form-textarea v-if="closeConversationReason == 'Reclamo o garantía'" no-resize rows="3" class="form-control" placeholder="Productos relacionados al reclamo" v-model="wrongProducts"/>   
-
-                    <br>
-                    <b-form-checkbox id="checkbox-1" v-model="sendEndMessage">Enviar mensaje de despedida</b-form-checkbox>
-                  </b-modal>
+                  <button class="btn btn-primary mr-2" type="button" @click="openEndConversationModal(currentActiveConversation.whatsappConversationRecipientPhoneNumber)" v-b-modal.endConversationModal>Finalizar</button>
+                  
 
                   <button class="btn btn-primary mr-2" type="button" v-b-modal.closeDuplicateModal>Duplicado</button>
                   <b-modal scrollable size="m" centered id="closeDuplicateModal" title="Cerrar duplicado" @ok="closeWhatsappDuplicateConversation()">
@@ -1710,31 +1715,8 @@
                   </b-modal>
 
                   <div style="margin-top: 10px;">
-                    <button class="btn btn-primary mr-2" type="button" @click="openEndConversationModal()" v-b-modal.endConversationModal>Finalizar</button>
-                    <b-modal scrollable size="m" centered id="endConversationModal" title="Finalizar conversación sin venta" @ok="closeWhatsappConversation()">
-                      <b-form-select v-model="selectedCloseLocality" :options="closeLocalityOptions"></b-form-select>
-                      <br><br><br>
-                      
-                      <b-dropdown variant="primary" text="Motivos frecuentes" style="width: 100%">
-                        <b-dropdown-item @click="addCloseConversationReason('Vuelve a escribir')">Vuelve a escribir</b-dropdown-item>
-                        <b-dropdown-item @click="addCloseConversationReason('Venta perdida')">Venta perdida</b-dropdown-item>
-                        <b-dropdown-item @click="addCloseConversationReason('Venta para otro día')">Venta para otro día</b-dropdown-item>
-                        <b-dropdown-item @click="addCloseConversationReason('Consulta sobre productos')">Consulta sobre productos</b-dropdown-item>
-                        <b-dropdown-item @click="addCloseConversationReason('No contestó')">No contestó</b-dropdown-item>
-                        <b-dropdown-item @click="addCloseConversationReason('Pasa a tienda')">Pasa a tienda</b-dropdown-item>
-                        <b-dropdown-item @click="addCloseConversationReason('Consulta de horario/ubicación')">Consulta de horario/ubicación</b-dropdown-item>
-                        <b-dropdown-item @click="addCloseConversationReason('Reclamo o garantía')">Reclamo o garantía</b-dropdown-item>
-                        <b-dropdown-item @click="addCloseConversationReason('Menor de edad')">Menor de edad</b-dropdown-item>
-                        <b-dropdown-item @click="addCloseConversationReason('Seguimiento de producto')">Seguimiento de producto</b-dropdown-item>
-                        <b-dropdown-item @click="addCloseConversationReason('Error')">Error</b-dropdown-item>
-                      </b-dropdown><br><br>
-                      <b-form-textarea no-resize rows="5" class="form-control" placeholder="Motivo de la finalización de la conversación" v-model="closeConversationReason"/> 
-                      <br>
-                      <b-form-textarea v-if="closeConversationReason == 'Reclamo o garantía'" no-resize rows="3" class="form-control" placeholder="Productos relacionados al reclamo" v-model="wrongProducts"/>   
-   
-                      <br>
-                      <b-form-checkbox id="checkbox-1" v-model="sendEndMessage">Enviar mensaje de despedida</b-form-checkbox>
-                    </b-modal>
+                    <button class="btn btn-primary mr-2" type="button" @click="openEndConversationModal(currentActiveConversation.whatsappConversationRecipientPhoneNumber)" v-b-modal.endConversationModal>Finalizar</button>
+                    
 
 
                     <button class="btn btn-primary mr-2" type="button" v-b-modal.closeDuplicateModal>Duplicado</button>
@@ -2538,11 +2520,24 @@ export default {
 
       disposablesTooltip: false,
       liquidsTooltip: false,
-      saltsTooltip: false
+      saltsTooltip: false,
+
+      closingNumber: null
     };
   },
 
   methods: {
+
+    quickClose(closingNumber){
+      this.closingNumber = closingNumber;
+      this.selectedCloseLocality = 'King Vape Center';
+      this.closeConversationReason = 'Seguimiento de productos';
+      this.wrongProducts = '';
+      this.$root.$emit('bv::show::modal', 'endConversationModal');
+
+    },
+
+
     deleteLocation(locationName){
       this.currentActiveConversation.whatsappConversationRecipientLocations[locationName].latitude = '0';
       this.currentActiveConversation.whatsappConversationRecipientLocations[locationName].longitude = '0';   
@@ -2897,7 +2892,8 @@ export default {
       }
     },
 
-    openEndConversationModal(){
+    openEndConversationModal(closingNumber){
+      this.closingNumber = closingNumber;
       this.selectedCloseLocality = 'Seleccione una localidad';
       this.closeConversationReason = '';
       this.wrongProducts = '';
@@ -5202,7 +5198,7 @@ export default {
           
           axios.post(constants.routes.backendAPI+'/closeWhatsappConversation',
           {
-            whatsappConversationRecipientPhoneNumber: this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+            whatsappConversationRecipientPhoneNumber: this.closingNumber,
             whatsappConversationCloseComment: this.closeConversationReason + ' ' + this.wrongProducts,
             whatsappConversationAmount: 0,
             whatsappTextMessageBody: localStorage.getItem('agentEndMessage'),
@@ -5214,17 +5210,17 @@ export default {
           .then((response) =>{ 
             if (response.data.success){
               const whatsappConversationID = response.data.result;
-              this.showNotification('success', 'Conversación cerrada', "Se ha cerrado la conversación asociada al número '" + this.currentActiveConversation.whatsappConversationRecipientPhoneNumber + "'.");
+              this.showNotification('success', 'Conversación cerrada', "Se ha cerrado la conversación asociada al número '" + this.closingNumber + "'.");
               
               const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
-              if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-                delete ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
+              if (ordenesActualesLocalStorage[this.closingNumber]){
+                delete ordenesActualesLocalStorage[this.closingNumber];
               }
               localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
 
               const datosActualesLocalStorage = JSON.parse(localStorage.getItem('datosActuales'));
-              if (datosActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-                delete datosActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber];
+              if (datosActualesLocalStorage[this.closingNumber]){
+                delete datosActualesLocalStorage[this.closingNumber];
               }
               localStorage.setItem('datosActuales', JSON.stringify(datosActualesLocalStorage));
 
