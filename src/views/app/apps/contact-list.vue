@@ -1173,7 +1173,14 @@ export default {
   methods: {
     closeContactModal(){
       this.displayedContactRows = this.originalContactRows;
-
+      if (this.contactType == 'Todos'){
+        this.displayedContactRows = this.originalContactRows;
+      } else if (this.contactType == 'Reloj'){
+        this.displayedContactRows = this.originalContactRows.filter(contact => this.isMoreThan30Days(contact.lastDate) == true);
+      } else {
+        this.displayedContactRows = this.originalContactRows.filter(contact => contact.lastDate == null);
+      }
+      
       let scrollInterval = setInterval(() => {
         if (this.$refs.contactContainer) {
           const scrollableDiv = this.$refs.contactContainer;
