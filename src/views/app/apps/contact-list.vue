@@ -142,13 +142,18 @@
       >
       
         <div slot="table-actions" class="m-3">
-          <b-button
-            @click="openCreateContactModal()"
-            variant="primary"
-            class="btn-icon btn d-none d-sm-block"
-            v-b-modal.modalCrear
-            ><i class="i-Add-User mr-2"> </i>Crear contacto
-          </b-button>
+
+          <div style="display: flex;">
+            <b-form-select v-model="contactType" :options="['Todos', 'Reloj', 'Equis']" style="width: 200px; margin-right: 10px;"></b-form-select>
+
+            <b-button
+              @click="openCreateContactModal()"
+              variant="primary"
+              class="btn-icon btn d-none d-sm-block"
+              v-b-modal.modalCrear
+              ><i class="i-Add-User mr-2"> </i>Crear contacto
+            </b-button>
+          </div>
         </div>
         
 
@@ -1031,7 +1036,8 @@ export default {
       clientFollowupReport: null,
       queryInterval: null,
 
-      currentHeight: 0
+      currentHeight: 0,
+      contactType: 'Todos'
     };
 
     
@@ -1069,6 +1075,15 @@ export default {
       }
     },
 
+    contactType(){
+      if (this.contactType == 'Todos'){
+        this.displayedContactRows = this.originalContactRows;
+      } else if (this.contactType == 'Reloj'){
+        this.displayedContactRows = this.originalContactRows.filter(contact => this.isMoreThan30Days(contact.lastDate) == true);
+      } else {
+        this.displayedContactRows = this.originalContactRows.filter(contact => contact.lastDate == null);
+      }
+    }
 
   },
 
@@ -1568,6 +1583,7 @@ export default {
             }));
             this.loaderContact = false;
             this.contactPhoneNumber = '';
+            this.contactType = 'Todos';
           } else {
             this.loaderContact = false;
             this.contactPhoneNumber = '';
