@@ -3451,8 +3451,14 @@ export default {
 
     rememberCart(conversation){
       this.currentActiveConversation.whatsappConversationProducts = JSON.parse(conversation.whatsappConversationProducts);
-      this.showNotification('success', 'Carrito recordado', 'Ha recordado el carrito de la compra previa del cliente.')
 
+      const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
+      ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = JSON.parse(conversation.whatsappConversationProducts);
+      
+      localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
+
+
+      this.showNotification('success', 'Carrito recordado', 'Ha recordado el carrito de la compra previa del cliente.')
     },
 
 
