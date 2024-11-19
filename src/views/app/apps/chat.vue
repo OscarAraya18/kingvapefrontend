@@ -1483,7 +1483,7 @@
                   </b-modal>
 
                   
-                  <button v-if="availableConversation == true" id="sendPromos" class="btn btn-icon btn-rounded mr-2" style="background-color: #000000; color: white;" type="button" @click="openPromosModal()" v-b-modal.promosModal>BLACK</button>
+                  <button v-if="availableConversation == true" id="sendPromos" class="btn btn-icon btn-rounded mr-2" style="background-color: #000000; color: white; display: none" type="button" @click="openPromosModal()" v-b-modal.promosModal>BLACK</button>
                   <b-tooltip target="sendPromos">BLACK NOVEMBER</b-tooltip>
 
                   <button v-if="availableConversation == true" id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>

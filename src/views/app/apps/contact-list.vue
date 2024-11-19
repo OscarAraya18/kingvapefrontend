@@ -1180,7 +1180,7 @@ export default {
       } else {
         this.displayedContactRows = this.originalContactRows.filter(contact => contact.lastDate == null);
       }
-      
+
       let scrollInterval = setInterval(() => {
         if (this.$refs.contactContainer) {
           const scrollableDiv = this.$refs.contactContainer;
