@@ -277,8 +277,6 @@ export default {
       axios.get(constants.routes.backendAPI+'/selectBarChartInformation').then((response) =>{
 
 
-        console.log(this.getAgentLabelsForLineChart(response.data.result));
-
         this.opcionesGraficoBarra = 
         {
           chart: {type: 'bar', height: 350, stacked: true},

@@ -269,7 +269,13 @@ export default {
       
       const regularExpressionChecker = /\S/;
       if (regularExpressionChecker.test(this.transferPhoneNumber)){
-        
+
+        this.transferPhoneNumber = this.transferPhoneNumber.replace(' ', '');
+        this.transferPhoneNumber = this.transferPhoneNumber.replace('(', '');
+        this.transferPhoneNumber = this.transferPhoneNumber.replace(')', '');
+        this.transferPhoneNumber = this.transferPhoneNumber.replace('+', '');
+
+
         if (this.transferName == ''){
           this.transferName = 'Sin registro';
         }
