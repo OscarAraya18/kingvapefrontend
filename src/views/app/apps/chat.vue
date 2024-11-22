@@ -471,8 +471,6 @@
                 <p v-if="historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length != 0" style="font-size: medium; margin: 0;"><strong>Última compra: </strong> {{parseHour(historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 )[historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length - 1].whatsappConversationEndDateTime)}}</p>
                 <p style="font-size: medium; margin: 0;"><strong>Cantidad de compras: </strong> {{historyConversations.filter(historyConversation => historyConversation.whatsappConversationAmount != 0 ).length}}</p>
               </b-card>
-              
-
             </div>  
           </b-modal>
 
