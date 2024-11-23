@@ -2076,7 +2076,8 @@
                               
                                 <br>
                                 <b-form-checkbox @input="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceIsForToday', currentActiveConversation.whatsappConversationIsForToday)" v-model="currentActiveConversation.whatsappConversationIsForToday">Pedido para hoy</b-form-checkbox>
-                              
+                                <b-form-checkbox style="margin-top: 10px;" @input="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceIsFollowup', currentActiveConversation.whatsappInvoiceIsFollowup)" v-model="currentActiveConversation.whatsappInvoiceIsFollowup">Venta por seguimiento</b-form-checkbox>
+
                               </b-form-group>
                             </b-card>
 
@@ -4073,7 +4074,8 @@ export default {
             whatsappInvoiceLocationNote: this.currentActiveConversation.whatsappConversationRecipientLocationDetails,
             whatsappInvoiceShippingNote: this.currentActiveConversation.whatsappConversationRecipientNote,
             whatsappInvoiceProducts: this.currentActiveConversation.whatsappConversationProducts,
-            whatsappInvoiceIsForToday: this.currentActiveConversation.whatsappConversationIsForToday
+            whatsappInvoiceIsForToday: this.currentActiveConversation.whatsappConversationIsForToday,
+            whatsappInvoiceIsFollowup: this.currentActiveConversation.whatsappInvoiceIsFollowup
           })
           .then((response) =>{ 
             if (response.data.success){
@@ -5120,10 +5122,14 @@ export default {
             this.whatsappInvoiceClientLocationURL = '';
           }
           if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceShippingNote']){
-            currentActiveConversation.whatsappConversationRecipientLocationDetails = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceShippingNote'];
+            this.currentActiveConversation.whatsappConversationRecipientLocationDetails = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceShippingNote'];
           }
           if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocationNote']){
-            currentActiveConversation.whatsappConversationRecipientNote = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocationNote'];
+            this.currentActiveConversation.whatsappConversationRecipientNote = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocationNote'];
+          }
+
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsFollowup'] == false || datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsFollowup'] == true){
+            this.currentActiveConversation.whatsappInvoiceIsFollowup = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsFollowup'];
           }
           
         } else {
@@ -5136,6 +5142,8 @@ export default {
           this.longitud = 0;
           this.whatsappInvoiceClientLocationURL = '';
           this.whatsappInvoiceIsForToday = true;
+          this.whatsappInvoiceIsForToday = true;
+
           this.currentActiveConversation.whatsappConversationPin = false;
         }
         this.scrollDown();
@@ -5386,6 +5394,7 @@ export default {
               respondedActiveConversations[activeConversationID]['latitude'] = 0;
               respondedActiveConversations[activeConversationID]['longitude'] = 0;
               respondedActiveConversations[activeConversationID]['whatsappConversationIsForToday'] = true;
+              respondedActiveConversations[activeConversationID]['whatsappInvoiceIsFollowup'] = false;
 
             }    
           }

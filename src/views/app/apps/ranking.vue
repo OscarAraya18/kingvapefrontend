@@ -335,7 +335,7 @@ export default {
       const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
 
       // Comprobar si han pasado 30 días o más
-      return diffInDays >= 30;
+      return diffInDays >= 60;
     },
     
   },
