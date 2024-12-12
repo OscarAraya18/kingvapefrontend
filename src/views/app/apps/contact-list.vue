@@ -161,7 +161,7 @@
         <template slot="table-row" slot-scope="props">
           
           <div v-if="props.column.field == 'contactFollowup'">
-            <i v-if="isMoreThan30Days(props.row.lastDate)" class="i-Loading-2 text-25 text-danger"></i>
+            <i v-if="isMoreThan30Days(props.row.lastDate, props.row.isMinor)" class="i-Loading-2 text-25 text-danger"></i>
             <div v-else>
               <i v-if="props.row.lastDate" class="i-Check text-25 text-success"></i>
               <i v-else class="i-Close text-25 text-gray"></i>
@@ -808,11 +808,11 @@
     <div style="display: flex; justify-content: center; align-items: center;">
       <div style="display: flex; width: 33%; justify-content: center; align-items: center;">
         <i class="i-Check text-50 text-success"></i>
-        <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate != null).filter(client => isMoreThan30Days(client.lastDate) == false).length }}</p>
+        <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate != null).filter(client => isMoreThan30Days(client.lastDate, client.isMinor) == false).length }}</p>
       </div>
       <div style="display: flex; width: 33%; justify-content: center; align-items: center;">
         <i class="i-Loading-2 text-50 text-danger"></i>
-        <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate != null).filter(client => isMoreThan30Days(client.lastDate) == true).length }}</p>
+        <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate != null).filter(client => isMoreThan30Days(client.lastDate, client.isMinor) == true).length }}</p>
       </div>
       <div style="display: flex; width: 33%; justify-content: center; align-items: center;">
         <i class="i-Close text-50 text-gray"></i>
@@ -1082,7 +1082,7 @@ export default {
         this.displayedContactRows = this.originalContactRows;
       } else if (this.contactType == 'Reloj'){
         if (this.contactLetter){
-          this.displayedContactRows = this.originalContactRows.filter(contact => this.isMoreThan30Days(contact.lastDate) == true);
+          this.displayedContactRows = this.originalContactRows.filter(contact => this.isMoreThan30Days(contact.lastDate, contact.isMinor) == true);
         } else {
           await this.getAllContacts('Reloj');
         }
@@ -1186,7 +1186,7 @@ export default {
       if (this.contactType == 'Todos'){
         this.displayedContactRows = this.originalContactRows;
       } else if (this.contactType == 'Reloj'){
-        this.displayedContactRows = this.originalContactRows.filter(contact => this.isMoreThan30Days(contact.lastDate) == true);
+        this.displayedContactRows = this.originalContactRows.filter(contact => this.isMoreThan30Days(contact.lastDate, contact.isMinor) == true);
       } else {
         this.displayedContactRows = this.originalContactRows.filter(contact => contact.lastDate == null);
       }
@@ -1270,9 +1270,10 @@ export default {
       }
     },
 
-    isMoreThan30Days(lastDate) {
+    isMoreThan30Days(lastDate, isMinor) {
       if (!lastDate) return false; // Si no hay una fecha, no se muestra el icono
-      
+      if (isMinor == true) return false;
+
       const currentDate = new Date(); // Fecha actual
       const parsedLastDate = new Date(lastDate); // Convertir lastDate a objeto Date
 
@@ -1375,6 +1376,7 @@ export default {
       .then((response) => {
         if (response.data.success){
           this.clientFollowupReport = response.data.result;
+          console.log(this.clientFollowupReport);
         } else {
           this.showNotification('danger', 'Error al consultar la cantidad de contactos del reporte', 'Ha ocurrido un error inesperado al consultar la cantidad de contactos del reporte. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }

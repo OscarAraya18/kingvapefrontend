@@ -7,11 +7,11 @@
         <div v-if="clientFollowupReport" style="display: flex; justify-content: center; align-items: center;">
           <div style="display: flex; width: 33%; justify-content: center; align-items: center;">
             <i class="i-Check text-40 text-success"></i>
-            <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate != null).filter(client => isMoreThan30Days(client.lastDate) == false).length }}</p>
+            <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate != null).filter(client => isMoreThan30Days(client.lastDate, client.isMinor) == false).length }}</p>
           </div>
           <div style="display: flex; width: 33%; justify-content: center; align-items: center;">
             <i class="i-Loading-2 text-40 text-danger"></i>
-            <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate != null).filter(client => isMoreThan30Days(client.lastDate) == true).length }}</p>
+            <p style="font-size: x-large; margin-left: 15px; margin-top: 15px;">{{ clientFollowupReport.filter(client => client.lastDate != null).filter(client => isMoreThan30Days(client.lastDate, client.isMinor) == true).length }}</p>
           </div>
           <div style="display: flex; width: 33%; justify-content: center; align-items: center;">
             <i class="i-Close text-40 text-gray"></i>
@@ -322,9 +322,10 @@ export default {
 
     },
 
-    isMoreThan30Days(lastDate) {
+    isMoreThan30Days(lastDate, isMinor) {
       if (!lastDate) return false; // Si no hay una fecha, no se muestra el icono
-      
+      if (isMinor == true) return false;
+
       const currentDate = new Date(); // Fecha actual
       const parsedLastDate = new Date(lastDate); // Convertir lastDate a objeto Date
 
