@@ -1075,13 +1075,21 @@ export default {
       }
     },
 
-    contactType(){
+    async contactType(){
       if (this.contactType == 'Todos'){
         this.displayedContactRows = this.originalContactRows;
       } else if (this.contactType == 'Reloj'){
-        this.displayedContactRows = this.originalContactRows.filter(contact => this.isMoreThan30Days(contact.lastDate) == true);
+        if (this.contactLetter){
+          this.displayedContactRows = this.originalContactRows.filter(contact => this.isMoreThan30Days(contact.lastDate) == true);
+        } else {
+          await this.getAllContacts('Reloj');
+        }
       } else {
-        this.displayedContactRows = this.originalContactRows.filter(contact => contact.lastDate == null);
+        if (this.contactLetter){
+          this.displayedContactRows = this.originalContactRows.filter(contact => contact.lastDate == null);
+        } else {
+          await this.getAllContacts('Equis');
+        }
       }
     }
 
@@ -1836,8 +1844,58 @@ export default {
           solid: true
         });
       })
+    },
+
+
+    async getAllContacts(type){
+      this.loaderContact = true;
+      this.originalContactRows.length = 0;
+
+      axios.post(constants.routes.backendAPI+'/selectContactsFromStartingLetter', 
+      {
+        'startingLetter': type
+      })
+      .then((response) =>{ 
+
+
+        this.originalContactRows = response.data.result.map(contact => ({
+          'contactID': contact.i,
+          'contactName': contact.n,
+          'contactPhoneNumber': contact.p,
+          'contactEmail': contact.e,
+          'contactLocations': JSON.parse(contact.l),
+          'contactHasIDImage': contact.ip,
+          'totalInvoiceAmount': parseInt(contact.totalInvoiceAmount),
+          'lastDate': contact.ld
+        }));
+        this.loaderContact = false;
+        this.displayedContactRows = this.originalContactRows;
+
+        let scrollInterval = setInterval(() => {
+          if (this.$refs.contactContainer) {
+            const scrollableDiv = this.$refs.contactContainer;
+            scrollableDiv.scrollTop = 0;
+            clearInterval(scrollInterval);
+          }
+        }, 1);
+
+
+      })
+      .catch(() =>{
+        this.$bvToast.toast("Ha ocurrido un error inesperado al consultar la lista de clientes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
+          title: "Error al consultar la lista de clientes",
+          variant: "danger",
+          solid: true
+        });
+      })
     }
+
+
   },
+
+  
+
+
 };
 </script>
 
