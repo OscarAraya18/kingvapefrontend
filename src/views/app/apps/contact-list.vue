@@ -208,6 +208,8 @@
           </span>
 
           <span v-else-if="props.column.field == 'contactActions'">
+            <i class="i-Close text-25 text-danger mr-2" v-if="props.row.isMinor"></i>
+
               <i  @click="selectClientIDSImage(props.row.contactPhoneNumber)" class="i-ID-Card text-25 text-black"  style="cursor: pointer; margin-right: 10px;"></i>
               <i class="i-Clock text-25 text-info" @click="getHistoryConversations(props.row.contactPhoneNumber)" v-b-modal.historyConversationsModal style="cursor: pointer; margin-right: 10px;"></i>
               <i class="i-Notepad text-25 text-warning" @click="openSendContactMessageModal(props.row)" style="cursor: pointer; margin-right: 7px;"></i>
@@ -1822,7 +1824,8 @@ export default {
           'contactLocations': JSON.parse(contact.l),
           'contactHasIDImage': contact.ip,
           'totalInvoiceAmount': parseInt(contact.totalInvoiceAmount),
-          'lastDate': contact.ld
+          'lastDate': contact.ld,
+          'isMinor': contact.m
         }));
         this.loaderContact = false;
         this.displayedContactRows = this.originalContactRows;
@@ -1866,7 +1869,8 @@ export default {
           'contactLocations': JSON.parse(contact.l),
           'contactHasIDImage': contact.ip,
           'totalInvoiceAmount': parseInt(contact.totalInvoiceAmount),
-          'lastDate': contact.ld
+          'lastDate': contact.ld,
+          'isMinor': contact.m
         }));
         this.loaderContact = false;
         this.displayedContactRows = this.originalContactRows;
