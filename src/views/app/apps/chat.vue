@@ -3041,7 +3041,7 @@ export default {
           })
           .then((response) =>{
             if (response.data.success){
-              this.currentActiveConversation.SINPEValidated = 'yes';
+              Vue.set(this.currentActiveConversation, 'SINPEValidated', 'yes');
               this.changeLocalStorageSINPEValidated();
               this.showNotification('success', 'Transacción validada', 'Se ha validado la transacción exitosamente.')
               this.$root.$emit('bv::hide::modal', 'syncTransactionModal');
