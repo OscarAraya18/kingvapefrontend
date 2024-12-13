@@ -2014,10 +2014,10 @@
                                         <b-list-group>
                                           <b-list-group-item v-if="currentTransactions.length == 0">No hay transacciones por asociar</b-list-group-item>
                                           <b-list-group-item v-b-modal.syncTransactionModal @click="openSyncTransactionModal(currentTransaction)" v-for="currentTransaction in currentTransactions" button style="cursor: pointer;">
-                                            <strong>ID:</strong> {{currentTransaction.transactionID}}<br>
-                                            <strong>Detalle:</strong> {{currentTransaction.transactionNote}}<br>
-                                            <strong>Monto:</strong> ₡{{currentTransaction.transactionAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}<br>
-                                            <strong>Fecha:</strong> {{parseHour(currentTransaction.transactionDate)}}
+                                            <strong>ID:</strong> {{currentTransaction.SINPEID}}<br>
+                                            <strong>Detalle:</strong> {{currentTransaction.SINPENote}}<br>
+                                            <strong>Monto:</strong> ₡{{currentTransaction.SINPEAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}<br>
+                                            <strong>Fecha:</strong> {{parseHour(currentTransaction.SINPEReceivedDate)}}
                                           </b-list-group-item>
                                         </b-list-group>
                                       </div>
@@ -3035,10 +3035,8 @@ export default {
         } else {
           axios.post(constants.routes.backendAPI+'/syncTransaction',
           {
-            transactionID: this.currentTransaction.transactionID,
-            transactionRelatedMessageID: whatsappGeneralMessageID,
-            transactionApprover: localStorage.getItem('agentID'),
-            transactionStore: this.selectedLocality
+            SINPEID: this.currentTransaction.SINPEID,
+            SINPEAgentID: localStorage.getItem('agentID')
           })
           .then((response) =>{
             if (response.data.success){
@@ -3077,7 +3075,7 @@ export default {
         Vue.set(this.currentActiveConversation.whatsappConversationMessages[whatsappMessage], 'selected', false);
       }
       this.currentTransaction = currentTransaction;
-      this.syncTransactionTitle = `Detalle: ${currentTransaction.transactionNote}. Monto: ₡${currentTransaction.transactionAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}`;
+      this.syncTransactionTitle = `Detalle: ${currentTransaction.SINPENote}. Monto: ₡${currentTransaction.SINPEAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}`;
     },
 
     deleteStoreConversation(){
@@ -3216,7 +3214,7 @@ export default {
     validatePaymentMethod(){ 
       this.validatePaymentMethodLoader = true;
       this.currentTransactions = null;
-      axios.post(constants.routes.backendAPI+'/selectNotUsedTransactions')
+      axios.post(constants.routes.backendAPI+'/selectSINPE')
       .then((response) =>{
         this.validatePaymentMethodLoader = false;
         if (response.data.success){
@@ -3238,11 +3236,11 @@ export default {
     },
 
     getWhatsappInvoicePaymentMethodIsSINPE(){
-      return this.whatsappInvoicePaymentMethod == 'SINPE';
+      return this.whatsappInvoicePaymentMethod == 'SINPE (confirmado)';
     },
 
     getWhatsappInvoicePaymentMethodStyle(){
-      return this.whatsappInvoicePaymentMethod == 'SINPE' ? 'margin-bottom: 10px; width: 70%' : 'margin-bottom: 10px; width: 100%';
+      return this.whatsappInvoicePaymentMethod == 'SINPE (confirmado)' ? 'margin-bottom: 10px; width: 70%' : 'margin-bottom: 10px; width: 100%';
     },
 
     getReferenciaSucursal(recipientPhoneNumber){
