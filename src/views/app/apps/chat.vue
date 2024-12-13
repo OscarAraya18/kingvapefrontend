@@ -2004,7 +2004,7 @@
                                 
                                 <div style="display: flex;">
                                   <b-form-select v-model="whatsappInvoicePaymentMethod" :options="whatsappInvoicePaymentMethodOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoicePaymentMethod', whatsappInvoicePaymentMethod)" :style="getWhatsappInvoicePaymentMethodStyle()"></b-form-select>
-                                  <b-button v-if="getWhatsappInvoicePaymentMethodIsSINPE()" v-b-modal.paymentMethodValidatorModal style="margin-bottom: 15px; margin-left: 10px; width: 30%" @click="validatePaymentMethod()" variant="info">Validar</b-button>
+                                  <b-button v-if="getWhatsappInvoicePaymentMethodIsSINPE()" v-b-modal.paymentMethodValidatorModal style="margin-bottom: 15px; margin-left: 10px; width: 30%" @click="validatePaymentMethod()" :variant="currentActiveConversation.SINPEValidated == 'yes' ? 'success' : 'info'">{{currentActiveConversation.SINPEValidated == 'yes' ? 'Validado' : 'Validar'}}</b-button>
 
 
                                   <b-modal scrollable size="m" centered hide-header hide-footer id="paymentMethodValidatorModal">
@@ -3041,6 +3041,8 @@ export default {
           })
           .then((response) =>{
             if (response.data.success){
+              this.currentActiveConversation.SINPEValidated = 'yes';
+              this.changeLocalStorageSINPEValidated();
               this.showNotification('success', 'Transacción validada', 'Se ha validado la transacción exitosamente.')
               this.$root.$emit('bv::hide::modal', 'syncTransactionModal');
               this.$root.$emit('bv::hide::modal', 'paymentMethodValidatorModal');
@@ -3273,6 +3275,19 @@ export default {
           'whatsappInvoiceClientLocationName': this.whatsappInvoiceClientLocationName,
           'whatsappInvoiceClientLocationLatitude': this.currentActiveConversation.whatsappConversationRecipientLocations[this.whatsappInvoiceClientLocationName].latitude,
           'whatsappInvoiceClientLocationLongitude': this.currentActiveConversation.whatsappConversationRecipientLocations[this.whatsappInvoiceClientLocationName].longitude
+        }
+      }
+      localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
+    },
+
+    changeLocalStorageSINPEValidated(){
+      const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+      if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['SINPEValidated'] = 'yes';
+      } else {
+        datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
+        {
+          'SINPEValidated': 'yes'
         }
       }
       localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
@@ -5129,6 +5144,10 @@ export default {
 
           if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsFollowup'] == false || datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsFollowup'] == true){
             this.currentActiveConversation.whatsappInvoiceIsFollowup = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsFollowup'];
+          }
+
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['SINPEValidated']){
+            this.currentActiveConversation.SINPEValidated = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['SINPEValidated'];
           }
           
         } else {
