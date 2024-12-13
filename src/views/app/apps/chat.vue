@@ -2015,6 +2015,7 @@
                                           <b-list-group-item v-if="currentTransactions.length == 0">No hay transacciones por asociar</b-list-group-item>
                                           <b-list-group-item v-b-modal.syncTransactionModal @click="openSyncTransactionModal(currentTransaction)" v-for="currentTransaction in currentTransactions" button style="cursor: pointer;">
                                             <strong>ID:</strong> {{currentTransaction.SINPEID}}<br>
+                                            <strong>Nombre:</strong> {{currentTransaction.SINPEName}}<br>
                                             <strong>Detalle:</strong> {{currentTransaction.SINPENote}}<br>
                                             <strong>Monto:</strong> ₡{{currentTransaction.SINPEAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}<br>
                                             <strong>Fecha:</strong> {{parseHour(currentTransaction.SINPEReceivedDate)}}
