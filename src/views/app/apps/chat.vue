@@ -3709,7 +3709,7 @@ export default {
     async cargarExistenciaTesting(codigo){
       return new Promise((cargarTestingPromiseResolve) => {
         var me = this;
-        axios.get('https://backend.kingvape.cr/api/ProductosWebs/'+codigo).then(function(response){
+        axios.get('https://backend.noahcloud.online/kingvape/api/ProductosWebs/'+codigo).then(function(response){
           var textoExistencia = {'stock': {}};
           for (var indice in response.data){
             textoExistencia['stock'][response.data[indice].localidad] = response.data[indice].cantidadInvActual;
@@ -3737,7 +3737,7 @@ export default {
     async cargarExistencia(codigoProducto, nombreProducto){
       this.stockLoader = true;
       let me = this;
-      axios.get('https://backend.kingvape.cr/api/ProductosWebs/'+codigoProducto).then(function(response){
+      axios.get('https://backend.noahcloud.online/kingvape/api/ProductosWebs/'+codigoProducto).then(function(response){
         var textoExistencia = {'tipo': 'unitario', 'nombre': nombreProducto, 'stock': {}};
         for (var indice in response.data){
           textoExistencia['stock'][response.data[indice].localidad] = response.data[indice].cantidadInvActual;
@@ -4264,7 +4264,7 @@ export default {
           this.timeouts.push(
             setTimeout( () => {
               this.loading = true;
-              axios.get('https://bakend2king.kingvape.cr/api/Productos/BuscadorEnter5/King%20Vape/'+myInput).then( response => {
+              axios.get('https://backend.noahcloud.online/kingvape/api/Productos/BuscadorEnter5/King%20Vape/'+myInput).then( response => {
                 me.productos = [];
                 Objeto = response.data
                   Objeto.map(function(x){
