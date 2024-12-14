@@ -3239,11 +3239,11 @@ export default {
     },
 
     getWhatsappInvoicePaymentMethodIsSINPE(){
-      return this.whatsappInvoicePaymentMethod == 'SINPE (confirmado)';
+      return this.whatsappInvoicePaymentMethod == 'SINPE (confirmado) x';
     },
 
     getWhatsappInvoicePaymentMethodStyle(){
-      return this.whatsappInvoicePaymentMethod == 'SINPE (confirmado)' ? 'margin-bottom: 10px; width: 70%' : 'margin-bottom: 10px; width: 100%';
+      return this.whatsappInvoicePaymentMethod == 'SINPE (confirmado) x' ? 'margin-bottom: 10px; width: 70%' : 'margin-bottom: 10px; width: 100%';
     },
 
     getReferenciaSucursal(recipientPhoneNumber){
