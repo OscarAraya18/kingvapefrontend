@@ -3096,7 +3096,6 @@ export default {
     },
 
     openSyncTransactionModal(currentTransaction){
-      this.selectedLocality = '';
       for (var whatsappMessage in this.currentActiveConversation.whatsappConversationMessages){ 
         Vue.set(this.currentActiveConversation.whatsappConversationMessages[whatsappMessage], 'selected', false);
       }
