@@ -568,13 +568,20 @@
     <div style="position: absolute; top: -70px; z-index: 500; right: 300px; transform: translateX(-50%);">
       <div style="display: flex; justify-content: center;">
         <img @click="updateApplicationLive()" v-if="live" class="liveLogo" src="../../../assets/pageAssets/live.png">
-      <img @click="updateApplicationLive()" v-else class="noliveLogo" src="../../../assets/pageAssets/nolive.png">
+        <img @click="updateApplicationLive()" v-else class="noliveLogo" src="../../../assets/pageAssets/nolive.png">
       </div>
     </div>
-    
+    <div style="position: absolute; top: -60px; z-index: 500; left: 250px; transform: translateX(-50%);">
+      <div style="display: flex; justify-content: center;">
+        <h1 @click="copyToken()" style="cursor: pointer"><strong>{{tokenValue}}</strong></h1>
+        <i @click="refreshToken()" class="i-Repeat" style="font-size: x-large; margin-left: 10px; margin-top: 5px; cursor: pointer;"></i>
+      </div>
+    </div>
     <br>
+
     <b-row>
 
+      
       <b-col lg="4" md="4" sm="12">
         <b-card
           class="card-icon-bg card-icon-bg-primary o-hidden mb-30 text-center"
@@ -1560,6 +1567,7 @@ export default {
   
   data() {
     return {
+      tokenValue: 543320,
 
       historyConversations: [],
       historyConversationsColumns: [{label: "Agente", field: "agentName", thClass: "text-left", tdClass: "text-left"}, {label: "Resultado", field: "whatsappConversationCloseComment", thClass: "text-left", tdClass: "text-left"}, {label: "Inicio", field: "whatsappConversationStartDateTime", thClass: "text-left", tdClass: "text-left"}, {label: "Fin", field: "whatsappConversationEndDateTime", thClass: "text-left", tdClass: "text-left"}, {label: "", field: "whatsappConversationActions", thClass: "text-right", tdClass: "text-right"}],
@@ -1569,6 +1577,7 @@ export default {
 
       queryInterval: null,
       notificationInterval: null,
+      tokenInterval: null,
       messageInterval: null,
 
       openedName: '',
@@ -2228,11 +2237,6 @@ export default {
 
   mounted(){
     
-
-    
-
-
-
     let todayInitialDate = new Date();
     todayInitialDate.setHours(0, 0, 0, 0);
     this.todayInitialDate = todayInitialDate;
@@ -2241,8 +2245,6 @@ export default {
     this.todayEndDate = todayEndDate;
   
     
-
-
     this.iceLogoSRC = constants.routes.iceLogoSRC;
     this.postreLogoSRC = constants.routes.postreLogoSRC;
     this.tabacoLogoSRC = constants.routes.tabacoLogoSRC;
@@ -2266,6 +2268,9 @@ export default {
     this.getInformation();
     this.selectNotResolvedWhatsappFeedbacks();
 
+    this.tokenInterval = setInterval(() => {
+      this.getToken();
+    }, 1000);
 
     this.notificationInterval = setInterval(() => {
       this.selectNotifications();
@@ -2310,9 +2315,19 @@ export default {
     clearInterval(this.queryInterval);
     clearInterval(this.notificationInterval);
     clearInterval(this.messageInterval);
+    clearInterval(this.tokenInterval);
   },
 
   methods: {
+    async copyToken(){
+      try {
+        await navigator.clipboard.writeText(this.tokenValue);
+        this.showNotification('success', 'Éxito', 'El token ha sido copiado al portapapeles');
+      } catch (err) {
+        this.showNotification('danger', 'Error al copiar el token al portapapeles', 'Ha ocurrido un error inesperado al copiar el token al portapapeles, contacte con su administrador del sistema o con soporte técnico.')
+      }
+    },
+
     getHistoryConversations(){
       this.historyLoader = true;
       this.historyConversations = [];
@@ -3147,10 +3162,21 @@ export default {
       this.bigImageSource = bigImageSource;
     },
 
+    getToken(){
+      axios.post(constants.routes.backendAPI+'/getToken').then((response) =>{
+        this.tokenValue = response.data.tokenValue;
+      });
+    },
+
+    refreshToken(){
+      axios.post(constants.routes.backendAPI+'/refreshToken').then((response) =>{
+        this.tokenValue = response.data.tokenValue;
+      });
+    },
+
     selectNotifications(){
       axios.post(constants.routes.backendAPI+'/selectNotifications').then((response) =>{
         this.notifications = response.data.result.reverse();
-
       });
     },
 

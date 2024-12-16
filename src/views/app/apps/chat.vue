@@ -2010,9 +2010,9 @@
                                   <b-modal scrollable size="m" centered hide-header hide-footer id="paymentMethodValidatorModal">
                                     <div>
                                       <div v-if="currentTransactions != null">
-                                        <h4><strong>Transacciones disponibles:</strong></h4><br>
-                                        <b-list-group>
-                                          <b-list-group-item v-if="currentTransactions.length == 0">No hay transacciones por asociar</b-list-group-item>
+                                        <h4><strong>SINPES disponibles:</strong></h4><br>
+                                        <b-list-group style="max-height: 600px; overflow-y: auto;">
+                                          <b-list-group-item v-if="currentTransactions.length == 0">No hay SINPES por asociar</b-list-group-item>
                                           <b-list-group-item v-b-modal.syncTransactionModal @click="openSyncTransactionModal(currentTransaction)" v-for="currentTransaction in currentTransactions" button style="cursor: pointer;">
                                             <strong>ID:</strong> {{currentTransaction.SINPEID}}<br>
                                             <strong>Nombre:</strong> {{currentTransaction.SINPEName}}<br>
@@ -2021,6 +2021,14 @@
                                             <strong>Fecha:</strong> {{parseHour(currentTransaction.SINPEReceivedDate)}}
                                           </b-list-group-item>
                                         </b-list-group>
+                                        <br><br>
+                                        <h4><strong>Validar por token:</strong></h4>
+                                        <br>
+                                        <div style="display: flex;">
+                                          <b-form-input v-model="tokenValue" placeholder="Token" style="width: 79%; margin-right: 1%;"></b-form-input>
+                                          <b-button @click="validateToken()" variant="success">Validar</b-button>
+                                        </div>
+
                                       </div>
                                       <div v-else style="text-align: center;">
                                         <br>
@@ -2053,12 +2061,6 @@
                                           </div>
                                         </div>
                                       </div>
-                                      <br><br>
-
-                                      <h4><strong>Sucursal relacionada:</strong></h4>
-                                      <b-form-select v-model="selectedLocality" :options="localityOptions"></b-form-select>
-                                      <br><br>
-                                      
                                     </div>
                                   </b-modal>
                                 </div>
@@ -2224,6 +2226,8 @@ export default {
 
   data() {
     return {
+      tokenValue: null,
+
       insertContactReminderMessage: null,
 
       showMap: false,
@@ -2527,6 +2531,28 @@ export default {
   },
 
   methods: {
+    validateToken(){
+      axios.post(constants.routes.backendAPI+'/validateToken',
+      {
+        'tokenValue': this.tokenValue
+      })
+      .then((response) =>{
+        if (response.data.success){
+          Vue.set(this.currentActiveConversation, 'SINPEValidated', 'yes');
+          this.changeLocalStorageSINPEValidated();
+          this.showNotification('success', 'Transacción validada', 'Se ha validado la transacción exitosamente.')
+          this.$root.$emit('bv::hide::modal', 'syncTransactionModal');
+          this.$root.$emit('bv::hide::modal', 'paymentMethodValidatorModal');
+        } else {
+          this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        this.$root.$emit('bv::hide::modal', 'syncTransactionModal');
+        this.$root.$emit('bv::hide::modal', 'paymentMethodValidatorModal');
+      })
+    },
 
     quickClose(closingNumber){
       this.closingNumber = closingNumber;
@@ -3030,31 +3056,28 @@ export default {
       if (whatsappGeneralMessageID == ''){
         this.showNotification('danger', 'Error al validar la transacción', 'Debe seleccionar un mensaje para asociar la transacción. Seleccione un mensaje e intentelo nuevamente.');
       } else {
-        if (this.selectedLocality == ''){
-          this.showNotification('danger', 'Error al validar la transacción', 'Debe seleccionar una sucursal para asociar la transacción. Seleccione un mensaje e intentelo nuevamente.');
-
-        } else {
-          axios.post(constants.routes.backendAPI+'/syncTransaction',
-          {
-            SINPEID: this.currentTransaction.SINPEID,
-            SINPEAgentID: localStorage.getItem('agentID')
-          })
-          .then((response) =>{
-            if (response.data.success){
-              Vue.set(this.currentActiveConversation, 'SINPEValidated', 'yes');
-              this.changeLocalStorageSINPEValidated();
-              this.showNotification('success', 'Transacción validada', 'Se ha validado la transacción exitosamente.')
-              this.$root.$emit('bv::hide::modal', 'syncTransactionModal');
-              this.$root.$emit('bv::hide::modal', 'paymentMethodValidatorModal');
-              
-            } else {
-              this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-            }
-          })
-          .catch(() => {
+        
+        axios.post(constants.routes.backendAPI+'/syncTransaction',
+        {
+          SINPEID: this.currentTransaction.SINPEID,
+          SINPEAgentID: localStorage.getItem('agentID')
+        })
+        .then((response) =>{
+          if (response.data.success){
+            Vue.set(this.currentActiveConversation, 'SINPEValidated', 'yes');
+            this.changeLocalStorageSINPEValidated();
+            this.showNotification('success', 'Transacción validada', 'Se ha validado la transacción exitosamente.')
+            this.$root.$emit('bv::hide::modal', 'syncTransactionModal');
+            this.$root.$emit('bv::hide::modal', 'paymentMethodValidatorModal');
+            
+          } else {
             this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-          })
-        }
+          }
+        })
+        .catch(() => {
+          this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        })
+        
       }
     },
 
@@ -3217,6 +3240,7 @@ export default {
     validatePaymentMethod(){ 
       this.validatePaymentMethodLoader = true;
       this.currentTransactions = null;
+      this.tokenValue = null;
       axios.post(constants.routes.backendAPI+'/selectSINPE')
       .then((response) =>{
         this.validatePaymentMethodLoader = false;
@@ -3239,11 +3263,11 @@ export default {
     },
 
     getWhatsappInvoicePaymentMethodIsSINPE(){
-      return this.whatsappInvoicePaymentMethod == 'SINPE (confirmado) x';
+      return this.whatsappInvoicePaymentMethod == 'SINPE (confirmado)';
     },
 
     getWhatsappInvoicePaymentMethodStyle(){
-      return this.whatsappInvoicePaymentMethod == 'SINPE (confirmado) x' ? 'margin-bottom: 10px; width: 70%' : 'margin-bottom: 10px; width: 100%';
+      return this.whatsappInvoicePaymentMethod == 'SINPE (confirmado)' ? 'margin-bottom: 10px; width: 70%' : 'margin-bottom: 10px; width: 100%';
     },
 
     getReferenciaSucursal(recipientPhoneNumber){
@@ -4040,7 +4064,10 @@ export default {
       } else if (regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientNote) == false){
         this.showNotification('danger', 'Nota del envío incompleta', 'Por favor, seleccione una nota del envío para generar la orden, e intentelo nuevamente');
         return false;
-      } 
+      } else if (this.currentActiveConversation.SINPEValidated != 'yes' && this.currentActiveConversation.whatsappInvoicePaymentMethod == 'SINPE (Confirmado)'){
+        this.showNotification('danger', 'SINPE no confirmado', 'Por favor, valide el pago por SINPE e intentelo nuevamente');
+        return false;
+      }
       return true;
     },
    

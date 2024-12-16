@@ -249,7 +249,7 @@
             </div>
 
             <div v-else-if="props.column.field == 'whatsappInvoiceApproveAction'">
-              <p @click="updateWhatsappInvoiceSINPE(props.row.whatsappInvoiceID, props.row.whatsappInvoiceSINPEApproved)" style="position: relative; top: 10px">
+              <p v-b-modal.paymentMethodValidatorModal @click="validatePaymentMethod(props.row)" style="position: relative; top: 10px">
                 {{ props.row.whatsappInvoiceSINPEApproved ? '✅' : '❌'  }}
               </p>
             </div>
@@ -268,6 +268,36 @@
         </vue-good-table>
       </div>
     </div>
+
+    <b-modal scrollable size="m" centered hide-header hide-footer id="paymentMethodValidatorModal">
+      <div>
+        <div v-if="currentTransactions != null">
+          <h4><strong>SINPES disponibles:</strong></h4><br>
+          <b-list-group style="max-height: 600px; overflow-y: auto;">
+            <b-list-group-item v-if="currentTransactions.length == 0">No hay SINPES por asociar</b-list-group-item>
+            <b-list-group-item @click="syncTransactionToMessage(currentTransaction)" v-for="currentTransaction in currentTransactions" button style="cursor: pointer;">
+              <strong>ID:</strong> {{currentTransaction.SINPEID}}<br>
+              <strong>Nombre:</strong> {{currentTransaction.SINPEName}}<br>
+              <strong>Detalle:</strong> {{currentTransaction.SINPENote}}<br>
+              <strong>Monto:</strong> ₡{{currentTransaction.SINPEAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}<br>
+              <strong>Fecha:</strong> {{parseHour(currentTransaction.SINPEReceivedDate)}}
+            </b-list-group-item>
+          </b-list-group>
+          <br><br>
+          <h4><strong>Validar por token:</strong></h4>
+          <br>
+          <div style="display: flex;">
+            <b-form-input v-model="tokenValue" placeholder="Token" style="width: 79%; margin-right: 1%;"></b-form-input>
+            <b-button @click="validateToken()" variant="success">Validar</b-button>
+          </div>
+
+        </div>
+        <div v-else style="text-align: center;">
+          <br>
+          <span class="spinner-glow spinner-glow-primary"></span>
+        </div>
+      </div>
+    </b-modal>
 
 
     <div v-if="agentType == 'admin'">
@@ -348,6 +378,10 @@ export default {
 
   data() {
     return {
+      tokenValue: null,
+      currentTransactions: null,
+      validatePaymentMethodLoader: false,
+      SINPE: null,
       queryInterval: null,
      
       agentType: '',
@@ -537,142 +571,6 @@ export default {
       })
     },
 
-    /*
-
-    reverseTransaction(transaction){
-      this.$swal({
-        title: "Reversar transacción",
-        html: 
-        `
-        Está a punto de reversar la transacción ${transaction.transactionID}<br>
-        <strong>¿Desea continuar?</strong>
-        `,
-        showCancelButton: true,
-        confirmButtonColor: "#1aad55",
-        cancelButtonText: "Cancelar",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Aceptar"
-      }).then((result) => {
-        if (result.isConfirmed == true){
-          axios.post(constants.routes.backendAPI+'/reverseTransaction', 
-          {
-            transactionID: transaction.transactionID
-          }).then((response) =>{
-            if (response.data.success){
-              if (this.selectedTransactionStores[transaction.transactionID]){
-                delete this.selectedTransactionStores[transaction.transactionID];
-              }
-              if (this.filtering == true){
-                this.filter();
-              } else {
-                this.selectUsedTransactions();
-              }
-              this.showNotification('success', 'Transacción reversada', 'Se ha reversado exitosamente la transacción.')
-            } else {
-              this.showNotification('danger', 'Error al reversar la transacción', 'Ha ocurrido un error inesperado al reversar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-            }
-          }).catch(() => {
-            this.showNotification('danger', 'Error al reversar la transacción', 'Ha ocurrido un error inesperado al reversar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-          })
-        }
-      });
-    },
-
-    validateTransaction(transaction){
-      if (this.agentType == 'locality'){
-        if (transaction.transactionApproverLocalityAgentID != 0){
-          this.$swal({
-            title: "Transacción a validar",
-            html: 
-            `
-            <strong>Número de referencia: </strong> ${transaction.transactionID} <br>
-            <strong>Descripción: </strong> ${transaction.transactionNote} <br>
-            <strong>Monto: </strong> ${transaction.transactionAmount} <br>
-            <strong>Fecha: </strong> ${transaction.transactionDate} <br><br>
-            <strong>Aprovado por: </strong> ${this.approverOptions.find(option => option.value === transaction.transactionApproverLocalityAgentID).text} <br>
-            <strong>Localidad: </strong> ${this.localityName}
-            `,
-            showCancelButton: true,
-            confirmButtonColor: "#1aad55",
-            cancelButtonText: "Cancelar",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Aceptar"
-          }).then((result) => {
-            if (result.isConfirmed == true){
-              axios.post(constants.routes.backendAPI+'/syncTransaction', 
-              {
-                transactionID: transaction.transactionID,
-                transactionStore: localStorage.getItem('localityID'),
-                transactionApprover: transaction.transactionApproverLocalityAgentID,
-                transactionRelatedMessageID: null
-              }).then((response) =>{
-                if (response.data.success){
-                  if (this.selectedTransactionApprovers[transaction.transactionID]){
-                    delete this.selectedTransactionApprovers[transaction.transactionID];
-                  }
-                  this.selectNotUsedTransactions();
-                  this.showNotification('success', 'Transacción validada', 'Se ha validado exitosamente la transacción.')
-                } else {
-                  this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-                }
-              }).catch(() => {
-                this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-              })
-            }
-          });
-        } else {
-          this.showNotification('danger', 'Error al validar transacción', 'Debe seleccionar el nombre de quien aprueba la transacción. Seleccione un nombre e intentelo de nuevo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        }
-
-      } else {
-
-        if (transaction.transactionStoreLocalityID != 0){
-          this.$swal({
-            title: "Transacción a validar",
-            html: 
-            `
-            <strong>Número de referencia: </strong> ${transaction.transactionID} <br>
-            <strong>Descripción: </strong> ${transaction.transactionNote} <br>
-            <strong>Monto: </strong> ${transaction.transactionAmount} <br>
-            <strong>Fecha: </strong> ${transaction.transactionDate} <br><br>
-            <strong>Aprovado por: </strong> ${this.agentName} <br>
-            <strong>Localidad: </strong> ${this.localitiesOptions.find(option => option.value === transaction.transactionStoreLocalityID).text}
-            `,
-            showCancelButton: true,
-            confirmButtonColor: "#1aad55",
-            cancelButtonText: "Cancelar",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Aceptar"
-          }).then((result) => {
-            if (result.isConfirmed == true){
-              axios.post(constants.routes.backendAPI+'/syncTransaction', 
-              {
-                transactionID: transaction.transactionID,
-                transactionStore: transaction.transactionStoreLocalityID,
-                transactionApprover: localStorage.getItem('agentID'),
-                transactionRelatedMessageID: null
-              })
-              .then((response) =>{
-                if (response.data.success){
-                  this.selectNotUsedTransactions();
-                  this.showNotification('success', 'Transacción validada', 'Se ha validado exitosamente la transacción.')
-                } else {
-                  this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-                }
-              })
-              .catch(() => {
-                this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-              })
-            }
-          });
-        } else {
-          this.showNotification('danger', 'Error al validar transacción', 'Debe seleccionar el nombre de la sucursal de la transacción. Seleccione un nombre e intentelo de nuevo. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        }
-
-      }
-    },
-    */
-
     showNotification(notificationType, notificationTitle, notificationContent){
       this.$bvToast.toast(notificationContent, {
         title: notificationTitle,
@@ -715,6 +613,47 @@ export default {
       })
       .catch(() => {
         this.showNotification('danger', 'Error al consultar las órdenes con SINPE por confirmar', 'Ha ocurrido un error inesperado al consultar las órdenes con SINPE por confirmar. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+    syncTransactionToMessage(currentTransaction){
+      axios.post(constants.routes.backendAPI+'/syncTransaction',
+      {
+        SINPEID: currentTransaction.SINPEID,
+        SINPEAgentID: localStorage.getItem('agentID')
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.showNotification('success', 'Transacción validada', 'Se ha validado la transacción exitosamente.')
+          this.$root.$emit('bv::hide::modal', 'paymentMethodValidatorModal');
+          this.updateWhatsappInvoiceSINPE(this.SINPE.whatsappInvoiceID, this.SINPE.whatsappInvoiceSINPEApproved);
+        } else {
+          this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    },
+
+    validatePaymentMethod(SINPE){ 
+      this.validatePaymentMethodLoader = true;
+      this.currentTransactions = null;
+      this.SINPE = SINPE;
+      this.tokenValue = null;
+      axios.post(constants.routes.backendAPI+'/selectSINPE')
+      .then((response) =>{
+        this.validatePaymentMethodLoader = false;
+        if (response.data.success){
+          this.currentTransactions = response.data.result;
+          
+        } else {
+          this.showNotification('danger', 'Error al consultar las transacciones', 'Ha ocurrido un error inesperado al consultar las transacciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch(() => {
+        this.validatePaymentMethodLoader = false;
+        this.showNotification('danger', 'Error al consultar las transacciones', 'Ha ocurrido un error inesperado al consultar las transacciones. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
     },
 
