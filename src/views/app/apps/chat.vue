@@ -4063,10 +4063,11 @@ export default {
       } else if (regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientNote) == false){
         this.showNotification('danger', 'Nota del envío incompleta', 'Por favor, seleccione una nota del envío para generar la orden, e intentelo nuevamente');
         return false;
-      } else if (this.currentActiveConversation.SINPEValidated != 'yes' && this.whatsappInvoicePaymentMethod == 'SINPE (confirmado)'){
+      } 
+      /*else if (this.currentActiveConversation.SINPEValidated != 'yes' && this.whatsappInvoicePaymentMethod == 'SINPE (confirmado)'){
         this.showNotification('danger', 'SINPE no confirmado', 'Por favor, valide el pago por SINPE e intentelo nuevamente');
         return false;
-      }
+      }*/
       return true;
     },
    
