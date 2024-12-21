@@ -616,6 +616,27 @@ export default {
       })
     },
 
+    validateToken(){
+      axios.post(constants.routes.backendAPI+'/validateToken',
+      {
+        'tokenValue': this.tokenValue
+      })
+      .then((response) =>{
+        if (response.data.success){
+          this.showNotification('success', 'Transacción validada', 'Se ha validado la transacción exitosamente.')
+          this.$root.$emit('bv::hide::modal', 'paymentMethodValidatorModal');
+          this.updateWhatsappInvoiceSINPE(this.SINPE.whatsappInvoiceID, this.SINPE.whatsappInvoiceSINPEApproved);          
+        } else {
+          this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        this.$root.$emit('bv::hide::modal', 'syncTransactionModal');
+        this.$root.$emit('bv::hide::modal', 'paymentMethodValidatorModal');
+      })
+    },
+
     syncTransactionToMessage(currentTransaction){
       axios.post(constants.routes.backendAPI+'/syncTransaction',
       {
