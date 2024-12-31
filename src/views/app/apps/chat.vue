@@ -1173,6 +1173,7 @@
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Heredia')">Heredia</b-dropdown-item>
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Metro Plaza')">Metro Plaza</b-dropdown-item>
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('San Rafael')">San Rafael</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('CC del Sur')">CC del Sur</b-dropdown-item>
 
                   </b-dropdown>
                   <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-right: 10px;" v-if="availableConversation == true">
@@ -1739,6 +1740,7 @@
                       <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Heredia')">Heredia</b-dropdown-item>
                       <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Metro Plaza')">Metro Plaza</b-dropdown-item>
                       <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('San Rafael')">San Rafael</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('CC del Sur')">CC del Sur</b-dropdown-item>
 
 
                     </b-dropdown>
@@ -4674,6 +4676,9 @@ export default {
       } else if (locationName == 'San Rafael'){
         var latitud = 9.926916;
         var longitud = -84.134624;
+      } else if (locationName == 'CC del Sur'){
+        var latitud = 9.3256445;
+        var longitud = -83.7228464;
       }
       var repliedMessageID = '';
       if (this.repliedMessage != null){
