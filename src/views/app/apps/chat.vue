@@ -4677,8 +4677,8 @@ export default {
         var latitud = 9.926916;
         var longitud = -84.134624;
       } else if (locationName == 'CC del Sur'){
-        var latitud = 9.3256445;
-        var longitud = -83.7228464;
+        var latitud = 9.917513;
+        var longitud = -84.071599;
       }
       var repliedMessageID = '';
       if (this.repliedMessage != null){
