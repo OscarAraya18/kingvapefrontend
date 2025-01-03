@@ -305,6 +305,10 @@ const routes = [
             component: () => import("./views/app/apps/chat"),
           },
           {
+            path: "webpage",
+            component: () => import("./views/app/apps/webpage"),
+          },
+          {
             path: "ranking",
             component: () => import("./views/app/apps/ranking"),
           },
