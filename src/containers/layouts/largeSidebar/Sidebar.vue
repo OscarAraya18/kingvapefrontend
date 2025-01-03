@@ -32,7 +32,22 @@
           >
             <router-link tag="a" class="nav-item-hold" to="/app/apps/chat">
               <i class="nav-icon i-Speach-Bubble-3"></i>
-              <span class="nav-text"><strong>CHAT</strong></span>
+              <span class="nav-text"><strong>WHATSAPP</strong></span>
+            </router-link>
+            <div class="triangle"></div>
+          </li>
+
+          <li
+            v-if="locality == false && localityAgent == false && (agentName != 'Mile Cruz')"
+            @mouseenter="toggleSubMenu"
+            class="nav-item"
+            data-item="webpage"
+            :class="{ active: selectedParentMenu == 'webpage' }"
+            :data-submenu="false"
+          >
+            <router-link tag="a" class="nav-item-hold" to="/app/apps/webpage">
+              <i class="nav-icon i-Chrome"></i>
+              <span class="nav-text"><strong>WEBPAGE</strong></span>
             </router-link>
             <div class="triangle"></div>
           </li>
