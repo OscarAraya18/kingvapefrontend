@@ -71,18 +71,6 @@ export default {
           webpageOrderNote: 'Nota de prueba (acá va información relevante que coloca el cliente en la página web)',
           webpageOrderAmount: 12000,
           webpageOrderProducts: [{"CodigoP":"6226173","descripcion":"PURE VAPE MINT WATERMELON 3MG 120ML","cantidad":1,"precio":8000,"id":2,"descuento":0},{"CodigoP":"6941291536769","descripcion":"VOOPOO PNP TW30 0.3OHM 28-36W 1PCS","cantidad":1,"precio":4000,"id":2,"descuento":0}],
-        },
-        {
-          webpageOrderID: 2,
-          loader: false,
-          webpageOrderCreationDate: 'Fri Jan 03 2025 20:53:52 GMT+0000 (Coordinated Universal Time)',
-          webpageOrderClientName: 'Oscar Araya',
-          webpageOrderClientPhoneNumber: 50660694075,
-          webpageOrderClientID: 117770329,
-          webpageOrderClientEmail: 'osaronaragar15@gmail.com',
-          webpageOrderNote: 'Nota de prueba (acá va información relevante que coloca el cliente en la página web)',
-          webpageOrderAmount: 12000,
-          webpageOrderProducts: [{"CodigoP":"6226173","descripcion":"PURE VAPE MINT WATERMELON 3MG 120ML","cantidad":1,"precio":8000,"id":2,"descuento":0},{"CodigoP":"6941291536769","descripcion":"VOOPOO PNP TW30 0.3OHM 28-36W 1PCS","cantidad":1,"precio":4000,"id":2,"descuento":0}],
         }
       ],
       webpageOrderColumns:
@@ -91,6 +79,7 @@ export default {
         {label: "Fecha", field: "webpageOrderCreationDate"},
         {label: "Nombre", field: "webpageOrderClientName"},
         {label: "Número", field: "webpageOrderClientPhoneNumber"},
+        {label: "Cédula", field: "webpageOrderClientID"},
         {label: "Correo", field: "webpageOrderClientEmail"},
         {label: "Nota", field: "webpageOrderNote"},
         {label: "Monto", field: "webpageOrderAmount"},
@@ -147,6 +136,7 @@ export default {
         'agentID': localStorage.getItem('agentID')
       };
       axios.post(constants.routes.backendAPI+'/processWebpageOrder', processWebpageOrderRequestQuery).then((response) =>{
+        console.log(response.data);
         if (response.data.success){
           this.showNotification('success', 'Conversación iniciada', 'Se ha iniciado una conversación con el cliente de la órden "' + webpageOrder.webpageOrderID + '".')
         } else {

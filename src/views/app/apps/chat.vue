@@ -5418,7 +5418,6 @@ export default {
         whatsappConversationIsActive: true
       })
       .then((response) =>{
-        
         if (response.data.success){
           const respondedActiveConversations = response.data.result;
           const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
@@ -5426,7 +5425,7 @@ export default {
 
           if (ordenesActualesLocalStorage){
             for (var activeConversationID in respondedActiveConversations){
-              var activeConversation = respondedActiveConversations[activeConversationID];
+              var activeConversation = respondedActiveConversations[activeConversationID];              
               var activeConversationRecipientPhoneNumber = activeConversation.whatsappConversationRecipientPhoneNumber;
               if (ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber]){
                 activeConversation['whatsappConversationProducts'] = ordenesActualesLocalStorage[activeConversationRecipientPhoneNumber];
