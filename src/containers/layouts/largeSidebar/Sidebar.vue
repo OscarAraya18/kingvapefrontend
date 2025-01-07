@@ -47,7 +47,10 @@
           >
             <router-link tag="a" class="nav-item-hold" to="/app/apps/webpage">
               <i class="nav-icon i-Chrome"></i>
-              <span class="nav-text"><strong>WEBPAGE</strong></span>
+              <div style="display: flex; width: 100%; justify-content: center; align-items: center;">
+                <span class="nav-text"><strong>WEBPAGE</strong></span>
+                <b-badge v-if="webpageOrderAmount != null && webpageOrderAmount != 0" variant="primary" style="margin-left: 5px;">{{ webpageOrderAmount }}</b-badge>
+              </div>
             </router-link>
             <div class="triangle"></div>
           </li>
@@ -921,6 +924,10 @@ export default {
 
   data() {
     return {
+      webpageOrderAmount: null,
+
+      webpageOrderInterval: null,
+
       isDisplay: true,
       isMenuOver: false,
       isStyle: true,
@@ -942,10 +949,19 @@ export default {
       initialDateOption: '',
       endDateOption: '',
 
-      passwordInput: ''
+      passwordInput: '',
+      url: 'https://souqbackend-production.up.railway.app',
+
     };
   },
-  mounted() {
+  async mounted() {
+
+    await this.selectWebpageOrderFromCallcenterCount();
+    this.webpageOrderInterval = setInterval(async () => {
+      await this.selectWebpageOrderFromCallcenterCount();      
+    }, 4000);
+
+
     this.toggleSelectedParentMenu();
     window.addEventListener("resize", this.handleWindowResize);
     document.addEventListener("click", this.returnSelectedParentMenu);
@@ -975,6 +991,10 @@ export default {
   },
 
   beforeDestroy() {
+    if (webpageOrderInterval){
+      clearInterval(webpageOrderInterval);
+    }
+
     document.removeEventListener("click", this.returnSelectedParentMenu);
     window.removeEventListener("resize", this.handleWindowResize);
   },
@@ -990,102 +1010,6 @@ export default {
       "changeSidebarProperties",
     ]),
 
-    cleanPassword(){
-      this.passwordInput = '';
-    },
-
-    generateTodayInvoice(){
-      if (localStorage.getItem('localityPassword') == this.passwordInput){
-        axios.post(constants.routes.backendAPI+'/generateTodayInvoice', {
-          localityID: localStorage.getItem('localityID')
-        }).then((response) =>{
-          if (response.data.success){
-            alert('entro')
-            const invoiceBase64 = response.data.result;
-            const byteCharacters = atob(invoiceBase64);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray], { type: 'application/pdf' });
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = 'Reporte de transacciones.pdf';
-            link.click();
-          } else {
-            this.showNotification('danger', 'Error al generar la factura', 'Ha ocurrido un error inesperado al generar la factura. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-          }
-        })
-        .catch(() => {
-          this.showNotification('danger', 'Error al generar la factura', 'Ha ocurrido un error inesperado al generar la factura. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        })
-      } else {
-        this.showNotification('danger', 'Contraseña de administrador incorrecta', 'Por favor coloque la contraseña correcta para generar el cierre. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-      }
-    },
-
-    generateInvoice(){
-      var localities = [];
-      var agents = [];
-      for (var localityIndex in this.localitiesOptions){
-        if (this.localitiesOptions[localityIndex].selected){
-          localities.push(this.localitiesOptions[localityIndex].localityID);
-        }
-      }
-      for (var agentIndex in this.agentOptions){
-        if (this.agentOptions[agentIndex].selected && this.agentOptions[agentIndex].visible){
-          agents.push(this.agentOptions[agentIndex].agentID);
-        }
-      }
-      axios.post(constants.routes.backendAPI+'/generateInvoice', {
-        localities: localities,
-        agents: agents,
-        initialDate: this.initialDateOption,
-        endDate: this.endDateOption
-      }).then((response) =>{
-        if (response.data.success){
-          const invoiceBase64 = response.data.result;
-          const byteCharacters = atob(invoiceBase64);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-              byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          const blob = new Blob([byteArray], { type: 'application/pdf' });
-          const link = document.createElement('a');
-          link.href = window.URL.createObjectURL(blob);
-          link.download = 'Reporte de transacciones.pdf';
-          link.click();
-        } else {
-          this.showNotification('danger', 'Error al generar la factura', 'Ha ocurrido un error inesperado al generar la factura. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        }
-      })
-      .catch(() => {
-        this.showNotification('danger', 'Error al generar la factura', 'Ha ocurrido un error inesperado al generar la factura. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-      })
-    },
-
-    cleanFilter(){
-      this.initialDateOption = '';
-      this.endDateOption = '';
-      for (var agentIndex in this.agentOptions){
-        this.agentOptions[agentIndex].visible = true;
-        this.agentOptions[agentIndex].selected = true;
-      }
-      for (var localityIndex in this.localitiesOptions){
-        this.localitiesOptions[localityIndex].selected = true;
-      }
-    },
-
-    changeLocalityOptions(locality){
-      for (var agentIndex in this.agentOptions){
-        if (this.agentOptions[agentIndex].localityID == locality.localityID){
-          this.agentOptions[agentIndex].visible = !this.agentOptions[agentIndex].visible;
-        }
-      }
-    },
-
     showNotification(notificationType, notificationTitle, notificationContent){
       this.$bvToast.toast(notificationContent, {
         title: notificationTitle,
@@ -1094,53 +1018,7 @@ export default {
       });
     },
 
-    selectLocalityAgents(){
-      axios.post(constants.routes.backendAPI+'/selectAllLocalityAgents').then((response) =>{
-        if (response.data.success){
-          this.agentOptions = [];
-          for (var agentIndex in response.data.result){
-            const agentID = response.data.result[agentIndex].agentID;
-            const agentName = response.data.result[agentIndex].agentName;
-            const localityID = response.data.result[agentIndex].localityID;
-            this.agentOptions.push({agentID: agentID, agentName: agentName, localityID: localityID, selected: true, visible: true});
-          }
-        } else {
-          this.showNotification('danger', 'Error al consultar los agentes', 'Ha ocurrido un error inesperado al consultar los agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        }
-      })
-      .catch(() => {
-        this.showNotification('danger', 'Error al consultar los agentes', 'Ha ocurrido un error inesperado al consultar los agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-      })
-    },
 
-    selectLocalities(){
-      axios.post(constants.routes.backendAPI+'/selectLocalities')
-      .then((response) =>{
-        if (response.data.success){
-          this.localitiesOptions = [];
-          for (var localityIndex in response.data.result){
-            const localityID = response.data.result[localityIndex].localityID;
-            const localityName = response.data.result[localityIndex].localityName;
-            this.localitiesOptions.push({localityID: localityID, localityName: localityName, selected: true});
-          }
-        } else {
-          this.showNotification('danger', 'Error al consultar las localidades', 'Ha ocurrido un error inesperado al consultar las localidades. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-        }
-      })
-      .catch(() => {
-        this.showNotification('danger', 'Error al consultar las localidades', 'Ha ocurrido un error inesperado al consultar las localidades. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
-      })
-    },
-
-    openInvoiceModal(){
-      this.selectLocalityAgents();
-      this.selectLocalities();
-    },
-
-    openAgents(){
-      router.push('/app/apps/chat')
-
-    },
 
     handleWindowResize() {
       //  console.log('not working is Mobile');
@@ -1193,6 +1071,25 @@ export default {
         this.toggleSelectedParentMenu();
       }
     },
+
+    async selectWebpageOrderFromCallcenterCount(){
+      const previousWebpageOrderAmount = this.webpageOrderAmount;
+
+      axios.post(this.url + '/webpage/functions/selectWebpageOrderFromCallcenterCount').then((response) =>{
+        if (response.data.success){
+          this.webpageOrderAmount = response.data.result;
+          if (this.webpageOrderAmount > previousWebpageOrderAmount && previousWebpageOrderAmount != null){
+            var soundToPlay = new Audio(require('../../../assets/pageAssets/webpage.wav'));
+            soundToPlay.play();
+          }
+        } else {
+          this.showNotification('danger', 'Error al consultar los pedidos de la página web', 'Ha ocurrido un error inesperado al consultar los pedidos de la página web. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al consultar los pedidos de la página web', 'Ha ocurrido un error inesperado al consultar los pedidos de la página web. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    }, 
 
     toggleSidebarDropdwon(event) {
       let dropdownMenus = this.$el.querySelectorAll(".dropdown-sidemenu.open");

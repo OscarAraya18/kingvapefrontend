@@ -8,14 +8,14 @@
         :line-numbers="false"
       >
         <template slot="table-row" slot-scope="props">
-          <div v-if="props.column.field == 'webpageOrderCreationDate'">
-            <p>{{ parseDate(props.row.webpageOrderCreationDate) }}</p>
+          <div v-if="props.column.field == 'webpageOrderCreationDatetime'">
+            <p>{{ props.row.webpageOrderCreationDatetime }}</p>
           </div>
           <div v-else-if="props.column.field == 'webpageOrderClientPhoneNumber'">
             <p>{{ parsePhoneNumber(props.row.webpageOrderClientPhoneNumber) }}</p>
           </div>
           <div v-else-if="props.column.field == 'webpageOrderNote'">
-            <div style="width: 400px;">
+            <div style="width: 300px;">
               <p>{{ props.row.webpageOrderNote }}</p>
             </div>
           </div>
@@ -27,9 +27,10 @@
             <b-tooltip placement="left" :target="'tooltip'+props.row.webpageOrderID">
               <div v-for="webpageProduct in props.row.webpageOrderProducts">
                 <br>
-                <p style="margin: 5px;"><strong>SKU: </strong>{{ webpageProduct.CodigoP }}</p>
-                <p style="margin: 5px;"><strong>NOMBRE: </strong>{{ webpageProduct.descripcion }}</p>
-                <p style="margin: 5px;"><strong>CANTIDAD: </strong>{{ webpageProduct.cantidad }}</p>
+                <p style="margin: 5px;"><strong>SKU: </strong>{{ webpageProduct.productID }}</p>
+                <p style="margin: 5px;"><strong>NOMBRE: </strong>{{ webpageProduct.productName }}</p>
+                <p style="margin: 5px;"><strong>PRECIO: </strong>₡ {{ webpageProduct.productPrice.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
+                <p style="margin: 5px;"><strong>CANTIDAD: </strong>{{ webpageProduct.productAmount }}</p>
                 <br>
               </div>
             </b-tooltip>
@@ -58,28 +59,16 @@ export default {
 
   data() {
     return {
-      webpageOrderRows: 
-      [
-        {
-          webpageOrderID: 1,
-          loader: false,
-          webpageOrderCreationDate: 'Fri Jan 03 2025 20:53:52 GMT+0000 (Coordinated Universal Time)',
-          webpageOrderClientName: 'Oscar Araya',
-          webpageOrderClientPhoneNumber: 50660694075,
-          webpageOrderClientID: 117770329,
-          webpageOrderClientEmail: 'osaronaragar15@gmail.com',
-          webpageOrderNote: 'Nota de prueba (acá va información relevante que coloca el cliente en la página web)',
-          webpageOrderAmount: 12000,
-          webpageOrderProducts: [{"CodigoP":"6226173","descripcion":"PURE VAPE MINT WATERMELON 3MG 120ML","cantidad":1,"precio":8000,"id":2,"descuento":0},{"CodigoP":"6941291536769","descripcion":"VOOPOO PNP TW30 0.3OHM 28-36W 1PCS","cantidad":1,"precio":4000,"id":2,"descuento":0}],
-        }
-      ],
+      url: 'https://souqbackend-production.up.railway.app',
+
+      webpageOrderRows: [],
       webpageOrderColumns:
       [
         {label: "ID", field: "webpageOrderID"},
-        {label: "Fecha", field: "webpageOrderCreationDate"},
+        {label: "Fecha", field: "webpageOrderCreationDatetime"},
         {label: "Nombre", field: "webpageOrderClientName"},
         {label: "Número", field: "webpageOrderClientPhoneNumber"},
-        {label: "Cédula", field: "webpageOrderClientID"},
+        {label: "Cédula", field: "webpageOrderClientSSN"},
         {label: "Correo", field: "webpageOrderClientEmail"},
         {label: "Nota", field: "webpageOrderNote"},
         {label: "Monto", field: "webpageOrderAmount"},
@@ -128,20 +117,49 @@ export default {
       });
     },
 
+
+    async selectWebpageOrderFromCallcenter(webpageOrderID, whatsappConversationID){
+      const selectWebpageOrderFromCallcenterRequestQuery =
+      {
+        'webpageOrderID': webpageOrderID,
+        'whatsappConversationID': whatsappConversationID
+      };
+      axios.post(this.url + '/webpage/functions/selectWebpageOrderFromCallcenter', selectWebpageOrderFromCallcenterRequestQuery).then((response) =>{
+        if (response.data.success){
+          this.webpageOrderRows = response.data.result.map(webpageOrderRow => ({
+            ...webpageOrderRow,
+            'loader': false
+          }));
+        } else {
+          this.showNotification('danger', 'Error al consultar los pedidos de la página web', 'Ha ocurrido un error inesperado al consultar los pedidos de la página web. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+        }
+      })
+      .catch(() => {
+        this.showNotification('danger', 'Error al consultar los pedidos de la página web', 'Ha ocurrido un error inesperado al consultar los pedidos de la página web. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
+      })
+    }, 
+
     async processWebpageOrder(webpageOrder){
       webpageOrder.loader = true;
       const processWebpageOrderRequestQuery =
       {
         'webpageOrderID': webpageOrder.webpageOrderID,
+        'webpageOrderClientName': webpageOrder.webpageOrderClientName,
+        'webpageOrderClientPhoneNumber': webpageOrder.webpageOrderClientPhoneNumber,
+        'webpageOrderClientSSN': webpageOrder.webpageOrderClientSSN,
+        'webpageOrderClientEmail': webpageOrder.webpageOrderClientEmail,
+        'webpageOrderNote': webpageOrder.webpageOrderNote,
+        'webpageOrderAmount': webpageOrder.webpageOrderAmount,
+        'webpageOrderProducts': webpageOrder.webpageOrderProducts,
         'agentID': localStorage.getItem('agentID')
       };
-      axios.post(constants.routes.backendAPI+'/processWebpageOrder', processWebpageOrderRequestQuery).then((response) =>{
-        console.log(response.data);
+      axios.post(constants.routes.backendAPI+'/processWebpageOrder', processWebpageOrderRequestQuery).then(async (response) =>{
         if (response.data.success){
           this.showNotification('success', 'Conversación iniciada', 'Se ha iniciado una conversación con el cliente de la órden "' + webpageOrder.webpageOrderID + '".')
         } else {
           this.showNotification('danger', 'Error al procesar el pedido de la página web', 'Ha ocurrido un error inesperado al procesar el pedido de la página web. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
+        await this.selectWebpageOrderFromCallcenter(webpageOrder.webpageOrderID, response.data.result);
         webpageOrder.loader = false;
       })
       .catch(() => {
@@ -161,8 +179,8 @@ export default {
 
   },
 
-  mounted(){    
-    
+  async mounted(){    
+    await this.selectWebpageOrderFromCallcenter(null, null);
   }, 
 
   beforeDestroy(){

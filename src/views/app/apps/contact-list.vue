@@ -821,27 +821,7 @@
     </div>
     <br><br><br>
 
-    <div style="display: flex;">
-      <div style="width: 30%; margin-right: 5%;">
-        <h4><strong>Filtro por fecha inicial:</strong></h4>
-        <b-form-datepicker v-model="initialDateFiltered"></b-form-datepicker>
-        <br>
-        <h4><strong>Filtro por fecha final:</strong></h4>
-        <b-form-datepicker v-model="endDateFiltered"></b-form-datepicker>
-        <br>
-        <h4><strong>Filtro por agente:</strong></h4>
-        <b-form-select v-model="agentFiltered" class="mb-3" :options="agentOptions"></b-form-select>
-      </div>
-
-      <div style="width: 45%; display: flex;">
-        <apexchart v-if="opcionesGraficoTotal != null && datosGraficoTotal.length != 0" type="pie" width="300" :options="opcionesGraficoTotal" :series="datosGraficoTotal"></apexchart>
-        <apexchart v-if="opcionesGraficoVenta != null && datosGraficoVenta.length != 0" type="pie" width="400" :options="opcionesGraficoVenta" :series="datosGraficoVenta"></apexchart>
-        <apexchart v-if="opcionesGraficoContacto != null && datosGraficoContacto.length != 0" type="pie" width="400" :options="opcionesGraficoContacto" :series="datosGraficoContacto"></apexchart>
-
-      </div>
-    </div>
     
-    <br><br>
 
     <div v-if="loaderReport" style="text-align: center;">
       <br>
@@ -851,7 +831,44 @@
 
       <b-card style="background-color: #e8e8e8; max-height: 750px; overflow-y: auto;">
 
-        <br>
+          <div style="display: flex;">
+            <div style="width: 31%; margin-right: 1%; margin-left: 1%;">
+              <h4><strong>Filtro por fecha inicial:</strong></h4>
+              <b-form-datepicker v-model="initialDateFiltered"></b-form-datepicker>
+            </div>
+            <div style="width: 31%; margin-right: 1%; margin-left: 1%;">
+              <h4><strong>Filtro por fecha final:</strong></h4>
+              <b-form-datepicker v-model="endDateFiltered"></b-form-datepicker>
+            </div>
+            <div style="width: 31%; margin-right: 1%; margin-left: 1%;">
+              <h4><strong>Filtro por agente:</strong></h4>
+              <b-form-select v-model="agentFiltered" class="mb-3" :options="agentOptions"></b-form-select>
+            </div>
+          </div>
+
+          <br><br>
+          <div style="width: 100%; display: flex; justify-content: center; gap: 20px;">
+            <apexchart v-if="opcionesGraficoTotal != null && datosGraficoTotal.length != 0" 
+                      type="pie" 
+                      width="400" 
+                      :options="opcionesGraficoTotal" 
+                      :series="datosGraficoTotal">
+            </apexchart>
+            <apexchart v-if="opcionesGraficoVenta != null && datosGraficoVenta.length != 0" 
+                      type="pie" 
+                      width="400" 
+                      :options="opcionesGraficoVenta" 
+                      :series="datosGraficoVenta">
+            </apexchart>
+            <apexchart v-if="opcionesGraficoContacto != null && datosGraficoContacto.length != 0" 
+                      type="pie" 
+                      width="400" 
+                      :options="opcionesGraficoContacto" 
+                      :series="datosGraficoContacto">
+            </apexchart>
+          </div>
+
+        <br><br><br>
         
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div>
@@ -861,10 +878,10 @@
             <h3><strong>Recuperado:</strong> ₡ {{ this.clientReport.reduce((total, item) => {return total + item.whatsappConversationAmount}, 0).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h3>
           </div>
           <div style="display: flex">
-            <div style="margin-right: 10px; padding: 10px; background-color: #fed330; border-radius: 30px; font-size: x-large; font-weight: bold;"> {{ this.clientReport.filter(client => client.whatsappConversationLocalityName == '1' && client.whatsappConversationAmount != 0).length}}</div>
-            <div style="margin-right: 10px; padding: 10px; background-color: #db67a3; border-radius: 30px; font-size: x-large; font-weight: bold;"> {{ this.clientReport.filter(client => client.whatsappConversationLocalityName == '4' && client.whatsappConversationAmount != 0).length}}</div>
-            <div style="margin-right: 10px; padding: 10px; background-color: #a78dcc; border-radius: 30px; font-size: x-large; font-weight: bold;"> {{ this.clientReport.filter(client => client.whatsappConversationLocalityName == '5' && client.whatsappConversationAmount != 0).length}}</div>
-            <div style="margin-right: 10px; padding: 10px; background-color: #55b5ab; border-radius: 30px; font-size: x-large; font-weight: bold;"> {{ this.clientReport.filter(client => client.whatsappConversationLocalityName == '3' && client.whatsappConversationAmount != 0).length}}</div>
+            <div style="margin-right: 10px; padding: 10px; background-color: #fed330; border-radius: 50px; font-size: x-large; font-weight: bold;"> {{ this.clientReport.filter(client => client.whatsappConversationLocalityName == '1' && client.whatsappConversationAmount != 0).length}}</div>
+            <div style="margin-right: 10px; padding: 10px; background-color: #db67a3; border-radius: 50px; font-size: x-large; font-weight: bold;"> {{ this.clientReport.filter(client => client.whatsappConversationLocalityName == '4' && client.whatsappConversationAmount != 0).length}}</div>
+            <div style="margin-right: 10px; padding: 10px; background-color: #a78dcc; border-radius: 50px; font-size: x-large; font-weight: bold;"> {{ this.clientReport.filter(client => client.whatsappConversationLocalityName == '5' && client.whatsappConversationAmount != 0).length}}</div>
+            <div style="margin-right: 10px; padding: 10px; background-color: #55b5ab; border-radius: 50px; font-size: x-large; font-weight: bold;"> {{ this.clientReport.filter(client => client.whatsappConversationLocalityName == '3' && client.whatsappConversationAmount != 0).length}}</div>
           </div>
         </div>
 
@@ -1442,7 +1459,7 @@ export default {
           const labels = this.getLabels();
           this.opcionesGraficoVenta = 
           {
-            chart: {width: 300, type: 'pie', fontSize: 20}, 
+            chart: {width: 400, type: 'pie', fontSize: 20}, 
             tooltip: {enabled: true}, 
             labels: labels,
             legend: {fontSize: '15px', show: false},
@@ -1455,7 +1472,7 @@ export default {
             chart: {width: 400, type: 'pie', fontSize: 20}, 
             tooltip: {enabled: true}, 
             labels: labels,
-            legend: {fontSize: '15px'},
+            legend: {fontSize: '15px', show: false},
             colors: this.getColors(labels)
           };
           this.datosGraficoContacto = this.getDatos2(labels);
@@ -1466,7 +1483,7 @@ export default {
             chart: {width: 400, type: 'pie', fontSize: 20}, 
             tooltip: {enabled: true}, 
             labels: ['Vendido', 'No vendido'],
-            legend: {fontSize: '15px'},
+            legend: {fontSize: '15px', show: false},
             colors: ['#2c6b1f', '#bd0404']
           };
           this.datosGraficoTotal = [this.clientReport.filter(clientReport => clientReport.whatsappConversationCloseComment == 'Venta').length, this.clientReport.filter(clientReport => clientReport.whatsappConversationCloseComment != 'Venta').length];
