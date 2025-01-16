@@ -622,6 +622,8 @@ export default {
         'tokenValue': this.tokenValue
       })
       .then((response) =>{
+        this.updateWhatsappInvoiceSINPE(this.SINPE.whatsappInvoiceID, this.SINPE.whatsappInvoiceSINPEApproved);          
+        /*
         if (response.data.success){
           this.showNotification('success', 'Transacción validada', 'Se ha validado la transacción exitosamente.')
           this.$root.$emit('bv::hide::modal', 'paymentMethodValidatorModal');
@@ -629,6 +631,7 @@ export default {
         } else {
           this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
+        */
       })
       .catch(() => {
         this.showNotification('danger', 'Error al validar la transacción', 'Ha ocurrido un error inesperado al validar la transacción. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
