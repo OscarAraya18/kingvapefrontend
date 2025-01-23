@@ -1485,6 +1485,9 @@
                   <button v-if="availableConversation == true" id="sendPromos" class="btn btn-icon btn-rounded mr-2" style="background-color: #000000; color: white; display: none;" type="button" @click="openPromosModal()" v-b-modal.promosModal>BLACK</button>
                   <b-tooltip target="sendPromos">BLACK NOVEMBER</b-tooltip>
 
+			<button v-if="availableConversation == true" id="sendSticker" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="openSendStickerModal()" v-b-modal.sendStickerModal><i class="i-Teddy-Bear"></i></button>
+                  <b-tooltip target="sendSticker">Enviar sticker</b-tooltip>
+			
                   <button v-if="availableConversation == true" id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>
                   <b-tooltip target="sendAudio">Audio</b-tooltip>
                   <b-modal id="recordAudioModal" hide-footer hide-header size="sm" centered>
@@ -1696,7 +1699,9 @@
                   <button v-if="availableConversation == true" id="sendPromos" class="btn btn-icon btn-rounded mr-2" style="background-color: #faafed; display: none" type="button" @click="openPromosModal()" v-b-modal.promosModal><i class="i-Gift-Box"></i></button>
                   <b-tooltip target="sendPromos">Promociones</b-tooltip>
 
-
+		<button v-if="availableConversation == true" id="sendSticker" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="openSendStickerModal()" v-b-modal.sendStickerModal><i class="i-Teddy-Bear"></i></button>
+                  <b-tooltip target="sendSticker">Enviar sticker</b-tooltip>
+			
                   <button v-if="availableConversation == true" id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>
                   <b-tooltip target="sendAudio">Enviar audio</b-tooltip>
                   <b-modal id="recordAudioModal" hide-footer hide-header size="sm" centered>
