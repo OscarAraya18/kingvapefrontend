@@ -2564,7 +2564,7 @@ export default {
     quickClose(closingNumber){
       this.closingNumber = closingNumber;
       this.selectedCloseLocality = 'King Vape Center';
-      this.closeConversationReason = 'Seguimiento de productos';
+      this.closeConversationReason = 'Seguimiento de producto';
       this.wrongProducts = '';
       this.$root.$emit('bv::show::modal', 'endConversationModal');
 
