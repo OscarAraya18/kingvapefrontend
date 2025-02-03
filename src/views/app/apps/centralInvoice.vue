@@ -1,6 +1,23 @@
 <template>
   <div>
 
+    <b-modal id="confirmationModal" size="lg" centered hide-header hide-footer>
+      
+      <div v-if="updatedWhatsappInvoice">
+        <h4><strong>ID:</strong> {{ updatedWhatsappInvoice.whatsappInvoiceID }}</h4>
+        <h4><strong>Nombre:</strong> {{ updatedWhatsappInvoice.whatsappInvoiceClientName }}</h4>
+        <h4><strong>Número:</strong> {{ parsePhoneNumber(updatedWhatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</h4>
+      </div>
+      <br><br>
+      <div v-if="whatsappInvoiceState == 'X'">
+        <b-form-textarea rows="4" class="form-control" placeholder="Motivo de cancelación de la órden" v-model="whatsappInvoiceNotShippedReason"/>
+        <br><br>
+      </div>
+      <div style="text-align: center;">
+        <button @click="updateWhatsappInvoiceFromLocalityExpress()" :class="whatsappInvoiceState == 'X' ? 'btn btn-danger' : 'btn btn-success'" style="margin-right: 20px;">{{ whatsappInvoiceState == 'X' ? 'Cancelar órden' : 'Entregar órden'}}</button>
+      </div>
+    </b-modal>
+
     
     <b-modal id="mapModal" size="lg" centered hide-header hide-footer>
       <MapComponent :localityAgentOptions="localityAgentOptions" :localityAgentBillerOptions="localityAgentBillerOptions" :multipleClients="locations" :localityMap="true" mapHeight="400px" mapWidth="100%"></MapComponent>
@@ -1050,6 +1067,58 @@
           </b-card>
         </div>
       </div>
+
+      <br><br>
+
+      <div style="padding: 10px; background-color: #dedede;">
+        
+        <vue-good-table
+          :columns="whatsappInvoiceColumns"
+          :line-numbers="false"
+          styleClass="order-table vgt-table"
+          :rows="expressInvoices"
+        >
+
+          <template slot="table-row" slot-scope="props">
+            <div v-if="props.column.field == 'localityName'">
+              <p style="margin: 0px;"><strong>Localidad: </strong>{{ props.row.localityName }}</p>
+              <p style="margin: 0px;"><strong>Agente: </strong>{{ props.row.agentName }}</p>
+              <p style="margin: 0px;"><strong>Fecha: </strong>{{ parseHour(props.row.whatsappInvoiceCentralDateTime) }}</p>
+            </div>
+
+            <div v-else-if="props.column.field == 'whatsappInvoiceClientName'">
+              <p style="margin: 0px;"><strong>Nombre: </strong>{{ props.row.whatsappInvoiceClientName }}</p>
+              <p style="margin: 0px;"><strong>Teléfono: </strong>{{ parsePhoneNumber(props.row.whatsappInvoiceClientPhoneNumber) }}</p>
+            </div>
+            <div v-else-if="props.column.field == 'whatsappInvoiceAmount'">
+              <p style="margin: 0px;"><strong>Monto: </strong>₡{{ parseInt(props.row.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
+              <p style="margin: 0px;"><strong>Método: </strong>{{ parsePhoneNumber(props.row.whatsappInvoicePaymentMethod) }}</p>
+              <p style="margin: 0px;"><strong>Estado: </strong>{{ parsePhoneNumber(props.row.whatsappInvoicePaymentState) }}</p>
+            </div>
+
+            <div v-else-if="props.column.field == 'whatsappInvoiceShippingNote'">
+              <p style="margin: 0px;"><strong>Nota de entrega: </strong>{{ props.row.whatsappInvoiceShippingNote }}</p>
+              <p style="margin: 0px;"><strong>Nota de ubicación: </strong>{{ props.row.whatsappInvoiceLocationNote }}</p>
+            </div>
+
+            <div v-else-if="props.column.field == 'whatsappInvoiceProducts'">
+              <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(props.row)" class="i-Shopping-Cart text-info" style="font-size: xx-large; cursor: pointer;"></i>
+            </div>
+            <div v-else-if="props.column.field == 'whatsappInvoiceAction'">
+              <div style="display: flex;">
+                <button @click="openConfirmationModal(props.row, 'E')" class="btn btn-success" style="margin-right: 20px;" v-b-modal.confirmationModal>Entregar</button>
+                <button @click="openConfirmationModal(props.row, 'X')" class="btn btn-danger" v-b-modal.confirmationModal>Cancelar</button>
+              </div>
+            </div>
+          </template>
+
+        </vue-good-table>
+
+      </div>
+
+      <br><br>
+
+
     </div>
 
     <div v-if="agentType == 'locality'">
@@ -1429,6 +1498,8 @@ export default {
       cartagoLocalityWhatsappInvoiceAmount: 0,
       cartagoShippingWhatsappInvoiceAmount: 0,
 
+      expressInvoices: [],
+
       localityName: '',
       localityColor: '',
       localityWhatsappInvoiceAmount: 0,
@@ -1540,7 +1611,57 @@ export default {
 
       newSource: null,
       idphone: null,
-      isClient: false
+      isClient: false,
+
+
+      whatsappInvoiceColumns:
+      [
+        {
+          label: "ID",
+          field: "whatsappInvoiceID",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Órden",
+          field: "localityName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Cliente",
+          field: "whatsappInvoiceClientName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Pago",
+          field: "whatsappInvoiceAmount",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Nota",
+          field: "whatsappInvoiceShippingNote",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Productos",
+          field: "whatsappInvoiceProducts",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Actualizar estado",
+          field: "whatsappInvoiceAction",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+      ],
+
+      whatsappInvoiceState: '',
+      whatsappInvoiceNotShippedReason: ''
     };
   },
 
@@ -1556,6 +1677,43 @@ export default {
   },
   
   methods: {
+
+    updateWhatsappInvoiceFromLocalityExpress(){
+      const regularExpressionChecker = /\S/;
+      if (this.whatsappInvoiceState == 'X' && regularExpressionChecker.test(this.whatsappInvoiceNotShippedReason) == false){
+        this.showNotification('danger', 'Error al cancelar la órden', 'Debe colocar un motivo de cancelación de la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      } else {
+        this.$root.$emit('bv::hide::modal', 'confirmationModal');
+
+        axios.post(this.backendURL+'/updateWhatsappInvoiceFromLocalityExpress',
+        {
+          whatsappInvoiceID: this.updatedWhatsappInvoice.whatsappInvoiceID,
+          whatsappInvoiceState: this.whatsappInvoiceState,
+          whatsappInvoiceNotShippedReason: (this.whatsappInvoiceState == 'X' ? this.whatsappInvoiceNotShippedReason : '')
+        })
+        .then((response) =>{
+          if (response.data.success){
+            this.showNotification('success', 'Órden ' + (this.whatsappInvoiceState == 'X' ? 'cancelada' : 'entregada'), 'La órden se ha ' + (this.whatsappInvoiceState == 'X' ? 'cancelado' : 'entregado') + ' exitosamente');
+            this.selectAllActiveWhatsappInvoiceFromLocality();
+          } else {
+            this.showNotification('danger', 'Error al actualizar el estado de la órden', 'Ha ocurrido un error inesperado al actualizar el estado de la órden. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }
+        })
+        .catch(() => {
+          this.errorCount = this.errorCount + 1;
+          if (this.errorCount >= 3){
+            this.showNotification('danger', 'Error al consultar las órdenes', 'Ha ocurrido un error inesperado al consultar las órdenes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+          }  
+        })
+      }
+    },
+
+    openConfirmationModal(whatsappInvoice, whatsappInvoiceState){
+      this.updatedWhatsappInvoice = whatsappInvoice;
+      this.whatsappInvoiceState = whatsappInvoiceState;
+      this.whatsappInvoiceNotShippedReason = '';
+    },
+
     cerrarMensajeroModal(){
       this.$root.$emit('bv::hide::modal', 'mensajeroModal');
     },
@@ -2588,6 +2746,9 @@ export default {
           this.cartagoLocalityWhatsappInvoiceAmount = 0;
           this.cartagoShippingWhatsappInvoiceAmount = 0;
 
+
+          this.expressInvoices = [];
+
           const whatsappInvoices = response.data.result;
           for (var whatsappInvoiceIndex in whatsappInvoices){
             const whatsappInvoice = whatsappInvoices[whatsappInvoiceIndex];
@@ -2646,6 +2807,9 @@ export default {
               } else if (whatsappInvoice.whatsappInvoiceState == 'R'){
                 this.cartagoShippingWhatsappInvoiceAmount = this.cartagoShippingWhatsappInvoiceAmount + 1;
               }
+
+            } else {
+              this.expressInvoices.push(whatsappInvoice);
             }
           }
 

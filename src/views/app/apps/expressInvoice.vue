@@ -53,7 +53,7 @@
 
 
 
-    <vue-good-table
+  <vue-good-table
     :columns="whatsappInvoiceColumns"
     :line-numbers="false"
     styleClass="order-table vgt-table"
