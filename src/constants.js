@@ -616,8 +616,8 @@ export const storeMaps = [
   },
   {
     storeName: 'King Vape Cartago',
-    storeColor: '#55b5ab',
-    storeColorWithOpacity: 'rgba(85, 181, 171, 0.3)',
+    storeColor: '#a78dcc',
+    storeColorWithOpacity: 'rgba(159, 124, 208, 0.3)',
     storeIconSource: 'https://i.postimg.cc/SK7tjgLB/2.png',
     storeLatitude: 9.864751,
     storeLongitude: -83.925354,
@@ -969,8 +969,8 @@ export const storeMaps = [
   },
   {
     storeName: 'King Vape Heredia',
-    storeColor: '#a78dcc',
-    storeColorWithOpacity: 'rgba(159, 124, 208, 0.3)',
+    storeColor: '#55b5ab',
+    storeColorWithOpacity: 'rgba(85, 181, 171, 0.3)',
     storeIconSource: 'https://i.postimg.cc/SK7tjgLB/2.png',
     storeLatitude: 9.99168,
     storeLongitude: -84.135,
