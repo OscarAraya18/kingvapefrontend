@@ -181,21 +181,6 @@
             <div class="triangle"></div>
           </li>
 
-          <li
-            v-if="(localityName == 'King Vape Metro Plaza')"
-            @mouseenter="toggleSubMenu"
-            class="nav-item"
-            data-item="storeOrders"
-            :class="{ active: selectedParentMenu == 'storeOrders' }"
-            :data-submenu="false"
-          >
-            <router-link tag="a" class="nav-item-hold" to="/app/apps/storeOrders">
-              <i class="nav-icon i-Board"></i>
-              <span class="nav-text"><strong>ÓRDENES</strong></span>
-            </router-link>
-            <div class="triangle"></div>
-          </li>
-
 
           <li
             v-if="agentName == 'Mile Cruz' || agentName == 'Oscar'"
