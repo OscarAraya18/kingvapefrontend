@@ -88,9 +88,8 @@
             <div class="triangle"></div>
           </li>
           
-
           <li
-            v-if="(agentName != 'Mile Cruz') && (localityName != 'King Vape Metro Plaza') && (localityName != 'King Vape San Rafael')"
+            v-if="(agentName != 'Mile Cruz') && (localityType != 'Express')"
             @mouseenter="toggleSubMenu"
             class="nav-item"
             data-item="centralInvoice"
@@ -100,6 +99,21 @@
             <router-link tag="a" class="nav-item-hold" to="/app/apps/centralInvoice">
               <i class="nav-icon i-Board"></i>
               <span class="nav-text"><strong>ÓRDENES</strong></span>
+            </router-link>
+            <div class="triangle"></div>
+          </li>
+
+          <li
+            v-if="localityType == 'Express'"
+            @mouseenter="toggleSubMenu"
+            class="nav-item"
+            data-item="expressInvoice"
+            :class="{ active: selectedParentMenu == 'expressInvoice' }"
+            :data-submenu="false"
+          >
+            <router-link tag="a" class="nav-item-hold" to="/app/apps/expressInvoice">
+              <i class="nav-icon i-Board"></i>
+              <span class="nav-text"><strong>ÓRDENES (EXPRESS)</strong></span>
             </router-link>
             <div class="triangle"></div>
           </li>
@@ -936,6 +950,7 @@ export default {
       isAdmin: '',
       agentName: '',
       localityName: '',
+      localityType: '',
       ranking: false,
 
       locality: false,
@@ -980,6 +995,7 @@ export default {
     if (localStorage.getItem('locality') == 'yes'){
       this.locality = true;
       this.ranking = false;
+      this.localityType = localStorage.getItem('localityType');
       this.localityName = localStorage.getItem('localityName');
 
     }
