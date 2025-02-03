@@ -182,7 +182,7 @@
       <img v-b-modal.generalMapModal  class="hoverAnimationTranslator" style="cursor: pointer; width: 40px; height: 40px; position: relative; top: 10px;" src="@/assets/pageAssets/map.png">
     </div>
 
-    <div style="position: fixed; bottom: 105px; right: 20px;">
+    <div style="position: fixed; bottom: 45px; right: 70px;">
       <b-dropdown v-if="(ranking == false) && (locality == false) && (localityAgent == false) && (agentName != 'Mile Cruz') && (agentName != 'Pantalla')" id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
         <template slot="button-content">
           <img class="hoverAnimationTranslator" id="traductorButton" style="cursor: pointer; width: 35px; height: 40px; position: relative; top: 10px;" src="@/assets/traductor.png">

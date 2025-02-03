@@ -124,13 +124,13 @@
       </div>
 
       <apexchart v-if="opcionesGraficoContacto != null && datosGraficoContacto.length != 0" 
-                      type="pie" 
-                      width="200" 
-                      :options="opcionesGraficoContacto" 
-                      :series="datosGraficoContacto"
-                      style="margin-left: 40px;"
-                      >
-            </apexchart>
+        type="pie" 
+        width="200" 
+        :options="opcionesGraficoContacto" 
+        :series="datosGraficoContacto"
+        style="margin-left: 40px;"
+        >
+      </apexchart>
 
     </div>
     
