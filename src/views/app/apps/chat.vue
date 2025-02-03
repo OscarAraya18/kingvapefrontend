@@ -2074,9 +2074,17 @@
                                 
                                 <b-form-select v-model="whatsappInvoicePaymentState" :options="whatsappInvoicePaymentStateOptions" @change="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoicePaymentState', whatsappInvoicePaymentState)" style="margin-bottom: 10px;"></b-form-select>
                                 
-                                <b-form-select v-model="whatsappInvoiceClientLocationName" :options="whatsappInvoiceClientLocationOptions" style="margin-bottom: 10px;" @change="changeLocalStorageWhatsappInvoiceLocationInformation()"></b-form-select>
-                                <b-form-input v-model="latitud" placeholder="Latitud" style="margin-bottom: 10px;"></b-form-input>
-                                <b-form-input v-model="longitud" placeholder="Longitud" style="margin-bottom: 10px;"></b-form-input>
+                                <div style="display: flex;">
+                                  <div :style="whatsappInvoiceClientLocationName == 'Ubicación de envío' ? 'width: 100%;' : 'width: 48%; margin-right: 2%;'">
+                                    <b-form-select v-model="whatsappInvoiceClientLocationName" :options="whatsappInvoiceClientLocationOptions" style="margin-bottom: 10px;" @change="changeLocalStorageWhatsappInvoiceLocationInformation()"></b-form-select>
+                                    <b-form-input v-model="latitud" placeholder="Latitud" style="margin-bottom: 10px;"></b-form-input>
+                                    <b-form-input v-model="longitud" placeholder="Longitud" style="margin-bottom: 10px;"></b-form-input>
+                                  </div>
+                                  <div v-if="whatsappInvoiceClientLocationName != 'Ubicación de envío'" style="width: 48%; margin-left: 2%;">
+                                    <MapComponent v-if="showMap2" mapHeight="120px" mapWidth="100%" :clientLongitude="longitud" :clientLatitude="latitud"></MapComponent>
+
+                                  </div>
+                                </div>
 
                                 <b-form-input v-model="whatsappInvoiceClientLocationURL" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientLocationURL', whatsappInvoiceClientLocationURL)" placeholder="Enlace de ubicación" style="margin-bottom: 10px;"></b-form-input>
 
@@ -2238,6 +2246,7 @@ export default {
       insertContactReminderMessage: null,
 
       showMap: false,
+      showMap2: false,
 
       catalogoNicotinaBuscado: '',
       catalogoSinNicotinaBuscado: '',
@@ -3294,6 +3303,7 @@ export default {
     },
 
     changeLocalStorageWhatsappInvoiceLocationInformation(){
+      this.toggleMap2();
       const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
       if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
         datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationName'] = this.whatsappInvoiceClientLocationName;
@@ -5077,8 +5087,16 @@ export default {
       });
     },
 
+    toggleMap2() {
+      this.showMap2 = false;
+      this.$nextTick(() => {
+        this.showMap2 = true;
+      });
+    },
+
     changeCurrentActiveConversation(currentActiveConversation, activeConversationID){
       this.toggleMap();
+      this.toggleMap2();
         this.currentActiveConversationID = activeConversationID;
 
 
