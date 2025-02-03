@@ -27,14 +27,14 @@
             @mouseenter="toggleSubMenu"
             class="nav-item"
             data-item="chat"
-            :class="{ active: selectedParentMenu == 'chat' }"
+            :class="{ active: selectedParentMenu == 'chat'}"
             :data-submenu="false"
           >
-            <router-link tag="a" class="nav-item-hold" to="/app/apps/chat">
-              <i class="nav-icon i-Speach-Bubble-3"></i>
-              <span class="nav-text"><strong>WHATSAPP</strong></span>
+            <router-link tag="a" to="/app/apps/chat">
+              <div style="padding: 15px;" @click="handleClick('chat')" :class="{clicked: isClicked === 'chat'}">
+                <img src="@/assets/sidebarIcons/whatsapp.png" alt style="width: 250px; height: auto;"/>
+              </div>
             </router-link>
-            <div class="triangle"></div>
           </li>
 
           <li
@@ -45,16 +45,12 @@
             :class="{ active: selectedParentMenu == 'webpage' }"
             :data-submenu="false"
           >
-            <router-link tag="a" class="nav-item-hold" to="/app/apps/webpage">
-              <i class="nav-icon i-Chrome"></i>
-              <div style="display: flex; width: 100%; justify-content: center; align-items: center;">
-                <span class="nav-text"><strong>WEBPAGE</strong></span>
-                <b-badge v-if="webpageOrderAmount != null && webpageOrderAmount != 0" variant="primary" style="margin-left: 5px;">{{ webpageOrderAmount }}</b-badge>
+            <router-link tag="a" to="/app/apps/webpage">
+              <div style="padding: 19px;" @click="handleClick('webpage')" :class="{clicked: isClicked === 'webpage'}">
+                <img src="@/assets/sidebarIcons/webpage.png" alt style="width: 80px; height: auto;"/>
               </div>
             </router-link>
-            <div class="triangle"></div>
           </li>
-
 
 
           <li
@@ -65,15 +61,13 @@
             :class="{ active: selectedParentMenu == 'contacts' }"
             :data-submenu="false"
           >
-            <router-link tag="a" class="nav-item-hold" to="/app/apps/contact-list">
-              <i class="nav-icon i-MaleFemale"></i>
-              <span class="nav-text"><strong>CONTACTOS</strong></span>
+            <router-link tag="a" to="/app/apps/contact-list">
+              <div style="padding: 10px;" @click="handleClick('contacts')" :class="{clicked: isClicked === 'contacts'}">
+                <img src="@/assets/sidebarIcons/contacts.png" alt style="width: 250px; height: auto;"/>
+              </div>
             </router-link>
-            <div class="triangle"></div>
           </li>
-
       
-
           <li
             @mouseenter="toggleSubMenu"
             :class="{ active: selectedParentMenu == 'dashboards' }"
@@ -81,13 +75,14 @@
             data-item="dashboards"
             v-if="isAdmin == true && locality == false"
           >
-            <router-link tag="a" class="nav-item-hold" to="/app/dashboards/dashboard.v1">
-              <i class="nav-icon i-Financial"></i>
-              <span class="nav-text"><strong>DASHBOARD</strong></span>
-            </router-link>
-            <div class="triangle"></div>
+            <router-link tag="a" to="/app/dashboards/dashboard.v1">
+              <div style="padding: 10px;" @click="handleClick('dashboard')" :class="{clicked: isClicked === 'dashboard'}">
+                <img src="@/assets/sidebarIcons/dashboard.png" alt style="width: 250px; height: auto;"/>
+              </div>
+            </router-link>            
           </li>
           
+
           <li
             v-if="(agentName != 'Mile Cruz') && (localityType != 'Express')"
             @mouseenter="toggleSubMenu"
@@ -96,27 +91,28 @@
             :class="{ active: selectedParentMenu == 'centralInvoice' }"
             :data-submenu="false"
           >
-            <router-link tag="a" class="nav-item-hold" to="/app/apps/centralInvoice">
-              <i class="nav-icon i-Board"></i>
-              <span class="nav-text"><strong>ÓRDENES</strong></span>
+            <router-link tag="a" to="/app/apps/centralInvoice">
+              <div style="padding: 10px;" @click="handleClick('orders')" :class="{clicked: isClicked === 'orders'}">
+                <img src="@/assets/sidebarIcons/orders.png" alt style="width: 250px; height: auto;"/>
+              </div>
             </router-link>
-            <div class="triangle"></div>
           </li>
 
           <li
-            v-if="localityType == 'Express'"
+            v-if="(agentName != 'Mile Cruz') && (localityType == 'Express')"
             @mouseenter="toggleSubMenu"
             class="nav-item"
-            data-item="expressInvoice"
+            data-item="centralInvoice"
             :class="{ active: selectedParentMenu == 'expressInvoice' }"
             :data-submenu="false"
           >
-            <router-link tag="a" class="nav-item-hold" to="/app/apps/expressInvoice">
-              <i class="nav-icon i-Board"></i>
-              <span class="nav-text"><strong>ÓRDENES (EXPRESS)</strong></span>
+            <router-link tag="a" to="/app/apps/expressInvoice">
+              <div style="padding: 10px;" @click="handleClick('orders')" :class="{clicked: isClicked === 'orders'}">
+                <img src="@/assets/sidebarIcons/orders.png" alt style="width: 250px; height: auto;"/>
+              </div>
             </router-link>
-            <div class="triangle"></div>
           </li>
+
 
           <li
             @mouseenter="toggleSubMenu"
@@ -125,11 +121,11 @@
             data-item="ranking"
             v-if="isAdmin == true && locality == false"
           >
-            <router-link tag="a" class="nav-item-hold" to="/app/apps/rankingAdmin">
-              <i class="nav-icon i-Bar-Chart"></i>
-              <span class="nav-text"><strong>RANKING</strong></span>
+            <router-link tag="a" to="/app/apps/rankingAdmin">
+              <div style="padding: 8px;" @click="handleClick('ranking')" :class="{clicked: isClicked === 'ranking'}">
+                <img src="@/assets/sidebarIcons/ranking.png" alt style="width: 250px; height: auto;"/>
+              </div>
             </router-link>
-            <div class="triangle"></div>
           </li>
 
 
@@ -142,14 +138,14 @@
             :data-submenu="false"
             v-if="locality == false && (agentName != 'Mile Cruz')"
           >
-            <router-link tag="a" class="nav-item-hold" to="/app/apps/locality">
-              <i class="nav-icon i-Dollar"></i>
-              <span class="nav-text"><strong>SINPE</strong></span>
+            <router-link tag="a" to="/app/apps/locality">
+              <div style="padding: 8px;" @click="handleClick('sinpe')" :class="{clicked: isClicked === 'sinpe'}">
+                <img src="@/assets/sidebarIcons/sinpe.png" alt style="width: 250px; height: auto;"/>
+              </div>
             </router-link>
-            <div class="triangle"></div>
           </li>
 
-
+          
           <li
             @mouseenter="toggleSubMenu"
             class="nav-item"
@@ -158,13 +154,12 @@
             :data-submenu="false"
             v-if="isAdmin == true && locality == false"
           >
-            <router-link tag="a" class="nav-item-hold" to="/app/apps/agents">
-              <i class="nav-icon i-Support"></i>
-              <span class="nav-text"><strong>AGENTES</strong></span>
+            <router-link tag="a" to="/app/apps/agents">
+              <div style="padding: 8px;" @click="handleClick('agents')" :class="{clicked: isClicked === 'agents'}">
+                <img src="@/assets/sidebarIcons/agents.png" alt style="width: 250px; height: auto;"/>
+              </div>
             </router-link>
-            <div class="triangle"></div>
           </li>
-
 
           <li
             @mouseenter="toggleSubMenu"
@@ -172,14 +167,15 @@
             data-item="transfer"
             :class="{ active: selectedParentMenu == 'transfer' }"
             :data-submenu="false"
-            v-if="isAdmin == true || agentName == 'Diana Jimenez' || agentName == 'Jose Estrada' || agentName == 'Emma Garcia' || locality == true"
+            v-if="isAdmin == true || agentName == 'Diana Jimenez' || agentName == 'Emma Garcia' || locality == true"
           >
-            <router-link tag="a" class="nav-item-hold" to="/app/apps/transfer">
-              <i class="nav-icon i-Arrow-Right-2"></i>
-              <span class="nav-text"><strong>TRANSFERIR</strong></span>
+            <router-link tag="a" to="/app/apps/transfer">
+              <div style="padding: 8px;" @click="handleClick('transfer')" :class="{clicked: isClicked === 'transfer'}">
+                <img src="@/assets/sidebarIcons/transfer.png" alt style="width: 250px; height: auto;"/>
+              </div>
             </router-link>
-            <div class="triangle"></div>
           </li>
+
 
 
           <li
@@ -190,11 +186,11 @@
             :class="{ active: selectedParentMenu == 'images' }"
             :data-submenu="false"
           >
-            <router-link tag="a" class="nav-item-hold" to="/app/apps/images">
-              <i class="nav-icon i-Add-File"></i>
-              <span class="nav-text"><strong>IMÁGENES</strong></span>
+            <router-link tag="a" to="/app/apps/images">
+              <div style="padding: 8px;" @click="handleClick('images')" :class="{clicked: isClicked === 'images'}">
+                <img src="@/assets/sidebarIcons/images.png" alt style="width: 250px; height: auto;"/>
+              </div>
             </router-link>
-            <div class="triangle"></div>
           </li>
 
           
@@ -952,6 +948,8 @@ export default {
       passwordInput: '',
       url: 'https://souqbackend-production.up.railway.app',
 
+      isClicked: null
+
     };
   },
   async mounted() {
@@ -1019,6 +1017,14 @@ export default {
       });
     },
 
+    handleClick(item){
+      this.isClicked = item;
+      
+      setTimeout(() => {
+        this.isClicked = null;
+      }, 300); 
+
+    },
 
 
     handleWindowResize() {
@@ -1105,4 +1111,21 @@ export default {
 };
 </script>
 
-<style lang="" scoped></style>
+<style scoped>
+@keyframes clickAnimation {
+  0% {
+    transform: scale(1); /* Estado original */
+  }
+  50% {
+    transform: scale(0.90); /* Un poco más pequeño en la mitad de la animación */
+  }
+  100% {
+    transform: scale(1); /* Vuelve al tamaño original */
+  }
+}
+
+.clicked {
+  animation: clickAnimation 0.3s ease; /* Duración de la animación */
+}
+
+</style>
