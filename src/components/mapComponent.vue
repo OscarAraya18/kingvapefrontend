@@ -1,13 +1,235 @@
 <template>
   <div>
+
+    <b-modal scrollable hide-footer hide-header size="lg" centered hide-backdrop id="mapConversationModal" @shown="scrollToBottom">
+      <div v-if="openConversationLoader == true" style="text-align: center;">
+        <br><span class="spinner-glow spinner-glow-primary"></span>
+      </div>
+      <div v-else>
+        <div style="margin-bottom: 20px;">
+          <div style="display: flex;">
+            <h3><strong>{{openedName}}</strong></h3>
+            <div class="flex-grow-1"></div>
+          </div>
+          <h3>{{parseNumber(openedNumber)}}</h3>
+        </div>
+
+
+        <div v-if="currentConversation != null" ref="scrollHistory" style="max-height: 80vh; overflow-y: auto;">
+          <div v-for="currentActiveConversationMessage in currentConversation.whatsappConversationMessages">
+            
+            <div class="d-flex mb-30" :class="getMessageOwnerStyle(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)">
+              <div :style="getMessageOwnerColor(currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber)" class="message flex-grow-1">
+                <div class="d-flex">
+                  <div class="m-0" style="margin-left: 0; margin-right:auto;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber != null">
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
+                      <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                        
+                        <div v-if="currentConversation.whatsappConversationMessages.map(whatsappGeneralMessage => whatsappGeneralMessage.whatsappGeneralMessageID).includes(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID) == false">
+                          <button @click="getHistoryMessage(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID)" class="btn btn-icon btn-primary mr-2" v-b-modal.historyMessageModal><i class="i-Clock"></i>Abrir mensaje del historial</button>
+                        </div>
+                        
+                        <div v-for="answeredMessage in currentConversation.whatsappConversationMessages">
+                          <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
+                            
+                            <p v-if="answeredMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'contact'"> 
+                              <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.whatsappContactMessageName}}</p>
+                              <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.whatsappContactMessagePhoneNumber}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'image'"> 
+                              <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`">
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappImageMessageCaption}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='video'"> 
+                              <video controls width="400" :src="`data:video/mp4;base64,${answeredMessage.whatsappVideoMessageFile}`"></video>
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappVideoMessageCaption}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                              Mapa de ubicación (no se puede renderizar dentro de este componente)
+                              <br>
+                              <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
+                              <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                              <a style="color: black;" :href="`data:${answeredMessage.whatsappDocumentMessageMimeType};base64,${answeredMessage.whatsappDocumentMessageFile}`" :download="answeredMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{answeredMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                            </div>
+                            
+                            <audio controls v-if="answeredMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${answeredMessage.whatsappAudioMessageFile}`"></audio>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                              <img v-b-modal.bigImageModal @click="openBigImage(answeredMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="answeredMessage.whatsappFavoriteImageMessageDriveURL">
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappFavoriteImageMessageCaption != null">{{answeredMessage.whatsappFavoriteImageMessageCaption}}</p>
+                            </div>
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'contact'"> 
+                      <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{currentActiveConversationMessage.whatsappContactMessageName}}</p>
+                      <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{currentActiveConversationMessage.whatsappContactMessagePhoneNumber}}</p>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
+                      <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='video'"> 
+                      <video controls width="400" :src="`data:video/mp4;base64,${currentActiveConversationMessage.whatsappVideoMessageFile}`"></video>
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappVideoMessageCaption}}</p>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                      Mapa de ubicación (no se puede renderizar dentro de este componente)
+
+                      <br>
+                      <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
+                      <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                      <a style="color: black;" :href="`data:${currentActiveConversationMessage.whatsappDocumentMessageMimeType};base64,${currentActiveConversationMessage.whatsappDocumentMessageFile}`" :download="currentActiveConversationMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{currentActiveConversationMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                    </div>
+                    
+                    <audio controls v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${currentActiveConversationMessage.whatsappAudioMessageFile}`"></audio>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                      <img v-b-modal.bigImageModal @click="openBigImage(currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL">
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappFavoriteImageMessageCaption != null">{{currentActiveConversationMessage.whatsappFavoriteImageMessageCaption}}</p>
+
+                    </div>
+                  
+                  </div>
+                  <span v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null" style="display:flex; margin-left: 0; margin-right:auto;" class="text-small text-muted">
+                    <img :id="'r'+currentActiveConversationMessage.whatsappGeneralMessageID" v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null" style="cursor: pointer; width: 25px; height: 25px; margin-right: 5px;" src="@/assets/read.png">
+                    <img :id="'d'+currentActiveConversationMessage.whatsappGeneralMessageID" v-else-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null" style="cursor: pointer; width: 25px; height: 25px; margin-right: 5px;" src="@/assets/delivered.png">
+                    <img :id="'s'+currentActiveConversationMessage.whatsappGeneralMessageID" v-else style="cursor: pointer; width: 25px; height: 25px; margin-right: 5px;" src="@/assets/send.png">
+                    <b-tooltip :target="'r'+currentActiveConversationMessage.whatsappGeneralMessageID">
+                      <p>Envíado: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null">Recibido: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null">Leído: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime)}}</p>
+                    </b-tooltip>
+                    <b-tooltip :target="'d'+currentActiveConversationMessage.whatsappGeneralMessageID">
+                      <p>Envíado: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null">Recibido: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null">Leído: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime)}}</p>
+                    </b-tooltip>
+                    <b-tooltip :target="'s'+currentActiveConversationMessage.whatsappGeneralMessageID">
+                      <p>Envíado: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime != null">Recibido: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageDeliveringDateTime)}}</p>
+                      <p v-if="currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime != null">Leído: {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageReadingDateTime)}}</p>
+                    </b-tooltip>
+                    {{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}
+                  </span>
+                  <span v-else style="margin-left: auto; margin-right:0;" class="text-small text-muted">{{parseHour(currentActiveConversationMessage.whatsappGeneralMessageCreationDateTime)}}</span>
+                  <div class="m-0" style="margin-left: auto; margin-right:0;" v-if="currentActiveConversationMessage.whatsappGeneralMessageOwnerPhoneNumber == null">
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID != null">
+                      <div style="background-color: rgb(226, 255, 206); border-radius: 10px; padding: 10px; margin-bottom: 10px;">
+                        
+                        <div v-if="currentConversation.whatsappConversationMessages.map(whatsappGeneralMessage => whatsappGeneralMessage.whatsappGeneralMessageID).includes(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID) == false">
+                          <button @click="getHistoryMessage(currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID)" class="btn btn-icon btn-primary mr-2" v-b-modal.historyMessageModal><i class="i-Clock"></i>Abrir mensaje del historial</button>
+                        </div>
+                        
+                        <div v-for="answeredMessage in currentConversation.whatsappConversationMessages">
+
+                          <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
+                            
+                            <p v-if="answeredMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'contact'"> 
+                              <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.whatsappContactMessageName}}</p>
+                              <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.whatsappContactMessagePhoneNumber}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'image'"> 
+                              <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${answeredMessage.whatsappImageMessageFile}`">
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappImageMessageCaption}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='video'"> 
+                              <video controls width="400" :src="`data:video/mp4;base64,${answeredMessage.whatsappVideoMessageFile}`"></video>
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappImageMessageCaption != null">{{answeredMessage.whatsappVideoMessageCaption}}</p>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                              Mapa de ubicación (no se puede renderizar dentro de este componente)
+
+                              <br>
+                              <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{answeredMessage.whatsappLocationMessageLatitude}}</p>
+                              <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{answeredMessage.whatsappLocationMessageLongitude}}</p><br>
+                            </div>
+                            
+                            <div v-if="answeredMessage.whatsappGeneralMessageType=='document'" class="m-0">
+                              <a style="color: black;" :href="`data:${answeredMessage.whatsappDocumentMessageMimeType};base64,${answeredMessage.whatsappDocumentMessageFile}`" :download="answeredMessage.whatsappDocumentMessageFileName"><p style="size: 10%;">Archivo: <strong>{{answeredMessage.whatsappDocumentMessageFileName}}</strong></p></a>
+                            </div>
+                            
+                            <audio controls v-if="answeredMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${answeredMessage.whatsappAudioMessageFile}`"></audio>
+                          
+                            <div v-if="answeredMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                              <img v-b-modal.bigImageModal @click="openBigImage(answeredMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="answeredMessage.whatsappFavoriteImageMessageDriveURL">
+                              <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="answeredMessage.whatsappFavoriteImageMessageCaption != null">{{answeredMessage.whatsappFavoriteImageMessageCaption}}</p>
+                            </div>
+                          
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'contact'"> 
+                      <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{currentActiveConversationMessage.whatsappContactMessageName}}</p>
+                      <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{currentActiveConversationMessage.whatsappContactMessagePhoneNumber}}</p>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'image'"> 
+                      <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`)" style="width: 250px;" :src="`data:image/png;base64,${currentActiveConversationMessage.whatsappImageMessageFile}`">
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappImageMessageCaption != null">{{currentActiveConversationMessage.whatsappImageMessageCaption}}</p>
+                    </div>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='location'" class="m-0">
+                      Mapa de ubicación (no se puede renderizar dentro de este componente)
+
+                      <br>
+                      <p class="m-0" style="font-size: large;"><strong>Latitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLatitude}}</p>
+                      <p class="m-0" style="font-size: large;"><strong>Longitud:</strong> {{currentActiveConversationMessage.whatsappLocationMessageLongitude}}</p><br>
+                    </div>
+                    
+                    <audio controls v-if="currentActiveConversationMessage.whatsappGeneralMessageType=='audio'" :src="`data:audio/ogg;base64,${currentActiveConversationMessage.whatsappAudioMessageFile}`"></audio>
+                    
+                    <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'favoriteImage'"> 
+                      <img v-b-modal.bigImageModal @click="openBigImage(currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL)" style="width: 250px;" :src="currentActiveConversationMessage.whatsappFavoriteImageMessageDriveURL">
+                      <p class="m-0" style="white-space: pre-line; font-size: medium; padding-top: 10px;" v-if="currentActiveConversationMessage.whatsappFavoriteImageMessageCaption != null">{{currentActiveConversationMessage.whatsappFavoriteImageMessageCaption}}</p>
+                    </div>
+                  
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </b-modal>
+
+
     <b-modal scrollable size="lg" centered id="modalMapaConversacion" hide-footer hide-header>
       <div v-if="openedConversation" style="padding: 10px;">
         <h4><strong>ID: </strong>{{ openedConversation.whatsappConversationID }}</h4>
-        <h4 :v-if="openConversation.whatsappInvoiceState"><strong>Estado: </strong>{{ openedConversation.whatsappInvoiceState }}</h4>
-
         <h4><strong>Nombre: </strong>{{ openedConversation.whatsappConversationRecipientProfileName }}</h4>
         <h4><strong>Número: </strong>{{ openedConversation.whatsappConversationRecipientPhoneNumber }}</h4>
         <h4><strong>Monto: </strong>₡{{ openedConversation.amount }}</h4>
+        <br>
+        <button @click="openConversation(openedConversation)" class="btn btn-icon btn-primary" v-b-modal.mapConversationModal>Abrir conversación</button>
+
       </div>
     </b-modal>
 
@@ -59,8 +281,11 @@
 
 
 
-    <div :id="mapId" :style="getMapDimensions()">
+    <div :id="navigation.mapID" :style="`width: ${mapWidth}; height: ${mapHeight}`">
     </div> 
+
+
+
   </div>
 </template>
 
@@ -73,8 +298,8 @@ import { OSM, Vector as VectorSource } from 'ol/source';
 
 import { fromLonLat } from "ol/proj";
 import { Point, Polygon } from "ol/geom";
-import { Fill, Icon, Stroke, Style, Text } from "ol/style";
-import {FullScreen, defaults as defaultControls} from 'ol/control.js';
+import { Fill, Icon, Stroke, Style} from "ol/style";
+import { FullScreen, defaults as defaultControls } from 'ol/control.js';
 
 const constants = require('@../../../src/constants.js'); 
 
@@ -82,30 +307,36 @@ const constants = require('@../../../src/constants.js');
 export default {
   name: 'mapComponent',
   
-  data() {
-    return {};
-  },
+
   methods: {},
 
-  data() {
-    return {
-      mapModal: null,
-      mapId: `map-${Math.random().toString(36).substr(2, 9)}`,
-      openedConversation: null,
-      currentConversation: null,
-      openConversationLoader: false,
-      openedName: '',
-      openedNumber: '',
+  data: () => ({
+    navigation: 
+    {
+      mapComponent: null,
+      mapID: `map-${Math.random().toString(36).substr(2, 9)}`
+    },
+
+    display:
+    {
+      storeMaps: null,
+      smallStoreMaps: null,
+      redZoneMaps: null
+    },
+
+    currentConversation: null,
+    openedConversation: null,
+    
+    openConversationLoader: false,
 
 
-      whatsappInvoiceID: null,
-      whatsappInvoiceLocalityID: null,
-      assignedLocalityAgentBiller: null,
-      assignedLocalityAgent: null,
+    whatsappInvoiceID: null,
+    whatsappInvoiceLocalityID: null,
+    assignedLocalityAgentBiller: null,
+    assignedLocalityAgent: null,
 
-      backendURL: 'https://payitcr.com'
-    }
-  },
+    backendURL: 'https://payitcr.com'
+  }),
 
   props: {
     mapWidth: String,
@@ -163,21 +394,14 @@ export default {
 
     },
     
-    getMapDimensions(){
-      return 'width: ' + this.mapWidth + '; height: ' + this.mapHeight;
-    },
 
-    getMessageOwnerStyle(messageOwner){
-      if(messageOwner != null){
-        return 'user';
-      } 
-    },
-
-    getMessageOwnerColor(messageOwner){
-      if(messageOwner == null){
-        return "background-color:#ceefff";
-      } 
-      return "background-color:#dedede";
+    parseNumber(phoneNumber){
+      const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+      const match = cleaned.match(/^(\d{3})(\d{2})(\d{2})(\d{2})(\d{2})$/);
+      if (match) {
+        return `(${match[1]}) ${match[2]}${match[3]}${match[4]}${match[5]}`;
+      }
+      return phoneNumber;
     },
 
     parseHour(originalHour){
@@ -196,19 +420,7 @@ export default {
       } else if (formattedDate.slice(-2) == 'pm') {
         formattedDate = formattedDate.slice(0,-2) + 'PM'
       }
-      if (formattedDate.includes('00') && formattedDate.includes('PM')){
-        formattedDate = formattedDate.replace('00', '12');
-      }
       return formattedDate;
-    },
-
-    parseNumber(phoneNumber){
-      const cleaned = ('' + phoneNumber).replace(/\D/g, '');
-      const match = cleaned.match(/^(\d{3})(\d{2})(\d{2})(\d{2})(\d{2})$/);
-      if (match) {
-        return `(${match[1]}) ${match[2]}${match[3]}${match[4]}${match[5]}`;
-      }
-      return phoneNumber;
     },
 
     openConversation(conversation){
@@ -223,6 +435,7 @@ export default {
       .then((response) =>{
         if (response.data.success){
           this.currentConversation = response.data.result[conversation.whatsappConversationID];
+          console.log(this.currentConversation);
           this.openConversationLoader = false;
         } else {
           this.showNotification('danger', 'Error al abrir la conversación', 'Ha ocurrido un error inesperado al abrir la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
@@ -232,218 +445,148 @@ export default {
         console.log(error);
         this.showNotification('danger', 'Error al abrir la conversación', 'Ha ocurrido un error inesperado al abrir la conversación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
       })
-    }
+    },
+
+
+    renderMapDivision(mapDivisionPoints, mapDivisionColor, mapDivisionColorWithOpacity){
+      const mapDivisionPointsFormatted = mapDivisionPoints.map(mapPoint => {
+        return fromLonLat([mapPoint['lng'], mapPoint['lat']]);
+      });
+      const mapDivisionStrokeStyle = new Stroke
+      ({
+        'color': mapDivisionColor,
+        'width': 3
+      });
+      const mapDivisionFillStyle = new Fill({'color': mapDivisionColorWithOpacity});
+      const mapDivisionStyle = new Style
+      ({
+        'stroke': mapDivisionStrokeStyle,
+        'fill': mapDivisionFillStyle
+      });
+      const mapDivisionPolygon = new Polygon([mapDivisionPointsFormatted]);
+      const mapDivisionFeature = new Feature(mapDivisionPolygon);
+      const mapDivisionVectorSource = new VectorSource();
+      mapDivisionVectorSource.addFeature(mapDivisionFeature);
+      const mapDivisionVectorLayer = new VectorLayer
+      ({
+        'source': mapDivisionVectorSource, 
+        'style': mapDivisionStyle
+      });
+      this.navigation.mapComponent.addLayer(mapDivisionVectorLayer);
+    },
+
+    renderStoreMaps(){
+      this.display.storeMaps.forEach(storeMap => {
+        this.renderMapDivision(storeMap.storeMapPoints, storeMap.storeColor, storeMap.storeColorWithOpacity);
+      });
+    },
+
+    renderRedZoneMaps(){
+      this.display.redZoneMaps.redZoneMapDivisions.forEach(redZoneMapDivision => {
+        this.renderMapDivision(redZoneMapDivision, this.display.redZoneMaps.redZoneColor, this.display.redZoneMaps.redZoneColorWithOpacity);
+      });
+    },
+
+    renderMapIcon(mapIconSource, mapIconLatitude, mapIconLongitude){
+      const mapIconIcon = new Icon
+      ({
+        'anchor': [0.5, 1],
+        'src': mapIconSource
+      });
+      const mapIconStyle = new Style({'image': mapIconIcon});
+      const mapIconFeature = new Feature({'geometry': new Point(fromLonLat([mapIconLongitude, mapIconLatitude]))});
+      const mapIconVectorSource = new VectorSource({'features': [mapIconFeature]});
+      const mapIconVectorLayer = new VectorLayer
+      ({
+        'source': mapIconVectorSource, 
+        'style': mapIconStyle
+      });
+      this.navigation.mapComponent.addLayer(mapIconVectorLayer);
+    },
+
+    renderStoreIcons(){
+      this.display.storeMaps.forEach(storeMap => {
+        this.renderMapIcon(storeMap.storeIconSource, storeMap.storeLatitude, storeMap.storeLongitude);
+      });
+      this.display.smallStoreMaps.forEach(smallStoreMap => {
+        this.renderMapIcon(smallStoreMap.smallStoreIconSource, smallStoreMap.smallStoreLatitude, smallStoreMap.smallStoreLongitude);
+      });
+    },
+
+    getMessageOwnerStyle(messageOwner){
+      if(messageOwner != null){
+        return 'user';
+      } 
+    },
+
+    getMessageOwnerColor(messageOwner){
+      if(messageOwner == null){
+        return "background-color:#ceefff";
+      } 
+      return "background-color:#dedede";
+    },
+
+    scrollToBottom(){
+      let scrollInterval = setInterval(() => {
+        this.$nextTick(() => {
+          if (this.$refs.scrollHistory) {
+            const scrollableDiv = this.$refs.scrollHistory;
+            scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
+            clearInterval(scrollInterval);
+          }
+        });
+      }, 1);
+    },
+
   },
 
   mounted(){
+    this.display.storeMaps = constants.storeMaps;
+    this.display.smallStoreMaps = constants.smallStoreMaps;
+    this.display.redZoneMaps = constants.redZoneMaps;
+
     const mapCenter = fromLonLat([this.clientLongitude || -84.0585289, this.clientLatitude || 9.9242503]);
 
-
-    this.mapModal = new Map({
-      controls: defaultControls().extend([new FullScreen()]),
-      target: this.mapId,
-      layers: [new TileLayer({source: new OSM()})],
-      view: new View({center: mapCenter, zoom: this.clientLatitude? 13 : 10}),
+    this.navigation.mapComponent = new Map
+    ({
+      'controls': defaultControls().extend([new FullScreen()]),
+      'target': this.navigation.mapID,
+      'layers': [new TileLayer({'source': new OSM()})],
+      'view': new View
+      ({
+        'center': mapCenter, 
+        'zoom': this.clientLatitude ? 13 : 10
+      }),
     });
 
-
-    let iconImage = new Icon({
-      anchor: [0.5, 1],
-      src: 'https://i.postimg.cc/SK7tjgLB/2.png'
-    });
-    let iconStyle = new Style({image: iconImage});
-
-    let zapoteStoreFeature = new Feature({
-      geometry: new Point(fromLonLat([-84.051987, 9.920173])),
-    });
-    let zapoteStoreVectorSource = new VectorSource({features: [zapoteStoreFeature]});
-    let zapoteStoreVectorLayer = new VectorLayer({source: zapoteStoreVectorSource, style: iconStyle})
-    this.mapModal.addLayer(zapoteStoreVectorLayer);
+    this.renderStoreMaps();
+    this.renderRedZoneMaps();
+    this.renderStoreIcons();
     
-    let escazuStoreFeature = new Feature({
-      geometry: new Point(fromLonLat([-84.163117, 9.949093])),
-    });
-    let escazuStoreVectorSource = new VectorSource({features: [escazuStoreFeature]});
-    let escazuStoreVectorLayer = new VectorLayer({source: escazuStoreVectorSource, style: iconStyle})
-    this.mapModal.addLayer(escazuStoreVectorLayer);
-    
-    let cartagoStoreFeature = new Feature({
-      geometry: new Point(fromLonLat([-83.925354, 9.864751])),
-    });
-    let cartagoStoreVectorSource = new VectorSource({features: [cartagoStoreFeature]});
-    let cartagoStoreVectorLayer = new VectorLayer({source: cartagoStoreVectorSource, style: iconStyle})
-    this.mapModal.addLayer(cartagoStoreVectorLayer);
-
-    let herediaStoreFeature = new Feature({
-      geometry: new Point(fromLonLat([-84.135, 9.99168])),
-    });
-    let herediaStoreVectorSource = new VectorSource({features: [herediaStoreFeature]});
-    let herediaStoreVectorLayer = new VectorLayer({source: herediaStoreVectorSource, style: iconStyle})
-    this.mapModal.addLayer(herediaStoreVectorLayer);
-
-    this.cartagoMap = constants.routes.cartagoMap;
-    let cartagoMapFormatted = [];
-    for (var cartagoMapIndex in this.cartagoMap[0]){
-      const cartagoPoint = this.cartagoMap[0][cartagoMapIndex];
-      const point = fromLonLat([cartagoPoint['lng'], cartagoPoint['lat']]);
-      cartagoMapFormatted.push(point);
-    }
-    let cartagoLineStyle = new Stroke({
-      color: 'rgba(38, 166, 153, 0.4)',
-      width: 3
-    })
-    let cartagoFillStyle = new Fill({
-      color: 'rgba(38, 166, 153, 0.4)'
-    })
-    let cartagoStyle = new Style({
-      stroke: cartagoLineStyle,
-      fill: cartagoFillStyle
-    })
-    let cartagoPolygon = new Polygon([cartagoMapFormatted]);
-    let cartagoFeature = new Feature(cartagoPolygon);
-    let cartagoVectorSource = new VectorSource();
-    cartagoVectorSource.addFeature(cartagoFeature);
-    let cartagoVectorLayer = new VectorLayer({source: cartagoVectorSource, style: cartagoStyle});
-    this.mapModal.addLayer(cartagoVectorLayer);
-
-    this.herediaMap = constants.routes.herediaMap;
-    let herediaMapFormatted = [];
-    for (var herediaMapIndex in this.herediaMap[0]){
-      const herediaPoint = this.herediaMap[0][herediaMapIndex];
-      const point = fromLonLat([herediaPoint['lng'], herediaPoint['lat']]);
-      herediaMapFormatted.push(point);
-    }
-    let herediaLineStyle = new Stroke({
-      color: 'rgba(159, 124, 208, 0.5)',
-      width: 3
-    })
-    let herediaFillStyle = new Fill({
-      color: 'rgba(159, 124, 208, 0.5)'
-    })
-    let herediaStyle = new Style({
-      stroke: herediaLineStyle,
-      fill: herediaFillStyle
-    })
-    let herediaPolygon = new Polygon([herediaMapFormatted]);
-    let herediaFeature = new Feature(herediaPolygon);
-    let herediaVectorSource = new VectorSource();
-    herediaVectorSource.addFeature(herediaFeature);
-    let herediaVectorLayer = new VectorLayer({source: herediaVectorSource, style: herediaStyle});
-    this.mapModal.addLayer(herediaVectorLayer);
-
-    this.zapoteMap = constants.routes.zapoteMap;
-    let zapoteMapFormatted = [];
-    for (var zapoteMapIndex in this.zapoteMap[0]){
-      const zapotePoint = this.zapoteMap[0][zapoteMapIndex];
-      const point = fromLonLat([zapotePoint['lng'], zapotePoint['lat']]);
-      zapoteMapFormatted.push(point);
-    }
-    let zapoteLineStyle = new Stroke({
-      color: 'rgba(254, 211, 48, 0.5)',
-      width: 3
-    })
-    let zapoteFillStyle = new Fill({
-      color: 'rgba(254, 211, 48, 0.5)'
-    })
-    let zapoteStyle = new Style({
-      stroke: zapoteLineStyle,
-      fill: zapoteFillStyle
-    })
-    let zapotePolygon = new Polygon([zapoteMapFormatted]);
-    let zapoteFeature = new Feature(zapotePolygon);
-    let zapoteVectorSource = new VectorSource();
-    zapoteVectorSource.addFeature(zapoteFeature);
-    let zapoteVectorLayer = new VectorLayer({source: zapoteVectorSource, style: zapoteStyle});
-    this.mapModal.addLayer(zapoteVectorLayer);
-
-    this.escazuMap = constants.routes.escazuMap;
-    let escazuMapFormatted = [];
-    for (var escazuMapIndex in this.escazuMap[0]){
-      const escazuPoint = this.escazuMap[0][escazuMapIndex];
-      const point = fromLonLat([escazuPoint['lng'], escazuPoint['lat']]);
-      escazuMapFormatted.push(point);
-    }
-    let escazuLineStyle = new Stroke({
-      color: 'rgba(228, 79, 156, 0.5)',
-      width: 3
-    })
-    let escazuFillStyle = new Fill({
-      color: 'rgba(228, 79, 156, 0.5)'
-    })
-    let escazuStyle = new Style({
-      stroke: escazuLineStyle,
-      fill: escazuFillStyle
-    })
-    let escazuPolygon = new Polygon([escazuMapFormatted]);
-    let escazuFeature = new Feature(escazuPolygon);
-    let escazuVectorSource = new VectorSource();
-    escazuVectorSource.addFeature(escazuFeature);
-    let escazuVectorLayer = new VectorLayer({source: escazuVectorSource, style: escazuStyle});
-    this.mapModal.addLayer(escazuVectorLayer);
-
-    this.redMap = constants.routes.redMap;
-    let redLineStyle = new Stroke({
-      color: 'rgba(171, 0, 0, 0.5)',
-      width: 3
-    })
-    let redFillStyle = new Fill({
-      color: 'rgba(171, 0, 0, 0.5)'
-    })
-    let redStyle = new Style({
-      stroke: redLineStyle,
-      fill: redFillStyle
-    })
-    for (var redMapIndex in this.redMap){
-      let redMapFormatted = [];
-      for (var redMapSubindex in this.redMap[redMapIndex]){
-        const redPoint = this.redMap[redMapIndex][redMapSubindex];
-        const point = fromLonLat([redPoint['lng'], redPoint['lat']]);
-        redMapFormatted.push(point);
-      }
-      let redPolygon = new Polygon([redMapFormatted]);
-      let redFeature = new Feature(redPolygon);
-      let redVectorSource = new VectorSource();
-      redVectorSource.addFeature(redFeature);
-      let redVectorLayer = new VectorLayer({source: redVectorSource, style: redStyle});
-      this.mapModal.addLayer(redVectorLayer);
-    }
+    (this.clientLatitude && this.clientLongitude) && this.renderMapIcon('https://i.postimg.cc/ncgWWjcP/1.webp', this.clientLatitude, this.clientLongitude);
 
 
-    if (this.clientLatitude){
-      let clientLocationImage = new Icon({
-        anchor: [0.5, 1],
-        src: 'https://i.postimg.cc/ncgWWjcP/1.webp'
-      });
-      let clientLocationStyle = new Style({image: clientLocationImage});
-      let clientLocationStoreFeature = new Feature({
-        geometry: new Point(fromLonLat([this.clientLongitude, this.clientLatitude])),
-      });
-      let clientLocationStoreVectorSource = new VectorSource({features: [clientLocationStoreFeature]});
-      let clientLocationStoreVectorLayer = new VectorLayer({source: clientLocationStoreVectorSource, style: clientLocationStyle})
-      this.mapModal.addLayer(clientLocationStoreVectorLayer);
-    }
+
 
     if (this.multipleClients){
       if (this.localityMap){
 
         const colorPins = 
         {
-          C1E0F5: 'https://i.postimg.cc/wvhvzfV2/C1E0F5.webp',
-          CB9BDE: 'https://i.postimg.cc/50qxTH4k/CB9BDE.webp',
-          DEFF9C: 'https://i.postimg.cc/cCxsSs61/DEFF9C.webp',
-          F7D547: 'https://i.postimg.cc/j2MRqGJH/F7D547.webp',
-          C1DD83: 'https://i.postimg.cc/W449kCKW/C1DD83.webp',
+          'C1E0F5': 'https://i.postimg.cc/wvhvzfV2/C1E0F5.webp',
+          'CB9BDE': 'https://i.postimg.cc/50qxTH4k/CB9BDE.webp',
+          'DEFF9C': 'https://i.postimg.cc/cCxsSs61/DEFF9C.webp',
+          'F7D547': 'https://i.postimg.cc/j2MRqGJH/F7D547.webp',
+          'C1DD83': 'https://i.postimg.cc/W449kCKW/C1DD83.webp',
           '34EBC3': 'https://i.postimg.cc/nzj0d7nq/34EBC3.webp',
           '6E81FF': 'https://i.postimg.cc/zGGwtWj3/6E81FF.webp',
-          FC7A56: 'https://i.postimg.cc/GtRGkstL/FC7A56.webp'
+          'FC7A56': 'https://i.postimg.cc/GtRGkstL/FC7A56.webp'
         }
 
         for (var clientIndex in this.multipleClients){
           const client = this.multipleClients[clientIndex];
-          console.log(client)
           const color = client.localityAgentColor ? (colorPins[client.localityAgentColor.substr(1)] ? colorPins[client.localityAgentColor.substr(1)] : 'https://i.postimg.cc/ncgWWjcP/1.webp') : 'https://i.postimg.cc/ncgWWjcP/1.webp'
 
-          console.log(client.localityAgentColor)
 
           let clientLocationImage = new Icon({
             anchor: [0.5, 1],
@@ -456,10 +599,10 @@ export default {
           clientLocationStoreFeature.setId(client);
           let clientLocationStoreVectorSource = new VectorSource({features: [clientLocationStoreFeature]});
           let clientLocationStoreVectorLayer = new VectorLayer({source: clientLocationStoreVectorSource, style: clientLocationStyle})
-          this.mapModal.addLayer(clientLocationStoreVectorLayer);
+          this.navigation.mapComponent.addLayer(clientLocationStoreVectorLayer);
 
-          this.mapModal.on('singleclick', (evt) => {
-            const feature = this.mapModal.forEachFeatureAtPixel(evt.pixel,
+          this.navigation.mapComponent.on('singleclick', (evt) => {
+            const feature = this.navigation.mapComponent.forEachFeatureAtPixel(evt.pixel,
               (feature) => {
                 return feature;
               });
@@ -480,32 +623,36 @@ export default {
           src: this.route ? 'https://i.postimg.cc/Qxyx3j8m/1.webp' : 'https://i.postimg.cc/FFW1jzYn/2.webp'
         });
 
+        let clientLocationStyle = new Style({image: clientLocationImage});
 
-
+        let featureList = [];
         for (var clientIndex in this.multipleClients){
           const client = this.multipleClients[clientIndex];
-
-          let clientLocationStyle = new Style({image: clientLocationImage});
 
           let clientLocationStoreFeature = new Feature({
             geometry: new Point(fromLonLat([client.longitude, client.latitude]))
           });
-          clientLocationStoreFeature.setId(client);
-          let clientLocationStoreVectorSource = new VectorSource({features: [clientLocationStoreFeature]});
-          let clientLocationStoreVectorLayer = new VectorLayer({source: clientLocationStoreVectorSource, style: clientLocationStyle})
-          this.mapModal.addLayer(clientLocationStoreVectorLayer);
+          clientLocationStoreFeature.setId(`client-${clientIndex}`);
+          clientLocationStoreFeature.setProperties(client)
+          featureList.push(clientLocationStoreFeature);
         }
+                let clientLocationStoreVectorSource = new VectorSource({features: featureList});
 
 
-        this.mapModal.on('singleclick', (evt) => {
-          const feature = this.mapModal.forEachFeatureAtPixel(evt.pixel,
+        let clientLocationStoreVectorLayer = new VectorLayer({source: clientLocationStoreVectorSource, style: clientLocationStyle})
+        this.navigation.mapComponent.addLayer(clientLocationStoreVectorLayer);
+
+        
+        this.navigation.mapComponent.on('singleclick', (evt) => {
+          const feature = this.navigation.mapComponent.forEachFeatureAtPixel(evt.pixel,
             (feature) => {
               return feature;
             });
 
           if (feature) {
-            if(feature.id_){
-              this.openedConversation = feature.id_;
+            if(feature.values_){
+              this.openedConversation = feature.values_;
+              this.currentConversation = null;
               this.$root.$emit('bv::show::modal', 'modalMapaConversacion');
             }
           }
