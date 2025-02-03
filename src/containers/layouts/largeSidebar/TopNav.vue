@@ -53,14 +53,12 @@
 
 
     <div class="header-part-right">
-      <!--
-      <button @click="updateApplicationNotification()" :class="getApplicationNotificationClass()" style="position:relative; left: -100px; font-size: medium;" v-if="(ranking == false) && (agentType == 'admin')"><strong>{{ applicationNotification }}</strong></button>
-      -->
+
 
       <button @click="updateApplicationStatus()" :class="getApplicationStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="(ranking == false) && (agentType == 'admin')"><strong>{{ applicationStatus }}</strong></button>
       
       <button @click="updateAgentStatus()" :class="getAgentStatusClass()" style="position:relative; left: -10px; font-size: medium;" v-if="ranking == false && agentStatus!='' && agentName != 'Pantalla' && agentName != 'Mile Cruz'"><strong>{{ agentStatus }}</strong></button>
-      
+
 
       <div style="width: 50px; height: 50px; border-radius: 100%; margin-right: 15px;" v-if="ranking == false">
         <b-dropdown id="dropdown-1" text="Dropdown Button" class="align-self-end" toggle-class="text-decoration-none" no-caret variant="link">
@@ -214,6 +212,8 @@
 
 
 <script>
+
+
 import { mapState, mapGetters, mapActions } from "vuex";
 import Util from "@/utils";
 import Sidebar from "./Sidebar";
@@ -236,6 +236,10 @@ export default {
 
   data() {
     return {
+      checkbox: false,
+
+      checked: false,
+
       applicationNotification: '',
 
 
@@ -485,6 +489,12 @@ export default {
   },
 
   methods: {
+
+    toggleCheckbox() {
+      this.checkbox = !this.checkbox
+      this.$emit('setCheckboxVal', this.checkbox)
+    },
+
     updateEdited(mvcArray) {
       let paths = [];
       for (let i=0; i<mvcArray.getLength(); i++) {
@@ -1204,6 +1214,8 @@ export default {
 </script>
 
 <style>
+
+
   .hover {
       transition: background-color 0.3s ease-in-out;
     }

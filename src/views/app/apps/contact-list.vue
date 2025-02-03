@@ -115,11 +115,31 @@
       <br><br>
     </div>
 
-    <b-form-input v-model="contactPhoneNumber" @keyup.enter="openContactFromPhoneNumber()" placeholder='Número de teléfono' style='margin-bottom: 10px;'></b-form-input>
-    <br>
+    <div style="display: flex;" v-if="agentName == 'Diana Jimenez' || agentName == 'Emma Garcia'">
+      <div style="width: 80%;">
+        <br>
+        <b-form-input v-model="contactPhoneNumber" @keyup.enter="openContactFromPhoneNumber()" placeholder='Número de teléfono' style='margin-bottom: 10px;'></b-form-input>
+        <br>
+        <b-form-select v-model="contactLetter" class="mb-3" :options="contactLettersOptions" :disabled="loaderContact" @change="getContacts()"></b-form-select>
+      </div>
 
-    <b-form-select v-model="contactLetter" class="mb-3" :options="contactLettersOptions" :disabled="loaderContact" @change="getContacts()">
-    </b-form-select>
+      <apexchart v-if="opcionesGraficoContacto != null && datosGraficoContacto.length != 0" 
+                      type="pie" 
+                      width="200" 
+                      :options="opcionesGraficoContacto" 
+                      :series="datosGraficoContacto"
+                      style="margin-left: 40px;"
+                      >
+            </apexchart>
+
+    </div>
+    
+    <div v-else>
+      <b-form-input v-model="contactPhoneNumber" @keyup.enter="openContactFromPhoneNumber()" placeholder='Número de teléfono' style='margin-bottom: 10px;'></b-form-input>
+      <br>
+      <b-form-select v-model="contactLetter" class="mb-3" :options="contactLettersOptions" :disabled="loaderContact" @change="getContacts()"></b-form-select>
+    </div>
+
     <br><br>
 
     <div v-if="loaderContact==true" style="text-align: center;">
@@ -210,7 +230,7 @@
           <span v-else-if="props.column.field == 'contactActions'">
             <i class="i-Close text-25 text-danger mr-2" v-if="props.row.isMinor"></i>
 
-              <i  @click="selectClientIDSImage(props.row.contactPhoneNumber)" class="i-ID-Card text-25 text-black"  style="cursor: pointer; margin-right: 10px;"></i>
+              <i @click="selectClientIDSImage(props.row.contactPhoneNumber)" class="i-ID-Card text-25 text-black"  style="cursor: pointer; margin-right: 10px;"></i>
               <i class="i-Clock text-25 text-info" @click="getHistoryConversations(props.row.contactPhoneNumber)" v-b-modal.historyConversationsModal style="cursor: pointer; margin-right: 10px;"></i>
               <i class="i-Notepad text-25 text-warning" @click="openSendContactMessageModal(props.row)" style="cursor: pointer; margin-right: 7px;"></i>
               <i class="i-Eraser-2 text-25 text-success mr-2" @click="openEdit(props.row.contactPhoneNumber)" v-b-modal.modalEditar style="cursor: pointer"></i>
@@ -1056,7 +1076,9 @@ export default {
       queryInterval: null,
 
       currentHeight: 0,
-      contactType: 'Todos'
+      contactType: 'Todos',
+
+      agentName: ''
     };
 
     
@@ -1115,7 +1137,7 @@ export default {
   },
 
   mounted(){
-
+    this.agentName = localStorage.getItem('agentName');
       
     
 
@@ -1140,7 +1162,7 @@ export default {
     this.initialDateFiltered = null;
     this.endDateFiltered = null;
 
-    if (this.agentType == 'admin'){
+    if (this.agentType == 'admin' || this.agentName == 'Emma Garcia' || this.agentName == 'Diana Jimenez'){
       this.getContactAmount();
       this.selectClientFollowupReport();
       this.selectClientReport(true);
@@ -1469,7 +1491,7 @@ export default {
 
           this.opcionesGraficoContacto = 
           {
-            chart: {width: 400, type: 'pie', fontSize: 20}, 
+            chart: {width: this.agentType=='admin' ? 400 : 200, type: 'pie', fontSize: 20}, 
             tooltip: {enabled: true}, 
             labels: labels,
             legend: {fontSize: '15px', show: false},
