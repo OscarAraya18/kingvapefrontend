@@ -3332,8 +3332,6 @@ export default {
       }
       localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
 
-      //this.detectLocality(this.currentActiveConversation.whatsappConversationRecipientLocations[this.whatsappInvoiceClientLocationName].latitude, this.currentActiveConversation.whatsappConversationRecipientLocations[this.whatsappInvoiceClientLocationName].longitude);
-
     },
 
     changeLocalStorageSINPEValidated(){
@@ -3811,8 +3809,13 @@ export default {
     },
   
     saveLocation(locationName, whatsappGeneralMessage){
+      this.toggleMap2();
       this.currentActiveConversation.whatsappConversationRecipientLocations[locationName] = {latitude: whatsappGeneralMessage.whatsappLocationMessageLatitude, longitude: whatsappGeneralMessage.whatsappLocationMessageLongitude};
       
+      this.whatsappInvoiceClientLocationName = locationName;
+      this.latitud = whatsappGeneralMessage.whatsappLocationMessageLatitude;
+      this.longitud = whatsappGeneralMessage.whatsappLocationMessageLongitude;
+
       const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
       if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
         datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationName'] = locationName;
