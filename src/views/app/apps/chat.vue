@@ -1485,7 +1485,7 @@
                   <button v-if="availableConversation == true" id="sendPromos" class="btn btn-icon btn-rounded mr-2" style="background-color: #000000; color: white; display: none;" type="button" @click="openPromosModal()" v-b-modal.promosModal>BLACK</button>
                   <b-tooltip target="sendPromos">BLACK NOVEMBER</b-tooltip>
 
-			<button v-if="availableConversation == true" id="sendSticker" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="openSendStickerModal()" v-b-modal.sendStickerModal><i class="i-Teddy-Bear"></i></button>
+			            <button v-if="availableConversation == true" id="sendSticker" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="openSendStickerModal()" v-b-modal.sendStickerModal><i class="i-Teddy-Bear"></i></button>
                   <b-tooltip target="sendSticker">Enviar sticker</b-tooltip>
 			
                   <button v-if="availableConversation == true" id="sendAudio" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="startRecording()" v-b-modal.recordAudioModal><i class="i-Microphone-3"></i></button>
@@ -1505,6 +1505,7 @@
                   </b-modal>
                 </div>
 
+                
                 <div v-if="agentType == 'admin'"> 
                   
                   <button v-if="availableConversation == true" id="sendDisposables" class="btn btn-icon btn-rounded btn-primary mr-2" v-b-modal.disposablesModal @click="deselectImages()">
@@ -1757,6 +1758,13 @@
                   </div>
 
                 </div>
+
+
+
+
+
+
+
 
               </div>
             </div>
@@ -2081,7 +2089,7 @@
                                     <b-form-input v-model="longitud" placeholder="Longitud" style="margin-bottom: 10px;"></b-form-input>
                                   </div>
                                   <div v-if="whatsappInvoiceClientLocationName != 'Ubicación de envío'" style="width: 48%; margin-left: 2%;">
-                                    <MapComponent v-if="showMap2" mapHeight="120px" mapWidth="100%" :clientLongitude="longitud" :clientLatitude="latitud"></MapComponent>
+                                    <MapComponent @mapDetected="mapDetectedFromMapComponent" v-if="showMap2" mapHeight="120px" mapWidth="100%" :clientLongitude="longitud" :clientLatitude="latitud" :autolocate="true"></MapComponent>
 
                                   </div>
                                 </div>
@@ -2258,15 +2266,9 @@ export default {
       db: null,
 
       cartagoMap: [],
-      cartagoMapOptions: {},
       zapoteMap: [],
-      zapoteMapOptions: {},
       herediaMap: [],
-      herediaMapOptions: {},
       escazuMap: [],
-      escazuMapOptions: {},
-      redMap: [],
-      redMapOptions: {},
 
       zapoteConversations: [],
       escazuConversations: [],
@@ -2568,6 +2570,16 @@ export default {
         this.$root.$emit('bv::hide::modal', 'syncTransactionModal');
         this.$root.$emit('bv::hide::modal', 'paymentMethodValidatorModal');
       })
+    },
+
+    mapDetectedFromMapComponent(localityName){
+      try {
+        const foundLocality = this.localityOptions.find(locality => locality.text == localityName);
+        this.selectedLocality = foundLocality.value;
+        this.changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceLocalityName', this.selectedLocality);
+      } catch (e) {
+        console.log(e);
+      }
     },
 
     quickClose(closingNumber){
@@ -3302,6 +3314,7 @@ export default {
       localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
     },
 
+
     changeLocalStorageWhatsappInvoiceLocationInformation(){
       this.toggleMap2();
       const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
@@ -3318,6 +3331,9 @@ export default {
         }
       }
       localStorage.setItem('datosActuales', JSON.stringify(datosActuales));
+
+      //this.detectLocality(this.currentActiveConversation.whatsappConversationRecipientLocations[this.whatsappInvoiceClientLocationName].latitude, this.currentActiveConversation.whatsappConversationRecipientLocations[this.whatsappInvoiceClientLocationName].longitude);
+
     },
 
     changeLocalStorageSINPEValidated(){
@@ -5943,16 +5959,12 @@ export default {
     this.saltsTooltip = true;
     this.saltsTooltip = false;
     
-    this.cartagoMap = constants.routes.cartagoMap;
-    this.cartagoMapOptions = constants.routes.cartagoMapOptions;
-    this.herediaMap = constants.routes.herediaMap;
-    this.herediaMapOptions = constants.routes.herediaMapOptions;
-    this.zapoteMap = constants.routes.zapoteMap;
-    this.zapoteMapOptions = constants.routes.zapoteMapOptions;
-    this.escazuMap = constants.routes.escazuMap;
-    this.escazuMapOptions = constants.routes.escazuMapOptions;
-    this.redMap = constants.routes.redMap;
-    this.redMapOptions = constants.routes.redMapOptions;
+    
+    this.zapoteMap = constants.storeMaps[0].storeMapPoints;
+    this.escazuMap = constants.storeMaps[1].storeMapPoints;
+    this.cartagoMap = constants.storeMaps[2].storeMapPoints;
+    this.herediaMap = constants.storeMaps[3].storeMapPoints;
+
 
     this.iceLogoSRC = constants.routes.iceLogoSRC;
     this.postreLogoSRC = constants.routes.postreLogoSRC;

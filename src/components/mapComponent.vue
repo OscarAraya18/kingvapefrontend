@@ -347,7 +347,8 @@ export default {
     route: Boolean,
     localityMap: Boolean,
     localityAgentOptions: Array,
-    localityAgentBillerOptions: Array
+    localityAgentBillerOptions: Array,
+    autolocate: Boolean
   },
 
   methods: {
@@ -448,7 +449,7 @@ export default {
     },
 
 
-    renderMapDivision(mapDivisionPoints, mapDivisionColor, mapDivisionColorWithOpacity){
+    renderMapDivision(mapName, mapDivisionPoints, mapDivisionColor, mapDivisionColorWithOpacity){
       const mapDivisionPointsFormatted = mapDivisionPoints.map(mapPoint => {
         return fromLonLat([mapPoint['lng'], mapPoint['lat']]);
       });
@@ -465,6 +466,7 @@ export default {
       });
       const mapDivisionPolygon = new Polygon([mapDivisionPointsFormatted]);
       const mapDivisionFeature = new Feature(mapDivisionPolygon);
+
       const mapDivisionVectorSource = new VectorSource();
       mapDivisionVectorSource.addFeature(mapDivisionFeature);
       const mapDivisionVectorLayer = new VectorLayer
@@ -473,17 +475,25 @@ export default {
         'style': mapDivisionStyle
       });
       this.navigation.mapComponent.addLayer(mapDivisionVectorLayer);
+
+      if (this.clientLatitude && this.clientLongitude && this.autolocate==true && mapName!=null){
+        var polygon = mapDivisionFeature.getGeometry();
+        var pointCoordinates = fromLonLat([this.clientLongitude, this.clientLatitude]);
+        if (polygon.intersectsCoordinate(pointCoordinates)){
+          this.$emit('mapDetected', mapName);
+        };
+      }
     },
 
     renderStoreMaps(){
       this.display.storeMaps.forEach(storeMap => {
-        this.renderMapDivision(storeMap.storeMapPoints, storeMap.storeColor, storeMap.storeColorWithOpacity);
+        this.renderMapDivision(storeMap.storeName, storeMap.storeMapPoints, storeMap.storeColor, storeMap.storeColorWithOpacity, true);
       });
     },
 
     renderRedZoneMaps(){
       this.display.redZoneMaps.redZoneMapDivisions.forEach(redZoneMapDivision => {
-        this.renderMapDivision(redZoneMapDivision, this.display.redZoneMaps.redZoneColor, this.display.redZoneMaps.redZoneColorWithOpacity);
+        this.renderMapDivision(null, redZoneMapDivision, this.display.redZoneMaps.redZoneColor, this.display.redZoneMaps.redZoneColorWithOpacity, false);
       });
     },
 
@@ -559,7 +569,7 @@ export default {
       }),
     });
 
-    this.renderStoreMaps();
+    this.renderStoreMaps(this.clientLatitude, this.clientLongitude);
     this.renderRedZoneMaps();
     this.renderStoreIcons();
     
