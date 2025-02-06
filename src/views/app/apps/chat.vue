@@ -605,7 +605,12 @@
                             <div v-for="answeredMessage in currentHistoryConversation.whatsappConversationMessages">
                               <div v-if="answeredMessage.whatsappGeneralMessageID == currentActiveConversationMessage.whatsappGeneralMessageRepliedMessageID">
                                 
-                                <p v-if="answeredMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
+                                <div v-if="answeredMessage.whatsappGeneralMessageType == 'text'">
+                                  <p class="m-0" style="white-space: pre-line; font-size: large;">{{answeredMessage.whatsappTextMessageBody}}</p>
+                                </div>
+                                
+                                
+                                
                                 <div v-if="answeredMessage.whatsappGeneralMessageType == 'contact'"> 
                                   <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{answeredMessage.whatsappContactMessageName}}</p>
                                   <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{answeredMessage.whatsappContactMessagePhoneNumber}}</p>
@@ -654,7 +659,10 @@
                             </div>
                           </div>
                         </div>
-                        <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>
+                        <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'">
+                          <p class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>
+                        </div>
+
                         
                         <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'contact'"> 
                           <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{currentActiveConversationMessage.whatsappContactMessageName}}</p>
@@ -910,8 +918,11 @@
                               </div>
                             </div>
                           </div>
-                          <p v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>
-                          
+                          <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'text'">
+                            <p class="m-0" style="white-space: pre-line; font-size: large;">{{currentActiveConversationMessage.whatsappTextMessageBody}}</p>
+                            <button @click="parseWazeLocation(currentActiveConversationMessage.whatsappTextMessageBody)" v-if="currentActiveConversationMessage.whatsappTextMessageBody.includes('https://waze.com/ul/')" class="btn btn-primary" style="margin-top: 10px;">Guardar ubicación de Waze</button>
+                          </div>
+
                           <div v-if="currentActiveConversationMessage.whatsappGeneralMessageType == 'contact'"> 
                             <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Nombre: </strong>{{currentActiveConversationMessage.whatsappContactMessageName}}</p>
                             <p class="m-0" style="white-space: pre-line; font-size: medium;"><strong>Número: </strong>{{currentActiveConversationMessage.whatsappContactMessagePhoneNumber}}</p>
@@ -2572,6 +2583,64 @@ export default {
       })
     },
 
+
+
+    async getWazeCoordinates(wazeURL) {
+      return new Promise((resolve, reject) => {
+        const newWindow = window.open(wazeURL, "_blank", "width=1,height=1,top=-1000,left=-1000"); // Abre oculto
+        
+        const interval = setInterval(() => {
+          try {
+            /*
+            if (!newWindow || newWindow.closed) {
+              clearInterval(interval);
+              reject("No se pudo obtener la ubicación.");
+              return;
+            }
+            */
+
+            const finalURL = newWindow.location.href;
+            alert(finalURL);
+            // Verifica si la URL tiene las coordenadas
+            if (finalURL.includes("to=ll.")) {
+              clearInterval(interval);
+              newWindow.close();
+
+              // Extrae la latitud y longitud
+              const match = finalURL.match(/to=ll\.([\d.-]+)%2C([\d.-]+)/);
+              if (match) {
+                const lat = parseFloat(match[1]);
+                const lon = parseFloat(match[2]);
+                resolve({ lat, lon });
+              } else {
+                reject("No se encontraron coordenadas en la URL.");
+              }
+            }
+          } catch (error) {
+            // Puede fallar por restricciones de CORS hasta que la redirección termine
+            console.log(error);
+          }
+        }, 500); // Revisa cada 500ms
+      });
+    },
+
+    async parseWazeLocation(whatsappTextMessage){
+      const regex = /(https?:\/\/waze\.com\/ul\/[a-zA-Z0-9]+)/;
+      const match = whatsappTextMessage.match(regex);
+      if (match){
+        const wazeURL = match[0];
+        const coords = await this.getWazeCoordinates(wazeURL);
+        alert(coords)
+        
+      } else {
+        this.showNotification('danger', 'Error al guardar la ubicación de Waze', 'Ha ocurrido un error inesperado al guardar la ubicación de Waze. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
+      }
+    },
+
+
+
+
+
     mapDetectedFromMapComponent(localityName){
       try {
         const foundLocality = this.localityOptions.find(locality => locality.text == localityName);
@@ -3815,6 +3884,9 @@ export default {
       this.whatsappInvoiceClientLocationName = locationName;
       this.latitud = whatsappGeneralMessage.whatsappLocationMessageLatitude;
       this.longitud = whatsappGeneralMessage.whatsappLocationMessageLongitude;
+
+      this.whatsappInvoiceShippingMethod = 'Envío por motorizado';
+      this.changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceShippingMethod', this.whatsappInvoiceShippingMethod);
 
       const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
       if (datosActuales[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
