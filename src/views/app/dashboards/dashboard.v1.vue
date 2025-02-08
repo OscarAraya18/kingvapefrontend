@@ -865,6 +865,9 @@
           </b-card>
 
           <div style="width: 40%; margin-left: 1%;">
+
+            UNSUPPORTED CHAR AT 44302 RESULT
+
             <div style="display: flex; margin-bottom: 25px;">
               <b-card style="width: 50%; margin-right: 1.5%; background-color: #fed330;">
                 <div style="display: flex;">
