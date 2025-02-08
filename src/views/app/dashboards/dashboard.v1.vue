@@ -853,48 +853,45 @@
         </b-card>
 
         <br><br>
+      
+        <b-card style="background-color: rgb(214, 214, 214); text-align: center; padding: auto;">
+          <i v-if="!totalAmountVisible" @click="seeAmount('totalAmountVisible', 'totalAmountInterval')" class="i-Eye" style="cursor: pointer; font-size: 2em; position: relative; top: 5px; margin: 0"></i>
+          <h5 v-if="totalAmountVisible" style="margin-bottom: 0px;"><strong>Total de ventas:</strong> ₡{{ whatsappTotalSells }} </h5>
+        </b-card>
 
         <div style="display: flex;">
-          <b-card style="margin-right: 1%; background-color: #ebebeb; height: 620px; width: 300px;">
-            <br>
-            <div v-if="opcionesGraficoPaquetes != null" style="text-align: center;">
-              <br>
-              <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoPaquetes"></apexchart>
-              <br><br><br><br><br>
-              <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoDinero"></apexchart>
-            </div>
-          </b-card>
+          
 
-          <div style="width: 80%; margin-left: 1%; height: 620px;">
-            <div style="display: flex; overflow-x: auto; height: 620px; min-width: 100%; width: auto; overflow-y: hidden;">
+          <div style="width: 100%; height: 400px;">
+            <div style="display: flex; overflow-x: hidden; height: 400px; min-width: 100%; width: auto; overflow-y: auto; justify-content: center;">
              
-              
+
               <div v-bind:style="{
                 backgroundImage: 'url(' + require('@/assets/dashboard/zapote.png') + ')',
                 backgroundSize: 'contain',
                 backgroundPosition: 'center',
-                width: '400px',
-                height: '620px',
+                width: '300px',
+                height: 'auto',
                 backgroundRepeat: 'no-repeat',
                 marginRight: '20px',
                 flexShrink: '0'
               }">
 
-                <img src="@/assets/dashboard/fire.gif" alt :style="zapoteSelled >= 60 && todayLoader == false ? 'position: relative; width: 60px; height: 60px; top: 155px; left: 70px;' : 'position: relative; width: 60px; height: 60px; top: 155px; left: 70px; opacity: 0;'"/>
+                <img src="@/assets/dashboard/fire.gif" alt :style="zapoteSelled >= 6 && todayLoader == false ? 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px;' : 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px; opacity: 0;'"/>
 
-                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                <p style="position: relative; color: black; top: 185px; left: 170px; font-size: medium; margin: 0px;">
                   <strong>Recibidas: </strong>{{ zapoteNotSelled + zapoteSelled }}
                 </p>
-                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                <p style="position: relative; color: black; top: 185px; left: 170px; font-size: medium; margin: 0px;">
                   <strong>Vendidas: </strong>{{ zapoteSelled }}
                 </p>
-                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                <p style="position: relative; color: black; top: 185px; left: 170px; font-size: medium; margin: 0px;">
                   <strong>No vendidas: </strong>{{ zapoteNotSelled }}
                 </p>
-                <div style="position: relative; color: black; top: 230px; left: 180px; font-size: large; margin: 0px; display: flex;">
-                  <p style="font-size: large; margin: 3px;"><strong>Ventas:</strong></p>
+                <div style="position: relative; color: black; top: 185px; left: 110px; font-size: medium; margin: 0px; display: flex;">
+                  <p style="font-size: medium; margin: 3px;"><strong>Ventas:</strong></p>
                   <img v-if="!zapoteAmountVisible" src="@/assets/dashboard/ojo.png" @click="seeAmount('zapoteAmountVisible', 'zapoteAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; top: 8px; position: relative; left: 10px;"/>
-                  <p v-else style="font-size: 18px; margin: 3px;"> ₡{{zapoteSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
+                  <p v-else style="font-size: medium; margin: 3px;"> ₡{{zapoteSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
                 </div>
               </div>
 
@@ -903,28 +900,28 @@
                 backgroundImage: 'url(' + require('@/assets/dashboard/escazu.png') + ')',
                 backgroundSize: 'contain',
                 backgroundPosition: 'center',
-                width: '400px',
-                height: '620px',
+                width: '300px',
+                height: 'auto',
                 backgroundRepeat: 'no-repeat',
                 marginRight: '20px',
                 flexShrink: '0'
               }">
 
-                <img src="@/assets/dashboard/fire.gif" alt :style="escazuSelled >= 60 && todayLoader == false ? 'position: relative; width: 60px; height: 60px; top: 155px; left: 70px;' : 'position: relative; width: 60px; height: 60px; top: 155px; left: 70px; opacity: 0;'"/>
+              <img src="@/assets/dashboard/fire.gif" alt :style="escazuSelled >= 6 && todayLoader == false ? 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px;' : 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px; opacity: 0;'"/>
               
-                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                <p style="position: relative; color: black; top: 185px; left: 170px; font-size: medium; margin: 0px;">
                   <strong>Recibidas: </strong>{{ escazuNotSelled + escazuSelled }}
                 </p>
-                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                <p style="position: relative; color: black; top: 185px; left: 170px; font-size: medium; margin: 0px;">
                   <strong>Vendidas: </strong>{{ escazuSelled }}
                 </p>
-                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                <p style="position: relative; color: black; top: 185px; left: 170px; font-size: medium; margin: 0px;">
                   <strong>No vendidas: </strong>{{ escazuNotSelled }}
                 </p>
-                <div style="position: relative; color: black; top: 230px; left: 180px; font-size: large; margin: 0px; display: flex;">
-                  <p style="font-size: large; margin: 3px;"><strong>Ventas:</strong></p>
+                <div style="position: relative; color: black; top: 185px; left: 110px; font-size: medium; margin: 0px; display: flex;">
+                  <p style="font-size: medium; margin: 3px;"><strong>Ventas:</strong></p>
                   <img v-if="!escazuAmountVisible" src="@/assets/dashboard/ojo.png" @click="seeAmount('escazuAmountVisible', 'escazuAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; top: 8px; position: relative; left: 10px;"/>
-                  <p v-else style="font-size: 18px; margin: 3px;"> ₡{{escazuSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
+                  <p v-else style="font-size: medium; margin: 3px;"> ₡{{escazuSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
                 </div>
               </div>
 
@@ -933,28 +930,28 @@
                 backgroundImage: 'url(' + require('@/assets/dashboard/heredia.png') + ')',
                 backgroundSize: 'contain',
                 backgroundPosition: 'center',
-                width: '400px',
-                height: '620px',
+                width: '300px',
+                height: 'auto',
                 backgroundRepeat: 'no-repeat',
                 marginRight: '20px',
                 flexShrink: '0'
               }">
 
-                <img src="@/assets/dashboard/fire.gif" alt :style="herediaSelled >= 60 && todayLoader == false ? 'position: relative; width: 60px; height: 60px; top: 155px; left: 70px;' : 'position: relative; width: 60px; height: 60px; top: 155px; left: 70px; opacity: 0;'"/>
+              <img src="@/assets/dashboard/fire.gif" alt :style="herediaSelled >= 6 && todayLoader == false ? 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px;' : 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px; opacity: 0;'"/>
 
-                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                <p style="position: relative; color: black; top: 185px; left: 170px; font-size: medium; margin: 0px;">
                   <strong>Recibidas: </strong>{{ herediaNotSelled + herediaSelled }}
                 </p>
-                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                <p style="position: relative; color: black; top: 185px; left: 170px; font-size: medium; margin: 0px;">
                   <strong>Vendidas: </strong>{{ herediaSelled }}
                 </p>
-                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                <p style="position: relative; color: black; top: 185px; left: 170px; font-size: medium; margin: 0px;">
                   <strong>No vendidas: </strong>{{ herediaNotSelled }}
                 </p>
-                <div style="position: relative; color: black; top: 230px; left: 180px; font-size: large; margin: 0px; display: flex;">
-                  <p style="font-size: large; margin: 3px;"><strong>Ventas:</strong></p>
+                <div style="position: relative; color: black; top: 185px; left: 110px; font-size: medium; margin: 0px; display: flex;">
+                  <p style="font-size: medium; margin: 3px;"><strong>Ventas:</strong></p>
                   <img v-if="!herediaAmountVisible" src="@/assets/dashboard/ojo.png" @click="seeAmount('herediaAmountVisible', 'herediaAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; top: 8px; position: relative; left: 10px;"/>
-                  <p v-else style="font-size: 18px; margin: 3px;"> ₡{{herediaSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
+                  <p v-else style="font-size: medium; margin: 3px;"> ₡{{herediaSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
                 </div>
               </div>
 
@@ -963,120 +960,33 @@
                 backgroundImage: 'url(' + require('@/assets/dashboard/cartago.png') + ')',
                 backgroundSize: 'contain',
                 backgroundPosition: 'center',
-                width: '400px',
-                height: '620px',
+                width: '300px',
+                height: 'auto',
                 backgroundRepeat: 'no-repeat',
                 marginRight: '20px',
                 flexShrink: '0'
               }">
 
-                <img src="@/assets/dashboard/fire.gif" alt :style="cartagoSelled >= 60 && todayLoader == false ? 'position: relative; width: 60px; height: 60px; top: 155px; left: 70px;' : 'position: relative; width: 60px; height: 60px; top: 155px; left: 70px; opacity: 0;'"/>
+            <img src="@/assets/dashboard/fire.gif" alt :style="cartagoSelled >= 6 && todayLoader == false ? 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px;' : 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px; opacity: 0;'"/>
 
-                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                <p style="position: relative; color: black; top: 185px; left: 170px; font-size: medium; margin: 0px;">
                   <strong>Recibidas: </strong>{{ cartagoNotSelled + cartagoSelled }}
                 </p>
-                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                <p style="position: relative; color: black; top: 185px; left: 170px; font-size: medium; margin: 0px;">
                   <strong>Vendidas: </strong>{{ cartagoSelled }}
                 </p>
-                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                <p style="position: relative; color: black; top: 185px; left: 170px; font-size: medium; margin: 0px;">
                   <strong>No vendidas: </strong>{{ cartagoNotSelled }}
                 </p>
-                <div style="position: relative; color: black; top: 230px; left: 180px; font-size: large; margin: 0px; display: flex;">
-                  <p style="font-size: large; margin: 3px;"><strong>Ventas:</strong></p>
+                <div style="position: relative; color: black; top: 185px; left: 110px; font-size: medium; margin: 0px; display: flex;">
+                  <p style="font-size: medium; margin: 3px;"><strong>Ventas:</strong></p>
                   <img v-if="!cartagoAmountVisible" src="@/assets/dashboard/ojo.png" @click="seeAmount('cartagoAmountVisible', 'cartagoAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; top: 8px; position: relative; left: 10px;"/>
                   <p v-else style="font-size: 18px; margin: 3px;"> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
                 </div>
               </div>
 
 
-            <b-card style="width: 300px; max-height: 485px; background-color: #ebebeb; overflow-y: auto">
-              <div v-for="notification in notifications">
-                <div style="margin-bottom: 20px; border-radius: 10px; padding: 10px;" :style="notification.notificationPersistent ? 'background-color: #f0ea97' : 'background-color: #d9d9d9'">
-                  <div v-if="notification.notificationType == 1">
-                    <div style="display: flex; cursor: pointer">
-                      <div style="display: flex;" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
-                        <div :style="{backgroundColor: notification.agent1Color}" style="border-radius: 10px; padding: 10px; width: fit-content; text-align: center;">
-                          <p style="margin: 0px;" :style="{color: notification.agent1FontColor }">{{ notification.agent1Name }}</p>
-                        </div>
-                        <p style="margin-top: 10px; margin-bottom: 0px; margin-left: 10px; margin-right: 10px;">ha transferido una conversación a</p>
-                        <div :style="{backgroundColor: notification.agent2Color}" style="border-radius: 10px; padding: 10px; width: fit-content; text-align: center;">
-                          <p style="margin: 0px;" :style="{color: notification.agent2FontColor }">{{ notification.agent2Name }}</p>
-                        </div>
-                      </div>
-                      <div class="flex-grow-1"></div>
-                      <div>
-                        <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
-                        <i v-if="notification.notificationPersistent == false" @click="updateNotificationPersistent(notification.notificationID, true)" class="i-Data-Save"></i>
-                        <i v-else @click="updateNotificationPersistent(notification.notificationID, false)" class="i-Close"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div v-if="notification.notificationType == 2">
-                    <div style="display: flex; cursor: pointer">
-                      <div style="display: flex;" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
-                        <div :style="{backgroundColor: notification.whatsappConversationAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px; text-align: center;">
-                          <p style="margin: 0px;" :style="{color: notification.whatsappConversationFontColor }">{{ notification.whatsappConversationAgentName }}</p>
-                        </div>
-                        <p style="margin-top: 10px; margin-bottom: 0px;">Ha cerrado la conversación {{ notification.whatsappConversationID }} como "{{ notification.whatsappConversationCloseComment }}"</p>
-                      </div>
-                      <div class="flex-grow-1"></div>
-                      <div>
-                        <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
-                        <i v-if="notification.notificationPersistent == false" @click="updateNotificationPersistent(notification.notificationID, true)" class="i-Data-Save"></i>
-                        <i v-else @click="updateNotificationPersistent(notification.notificationID, false)" class="i-Close"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div v-if="notification.notificationType == 3">
-                    <div style="display: flex; cursor: pointer">
-                      <div style="display: flex;" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
-                        <div :style="{backgroundColor: notification.whatsappInvoiceAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px; text-align: center;">
-                          <p style="margin: 0px;" :style="{color: notification.whatsappInvoiceAgentFontColor }">{{ notification.whatsappInvoiceAgentName }}</p>
-                        </div>
-                        <p style="margin-top: 10px; margin-bottom: 0px;">Ha vendido la órden {{ notification.whatsappInvoiceID }} por ₡{{ notification.whatsappInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
-                      </div>
-                      <div class="flex-grow-1"></div>
-                      <div>
-                        <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
-                        <i v-if="notification.notificationPersistent == false" @click="updateNotificationPersistent(notification.notificationID, true)" class="i-Data-Save"></i>
-                        <i v-else @click="updateNotificationPersistent(notification.notificationID, false)" class="i-Close"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div v-if="notification.notificationType == 4">
-                    <div style="display: flex; cursor: pointer">
-                      <div style="display: flex;" v-b-modal.conversationModal @click="whatsappConversationOpenAction(notification)">
-                        <div :style="{backgroundColor: notification.whatsappConversationAgentColor}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px; text-align: center;">
-                          <p style="margin: 0px;" :style="{color: notification.whatsappConversationFontColor }">{{ notification.whatsappConversationAgentName }}</p>
-                        </div>
-                        <p style="margin-top: 10px; margin-bottom: 0px;">Ha regresado la órden {{ notification.whatsappInvoiceID }} al Call Center</p>
-                      </div>
-                      <div class="flex-grow-1"></div>
-                      <div>
-                        <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
-                        <i v-if="notification.notificationPersistent == false" @click="updateNotificationPersistent(notification.notificationID, true)" class="i-Data-Save"></i>
-                        <i v-else @click="updateNotificationPersistent(notification.notificationID, false)" class="i-Close"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div v-if="notification.notificationType == 5">
-                    <div style="display: flex;">
-                      <div :style="{backgroundColor: notification.agent1Color}" style="border-radius: 10px; padding: 10px; width: fit-content; margin-right: 10px; text-align: center;">
-                        <p style="margin: 0px;" :style="{color: notification.agent1FontColor }">{{ notification.agent1Name }}</p>
-                      </div>
-                      <p style="margin-top: 10px; margin-bottom: 0px;">Ha aprobado el SINPE de la órden {{ notification.whatsappInvoiceID }} por ₡{{ notification.whatsappInvoiceAmount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</p>
-                      <div class="flex-grow-1"></div>
-                      <div>
-                        <p style="margin: 0px; font-size: xx-small;">{{ new Date(new Date(notification.notificationDatetime).setUTCHours(new Date(notification.notificationDatetime).getUTCHours() - 6)).toISOString().slice(11, 19) }}</p>
-                        <i v-if="notification.notificationPersistent == false" @click="updateNotificationPersistent(notification.notificationID, true)" class="i-Data-Save"></i>
-                        <i v-else @click="updateNotificationPersistent(notification.notificationID, false)" class="i-Close"></i>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </b-card>
-            
+          
             
               
 
@@ -1092,13 +1002,12 @@
 
         </div>
 
-        <br><br>
+        <div v-if="opcionesGraficoPaquetes != null" style="text-align: center; display: flex; width: 100%; justify-content: center;">
+          <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoPaquetes"></apexchart>
+          <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoDinero"></apexchart>
+        </div>
 
-        <b-card style="background-color: rgb(214, 214, 214); text-align: center; padding: auto;">
-          <i v-if="!totalAmountVisible" @click="seeAmount('totalAmountVisible', 'totalAmountInterval')" class="i-Eye" style="cursor: pointer; font-size: 2em; position: relative; top: 5px;"></i>
-          <h5 v-if="totalAmountVisible" style="margin-bottom: 0px;"><strong>Total de ventas:</strong> ₡{{ whatsappTotalSells }} </h5>
-
-        </b-card>
+        <br>
         
         <div v-if="feedbackRows.length != 0">
           <br><br>
@@ -3297,7 +3206,7 @@ export default {
           this.herediaSales = 0;
         }
 
-        this.opcionesGraficoPaquetes = {chart: {width: 250, type: 'pie', height: 220}, legend: {show: false}, tooltip: {enabled: true}, labels: ['Zapote', 'Escazú', 'Cartago', 'Heredia'], colors: ['#fed330', '#db67a3', '#55b5ab', '#a78dcc']};
+        this.opcionesGraficoPaquetes = {chart: {width: 300, type: 'pie', height: 220}, legend: {show: false}, tooltip: {enabled: true}, labels: ['Zapote', 'Escazú', 'Cartago', 'Heredia'], colors: ['#fed330', '#db67a3', '#55b5ab', '#a78dcc']};
         this.datosGraficoPaquetes = [this.zapoteSelled, this.escazuSelled, this.cartagoSelled, this.herediaSelled];
         this.datosGraficoDinero = [this.zapoteSales, this.escazuSales, this.cartagoSales, this.herediaSales];
 
