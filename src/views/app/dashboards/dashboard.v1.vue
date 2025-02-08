@@ -1,5 +1,5 @@
 <template>
-  <div class="main-content">
+  <div class="main-content" style="background-color: #f4f4f4;">
 
     <b-modal scrollable size="lg" centered hide-footer id="historyOpenModal" hide-header>
             <div v-if="openHistoryLoader == true" style="text-align: center;">
@@ -855,92 +855,141 @@
         <br><br>
 
         <div style="display: flex;">
-          <b-card style="margin-right: 1%; background-color: #ebebeb; height: 480px; width: 300px;">
+          <b-card style="margin-right: 1%; background-color: #ebebeb; height: 620px; width: 300px;">
             <br>
             <div v-if="opcionesGraficoPaquetes != null" style="text-align: center;">
-              <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoPaquetes"></apexchart>
               <br>
+              <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoPaquetes"></apexchart>
+              <br><br><br><br><br>
               <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoDinero"></apexchart>
             </div>
           </b-card>
 
-          <div style="width: 40%; margin-left: 1%;">
+          <div style="width: 80%; margin-left: 1%; height: 620px;">
+            <div style="display: flex; overflow-x: auto; height: 620px; min-width: 100%; width: auto; overflow-y: hidden;">
+             
+              
+              <div v-bind:style="{
+                backgroundImage: 'url(' + require('@/assets/dashboard/zapote.png') + ')',
+                backgroundSize: 'contain',
+                backgroundPosition: 'center',
+                width: '400px',
+                height: '620px',
+                backgroundRepeat: 'no-repeat',
+                marginRight: '20px',
+                flexShrink: '0'
+              }">
 
-            UNSUPPORTED CHAR AT 44302 RESULT
+                <img src="@/assets/dashboard/fire.gif" alt :style="zapoteSelled >= 60 && todayLoader == false ? 'position: relative; width: 60px; height: 60px; top: 155px; left: 70px;' : 'position: relative; width: 60px; height: 60px; top: 155px; left: 70px; opacity: 0;'"/>
 
-            <div style="display: flex; margin-bottom: 25px;">
-              <b-card style="width: 50%; margin-right: 1.5%; background-color: #fed330;">
-                <div style="display: flex;">
-                  <p style="font-size: 22px; margin-top: 5px;"><strong>ZAPOTE:</strong></p>
-                    <div class="flex-grow-1"></div>
-                    <img v-if="(zapoteSelled) >= 80 && todayLoader == false" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
-                </div>
-                <p @click="selectTodayConversationsByLocalityNameAndType('1', 3)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{zapoteSelled + zapoteNotSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('1', 1)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{zapoteSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('1', 2)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{zapoteNotSelled}}</p>
-                <div style="display: flex">
-                  <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong></p>
-                  <i v-if="!zapoteAmountVisible" @click="seeAmount('zapoteAmountVisible', 'zapoteAmountInterval')" class="i-Eye" style="cursor: pointer; font-size: 2em; margin: 5px;"></i>
+                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                  <strong>Recibidas: </strong>{{ zapoteNotSelled + zapoteSelled }}
+                </p>
+                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                  <strong>Vendidas: </strong>{{ zapoteSelled }}
+                </p>
+                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                  <strong>No vendidas: </strong>{{ zapoteNotSelled }}
+                </p>
+                <div style="position: relative; color: black; top: 230px; left: 180px; font-size: large; margin: 0px; display: flex;">
+                  <p style="font-size: large; margin: 3px;"><strong>Ventas:</strong></p>
+                  <img v-if="!zapoteAmountVisible" src="@/assets/dashboard/ojo.png" @click="seeAmount('zapoteAmountVisible', 'zapoteAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; top: 8px; position: relative; left: 10px;"/>
                   <p v-else style="font-size: 18px; margin: 3px;"> ₡{{zapoteSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
                 </div>
-              </b-card>
-              <b-card style="width: 50%; margin-left: 1.5%; background-color: #db67a3;">
-                <div style="display: flex;">
-                  <p style="font-size: 22px; margin-top: 5px;"><strong>ESCAZÚ:</strong></p>
-                    <div class="flex-grow-1"></div>
-                    <img v-if="(escazuSelled) >= 60 && todayLoader == false" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
-                </div>
-                <p @click="selectTodayConversationsByLocalityNameAndType('4', 3)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{escazuSelled + escazuNotSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('4', 1)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{escazuSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('4', 2)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{escazuNotSelled}}</p>
-                <div style="display: flex">
-                  <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong></p>
-                  <i v-if="!escazuAmountVisible" @click="seeAmount('escazuAmountVisible', 'escazuAmountInterval')" class="i-Eye" style="cursor: pointer; font-size: 2em; margin: 5px;"></i>
+              </div>
+
+
+              <div v-bind:style="{
+                backgroundImage: 'url(' + require('@/assets/dashboard/escazu.png') + ')',
+                backgroundSize: 'contain',
+                backgroundPosition: 'center',
+                width: '400px',
+                height: '620px',
+                backgroundRepeat: 'no-repeat',
+                marginRight: '20px',
+                flexShrink: '0'
+              }">
+
+                <img src="@/assets/dashboard/fire.gif" alt :style="escazuSelled >= 60 && todayLoader == false ? 'position: relative; width: 60px; height: 60px; top: 155px; left: 70px;' : 'position: relative; width: 60px; height: 60px; top: 155px; left: 70px; opacity: 0;'"/>
+              
+                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                  <strong>Recibidas: </strong>{{ escazuNotSelled + escazuSelled }}
+                </p>
+                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                  <strong>Vendidas: </strong>{{ escazuSelled }}
+                </p>
+                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                  <strong>No vendidas: </strong>{{ escazuNotSelled }}
+                </p>
+                <div style="position: relative; color: black; top: 230px; left: 180px; font-size: large; margin: 0px; display: flex;">
+                  <p style="font-size: large; margin: 3px;"><strong>Ventas:</strong></p>
+                  <img v-if="!escazuAmountVisible" src="@/assets/dashboard/ojo.png" @click="seeAmount('escazuAmountVisible', 'escazuAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; top: 8px; position: relative; left: 10px;"/>
                   <p v-else style="font-size: 18px; margin: 3px;"> ₡{{escazuSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
                 </div>
-              </b-card>
-            </div>
+              </div>
 
-            <div style="display: flex; margin-top: 25px;">
-              <b-card style="width: 50%; margin-right: 1.5%; background-color: #55b5ab;">
-                <div style="display: flex;">
-                  <p style="font-size: 22px; margin-top: 5px;"><strong>CARTAGO:</strong></p>
-                    <div class="flex-grow-1"></div>
-                    <img v-if="(cartagoSelled) >= 60 && todayLoader == false" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
-                </div>
-                <p @click="selectTodayConversationsByLocalityNameAndType('3', 3)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{cartagoNotSelled + cartagoSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('3', 1)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{cartagoSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('3', 2)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{cartagoNotSelled}}</p>
-                <div style="display: flex">
-                  <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong></p>
-                  <i v-if="!cartagoAmountVisible" @click="seeAmount('cartagoAmountVisible', 'cartagoAmountInterval')" class="i-Eye" style="cursor: pointer; font-size: 2em; margin: 5px;"></i>
-                  <p v-else style="font-size: 18px; margin: 3px;"> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
-                </div>
-              </b-card>
-              <b-card style="width: 50%; margin-left: 1.5%; background-color: #a78dcc;">
-                <div style="display: flex;">
-                  <p style="font-size: 22px; margin-top: 5px;"><strong>HEREDIA:</strong></p>
-                    <div class="flex-grow-1"></div>
-                    <img v-if="(herediaSelled) >= 60 && todayLoader == false" class="alertAnimation" src="@/assets/pageAssets/p.webp" alt style="width: 70px; height: 40px;"/>
-                </div>
-                <p @click="selectTodayConversationsByLocalityNameAndType('5', 3)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Recibidas:</strong> {{herediaSelled + herediaNotSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('5', 1)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>Vendidas:</strong> {{herediaSelled}}</p>
-                <p @click="selectTodayConversationsByLocalityNameAndType('5', 2)" style="cursor: pointer; font-size: 18px; margin: 3px;"><strong>No vendidas:</strong> {{herediaNotSelled}}</p>
-                <div style="display: flex">
-                  <p style="font-size: 18px; margin: 3px;"><strong>Ventas:</strong></p>
-                  <i v-if="!herediaAmountVisible" @click="seeAmount('herediaAmountVisible', 'herediaAmountInterval')" class="i-Eye" style="cursor: pointer; font-size: 2em; margin: 5px;"></i>
+
+              <div v-bind:style="{
+                backgroundImage: 'url(' + require('@/assets/dashboard/heredia.png') + ')',
+                backgroundSize: 'contain',
+                backgroundPosition: 'center',
+                width: '400px',
+                height: '620px',
+                backgroundRepeat: 'no-repeat',
+                marginRight: '20px',
+                flexShrink: '0'
+              }">
+
+                <img src="@/assets/dashboard/fire.gif" alt :style="herediaSelled >= 60 && todayLoader == false ? 'position: relative; width: 60px; height: 60px; top: 155px; left: 70px;' : 'position: relative; width: 60px; height: 60px; top: 155px; left: 70px; opacity: 0;'"/>
+
+                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                  <strong>Recibidas: </strong>{{ herediaNotSelled + herediaSelled }}
+                </p>
+                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                  <strong>Vendidas: </strong>{{ herediaSelled }}
+                </p>
+                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                  <strong>No vendidas: </strong>{{ herediaNotSelled }}
+                </p>
+                <div style="position: relative; color: black; top: 230px; left: 180px; font-size: large; margin: 0px; display: flex;">
+                  <p style="font-size: large; margin: 3px;"><strong>Ventas:</strong></p>
+                  <img v-if="!herediaAmountVisible" src="@/assets/dashboard/ojo.png" @click="seeAmount('herediaAmountVisible', 'herediaAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; top: 8px; position: relative; left: 10px;"/>
                   <p v-else style="font-size: 18px; margin: 3px;"> ₡{{herediaSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
                 </div>
-              </b-card>
-            </div>
-            
-          </div>
+              </div>
 
 
+              <div v-bind:style="{
+                backgroundImage: 'url(' + require('@/assets/dashboard/cartago.png') + ')',
+                backgroundSize: 'contain',
+                backgroundPosition: 'center',
+                width: '400px',
+                height: '620px',
+                backgroundRepeat: 'no-repeat',
+                marginRight: '20px',
+                flexShrink: '0'
+              }">
+
+                <img src="@/assets/dashboard/fire.gif" alt :style="cartagoSelled >= 60 && todayLoader == false ? 'position: relative; width: 60px; height: 60px; top: 155px; left: 70px;' : 'position: relative; width: 60px; height: 60px; top: 155px; left: 70px; opacity: 0;'"/>
+
+                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                  <strong>Recibidas: </strong>{{ cartagoNotSelled + cartagoSelled }}
+                </p>
+                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                  <strong>Vendidas: </strong>{{ cartagoSelled }}
+                </p>
+                <p style="position: relative; color: black; top: 230px; left: 240px; font-size: large; margin: 0px;">
+                  <strong>No vendidas: </strong>{{ cartagoNotSelled }}
+                </p>
+                <div style="position: relative; color: black; top: 230px; left: 180px; font-size: large; margin: 0px; display: flex;">
+                  <p style="font-size: large; margin: 3px;"><strong>Ventas:</strong></p>
+                  <img v-if="!cartagoAmountVisible" src="@/assets/dashboard/ojo.png" @click="seeAmount('cartagoAmountVisible', 'cartagoAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; top: 8px; position: relative; left: 10px;"/>
+                  <p v-else style="font-size: 18px; margin: 3px;"> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
+                </div>
+              </div>
 
 
-          <div style="width: 40%; margin-left: 2%; max-height: 485px; overflow-y: auto">
-            <b-card style="width: 100%; max-height: 485px; background-color: #ebebeb; overflow-y: auto">
+            <b-card style="width: 300px; max-height: 485px; background-color: #ebebeb; overflow-y: auto">
               <div v-for="notification in notifications">
                 <div style="margin-bottom: 20px; border-radius: 10px; padding: 10px;" :style="notification.notificationPersistent ? 'background-color: #f0ea97' : 'background-color: #d9d9d9'">
                   <div v-if="notification.notificationType == 1">
@@ -1027,10 +1076,19 @@
                 </div>
               </div>
             </b-card>
+            
+            
               
+
+              
+            </div>
+
+            
             
           </div>
 
+
+          
 
         </div>
 
