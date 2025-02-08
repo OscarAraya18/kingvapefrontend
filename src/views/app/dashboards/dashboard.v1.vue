@@ -877,7 +877,7 @@
                 flexShrink: '0'
               }">
 
-                <img src="@/assets/dashboard/fire.gif" alt :style="zapoteSelled >= 6 && todayLoader == false ? 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px;' : 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px; opacity: 0;'"/>
+                <img src="@/assets/dashboard/fire.gif" alt :style="zapoteSelled >= 80 && todayLoader == false ? 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px;' : 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px; opacity: 0;'"/>
 
                 <p style="position: relative; color: black; top: 185px; left: 170px; font-size: medium; margin: 0px;">
                   <strong>Recibidas: </strong>{{ zapoteNotSelled + zapoteSelled }}
@@ -907,7 +907,7 @@
                 flexShrink: '0'
               }">
 
-              <img src="@/assets/dashboard/fire.gif" alt :style="escazuSelled >= 6 && todayLoader == false ? 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px;' : 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px; opacity: 0;'"/>
+              <img src="@/assets/dashboard/fire.gif" alt :style="escazuSelled >= 60 && todayLoader == false ? 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px;' : 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px; opacity: 0;'"/>
               
                 <p style="position: relative; color: black; top: 185px; left: 170px; font-size: medium; margin: 0px;">
                   <strong>Recibidas: </strong>{{ escazuNotSelled + escazuSelled }}
@@ -937,7 +937,7 @@
                 flexShrink: '0'
               }">
 
-              <img src="@/assets/dashboard/fire.gif" alt :style="herediaSelled >= 6 && todayLoader == false ? 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px;' : 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px; opacity: 0;'"/>
+              <img src="@/assets/dashboard/fire.gif" alt :style="herediaSelled >= 60 && todayLoader == false ? 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px;' : 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px; opacity: 0;'"/>
 
                 <p style="position: relative; color: black; top: 185px; left: 170px; font-size: medium; margin: 0px;">
                   <strong>Recibidas: </strong>{{ herediaNotSelled + herediaSelled }}
@@ -967,7 +967,7 @@
                 flexShrink: '0'
               }">
 
-            <img src="@/assets/dashboard/fire.gif" alt :style="cartagoSelled >= 6 && todayLoader == false ? 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px;' : 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px; opacity: 0;'"/>
+            <img src="@/assets/dashboard/fire.gif" alt :style="cartagoSelled >= 60 && todayLoader == false ? 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px;' : 'position: relative; width: 35px; height: 35px; top: 150px; left: 55px; opacity: 0;'"/>
 
                 <p style="position: relative; color: black; top: 185px; left: 170px; font-size: medium; margin: 0px;">
                   <strong>Recibidas: </strong>{{ cartagoNotSelled + cartagoSelled }}
