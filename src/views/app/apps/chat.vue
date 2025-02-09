@@ -4805,7 +4805,11 @@ export default {
           this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(response.data.result);          
           this.scrollDown();
           this.sortConversations();
-          this.sendWhatsappFavoriteTextMessage('Nuestro horario de atención es de lunes a domingo de 9:30 am a 7:00 pm')
+          if (['Metro Plaza', 'San Rafael', 'CC del Sur'].includes(locationName)){
+            this.sendWhatsappFavoriteTextMessage('Nuestro horario de atención es de lunes a sábado de 9:30 am a 7:00 pm')
+          } else {
+            this.sendWhatsappFavoriteTextMessage('Nuestro horario de atención es de lunes a domingo de 9:30 am a 7:00 pm')
+          }
         } else {
           this.showNotification('danger', 'Error al enviar la ubicación', 'Ha ocurrido un error inesperado al enviar la ubicación. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
         }
