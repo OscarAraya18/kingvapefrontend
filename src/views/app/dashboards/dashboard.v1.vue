@@ -1,5 +1,5 @@
 <template>
-  <div class="main-content" style="background-color: #f4f4f4;">
+  <div class="main-content">
 
     <b-modal scrollable size="lg" centered hide-footer id="historyOpenModal" hide-header>
             <div v-if="openHistoryLoader == true" style="text-align: center;">
@@ -859,7 +859,8 @@
           <h5 v-if="totalAmountVisible" style="margin-bottom: 0px;"><strong>Total de ventas:</strong> ₡{{ whatsappTotalSells }} </h5>
         </b-card>
 
-        <div style="display: flex;">
+        <br><br>
+        <b-card style="display: flex; background-color: #ebebeb">
           
 
           <div style="width: 100%; height: 400px;">
@@ -870,14 +871,14 @@
                 backgroundImage: 'url(' + require('@/assets/dashboard/zapote.png') + ')',
                 backgroundSize: 'contain',
                 backgroundPosition: 'center',
-                width: '350px',
+                width: '340px',
                 height: 'auto',
                 backgroundRepeat: 'no-repeat',
                 marginRight: '20px',
                 flexShrink: '0'
               }">
 
-                <img src="@/assets/dashboard/fire.gif" alt :style="zapoteSelled >= 80 && todayLoader == false ? 'position: relative; width: 40px; height: 40px; top: 145px; left: 65px;' : 'position: relative; width: 40px; height: 40px; top: 145px; left: 65px; opacity: 0;'"/>
+                <img src="@/assets/dashboard/fire.gif" alt :style="zapoteSelled >= 80 && todayLoader == false ? 'position: relative; width: 40px; height: 40px; top: 145px; left: 60px;' : 'position: relative; width: 40px; height: 40px; top: 145px; left: 60px; opacity: 0;'"/>
 
                 <p style="position: relative; color: black; top: 200px; left: 185px; font-size: medium; margin: 0px;">
                   <strong>Recibidas: </strong>{{ zapoteNotSelled + zapoteSelled }}
@@ -900,14 +901,14 @@
                 backgroundImage: 'url(' + require('@/assets/dashboard/escazu.png') + ')',
                 backgroundSize: 'contain',
                 backgroundPosition: 'center',
-                width: '350px',
+                width: '340px',
                 height: 'auto',
                 backgroundRepeat: 'no-repeat',
                 marginRight: '20px',
                 flexShrink: '0'
               }">
 
-              <img src="@/assets/dashboard/fire.gif" alt :style="escazuSelled >= 60 && todayLoader == false ? 'position: relative; width: 40px; height: 40px; top: 145px; left: 65px;' : 'position: relative; width: 40px; height: 40px; top: 145px; left: 65px; opacity: 0;'"/>
+              <img src="@/assets/dashboard/fire.gif" alt :style="escazuSelled >= 60 && todayLoader == false ? 'position: relative; width: 40px; height: 40px; top: 145px; left: 60px;' : 'position: relative; width: 40px; height: 40px; top: 145px; left: 60px; opacity: 0;'"/>
              
                 <p style="position: relative; color: black; top: 200px; left: 185px; font-size: medium; margin: 0px;">
                   <strong>Recibidas: </strong>{{ escazuNotSelled + escazuSelled }}
@@ -930,14 +931,14 @@
                 backgroundImage: 'url(' + require('@/assets/dashboard/heredia.png') + ')',
                 backgroundSize: 'contain',
                 backgroundPosition: 'center',
-                width: '350px',
+                width: '340px',
                 height: 'auto',
                 backgroundRepeat: 'no-repeat',
                 marginRight: '20px',
                 flexShrink: '0'
               }">
 
-              <img src="@/assets/dashboard/fire.gif" alt :style="herediaSelled >= 60 && todayLoader == false ? 'position: relative; width: 40px; height: 40px; top: 145px; left: 65px;' : 'position: relative; width: 40px; height: 40px; top: 145px; left: 65px; opacity: 0;'"/>
+              <img src="@/assets/dashboard/fire.gif" alt :style="herediaSelled >= 60 && todayLoader == false ? 'position: relative; width: 40px; height: 40px; top: 145px; left: 60px;' : 'position: relative; width: 40px; height: 40px; top: 145px; left: 60px; opacity: 0;'"/>
 
                 <p style="position: relative; color: black; top: 200px; left: 185px; font-size: medium; margin: 0px;">
                   <strong>Recibidas: </strong>{{ herediaNotSelled + herediaSelled }}
@@ -960,14 +961,14 @@
                 backgroundImage: 'url(' + require('@/assets/dashboard/cartago.png') + ')',
                 backgroundSize: 'contain',
                 backgroundPosition: 'center',
-                width: '350px',
+                width: '340px',
                 height: 'auto',
                 backgroundRepeat: 'no-repeat',
                 marginRight: '20px',
                 flexShrink: '0'
               }">
 
-              <img src="@/assets/dashboard/fire.gif" alt :style="cartagoSelled >= 60 && todayLoader == false ? 'position: relative; width: 40px; height: 40px; top: 145px; left: 65px;' : 'position: relative; width: 40px; height: 40px; top: 145px; left: 65px; opacity: 0;'"/>
+              <img src="@/assets/dashboard/fire.gif" alt :style="cartagoSelled >= 60 && todayLoader == false ? 'position: relative; width: 40px; height: 40px; top: 145px; left: 60px;' : 'position: relative; width: 40px; height: 40px; top: 145px; left: 60px; opacity: 0;'"/>
 
                 <p style="position: relative; color: black; top: 200px; left: 185px; font-size: medium; margin: 0px;">
                   <strong>Recibidas: </strong>{{ cartagoNotSelled + cartagoSelled }}
@@ -997,19 +998,16 @@
             
           </div>
 
+          <br>
 
-          
-
-        </div>
-
-        <div style="display: flex;">
-          <div style="width: 49%;">
+          <div style="display: flex;">
+          <div style="width: 50%;">
             <div v-if="opcionesGraficoPaquetes != null" style="display: flex; display: flex; justify-content: center; align-items: center; height: 100%;">
               <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoPaquetes"></apexchart>
               <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoDinero"></apexchart>
             </div>
           </div>
-          <div style="width: 49%; max-height: px; overflow-y: auto">
+          <div style="width: 50%; overflow-y: auto">
             <b-card style="width: 100%; max-height: 300px; background-color: #ebebeb; overflow-y: auto">
               <div v-for="notification in notifications">
                 <div style="margin-bottom: 20px; border-radius: 10px; padding: 10px;" :style="notification.notificationPersistent ? 'background-color: #f0ea97' : 'background-color: #d9d9d9'">
@@ -1102,6 +1100,13 @@
           </div>
 
         </div>
+          
+        <br>
+
+
+        </b-card>
+
+        
         
 
         <br>
@@ -1205,32 +1210,32 @@
 
 
 
-        <br><br>
-        
-
-        <b-card style="background-color: #ebebeb">
-          <h4><strong>Búsqueda por número:</strong></h4>
-            <div style="display: flex;">  
-              <b-form-input style="width: 90%;" v-model="numberSearched" class="mb-2" placeholder="Coloque un número para buscar" @keyup="searchByNumber()"></b-form-input>
-              <button class="btn btn-icon" style="background-color: rgb(255, 184, 32); top:-5px; position:relative; margin-left: 20px;" @click="searchAllNumbers()"><i class="i-Folder-Trash"></i>Mostrar todo</button>
-            </div>
-          <br>
-          <h4><strong>Filtro por agente:</strong></h4>
-            <div style="display: flex;">  
-              <b-form-select style="width: 90%;" v-model="agentFiltered" class="mb-2" :options="agentOptions" @change="filterByAgent()"></b-form-select>
-              <button class="btn btn-icon" style="background-color: rgb(255, 184, 32); top:-5px; position:relative; margin-left: 20px;" @click="cleanAgentFilter()"><i class="i-Folder-Trash"></i>Mostrar todo</button>
-
-            </div>
-        </b-card>
-        
-
-        <br><br>
+        <br><br><br>
+      
       </div>
 
       <div class="card mb-30">
 
         
-        <div class="card-body p-0" style="background-color: #ebebeb;">
+        <b-card class="card-body p-0" style="background-color: #ebebeb;">
+
+          <div style="padding: 30px; display: flex;">
+            <div style="width: 48%; margin-right: 2%;">
+              <h4><strong>Búsqueda por número:</strong></h4>
+              <div style="display: flex;">  
+                <b-form-input style="width: 90%;" v-model="numberSearched" class="mb-2" placeholder="Coloque un número para buscar" @keyup="searchByNumber()"></b-form-input>
+                <button class="btn btn-icon" style="background-color: rgb(255, 184, 32); top:-5px; position:relative; margin-left: 20px;" @click="searchAllNumbers()"><i class="i-Folder-Trash"></i>Mostrar todo</button>
+              </div>
+            </div>
+            <div style="width: 48%; margin-left: 2%;">
+              <h4><strong>Filtro por agente:</strong></h4>
+              <div style="display: flex;">  
+                <b-form-select style="width: 90%;" v-model="agentFiltered" class="mb-2" :options="agentOptions" @change="filterByAgent()"></b-form-select>
+                <button class="btn btn-icon" style="background-color: rgb(255, 184, 32); top:-5px; position:relative; margin-left: 20px;" @click="cleanAgentFilter()"><i class="i-Folder-Trash"></i>Mostrar todo</button>
+              </div>
+            </div>
+          </div>
+          
           
           <div v-if="view == 'activeConversations'" style="margin-top: 30px; margin-bottom: 30px; display: flex">
             <div style="width: 50%; text-align: center;">
@@ -1305,7 +1310,7 @@
             </template>
           </vue-good-table>
 
-        </div>
+        </b-card>
       </div>
     </div>
 
