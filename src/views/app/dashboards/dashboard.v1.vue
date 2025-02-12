@@ -852,12 +852,6 @@
           </div>
         </b-card>
 
-        <br><br>
-      
-        <b-card style="background-color: rgb(214, 214, 214); text-align: center; padding: auto;">
-          <i v-if="!totalAmountVisible" @click="seeAmount('totalAmountVisible', 'totalAmountInterval')" class="i-Eye" style="cursor: pointer; font-size: 2em; position: relative; top: 5px; margin: 0"></i>
-          <h5 v-if="totalAmountVisible" style="margin-bottom: 0px;"><strong>Total de ventas:</strong> ₡{{ whatsappTotalSells }} </h5>
-        </b-card>
 
         <br><br>
         <b-card style="display: flex; background-color: #ebebeb">
@@ -985,28 +979,35 @@
                   <p v-else style="font-size: 18px; margin: 3px;"> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
                 </div>
               </div>
-
-
-          
-            
-              
-
-              
             </div>
-
-            
-            
           </div>
 
           <br>
 
           <div style="display: flex;">
-          <div style="width: 50%;">
-            <div v-if="opcionesGraficoPaquetes != null" style="display: flex; display: flex; justify-content: center; align-items: center; height: 100%;">
-              <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoPaquetes"></apexchart>
-              <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoDinero"></apexchart>
+          
+            <div style="width: 50%;">
+              
+
+              <div v-if="opcionesGraficoPaquetes != null && datosGraficoPaquetes.length != 0 && datosGraficoDinero.length != 0" style="display: flex; display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
+                <div style="position: relative;">
+                  <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoPaquetes"></apexchart>
+                  <div style="position: absolute; top: 130px; left: 50%; transform: translateX(-50%); padding: 5px 10px; z-index: 10;">
+                    <img v-if="!paqueteAmountVisible" @click="seeAmount('paqueteAmountVisible', 'paqueteAmountInterval')" src="@/assets/dashboard/ojo.png" style="cursor: pointer; height: 30px; width: 35px;"/>
+                    <h5 v-if="paqueteAmountVisible" style="margin: 0;"><strong>{{ zapoteSelled + escazuSelled + herediaSelled + cartagoSelled }}</strong></h5>
+                  </div>
+                </div>
+                <div style="position: relative;">
+                  <apexchart type="pie" :options="opcionesGraficoPaquetes" :series="datosGraficoDinero"></apexchart>
+                  <div style="position: absolute; top: 130px; left: 50%; transform: translateX(-50%); padding: 5px 10px; z-index: 10;">
+                    <img v-if="!totalAmountVisible" @click="seeAmount('totalAmountVisible', 'totalAmountInterval')" src="@/assets/dashboard/ojo.png" style="cursor: pointer; height: 30px; width: 35px;"/>
+                    <h5 v-if="totalAmountVisible" style="margin: 0;"><strong>₡{{ whatsappTotalSells }}</strong></h5>
+                  </div>
+                </div>
+              </div>
+            
             </div>
-          </div>
+
           <div style="width: 50%; overflow-y: auto">
             <b-card style="width: 100%; max-height: 300px; background-color: #ebebeb; overflow-y: auto">
               <div v-for="notification in notifications">
@@ -1095,16 +1096,11 @@
                 </div>
               </div>
             </b-card>
-              
-            
           </div>
-
         </div>
           
         <br>
-
-
-        </b-card>
+      </b-card>
 
         
         
@@ -2263,6 +2259,9 @@ export default {
       totalAmountVisible: false,
       totalAmountInterval: null,
 
+      paqueteAmountVisible: false,
+      paqueteAmountInterval: null,
+
       zapoteAmountVisible: false,
       zapoteAmountInterval: null,
 
@@ -3308,7 +3307,7 @@ export default {
           this.herediaSales = 0;
         }
 
-        this.opcionesGraficoPaquetes = {chart: {width: 300, type: 'pie', height: 220}, legend: {show: false}, tooltip: {enabled: true}, labels: ['Zapote', 'Escazú', 'Cartago', 'Heredia'], colors: ['#fed330', '#db67a3', '#55b5ab', '#a78dcc']};
+        this.opcionesGraficoPaquetes = {chart: {width: 400, type: 'donut', height: 320}, legend: {show: false}, tooltip: {enabled: true}, labels: ['Zapote', 'Escazú', 'Cartago', 'Heredia'], colors: ['#fed330', '#db67a3', '#55b5ab', '#a78dcc']};
         this.datosGraficoPaquetes = [this.zapoteSelled, this.escazuSelled, this.cartagoSelled, this.herediaSelled];
         this.datosGraficoDinero = [this.zapoteSales, this.escazuSales, this.cartagoSales, this.herediaSales];
 
