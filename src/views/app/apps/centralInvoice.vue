@@ -666,6 +666,10 @@
         
         <div style="width: 25%; margin-right: 1%;">
           <b-card style="height: 90vh; background-color: #fed330;">
+            <div style="position: absolute; top: 0; left: 0; background-color: gray; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center; color: white;">
+              <h2 style="margin: 0; color: white; font-weight: bolder;">{{ motosZapote }}</h2>
+            </div>
+
             <div style="display: flex; justify-content: center; width: 100%;">
               <div style="position: relative; top: -80px; background-color: white; width: 200px; height: 150px; border-radius: 40%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
                 <img src="../../../assets/dashboard/titulozapote.png" style="width: 90%;">
@@ -754,6 +758,10 @@
 
         <div style="width: 25%; margin-right: 1%;">
           <b-card style="height: 90vh; background-color: #db67a3;">
+            <div style="position: absolute; top: 0; left: 0; background-color: gray; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center; color: white;">
+              <h2 style="margin: 0; color: white; font-weight: bolder;">{{ motosEscazu }}</h2>
+            </div>
+
             <div style="display: flex; justify-content: center; width: 100%;">
               <div style="position: relative; top: -80px; background-color: white; width: 200px; height: 150px; border-radius: 40%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
                 <img src="../../../assets/dashboard/tituloescazu.png" style="width: 90%;">
@@ -842,6 +850,10 @@
 
         <div style="width: 25%; margin-right: 1%;">
           <b-card style="height: 90vh; background-color: #a78dcc;">
+            <div style="position: absolute; top: 0; left: 0; background-color: gray; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center; color: white;">
+              <h2 style="margin: 0; color: white; font-weight: bolder;">{{ motosHeredia }}</h2>
+            </div>
+
             <div style="display: flex; justify-content: center; width: 100%;">
               <div style="position: relative; top: -80px; background-color: white; width: 200px; height: 150px; border-radius: 40%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
                 <img src="../../../assets/dashboard/tituloheredia.png" style="width: 90%;">
@@ -930,6 +942,10 @@
 
         <div style="width: 25%; margin-right: 1%;">
           <b-card style="height: 90vh; background-color: #55b5ab;">
+            <div style="position: absolute; top: 0; left: 0; background-color: gray; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center; color: white;">
+              <h2 style="margin: 0; color: white; font-weight: bolder;">{{ motosCartago }}</h2>
+            </div>
+
             <div style="display: flex; justify-content: center; width: 100%;">
               <div style="position: relative; top: -80px; background-color: white; width: 200px; height: 150px; border-radius: 40%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
                 <img src="../../../assets/dashboard/titulocartago.png" style="width: 90%;">
