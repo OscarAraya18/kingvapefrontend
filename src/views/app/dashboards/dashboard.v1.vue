@@ -874,19 +874,19 @@
 
                 <img src="@/assets/dashboard/fire.gif" alt :style="zapoteSelled >= 80 && todayLoader == false ? 'position: relative; width: 40px; height: 40px; top: 145px; left: 60px;' : 'position: relative; width: 40px; height: 40px; top: 145px; left: 60px; opacity: 0;'"/>
 
-                <p style="position: relative; color: black; top: 200px; left: 185px; font-size: medium; margin: 0px;">
+                <p style="position: relative; color: black; top: 190px; left: 185px; font-size: large; margin: 0px;">
                   <strong>Recibidas: </strong>{{ zapoteNotSelled + zapoteSelled }}
                 </p>
-                <p style="position: relative; color: black; top: 200px; left: 185px; font-size: medium; margin: 0px;">
+                <p style="position: relative; color: black; top: 190px; left: 185px; font-size: large; margin: 0px;">
                   <strong>Vendidas: </strong>{{ zapoteSelled }}
                 </p>
-                <p style="position: relative; color: black; top: 200px; left: 185px; font-size: medium; margin: 0px;">
+                <p style="position: relative; color: black; top: 190px; left: 185px; font-size: large; margin: 0px;">
                   <strong>No vendidas: </strong>{{ zapoteNotSelled }}
                 </p>
-                <div style="position: relative; color: black; top: 200px; left: 140px; font-size: medium; margin: 0px; display: flex;">
-                  <p style="font-size: medium; margin: 3px;"><strong>Ventas:</strong></p>
+                <div style="position: relative; color: black; top: 190px; left: 120px; font-size: large; margin: 0px; display: flex;">
+                  <p style="font-size: large; margin: 3px;"><strong>Ventas:</strong></p>
                   <img v-if="!zapoteAmountVisible" src="@/assets/dashboard/ojo.png" @click="seeAmount('zapoteAmountVisible', 'zapoteAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; top: 8px; position: relative; left: 10px;"/>
-                  <p v-else style="font-size: medium; margin: 3px;"> ₡{{zapoteSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
+                  <p v-else style="font-size: large; margin: 3px;"> ₡{{zapoteSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
                 </div>
               </div>
 
@@ -904,19 +904,19 @@
 
               <img src="@/assets/dashboard/fire.gif" alt :style="escazuSelled >= 60 && todayLoader == false ? 'position: relative; width: 40px; height: 40px; top: 145px; left: 60px;' : 'position: relative; width: 40px; height: 40px; top: 145px; left: 60px; opacity: 0;'"/>
              
-                <p style="position: relative; color: black; top: 200px; left: 185px; font-size: medium; margin: 0px;">
+                <p style="position: relative; color: black; top: 190px; left: 185px; font-size: large; margin: 0px;">
                   <strong>Recibidas: </strong>{{ escazuNotSelled + escazuSelled }}
                 </p>
-                <p style="position: relative; color: black; top: 200px; left: 185px; font-size: medium; margin: 0px;">
+                <p style="position: relative; color: black; top: 190px; left: 185px; font-size: large; margin: 0px;">
                   <strong>Vendidas: </strong>{{ escazuSelled }}
                 </p>
-                <p style="position: relative; color: black; top: 200px; left: 185px; font-size: medium; margin: 0px;">
+                <p style="position: relative; color: black; top: 190px; left: 185px; font-size: large; margin: 0px;">
                   <strong>No vendidas: </strong>{{ escazuNotSelled }}
                 </p>
-                <div style="position: relative; color: black; top: 200px; left: 140px; font-size: medium; margin: 0px; display: flex;">
-                  <p style="font-size: medium; margin: 3px;"><strong>Ventas:</strong></p>
+                <div style="position: relative; color: black; top: 190px; left: 120px; font-size: large; margin: 0px; display: flex;">
+                  <p style="font-size: large; margin: 3px;"><strong>Ventas:</strong></p>
                   <img v-if="!escazuAmountVisible" src="@/assets/dashboard/ojo.png" @click="seeAmount('escazuAmountVisible', 'escazuAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; top: 8px; position: relative; left: 10px;"/>
-                  <p v-else style="font-size: medium; margin: 3px;"> ₡{{escazuSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
+                  <p v-else style="font-size: large; margin: 3px;"> ₡{{escazuSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
                 </div>
               </div>
 
@@ -934,19 +934,19 @@
 
               <img src="@/assets/dashboard/fire.gif" alt :style="herediaSelled >= 60 && todayLoader == false ? 'position: relative; width: 40px; height: 40px; top: 145px; left: 60px;' : 'position: relative; width: 40px; height: 40px; top: 145px; left: 60px; opacity: 0;'"/>
 
-                <p style="position: relative; color: black; top: 200px; left: 185px; font-size: medium; margin: 0px;">
+                <p style="position: relative; color: black; top: 190px; left: 185px; font-size: large; margin: 0px;">
                   <strong>Recibidas: </strong>{{ herediaNotSelled + herediaSelled }}
                 </p>
-                <p style="position: relative; color: black; top: 200px; left: 185px; font-size: medium; margin: 0px;">
+                <p style="position: relative; color: black; top: 190px; left: 185px; font-size: large; margin: 0px;">
                   <strong>Vendidas: </strong>{{ herediaSelled }}
                 </p>
-                <p style="position: relative; color: black; top: 200px; left: 185px; font-size: medium; margin: 0px;">
+                <p style="position: relative; color: black; top: 190px; left: 185px; font-size: large; margin: 0px;">
                   <strong>No vendidas: </strong>{{ herediaNotSelled }}
                 </p>
-                <div style="position: relative; color: black; top: 200px; left: 140px; font-size: medium; margin: 0px; display: flex;">
-                  <p style="font-size: medium; margin: 3px;"><strong>Ventas:</strong></p>
+                <div style="position: relative; color: black; top: 190px; left: 120px; font-size: large; margin: 0px; display: flex;">
+                  <p style="font-size: large; margin: 3px;"><strong>Ventas:</strong></p>
                   <img v-if="!herediaAmountVisible" src="@/assets/dashboard/ojo.png" @click="seeAmount('herediaAmountVisible', 'herediaAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; top: 8px; position: relative; left: 10px;"/>
-                  <p v-else style="font-size: medium; margin: 3px;"> ₡{{herediaSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
+                  <p v-else style="font-size: large; margin: 3px;"> ₡{{herediaSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
                 </div>
               </div>
 
@@ -964,17 +964,17 @@
 
               <img src="@/assets/dashboard/fire.gif" alt :style="cartagoSelled >= 60 && todayLoader == false ? 'position: relative; width: 40px; height: 40px; top: 145px; left: 60px;' : 'position: relative; width: 40px; height: 40px; top: 145px; left: 60px; opacity: 0;'"/>
 
-                <p style="position: relative; color: black; top: 200px; left: 185px; font-size: medium; margin: 0px;">
+                <p style="position: relative; color: black; top: 190px; left: 185px; font-size: large; margin: 0px;">
                   <strong>Recibidas: </strong>{{ cartagoNotSelled + cartagoSelled }}
                 </p>
-                <p style="position: relative; color: black; top: 200px; left: 185px; font-size: medium; margin: 0px;">
+                <p style="position: relative; color: black; top: 190px; left: 185px; font-size: large; margin: 0px;">
                   <strong>Vendidas: </strong>{{ cartagoSelled }}
                 </p>
-                <p style="position: relative; color: black; top: 200px; left: 185px; font-size: medium; margin: 0px;">
+                <p style="position: relative; color: black; top: 190px; left: 185px; font-size: large; margin: 0px;">
                   <strong>No vendidas: </strong>{{ cartagoNotSelled }}
                 </p>
-                <div style="position: relative; color: black; top: 200px; left: 140px; font-size: medium; margin: 0px; display: flex;">
-                  <p style="font-size: medium; margin: 3px;"><strong>Ventas:</strong></p>
+                <div style="position: relative; color: black; top: 190px; left: 120px; font-size: large; margin: 0px; display: flex;">
+                  <p style="font-size: large; margin: 3px;"><strong>Ventas:</strong></p>
                   <img v-if="!cartagoAmountVisible" src="@/assets/dashboard/ojo.png" @click="seeAmount('cartagoAmountVisible', 'cartagoAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; top: 8px; position: relative; left: 10px;"/>
                   <p v-else style="font-size: 18px; margin: 3px;"> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
                 </div>
