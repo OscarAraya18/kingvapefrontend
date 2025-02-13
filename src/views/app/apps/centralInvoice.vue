@@ -667,8 +667,8 @@
         <div style="width: 25%; margin-right: 1%;">
           <b-card style="height: 90vh; background-color: #fed330;">
             <div style="display: flex; justify-content: center; width: 100%;">
-              <div style="position: relative; top: -80px; background-color: white; width: 200px; height: 200px; border-radius: 50%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
-                <img src="../../../assets/dashboard/titulozapote.png" style="width: 90%; margin-bottom: 10px;">
+              <div style="position: relative; top: -80px; background-color: white; width: 200px; height: 150px; border-radius: 40%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
+                <img src="../../../assets/dashboard/titulozapote.png" style="width: 90%;">
                 <img v-if="(zapoteCentralWhatsappInvoiceAmount + zapoteLocalityWhatsappInvoiceAmount + zapoteShippingWhatsappInvoiceAmount) >= 40" src="../../../assets/dashboard/fire.gif" style="width: 25%;">
               </div>
             </div>
@@ -692,25 +692,22 @@
                   <div style="width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 15px solid #fed330;"></div>
                 </div>
                 <div>
-                  <div v-for="whatsappInvoice in zapoteWhatsappInvoices" style="padding: 20px;">
+                  <div v-for="whatsappInvoice in zapoteWhatsappInvoices" style="padding: 10px 20px 10px 20px;">
                     <div style="background-color: white;">
                       <div style="width: 100%; display: flex; justify-content: space-between;">
                         <div v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
                           <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
                         </div>
-                        <div style="width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
+                        <div v-else style="width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
                           <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
                         </div>
                         <div>
                           <div style="width: 100px; height: 45px; border-radius: 0 0 0 30px; display: flex; justify-content: center; align-items: center; background-color: #c4c4c4;">
                             <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceID }}</h3>
                           </div>
-                          <div style="width: 100%; display: flex; justify-content: flex-end;">
-                            <p style="margin-top: 5px; margin-right: 5px; font-weight: bold;">{{ whatsappInvoice.agentName }}</p>
-                          </div>
                         </div>
                       </div>
-                      <div style="padding: 10px;">
+                      <div style="padding: 0px 10px 0px 10px;">
                         <div style="display: flex; flex-wrap: wrap; width: 100%; margin: 5px 0px 5px 0px;">
                           <h5 style="color: #c4c4c4; margin: 0; font-weight: bolder; white-space: nowrap;">NOMBRE:</h5>
                           <h5 v-b-modal.updateWhatsappInvoiceClientNameModal @click="openUpdateWhatsappInvoiceClientName(whatsappInvoice)" style="color: black; margin: 0 0 0 10px; font-weight: bolder; flex: 1; word-wrap: break-word; cursor: pointer;">{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
@@ -723,15 +720,19 @@
                           <h5 style="color: #c4c4c4; margin: 0; font-weight: bolder; white-space: nowrap;">MONTO:</h5>
                           <h5 v-b-modal.updateWhatsappInvoiceAmountModal @click="openUpdateWhatsappInvoiceAmount(whatsappInvoice)" style="cursor: pointer; color: black; margin: 0 0 0 10px; font-weight: bolder; flex: 1; word-wrap: break-word;">₡{{ parseInt(whatsappInvoice.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h5>
                         </div>
-                      </div>
-                      <div style="width: 100%; display: flex; justify-content: flex-end;">
-                        <div style="display: flex;">
-                          <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(whatsappInvoice)" class="i-Shopping-Cart" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
-                          <i v-b-modal.updateWhatsappInvoiceInformation @click="openWhatsappInvoiceInformation(whatsappInvoice)" class="i-Information text-info" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
-                          <img v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 33px; height: auto; margin-right: 10px; margin-bottom: 5px;"/>
+                        <div style="display: flex; flex-wrap: wrap; width: 100%; margin: 5px 0px 5px 0px;">
+                          <h5 style="color: #c4c4c4; margin: 0; font-weight: bolder; white-space: nowrap;">AGENTE:</h5>
+                          <h5 style="cursor: pointer; color: black; margin: 0 0 0 10px; font-weight: bolder; flex: 1; word-wrap: break-word;">{{ whatsappInvoice.agentName }}</h5>
+                          <div style="display: flex; justify-content: flex-end;">
+                            <div style="display: flex; position: relative; top: -10px;">
+                              <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(whatsappInvoice)" class="i-Shopping-Cart" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
+                              <i v-b-modal.updateWhatsappInvoiceInformation @click="openWhatsappInvoiceInformation(whatsappInvoice)" class="i-Information text-info" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
+                              <img v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 33px; height: auto; margin-right: 10px; margin-bottom: 5px;"/>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <br>
+
                       <div style="width: 100%; display: flex;">
                         <div style="width: 33.3333%; height: 40px; background-color: #d3355f; border-right: 2px solid white; display: flex; justify-content: center; align-items: center;">
                           <h4 style="color: white; margin: 0; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceCentralDateTimeRepresentation }}</h4>
@@ -754,9 +755,9 @@
         <div style="width: 25%; margin-right: 1%;">
           <b-card style="height: 90vh; background-color: #db67a3;">
             <div style="display: flex; justify-content: center; width: 100%;">
-              <div style="position: relative; top: -80px; background-color: white; width: 200px; height: 200px; border-radius: 50%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
-                <img src="../../../assets/dashboard/tituloescazu.png" style="width: 90%; margin-bottom: 10px;">
-                <img v-if="(escazuCentralWhatsappInvoiceAmount + escazuLocalityWhatsappInvoiceAmount + escazuShippingWhatsappInvoiceAmount) >= 40" src="../../../assets/dashboard/fire.gif" style="width: 25%;">
+              <div style="position: relative; top: -80px; background-color: white; width: 200px; height: 150px; border-radius: 40%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
+                <img src="../../../assets/dashboard/tituloescazu.png" style="width: 90%;">
+                <img v-if="(escazuCentralWhatsappInvoiceAmount + escazuLocalityWhatsappInvoiceAmount + escazuShippingWhatsappInvoiceAmount) >= 20" src="../../../assets/dashboard/fire.gif" style="width: 25%;">
               </div>
             </div>
             <br><br>
@@ -779,25 +780,22 @@
                   <div style="width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 15px solid #db67a3;"></div>
                 </div>
                 <div>
-                  <div v-for="whatsappInvoice in escazuWhatsappInvoices" style="padding: 20px;">
+                  <div v-for="whatsappInvoice in escazuWhatsappInvoices" style="padding: 10px 20px 10px 20px;">
                     <div style="background-color: white;">
                       <div style="width: 100%; display: flex; justify-content: space-between;">
                         <div v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
                           <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
                         </div>
-                        <div style="width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
+                        <div v-else style="width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
                           <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
                         </div>
                         <div>
                           <div style="width: 100px; height: 45px; border-radius: 0 0 0 30px; display: flex; justify-content: center; align-items: center; background-color: #c4c4c4;">
                             <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceID }}</h3>
                           </div>
-                          <div style="width: 100%; display: flex; justify-content: flex-end;">
-                            <p style="margin-top: 5px; margin-right: 5px; font-weight: bold;">{{ whatsappInvoice.agentName }}</p>
-                          </div>
                         </div>
                       </div>
-                      <div style="padding: 10px;">
+                      <div style="padding: 0px 10px 0px 10px;">
                         <div style="display: flex; flex-wrap: wrap; width: 100%; margin: 5px 0px 5px 0px;">
                           <h5 style="color: #c4c4c4; margin: 0; font-weight: bolder; white-space: nowrap;">NOMBRE:</h5>
                           <h5 v-b-modal.updateWhatsappInvoiceClientNameModal @click="openUpdateWhatsappInvoiceClientName(whatsappInvoice)" style="color: black; margin: 0 0 0 10px; font-weight: bolder; flex: 1; word-wrap: break-word; cursor: pointer;">{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
@@ -810,15 +808,19 @@
                           <h5 style="color: #c4c4c4; margin: 0; font-weight: bolder; white-space: nowrap;">MONTO:</h5>
                           <h5 v-b-modal.updateWhatsappInvoiceAmountModal @click="openUpdateWhatsappInvoiceAmount(whatsappInvoice)" style="cursor: pointer; color: black; margin: 0 0 0 10px; font-weight: bolder; flex: 1; word-wrap: break-word;">₡{{ parseInt(whatsappInvoice.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h5>
                         </div>
-                      </div>
-                      <div style="width: 100%; display: flex; justify-content: flex-end;">
-                        <div style="display: flex;">
-                          <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(whatsappInvoice)" class="i-Shopping-Cart" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
-                          <i v-b-modal.updateWhatsappInvoiceInformation @click="openWhatsappInvoiceInformation(whatsappInvoice)" class="i-Information text-info" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
-                          <img v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 33px; height: auto; margin-right: 10px; margin-bottom: 5px;"/>
+                        <div style="display: flex; flex-wrap: wrap; width: 100%; margin: 5px 0px 5px 0px;">
+                          <h5 style="color: #c4c4c4; margin: 0; font-weight: bolder; white-space: nowrap;">AGENTE:</h5>
+                          <h5 style="cursor: pointer; color: black; margin: 0 0 0 10px; font-weight: bolder; flex: 1; word-wrap: break-word;">{{ whatsappInvoice.agentName }}</h5>
+                          <div style="display: flex; justify-content: flex-end;">
+                            <div style="display: flex; position: relative; top: -10px;">
+                              <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(whatsappInvoice)" class="i-Shopping-Cart" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
+                              <i v-b-modal.updateWhatsappInvoiceInformation @click="openWhatsappInvoiceInformation(whatsappInvoice)" class="i-Information text-info" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
+                              <img v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 33px; height: auto; margin-right: 10px; margin-bottom: 5px;"/>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <br>
+
                       <div style="width: 100%; display: flex;">
                         <div style="width: 33.3333%; height: 40px; background-color: #d3355f; border-right: 2px solid white; display: flex; justify-content: center; align-items: center;">
                           <h4 style="color: white; margin: 0; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceCentralDateTimeRepresentation }}</h4>
@@ -841,9 +843,9 @@
         <div style="width: 25%; margin-right: 1%;">
           <b-card style="height: 90vh; background-color: #a78dcc;">
             <div style="display: flex; justify-content: center; width: 100%;">
-              <div style="position: relative; top: -80px; background-color: white; width: 200px; height: 200px; border-radius: 50%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
-                <img src="../../../assets/dashboard/tituloheredia.png" style="width: 90%; margin-bottom: 10px;">
-                <img v-if="(herediaCentralWhatsappInvoiceAmount + herediaLocalityWhatsappInvoiceAmount + herediaShippingWhatsappInvoiceAmount) >= 40" src="../../../assets/dashboard/fire.gif" style="width: 25%;">
+              <div style="position: relative; top: -80px; background-color: white; width: 200px; height: 150px; border-radius: 40%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
+                <img src="../../../assets/dashboard/tituloheredia.png" style="width: 90%;">
+                <img v-if="(herediaCentralWhatsappInvoiceAmount + herediaLocalityWhatsappInvoiceAmount + herediaShippingWhatsappInvoiceAmount) >= 20" src="../../../assets/dashboard/fire.gif" style="width: 25%;">
               </div>
             </div>
             <br><br>
@@ -866,25 +868,22 @@
                   <div style="width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 15px solid #a78dcc;"></div>
                 </div>
                 <div>
-                  <div v-for="whatsappInvoice in herediaWhatsappInvoices" style="padding: 20px;">
+                  <div v-for="whatsappInvoice in herediaWhatsappInvoices" style="padding: 10px 20px 10px 20px;">
                     <div style="background-color: white;">
                       <div style="width: 100%; display: flex; justify-content: space-between;">
                         <div v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
                           <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
                         </div>
-                        <div style="width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
+                        <div v-else style="width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
                           <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
                         </div>
                         <div>
                           <div style="width: 100px; height: 45px; border-radius: 0 0 0 30px; display: flex; justify-content: center; align-items: center; background-color: #c4c4c4;">
                             <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceID }}</h3>
                           </div>
-                          <div style="width: 100%; display: flex; justify-content: flex-end;">
-                            <p style="margin-top: 5px; margin-right: 5px; font-weight: bold;">{{ whatsappInvoice.agentName }}</p>
-                          </div>
                         </div>
                       </div>
-                      <div style="padding: 10px;">
+                      <div style="padding: 0px 10px 0px 10px;">
                         <div style="display: flex; flex-wrap: wrap; width: 100%; margin: 5px 0px 5px 0px;">
                           <h5 style="color: #c4c4c4; margin: 0; font-weight: bolder; white-space: nowrap;">NOMBRE:</h5>
                           <h5 v-b-modal.updateWhatsappInvoiceClientNameModal @click="openUpdateWhatsappInvoiceClientName(whatsappInvoice)" style="color: black; margin: 0 0 0 10px; font-weight: bolder; flex: 1; word-wrap: break-word; cursor: pointer;">{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
@@ -897,15 +896,19 @@
                           <h5 style="color: #c4c4c4; margin: 0; font-weight: bolder; white-space: nowrap;">MONTO:</h5>
                           <h5 v-b-modal.updateWhatsappInvoiceAmountModal @click="openUpdateWhatsappInvoiceAmount(whatsappInvoice)" style="cursor: pointer; color: black; margin: 0 0 0 10px; font-weight: bolder; flex: 1; word-wrap: break-word;">₡{{ parseInt(whatsappInvoice.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h5>
                         </div>
-                      </div>
-                      <div style="width: 100%; display: flex; justify-content: flex-end;">
-                        <div style="display: flex;">
-                          <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(whatsappInvoice)" class="i-Shopping-Cart" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
-                          <i v-b-modal.updateWhatsappInvoiceInformation @click="openWhatsappInvoiceInformation(whatsappInvoice)" class="i-Information text-info" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
-                          <img v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 33px; height: auto; margin-right: 10px; margin-bottom: 5px;"/>
+                        <div style="display: flex; flex-wrap: wrap; width: 100%; margin: 5px 0px 5px 0px;">
+                          <h5 style="color: #c4c4c4; margin: 0; font-weight: bolder; white-space: nowrap;">AGENTE:</h5>
+                          <h5 style="cursor: pointer; color: black; margin: 0 0 0 10px; font-weight: bolder; flex: 1; word-wrap: break-word;">{{ whatsappInvoice.agentName }}</h5>
+                          <div style="display: flex; justify-content: flex-end;">
+                            <div style="display: flex; position: relative; top: -10px;">
+                              <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(whatsappInvoice)" class="i-Shopping-Cart" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
+                              <i v-b-modal.updateWhatsappInvoiceInformation @click="openWhatsappInvoiceInformation(whatsappInvoice)" class="i-Information text-info" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
+                              <img v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 33px; height: auto; margin-right: 10px; margin-bottom: 5px;"/>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <br>
+
                       <div style="width: 100%; display: flex;">
                         <div style="width: 33.3333%; height: 40px; background-color: #d3355f; border-right: 2px solid white; display: flex; justify-content: center; align-items: center;">
                           <h4 style="color: white; margin: 0; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceCentralDateTimeRepresentation }}</h4>
@@ -928,9 +931,9 @@
         <div style="width: 25%; margin-right: 1%;">
           <b-card style="height: 90vh; background-color: #55b5ab;">
             <div style="display: flex; justify-content: center; width: 100%;">
-              <div style="position: relative; top: -80px; background-color: white; width: 200px; height: 200px; border-radius: 50%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
-                <img src="../../../assets/dashboard/titulocartago.png" style="width: 90%; margin-bottom: 10px;">
-                <img v-if="(cartagoCentralWhatsappInvoiceAmount + cartagoLocalityWhatsappInvoiceAmount + cartagoShippingWhatsappInvoiceAmount) >= 40" src="../../../assets/dashboard/fire.gif" style="width: 25%;">
+              <div style="position: relative; top: -80px; background-color: white; width: 200px; height: 150px; border-radius: 40%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
+                <img src="../../../assets/dashboard/titulocartago.png" style="width: 90%;">
+                <img v-if="(cartagoCentralWhatsappInvoiceAmount + cartagoLocalityWhatsappInvoiceAmount + cartagoShippingWhatsappInvoiceAmount) >= 20" src="../../../assets/dashboard/fire.gif" style="width: 25%;">
               </div>
             </div>
             <br><br>
@@ -953,25 +956,22 @@
                   <div style="width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 15px solid #55b5ab;"></div>
                 </div>
                 <div>
-                  <div v-for="whatsappInvoice in cartagoWhatsappInvoices" style="padding: 20px;">
+                  <div v-for="whatsappInvoice in cartagoWhatsappInvoices" style="padding: 10px 20px 10px 20px;">
                     <div style="background-color: white;">
                       <div style="width: 100%; display: flex; justify-content: space-between;">
                         <div v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
                           <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
                         </div>
-                        <div style="width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
+                        <div v-else style="width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
                           <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
                         </div>
                         <div>
                           <div style="width: 100px; height: 45px; border-radius: 0 0 0 30px; display: flex; justify-content: center; align-items: center; background-color: #c4c4c4;">
                             <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceID }}</h3>
                           </div>
-                          <div style="width: 100%; display: flex; justify-content: flex-end;">
-                            <p style="margin-top: 5px; margin-right: 5px; font-weight: bold;">{{ whatsappInvoice.agentName }}</p>
-                          </div>
                         </div>
                       </div>
-                      <div style="padding: 10px;">
+                      <div style="padding: 0px 10px 0px 10px;">
                         <div style="display: flex; flex-wrap: wrap; width: 100%; margin: 5px 0px 5px 0px;">
                           <h5 style="color: #c4c4c4; margin: 0; font-weight: bolder; white-space: nowrap;">NOMBRE:</h5>
                           <h5 v-b-modal.updateWhatsappInvoiceClientNameModal @click="openUpdateWhatsappInvoiceClientName(whatsappInvoice)" style="color: black; margin: 0 0 0 10px; font-weight: bolder; flex: 1; word-wrap: break-word; cursor: pointer;">{{ whatsappInvoice.whatsappInvoiceClientName }}</h5>
@@ -984,15 +984,19 @@
                           <h5 style="color: #c4c4c4; margin: 0; font-weight: bolder; white-space: nowrap;">MONTO:</h5>
                           <h5 v-b-modal.updateWhatsappInvoiceAmountModal @click="openUpdateWhatsappInvoiceAmount(whatsappInvoice)" style="cursor: pointer; color: black; margin: 0 0 0 10px; font-weight: bolder; flex: 1; word-wrap: break-word;">₡{{ parseInt(whatsappInvoice.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}</h5>
                         </div>
-                      </div>
-                      <div style="width: 100%; display: flex; justify-content: flex-end;">
-                        <div style="display: flex;">
-                          <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(whatsappInvoice)" class="i-Shopping-Cart" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
-                          <i v-b-modal.updateWhatsappInvoiceInformation @click="openWhatsappInvoiceInformation(whatsappInvoice)" class="i-Information text-info" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
-                          <img v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 33px; height: auto; margin-right: 10px; margin-bottom: 5px;"/>
+                        <div style="display: flex; flex-wrap: wrap; width: 100%; margin: 5px 0px 5px 0px;">
+                          <h5 style="color: #c4c4c4; margin: 0; font-weight: bolder; white-space: nowrap;">AGENTE:</h5>
+                          <h5 style="cursor: pointer; color: black; margin: 0 0 0 10px; font-weight: bolder; flex: 1; word-wrap: break-word;">{{ whatsappInvoice.agentName }}</h5>
+                          <div style="display: flex; justify-content: flex-end;">
+                            <div style="display: flex; position: relative; top: -10px;">
+                              <i v-b-modal.whatsappInvoiceProductsModal @click="openWhatsappInvoiceProducts(whatsappInvoice)" class="i-Shopping-Cart" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
+                              <i v-b-modal.updateWhatsappInvoiceInformation @click="openWhatsappInvoiceInformation(whatsappInvoice)" class="i-Information text-info" style="font-size: xx-large; margin-right: 10px; cursor: pointer;"></i>
+                              <img v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 33px; height: auto; margin-right: 10px; margin-bottom: 5px;"/>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <br>
+
                       <div style="width: 100%; display: flex;">
                         <div style="width: 33.3333%; height: 40px; background-color: #d3355f; border-right: 2px solid white; display: flex; justify-content: center; align-items: center;">
                           <h4 style="color: white; margin: 0; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceCentralDateTimeRepresentation }}</h4>
@@ -1011,6 +1015,8 @@
             </div>
           </b-card>
         </div>
+       
+       
        
       </div>
 
@@ -2011,7 +2017,7 @@ export default {
       if(this.isAdmin){
         return 'height: 65vh; overflow-y: auto;';
       } else {
-        return 'height: 75vh; overflow-y: auto;';
+        return 'height: 70vh; overflow-y: auto;';
       }
     },
     playSound(soundType){
