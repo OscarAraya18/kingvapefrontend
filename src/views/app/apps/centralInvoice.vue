@@ -697,7 +697,7 @@
                 </div>
                 <div>
                   <div v-for="whatsappInvoice in zapoteWhatsappInvoices" style="padding: 10px 20px 10px 20px;">
-                    <div style="background-color: white;">
+                    <div :style="whatsappInvoice.whatsappInvoiceIsForToday ? 'background-color: white;' : 'background-color: #9c9c9c;'">
                       <div style="width: 100%; display: flex; justify-content: space-between;">
                         <div v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
                           <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
@@ -789,7 +789,7 @@
                 </div>
                 <div>
                   <div v-for="whatsappInvoice in escazuWhatsappInvoices" style="padding: 10px 20px 10px 20px;">
-                    <div style="background-color: white;">
+                    <div :style="whatsappInvoice.whatsappInvoiceIsForToday ? 'background-color: white;' : 'background-color: #9c9c9c;'">
                       <div style="width: 100%; display: flex; justify-content: space-between;">
                         <div v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
                           <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
@@ -881,7 +881,7 @@
                 </div>
                 <div>
                   <div v-for="whatsappInvoice in herediaWhatsappInvoices" style="padding: 10px 20px 10px 20px;">
-                    <div style="background-color: white;">
+                    <div :style="whatsappInvoice.whatsappInvoiceIsForToday ? 'background-color: white;' : 'background-color: #9c9c9c;'">
                       <div style="width: 100%; display: flex; justify-content: space-between;">
                         <div v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
                           <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
@@ -973,7 +973,7 @@
                 </div>
                 <div>
                   <div v-for="whatsappInvoice in cartagoWhatsappInvoices" style="padding: 10px 20px 10px 20px;">
-                    <div style="background-color: white;">
+                    <div :style="whatsappInvoice.whatsappInvoiceIsForToday ? 'background-color: white;' : 'background-color: #9c9c9c;'">
                       <div style="width: 100%; display: flex; justify-content: space-between;">
                         <div v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
                           <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
