@@ -697,7 +697,7 @@
                 </div>
                 <div>
                   <div v-for="whatsappInvoice in zapoteWhatsappInvoices" style="padding: 10px 20px 10px 20px;">
-                    <div :style="whatsappInvoice.whatsappInvoiceIsForToday ? 'background-color: white;' : 'background-color: #9c9c9c;'">
+                    <div :class="getAlertAnimation(whatsappInvoice)">
                       <div style="width: 100%; display: flex; justify-content: space-between;">
                         <div v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
                           <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
@@ -789,7 +789,7 @@
                 </div>
                 <div>
                   <div v-for="whatsappInvoice in escazuWhatsappInvoices" style="padding: 10px 20px 10px 20px;">
-                    <div :style="whatsappInvoice.whatsappInvoiceIsForToday ? 'background-color: white;' : 'background-color: #9c9c9c;'">
+                    <div :class="getAlertAnimation(whatsappInvoice)">
                       <div style="width: 100%; display: flex; justify-content: space-between;">
                         <div v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
                           <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
@@ -881,7 +881,7 @@
                 </div>
                 <div>
                   <div v-for="whatsappInvoice in herediaWhatsappInvoices" style="padding: 10px 20px 10px 20px;">
-                    <div :style="whatsappInvoice.whatsappInvoiceIsForToday ? 'background-color: white;' : 'background-color: #9c9c9c;'">
+                    <div :class="getAlertAnimation(whatsappInvoice)">
                       <div style="width: 100%; display: flex; justify-content: space-between;">
                         <div v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
                           <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
@@ -973,7 +973,7 @@
                 </div>
                 <div>
                   <div v-for="whatsappInvoice in cartagoWhatsappInvoices" style="padding: 10px 20px 10px 20px;">
-                    <div :style="whatsappInvoice.whatsappInvoiceIsForToday ? 'background-color: white;' : 'background-color: #9c9c9c;'">
+                    <div :class="getAlertAnimation(whatsappInvoice)">
                       <div style="width: 100%; display: flex; justify-content: space-between;">
                         <div v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
                           <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
@@ -1119,7 +1119,7 @@
             <div style="padding: 20px;">
               <div v-for="whatsappInvoice in localityWhatsappInvoices">
                 <div v-if="whatsappInvoice.whatsappInvoiceState != 'R'">
-                  <div style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; width: 100%;" :class="getAlertAnimation(whatsappInvoice)">
+                  <div style="display: flex; border: 1px solid gray; border-radius: 10px; margin-bottom: 10px; width: 100%;" :class="getAlertAnimation(whatsappInvoice, true)">
                     <div style="width: 70%; margin-top: auto; margin-bottom: auto; margin-right: 10px; margin-left: 10px;">
 
                       <h5 style="cursor: pointer; margin-top: 10px;"><strong>ID: </strong>{{ whatsappInvoice.whatsappInvoiceID }}</h5>
@@ -1984,16 +1984,29 @@ export default {
     },
 
 
-    getAlertAnimation(whatsappInvoice){
-      if (whatsappInvoice.whatsappInvoiceState == 'C'){
-        const elapsedSeconds = Math.floor((new Date() - new Date(whatsappInvoice.whatsappInvoiceCentralDateTime))/1000);
-        if (elapsedSeconds >= 30){
-          return 'invoiceAlertAnimation';
-        }
-      } else if (whatsappInvoice.whatsappInvoiceIsForToday == 0){
-        return 'notForToday';
-      } 
-      return 'forToday';
+    getAlertAnimation(whatsappInvoice, locality = false){
+      if (locality){
+        if (whatsappInvoice.whatsappInvoiceState == 'S'){
+          const elapsedSeconds = Math.floor((new Date() - new Date(whatsappInvoice.whatsappInvoiceLocalityDateTime))/1000);
+          if (elapsedSeconds >= 1800){
+            return 'invoiceAlertAnimation';
+          }
+        } else if (whatsappInvoice.whatsappInvoiceIsForToday == 0){
+          return 'notForToday';
+        } 
+        return 'forToday';
+      } else {
+        if (whatsappInvoice.whatsappInvoiceState == 'C'){
+          const elapsedSeconds = Math.floor((new Date() - new Date(whatsappInvoice.whatsappInvoiceCentralDateTime))/1000);
+          if (elapsedSeconds >= 30){
+            return 'invoiceAlertAnimation';
+          }
+        } else if (whatsappInvoice.whatsappInvoiceIsForToday == 0){
+          return 'notForToday';
+        } 
+        return 'forToday';
+      }
+      
     },
 
     getLocalityAgentPhoneColor(){
