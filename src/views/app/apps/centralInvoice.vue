@@ -1988,12 +1988,13 @@ export default {
       if (locality){
         if (whatsappInvoice.whatsappInvoiceState == 'S'){
           const elapsedSeconds = Math.floor((new Date() - new Date(whatsappInvoice.whatsappInvoiceLocalityDateTime))/1000);
+          if (whatsappInvoice.whatsappInvoiceIsForToday == 0){
+            return 'notForToday';
+          }
           if (elapsedSeconds >= 1800){
             return 'invoiceAlertAnimation';
           }
-        } else if (whatsappInvoice.whatsappInvoiceIsForToday == 0){
-          return 'notForToday';
-        } 
+        }
         return 'forToday';
       } else {
         if (whatsappInvoice.whatsappInvoiceState == 'C'){
