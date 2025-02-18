@@ -1103,7 +1103,7 @@ export default {
     selectedMessageType(){
       if (this.selectedMessageType == 'Seguimiento de producto'){
         if (this.sendingContact.lastDate == null){
-          this.sendingMessage = `Hola ${this.sendingContact.contactName.split(' ')[0]}, como estás? Te escribe ${localStorage.getItem('agentName').split(' ')[0]} de King Vape. Nada más quería comentarte que tenemos un nuevo Call Center habilitado y hemos mejorado nuestros envíos muchisimo! Nuestros envíos se realizan lo más rápido posible y sin costo alguno! Quedo a la órden por si gustas realizar algún pedido 🫡`
+          this.sendingMessage = `Hola ${this.sendingContact.contactName.split(' ')[0]}, ¿como estás? Te escribe ${localStorage.getItem('agentName').split(' ')[0]} de King Vape, nos pasaron tu numero de la sucursal, bienvenido a la familia 🔥🥳 ¿Sabías que contamos con un Call Center especializado para que los productos te lleguen a donde estés sin costo de envío? Tenemos muchísima variedad en productos y promociones por acá. Estamos a la orden para lo que ocupes 🫡`
         }
       }
     },
