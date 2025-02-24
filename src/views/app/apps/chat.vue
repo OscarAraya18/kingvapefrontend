@@ -454,7 +454,7 @@
                         <i v-if='props.row.whatsappConversationAmount != 0' :id="'productos'+props.row.whatsappConversationID" class="i-Shopping-Cart text-25 text-info" @click="rememberCart(props.row)" style="cursor: pointer; margin-right: 10px;"></i>
                         <b-tooltip v-if='props.row.productos.length != 0' :target="'productos'+props.row.whatsappConversationID" triggers="hover" variant="info" placement="left">
                           <div v-for="element in props.row.productos">
-                            <p><strong>{{ element.descripcion }}: </strong>{{element.cantidad}}</p>
+                            <p><strong>{{ element.productName }}: </strong>{{element.productAmount}}</p>
                           </div>
                         </b-tooltip>
                         <i class="i-Notepad text-25 text-warning" @click="openHistoryConversation(props.row)" v-b-modal.historyOpenModal style="cursor: pointer; margin-right: 7px;"></i>
@@ -1787,202 +1787,99 @@
          <div v-if="vistaItems == 'Productos'">
           <b-card style="background-color: #e8e8e8">
 
-<b-form-input
-    @keyup="selectProductos()"
-    v-model="producto"
-    id="buscador" 
-    type="text"
-    required
-    placeholder="Coloque el nombre del producto"
-    :class="{'loading-effect': loading}"
-  ></b-form-input>
+        <b-form-input
+            v-model="selectProductValue"
+            id="selectProductInput" 
+            type="text"
+            required
+            placeholder="Coloque el nombre del producto"
+            :class="{'loading-effect': loading}"
+          ></b-form-input>
 
-<div v-if="loading == true" style="text-align: center;">
-  <br><br>
-  <span class="spinner-glow spinner-glow-primary"></span>
-</div>
-
-<div class="ul-widget__body" v-else>
-  <br v-if="productos.length != 0">
-  <div class="ul-widget1" v-for="producto in productos" :key="producto.codigoProducto" style="margin-top: 10px; margin-bottom: 10px;">
-    
-    <div class="ul-widget__item ul-widget4__users" style="background-color: white; border-radius: 20px; border: 2px solid #d6d6d6;">
-      <div class="ul-widget4__img">
-        <div style="display: flex; margin-left: 15px;">
-          <img style="width: 30px; height: auto;" v-if="producto.consignacion && producto.consignacion.includes('Extra Ice')" :src="iceLogoSRC"/>
-          <img style="width: 30px; height: auto;" v-if="producto.consignacion && producto.consignacion.includes('ICE')" :src="iceLogoSRC"/>
-          <img style="width: 30px; height: auto;" v-if="producto.consignacion && producto.consignacion.includes('Postre')" :src="postreLogoSRC"/>
-          <img style="width: 30px; height: auto;" v-if="producto.consignacion && producto.consignacion.includes('Tabaco')" :src="tabacoLogoSRC"/>
-          <img style="width: 30px; height: auto;" v-if="producto.consignacion && producto.consignacion.includes('Wax')" :src="waxLogoSRC"/>
-          <img style="width: 30px; height: auto;" v-if="producto.consignacion && producto.consignacion.includes('Hierba')" :src="hierbaLogoSRC"/>
+        <div v-if="loading == true" style="text-align: center;">
+          <br><br>
+          <span class="spinner-glow spinner-glow-primary"></span>
         </div>
-        <img style="cursor: pointer; margin-left: 15px;" v-b-modal.bigImageModal @click="openBigImage(producto.localizacion)" :src="producto.localizacion" alt="N/A"/>
-      </div>
-      <div class="ul-widget2__info ul-widget4__users-info">
-        <a href="#" variant="info" v-if="producto.productosAsociados.length==0" @click="AgregarItem(producto,'info')" class="ul-widget2__title">{{ producto.descripcion }}</a>
-        <a href="#" variant="info" v-if="producto.productosAsociados.length!=0" style="cursor: default;" class="ul-widget2__title">{{ producto.descripcion }}</a>
 
-        <span class="ul-widget2__username">{{ producto.codigoProducto }}</span>
-        <span style="font-size:8px" class="ul-widget2__username">{{ producto.subFamilia }}</span>
-        <span class="ul-widget4__number text-success">₡{{ producto.precioVenta }}</span>
-        
-        <div v-if="producto.productosAsociados.length != 0">
-          <div v-for="nivelNicotina in producto.productosAsociados" :key="producto.codigoAsoiado" style="display: inline;"> 
-            <b-badge variant="dark" style="cursor:pointer; margin: 3px;" @click="AgregarItemVariacion(producto, nivelNicotina.codigoAsoiado, nivelNicotina.descripcion,'info')">{{nivelNicotina.nicotina}} MG</b-badge>
+        <div class="ul-widget__body" v-else>
+          <div v-for="product in this.products.product" v-bind:key="product" style="margin: 15px 5px 15px 5px;">
+            <div style="padding: 10px; background-color: white; border: 1px solid #dedede; border-radius: 15px;">
+              <div v-if="product.mi">
+                <div style="display: flex;">
+                  <div style="width: 30%; margin-right: 5%;">
+                    <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${product.f}`)" style="width: 100%; cursor: pointer;" :src="`data:image/png;base64,${product.f}`">
+                  </div>
+                  <div style="width: 65%;">
+                    <p style="font-weight: bold; margin: 0;">{{ product.n }}</p>
+                    <p style="font-weight: bold; color: #00701e; margin: 5px 0px 0px 0px;">₡ {{product.p.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}}</p>
+                    <p style="font-size: smaller; color: #4f4f4f; margin: 5px 0px 0px 0px;">{{ product.e }}</p>
+                    <div style="display: flex; margin-top: 10px;">
+                      <div v-for="productChild in product.c" v-bind:key="productChild" style="margin-right: 5px; cursor: pointer;" @click="product.selected = productChild.i">
+                        <b-badge :variant="product.selected == productChild.i ? 'primary' : 'dark'">{{ productChild.d }}</b-badge>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <br>
+                <div v-if="product.selected != null" style="display: flex">
+                  <div style="display: flex; flex-wrap: wrap; gap: 5px; width: 70%;">
+                    <div v-for="locality in product.c.find(child => child.i == product.selected).s" 
+                        v-bind:key="locality" 
+                        :id="product.mi + product.selected + locality.i"
+                        style="width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;"
+                        :style="'background-color: ' + products.locality[locality.i].c">
+                      <p :style="'color: ' + products.locality[locality.i].f" style="margin: 0;"><strong>{{(product.c.find(child => child.i == product.selected).s).find(stock => stock.i == locality.i).a}}</strong></p>
+                      <b-tooltip :target="product.mi + product.selected + locality.i" triggers="hover">{{ products.locality[locality.i].n }}</b-tooltip>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: row-reverse; width: 30%;">
+                    <img @click="sendWhatsappProductMessage(product, product.c.find(child => child.i == product.selected).n)" :id="product.mi + product.selected + 'send'" src="../../../assets/message.gif" style="width: 35px; height: 35px; cursor: pointer;">
+                    <img @click="addProductToCart(product, product.c.find(child => child.i == product.selected))" :id="product.mi + product.selected + 'cart'" src="../../../assets/cart.gif" style="width: 35px; height: 35px; cursor: pointer;">
+                    <b-tooltip :target="product.mi + product.selected + 'cart'" triggers="hover">Agregar al carrito</b-tooltip>
+                    <b-tooltip :target="product.mi + product.selected + 'send'" triggers="hover">Enviar al cliente</b-tooltip>
+                  </div>
+                </div>
+              </div>
+              <div v-else>
+                <div style="display: flex;">
+                  <div style="width: 30%; margin-right: 5%;">
+                    <img v-b-modal.bigImageModal @click="openBigImage(`data:image/png;base64,${product.f}`)" style="width: 100%; cursor: pointer;" :src="`data:image/png;base64,${product.f}`">
+                  </div>
+                  <div style="width: 65%;">
+                    <p style="font-weight: bold; margin: 0;">{{ product.n }}</p>
+                    <p style="font-weight: bold; color: #00701e; margin: 5px 0px 0px 0px;">₡ {{product.p.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}}</p>
+                    <p style="font-size: smaller; color: #4f4f4f; margin: 5px 0px 0px 0px;">{{ product.e }}</p>
+                  </div>
+                </div>
+                <br>
+                <div style="display: flex">
+                  <div style="display: flex; flex-wrap: wrap; gap: 5px; width: 70%;">
+                    <div v-for="locality in product.s" 
+                        v-bind:key="locality" 
+                        :id="product.i + locality.i"
+                        style="width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;"
+                        :style="'background-color: ' + products.locality[locality.i].c">
+                      <p :style="'color: ' + products.locality[locality.i].f" style="margin: 0;"><strong>{{(product.s).find(stock => stock.i == locality.i).a}}</strong></p>
+                      <b-tooltip :target="product.i + locality.i" triggers="hover">{{ products.locality[locality.i].n }}</b-tooltip>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: row-reverse; width: 30%;">
+                    <img @click="sendWhatsappProductMessage(product, product.n)" :id="product.i + 'send'" src="../../../assets/message.gif" style="width: 35px; height: 35px; cursor: pointer;">
+                    <img @click="addProductToCart(product, product)" :id="product.i + 'cart'" src="../../../assets/cart.gif" style="width: 35px; height: 35px; cursor: pointer;">
+                    <b-tooltip :target="product.i + 'cart'" triggers="hover">Agregar al carrito</b-tooltip>
+                    <b-tooltip :target="product.i + 'send'" triggers="hover">Enviar al cliente</b-tooltip>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
           </div>
-        </div>
-
-        <div style="display: flex">
           
-          <button class="btn btn-icon btn-success mr-2" @click="sendWhatsappProductMessage(producto)">
-            Enviar
-          </button>
-          <button v-b-modal.stockModal v-if="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistencia(producto.codigoProducto, producto.descripcion)">
-            Stock
-          </button>
-
-          <button v-b-modal.stockModal  v-else class="btn btn-icon btn-warning mr-2" @click="cargarExistenciaNicotina(producto.productosAsociados, producto.descripcion)">
-            Stock
-          </button>
         </div> 
 
-
-       
-
-      </div>
-    </div>
-  </div>
-</div> 
-
-        <b-modal scrollable size="m" centered hide-header hide-footer id="stockModal">
-          <div>
-            <div v-if="stockLoader == true" style="text-align: center;">
-              <br>
-              <span class="spinner-glow spinner-glow-primary"></span>
-            </div>
-            <div v-else>
-              <div style="text-align: center;">
-                <p style="font-size: x-large;"><strong>{{stockContent.nombre}}</strong></p>
-              </div>
-              
-              
-              <div v-if="stockContent.tipo == 'unitario'">
-                <br>
-                <div v-if="stockContent.stock['King Vape'] != null" style="display: flex; margin-bottom: 20px;">
-                  <div style="background-color: #cccccc; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
-                    <p style="font-size: medium; margin: 0px;"><strong>Bodega: </strong></p>
-                  </div>
-                  <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ stockContent.stock['King Vape'] }}</p>
-                </div>
-
-                <div v-if="stockContent.stock['King Vape Zapote'] != null" style="display: flex; margin-bottom: 20px;">
-                  <div style="background-color: #fed330; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
-                    <p style="font-size: medium; margin: 0px;"><strong>King Vape Zapote: </strong></p>
-                  </div>
-                  <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ stockContent.stock['King Vape Zapote'] }}</p>
-                </div>
-
-                <div v-if="stockContent.stock['King Vape Escazu'] != null" style="display: flex; margin-bottom: 20px;">
-                  <div style="background-color: #db67a3; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
-                    <p style="font-size: medium; margin: 0px;"><strong>King Vape Escazú: </strong></p>
-                  </div>
-                  <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ stockContent.stock['King Vape Escazu'] }}</p>
-                </div>
-
-                <div v-if="stockContent.stock['King Vape Heredia'] != null" style="display: flex; margin-bottom: 20px;">
-                  <div style="background-color: #a78dcc; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
-                    <p style="font-size: medium; margin: 0px;"><strong>King Vape Heredia: </strong></p>
-                  </div>
-                  <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ stockContent.stock['King Vape Heredia'] }}</p>
-                </div>
-
-                <div v-if="stockContent.stock['King Vape Cartago'] != null" style="display: flex; margin-bottom: 20px;">
-                  <div style="background-color: #55b5ab; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
-                    <p style="font-size: medium; margin: 0px;"><strong>King Vape Cartago: </strong></p>
-                  </div>
-                  <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ stockContent.stock['King Vape Cartago'] }}</p>
-                </div>
-
-                <div v-if="stockContent.stock['King Vape MetroPlaza'] != null" style="display: flex; margin-bottom: 20px;">
-                  <div style="background-color: #49549c; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
-                    <p style="font-size: medium; margin: 0px;"><strong>King Vape Metro Plaza: </strong></p>
-                  </div>
-                  <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ stockContent.stock['King Vape MetroPlaza'] }}</p>
-                </div>
-
-                <div v-if="stockContent.stock['King Vape San Rafael'] != null" style="display: flex;">
-                  <div style="background-color: #ff933b; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
-                    <p style="font-size: medium; margin: 0px;"><strong>King Vape San Rafael: </strong></p>
-                  </div>
-                  <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ stockContent.stock['King Vape San Rafael'] }}</p>
-                </div>
-                
-              </div>
-
-              <div v-else>
-                <div v-for="(graduacion, key) in stockContent.stock" :key="key">
-                  <br><br>
-                  <div style="text-align: center;">
-                    <p style="font-size: large;"><strong>{{ key }}:</strong></p>
-                  </div>
-                  <br>
-
-                  <div v-if="graduacion.stock['King Vape'] != null" style="display: flex; margin-bottom: 20px;">
-                    <div style="background-color: #cccccc; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
-                      <p style="font-size: medium; margin: 0px;"><strong>Bodega: </strong></p>
-                    </div>
-                    <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ graduacion.stock['King Vape'] }}</p>
-                  </div>
-
-                  <div v-if="graduacion.stock['King Vape Zapote'] != null" style="display: flex; margin-bottom: 20px;">
-                    <div style="background-color: #fed330; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
-                      <p style="font-size: medium; margin: 0px;"><strong>King Vape Zapote: </strong></p>
-                    </div>
-                    <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ graduacion.stock['King Vape Zapote'] }}</p>
-                  </div>
-
-                  <div v-if="graduacion.stock['King Vape Escazu'] != null" style="display: flex; margin-bottom: 20px;">
-                    <div style="background-color: #db67a3; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
-                      <p style="font-size: medium; margin: 0px;"><strong>King Vape Escazú: </strong></p>
-                    </div>
-                    <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ graduacion.stock['King Vape Escazu'] }}</p>
-                  </div>
-
-                  <div v-if="graduacion.stock['King Vape Heredia'] != null" style="display: flex; margin-bottom: 20px;">
-                    <div style="background-color: #a78dcc; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
-                      <p style="font-size: medium; margin: 0px;"><strong>King Vape Heredia: </strong></p>
-                    </div>
-                    <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ graduacion.stock['King Vape Heredia'] }}</p>
-                  </div>
-
-                  <div v-if="graduacion.stock['King Vape Cartago'] != null" style="display: flex; margin-bottom: 20px;">
-                    <div style="background-color: #55b5ab; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
-                      <p style="font-size: medium; margin: 0px;"><strong>King Vape Cartago: </strong></p>
-                    </div>
-                    <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ graduacion.stock['King Vape Cartago'] }}</p>
-                  </div>
-
-                  <div v-if="graduacion.stock['King Vape MetroPlaza'] != null" style="display: flex; margin-bottom: 20px;">
-                    <div style="background-color: #49549c; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
-                      <p style="font-size: medium; margin: 0px;"><strong>King Vape Metro Plaza: </strong></p>
-                    </div>
-                    <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ graduacion.stock['King Vape MetroPlaza'] }}</p>
-                  </div>
-
-                  <div v-if="graduacion.stock['King Vape San Rafael'] != null" style="display: flex;">
-                    <div style="background-color: #ff933b; border-radius: 10px; padding: 5px; width: fit-content; text-align: center; margin-right: 10px;">
-                      <p style="font-size: medium; margin: 0px;"><strong>King Vape San Rafael: </strong></p>
-                    </div>
-                    <p style="font-size: medium; margin: 0px; margin-top: 5px;">{{ graduacion.stock['King Vape San Rafael'] }}</p>
-                  </div>
-                </div>
-              </div>
-              
-            </div>
-          </div>
-        </b-modal>
-
-</b-card>
+        </b-card>
           <br>
 
          </div>   
@@ -2135,21 +2032,21 @@
                                 >
                                   <template slot="table-row" slot-scope="props">
                                       <!-- Descripción - Dropdown -->
-                                      <span v-if="props.column.field == 'descripcion'">
+                                      <span v-if="props.column.field == 'productName'">
                                           <div style="display: flex;">
-                                            <i @click="EliminarLinea(props.row.CodigoP)" class="icon-regular ml-0 mr-3 i-Eraser-2" style="color:red; cursor: pointer; margin-right: 5px;"></i>
+                                            <i @click="EliminarLinea(props.row.productID)" class="icon-regular ml-0 mr-3 i-Eraser-2" style="color:red; cursor: pointer; margin-right: 5px;"></i>
                                             <b-dropdown class="text-dropdown description-content" size="sm" no-caret>
-                                                <template slot="button-content">{{props.row.descripcion}}</template>
+                                                <template slot="button-content">{{props.row.productName}}</template>
                                             </b-dropdown>
                                           </div>
                                       </span>
 
                                       
                                       <!-- Cantidad - Input -->
-                                      <span v-if="props.column.field == 'cantidad'">
+                                      <span v-if="props.column.field == 'productAmount'">
                                           <b-form-input
-                                              :value="props.row.cantidad"
-                                              @input="updateFieldCant('cantidad', $event, props.row)"
+                                              :value="props.row.productAmount"
+                                              @input="updateFieldCant('productAmount', $event, props.row)"
                                               required
                                               onfocus="this.select();"
                                               placeholder=""
@@ -2159,10 +2056,10 @@
                                               step="1" 
                                           ></b-form-input>
                                       </span>
-                                      <span v-if="props.column.field == 'descuento'">
+                                      <span v-if="props.column.field == 'productDiscount'">
                                           <b-form-input
-                                              :value="props.row.descuento"
-                                              @input="updateFieldDesc('descuento', $event, props.row)"
+                                              :value="props.row.productDiscount"
+                                              @input="updateFieldDesc('productDiscount', $event, props.row)"
                                               required
                                               onfocus="this.select();"
                                               placeholder="Descuento"
@@ -2171,8 +2068,8 @@
                                       </span>
 
                                       
-                                      <span v-if="props.column.field == 'precioVenta'">
-                                          {{props.row.precio}}
+                                      <span v-if="props.column.field == 'productPrice'">
+                                          {{props.row.productPrice}}
                                       </span>
 
                                       
@@ -2250,7 +2147,17 @@ export default {
       } else {
         this.insertContactReminderMessage = '';
       }
-    }
+    },
+
+    async selectProductValue(newValue) {
+      clearTimeout(this.selectProductTimeout);
+
+      if (newValue.length > 2) {
+        this.selectProductTimeout = setTimeout(async () => {
+          await this.selectProducts();
+        }, 1000);
+      }
+    },
 
   }, 
 
@@ -2402,8 +2309,9 @@ export default {
       search: "",
       isMobile: false,
       Localidad: "Select location",
-      producto:"",
-      productos:[],
+      selectProductValue:"",
+      selectProductTimeout: null,
+      products:[],
       loading:false,
       timeouts: [],
       orden: [],
@@ -2411,23 +2319,23 @@ export default {
       columns: [
         {
           label: "Nombre",
-          field: "descripcion",
+          field: "productName",
           width: "200px",
           thClass: "gull-th-class"
         },
         {
           label: "Cantidad",
-          field: "cantidad",
+          field: "productAmount",
           width: "100px",
         },
         {
           label: "Descuento",
-          field: "descuento",
+          field: "productDiscount",
           width: "100px",
         },
         {
           label: "Precio",
-          field: "precioVenta",
+          field: "productPrice",
           width: "100px",
           type: "number",
         },
@@ -3826,57 +3734,6 @@ export default {
       return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
     },
 
-
-    
-
-    async cargarExistenciaTesting(codigo){
-      return new Promise((cargarTestingPromiseResolve) => {
-        var me = this;
-        axios.get('https://backend.noahcloud.online/kingvape/api/ProductosWebs/'+codigo).then(function(response){
-          var textoExistencia = {'stock': {}};
-          for (var indice in response.data){
-            textoExistencia['stock'][response.data[indice].localidad] = response.data[indice].cantidadInvActual;
-          }
-          cargarTestingPromiseResolve(textoExistencia);
-        }).catch(function(error){
-          console.log(error);
-          alert('Producto no encontrado');
-        });
-      });
-    },
-
-    async cargarExistenciaNicotina(productosPorNicotina, nombreProducto){
-      this.stockLoader = true;
-      var textoExistencia = {'tipo': 'multiple', 'nombre': nombreProducto, 'stock': {}};
-      for (var indiceProducto in productosPorNicotina){
-        var codigoProducto = productosPorNicotina[indiceProducto].codigoAsoiado;
-        var a = await this.cargarExistenciaTesting(codigoProducto);
-        textoExistencia['stock'][productosPorNicotina[indiceProducto].nicotina+'MG'] = a;
-      }
-      this.stockLoader = false;
-      this.stockContent = textoExistencia;
-    },
-
-    async cargarExistencia(codigoProducto, nombreProducto){
-      this.stockLoader = true;
-      let me = this;
-      axios.get('https://backend.noahcloud.online/kingvape/api/ProductosWebs/'+codigoProducto).then(function(response){
-        var textoExistencia = {'tipo': 'unitario', 'nombre': nombreProducto, 'stock': {}};
-        for (var indice in response.data){
-          textoExistencia['stock'][response.data[indice].localidad] = response.data[indice].cantidadInvActual;
-        }
-        me.stockLoader = false;
-        me.stockContent = textoExistencia;
-      }).catch(function(error){
-        console.log(error);
-        me.$bvToast.toast("Ha ocurrido un error inesperado al consultar el stock. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-          title: "Error al consultar stock",
-          variant: "danger",
-          solid: true
-        });
-      });
-    },
-  
     saveLocation(locationName, whatsappGeneralMessage){
       this.toggleMap2();
       this.currentActiveConversation.whatsappConversationRecipientLocations[locationName] = {latitude: whatsappGeneralMessage.whatsappLocationMessageLatitude, longitude: whatsappGeneralMessage.whatsappLocationMessageLongitude};
@@ -4106,14 +3963,14 @@ export default {
 
     
     updateFieldCant(field, value, row) {
-      this.currentActiveConversation.whatsappConversationProducts[row.originalIndex].cantidad = value;
+      this.currentActiveConversation.whatsappConversationProducts[row.originalIndex].productAmount = value;
 
-      const codigoProducto = row.CodigoP;
+      const codigoProducto = row.productID;
       const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
       if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
         for (var productoIndex in ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-          if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber][productoIndex]['CodigoP'] == codigoProducto){
-            ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber][productoIndex]['cantidad'] = value;
+          if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber][productoIndex]['productID'] == codigoProducto){
+            ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber][productoIndex]['productAmount'] = value;
           }
         }
       }
@@ -4122,14 +3979,14 @@ export default {
 
 
     updateFieldDesc(field, value, row) {
-      this.currentActiveConversation.whatsappConversationProducts[row.originalIndex].descuento = value;
+      this.currentActiveConversation.whatsappConversationProducts[row.originalIndex].productDiscount = value;
 
-      const codigoProducto = row.CodigoP;
+      const codigoProducto = row.productID;
       const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
       if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
         for (var productoIndex in ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-          if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber][productoIndex]['CodigoP'] == codigoProducto){
-            ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber][productoIndex]['descuento'] = value;
+          if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber][productoIndex]['productID'] == codigoProducto){
+            ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber][productoIndex]['productDiscount'] = value;
 
           }
         }
@@ -4197,8 +4054,8 @@ export default {
           var subTotal = 0.0;
           var descuento = 0.0;
           for (var productIndex in this.currentActiveConversation.whatsappConversationProducts){
-            subTotal = subTotal + (this.currentActiveConversation.whatsappConversationProducts[productIndex].cantidad * this.currentActiveConversation.whatsappConversationProducts[productIndex].precio);
-            descuento = descuento + ((this.currentActiveConversation.whatsappConversationProducts[productIndex].descuento/100)*((this.currentActiveConversation.whatsappConversationProducts[productIndex].precio)*this.currentActiveConversation.whatsappConversationProducts[productIndex].cantidad));
+            subTotal = subTotal + (this.currentActiveConversation.whatsappConversationProducts[productIndex].productAmount * this.currentActiveConversation.whatsappConversationProducts[productIndex].productPrice);
+            descuento = descuento + ((this.currentActiveConversation.whatsappConversationProducts[productIndex].productDiscount/100)*((this.currentActiveConversation.whatsappConversationProducts[productIndex].productPrice)*this.currentActiveConversation.whatsappConversationProducts[productIndex].productAmount));
           }
           var amount = subTotal - descuento;
           amount = Math.round(amount / 5) * 5;
@@ -4298,136 +4155,68 @@ export default {
       }
     },
 
-      EliminarLinea(CodigoP){
-        this.currentActiveConversation.whatsappConversationProducts = this.currentActiveConversation.whatsappConversationProducts.filter(e => e.CodigoP != CodigoP);
+      EliminarLinea(productID){
+        this.currentActiveConversation.whatsappConversationProducts = this.currentActiveConversation.whatsappConversationProducts.filter(e => e.productID != productID);
         const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
         if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-          ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber].filter(e => e.CodigoP != CodigoP);
+          ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber].filter(e => e.productID != productID);
         }
         localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
       },
 
-      AgregarItem(item,variant = null){
+      addProductToCart(mainProduct, childProduct){
         this.currentActiveConversation.whatsappConversationProducts.push({
-          CodigoP:item.codigoProducto,
-          descripcion: item.descripcion,
-          cantidad: 1,
-          precio: item.precioVenta,
-          id: item.id,
-          descuento: 0,
+          'productID': childProduct.i,
+          'productName': childProduct.n,
+          'productAmount': 1,
+          'productPrice': mainProduct.p,
+          'productDiscount': 0
         });
-        this.$bvToast.toast(item.descripcion + " cargado al carrito.", {
-          title: `Producto cargado al carrito`,
-          variant: variant,
+        this.$bvToast.toast(childProduct.n + " agregado al carrito.", {
+          title: `Producto agregado al carrito`,
+          variant: 'success',
           solid: true
         });
 
         const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
         if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
           ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber].push({
-            CodigoP: item.codigoProducto,
-            descripcion: item.descripcion,
-            cantidad: 1,
-            precio: item.precioVenta,
-            id: item.id,
-            descuento: 0
+            'productID': childProduct.i,
+            'productName': childProduct.n,
+            'productAmount': 1,
+            'productPrice': mainProduct.p,
+            'productDiscount': 0
           });
         } else {
           ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = 
           [{
-            CodigoP: item.codigoProducto,
-            descripcion: item.descripcion,
-            cantidad: 1,
-            precio: item.precioVenta,
-            id: item.id,
-            descuento: 0
+            'productID': childProduct.i,
+            'productName': childProduct.n,
+            'productAmount': 1,
+            'productPrice': mainProduct.p,
+            'productDiscount': 0
           }];
         }
         localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
       },
 
-      AgregarItemVariacion(item, codigoVariacion, descripcionVariacion, variant = null){
-        this.currentActiveConversation.whatsappConversationProducts.push({
-          CodigoP: codigoVariacion,
-          descripcion: descripcionVariacion,
-          cantidad: 1,
-          precio: item.precioVenta,
-          id: item.id,
-          descuento: 0
+
+      async selectProducts(){
+        this.loading = true;
+        const selectProductRequestQuery = 
+        {
+          'productSearch': this.selectProductValue
+        };
+        await axios.post('http://localhost:10000/webpage/productListPageView/selectProduct', selectProductRequestQuery).then((response) => {
+          if (response.data.success){
+            this.products = response.data.result;
+          } else {
+
+          }
+        }).catch((error) => {
+          console.log(error);
         });
-        this.$bvToast.toast(descripcionVariacion + " cargado al carrito.", {
-          title: `Producto cargado al carrito`,
-          variant: variant,
-          solid: true
-        });
-
-        const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
-        if (ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-          ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber].push({
-            CodigoP: codigoVariacion,
-            descripcion: descripcionVariacion,
-            cantidad: 1,
-            precio: item.precioVenta,
-            id: item.id,
-            descuento: 0
-          });
-        } else {
-          ordenesActualesLocalStorage[this.currentActiveConversation.whatsappConversationRecipientPhoneNumber] = [{
-            CodigoP: codigoVariacion,
-            descripcion: descripcionVariacion,
-            cantidad: 1,
-            precio: item.precioVenta,
-            id: item.id,
-            descuento: 0
-          }];
-        }
-
-        localStorage.setItem('ordenesActuales', JSON.stringify(ordenesActualesLocalStorage));
-      },
-
-      selectProductos(){
-        this.repliedMessage = null;
-        let me=this;
-        let Objeto = [];
-        let myInput = document.getElementById('buscador');
-        myInput = myInput.value;
-        let cant = myInput.length;
-        if ( cant > 2 ) {
-          var search_term = myInput;
-          
-          this.timeouts.map( timeout => {
-            window.clearTimeout( timeout );
-          } );
-          this.timeouts.push(
-            setTimeout( () => {
-              this.loading = true;
-              axios.get('https://backend.noahcloud.online/kingvape/api/Productos/BuscadorEnter5/King%20Vape/'+myInput).then( response => {
-                me.productos = [];
-                Objeto = response.data
-                  Objeto.map(function(x){
-                    me.productos.push({descripcion:x.descripcion,
-                      codigoProducto:x.codigoProducto,
-                      consignacion:x.consignacion,
-                      precioVenta:x.precioVenta,
-                      localizacion:x.localizacion,
-                      datosAdicionales:x.subFamilia,
-                      ubicacion:x.ubicacion,
-                      id: me.productos.length + 2,
-                      productosAsociados: x.productosAsociados
-                    });
-                  });
-                  //me.productos= Objeto;
-                  me.loading = false;
-                } )
-                .catch( error => { } );
-            }, 500 )
-          );
-        } else {
-          this.timeouts.map( timeout => {
-            window.clearTimeout( timeout );
-          } );
-          this.productos = [];
-        }
+        this.loading = false;
       },
 
 
@@ -4590,9 +4379,9 @@ export default {
         var whatsappTextMessageContent = '';
         for (var productIndex in this.currentActiveConversation.whatsappConversationProducts){
           if (whatsappTextMessageContent != ''){
-            whatsappTextMessageContent = whatsappTextMessageContent + `%0a%0a*Nombre*: ` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['descripcion'] + `%0a*Precio*: ₡` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['precio'] + `%0a*Cantidad*: ` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['cantidad'] + `%0a*Subtotal*: ₡` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['cantidad']*this.currentActiveConversation.whatsappConversationProducts[productIndex]['precio'];
+            whatsappTextMessageContent = whatsappTextMessageContent + `%0a%0a*Nombre*: ` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['productName'] + `%0a*Precio*: ₡` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['productPrice'] + `%0a*Cantidad*: ` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['productAmount'] + `%0a*Subtotal*: ₡` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['productAmount']*this.currentActiveConversation.whatsappConversationProducts[productIndex]['productPrice'];
           } else {
-            whatsappTextMessageContent = `*Nombre*: ` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['descripcion'] + `%0a*Precio*: ₡` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['precio'] + `%0a*Cantidad*: ` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['cantidad'] + `%0a*Subtotal*: ₡` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['cantidad']*this.currentActiveConversation.whatsappConversationProducts[productIndex]['precio'];
+            whatsappTextMessageContent = `*Nombre*: ` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['productName'] + `%0a*Precio*: ₡` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['productPrice'] + `%0a*Cantidad*: ` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['productAmount'] + `%0a*Subtotal*: ₡` + this.currentActiveConversation.whatsappConversationProducts[productIndex]['productAmount']*this.currentActiveConversation.whatsappConversationProducts[productIndex]['productPrice'];
           }
         }
         whatsappTextMessageContent = whatsappTextMessageContent + `%0a%0a*SUBTOTAL*: ₡` + this.calcularSubTotal;
@@ -5063,14 +4852,12 @@ export default {
     },
 
 
-    async sendWhatsappProductMessage(product){
+    async sendWhatsappProductMessage(product, productChildName){
       this.repliedMessageID = null;
-
-      const whatsappImageMessageFile = product.localizacion;
 
       const whatsappConversationID = this.currentActiveConversationID;
       const whatsappGeneralMessagePromiseID = Math.floor(Math.random() * 9000000000) + 1000000000;
-      const whatsappProductImageMessageCaption = `*Nombre:* ` + product.descripcion + `.\n\n*Precio:* ₡` + product.precioVenta + `.\n\n*Descripción:* ` + product.datosAdicionales;
+      const whatsappProductImageMessageCaption = `*Nombre:* ` + productChildName + `.\n\n*Precio:* ₡` + product.p + `.\n\n*Descripción:* ` + product.e + '.';
 
       if (this.activeConversationsAsJSON[whatsappConversationID]){
         
@@ -5084,9 +4871,9 @@ export default {
           'whatsappGeneralMessageRepliedMessageID': this.repliedMessage ? this.repliedMessage.whatsappGeneralMessageID : null,
           'whatsappGeneralMessageSendingDateTime': new Date().toString(),
           'whatsappGeneralMessageType': 'image',
-          'whatsappImageMessageFile': whatsappImageMessageFile,
+          'whatsappImageMessageFile': product.f,
           'whatsappImageMessageCaption': whatsappProductImageMessageCaption,
-          'whatsappImageMessageFileIsURL': true,
+          'whatsappImageMessageFileIsURL': false,
           'whatsappGeneralMessagePromiseID': whatsappGeneralMessagePromiseID
         };
         this.activeConversationsAsJSON[whatsappConversationID].whatsappConversationMessages.push(newWhatsappTextMessage);
@@ -5101,7 +4888,7 @@ export default {
       axios.post(constants.routes.backendAPI+'/sendWhatsappProductImageMessage', 
       {
         'whatsappConversationRecipientPhoneNumber': this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
-        'whatsappProductImageMessageURL': product.localizacion,
+        'whatsappProductImageMessageURL': product.f,
         'whatsappProductImageMessageCaption': whatsappProductImageMessageCaption,
         'whatsappGeneralMessagePromiseID': whatsappGeneralMessagePromiseID
       })
@@ -5196,7 +4983,7 @@ export default {
 
 
         this.currentActiveConversation = currentActiveConversation;
-        this.productos = [];
+        this.products = [];
         this.repliedMessage = null;
         this.sendEndMessage = false;
         this.producto = '';
@@ -5975,7 +5762,7 @@ export default {
 			var resultado=0.0; 
 				for(var j=0;j<this.currentActiveConversation.whatsappConversationProducts.length;j++)
 				  { 
-						resultado = resultado + ((this.currentActiveConversation.whatsappConversationProducts[j].descuento/100)*((this.currentActiveConversation.whatsappConversationProducts[j].precio) * this.currentActiveConversation.whatsappConversationProducts[j].cantidad));
+						resultado = resultado + ((this.currentActiveConversation.whatsappConversationProducts[j].productDiscount/100)*((this.currentActiveConversation.whatsappConversationProducts[j].productPrice) * this.currentActiveConversation.whatsappConversationProducts[j].productAmount));
           }
       if (resultado.toFixed(2) == 0.00){
       }
@@ -5987,7 +5774,7 @@ export default {
 			var resultado=0.0; 
 				for(var j=0;j<this.currentActiveConversation.whatsappConversationProducts.length;j++)
 				  { 
-						resultado = resultado + this.currentActiveConversation.whatsappConversationProducts[j].cantidad * this.currentActiveConversation.whatsappConversationProducts[j].precio ;
+						resultado = resultado + this.currentActiveConversation.whatsappConversationProducts[j].productAmount * this.currentActiveConversation.whatsappConversationProducts[j].productPrice;
           }
 			
 			return resultado.toFixed(2);

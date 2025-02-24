@@ -277,7 +277,7 @@
                         
                         <b-tooltip v-if='JSON.parse(props.row.whatsappConversationProducts).length != 0' :target="'productos'+props.row.whatsappConversationID" triggers="hover" variant="info" placement="left">
                           <div v-for="whatsappConversationProduct in JSON.parse(props.row.whatsappConversationProducts)">
-                            <p><strong>{{ whatsappConversationProduct.descripcion }}: </strong>{{whatsappConversationProduct.cantidad}}</p>
+                            <p><strong>{{ whatsappConversationProduct.productName }}: </strong>{{whatsappConversationProduct.productAmount}}</p>
                           </div>
                         </b-tooltip>
 

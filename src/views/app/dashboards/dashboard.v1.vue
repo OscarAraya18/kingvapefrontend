@@ -273,7 +273,7 @@
                   <i v-if='props.row.whatsappConversationAmount != 0' :id="'productos'+props.row.whatsappConversationID" class="i-Shopping-Cart text-25 text-info" style="cursor: pointer; margin-right: 10px;"></i>
                   <b-tooltip v-if='props.row.productos.length != 0' :target="'productos'+props.row.whatsappConversationID" triggers="hover" variant="info" placement="left">
                     <div v-for="element in props.row.productos">
-                      <p><strong>{{ element.descripcion }}: </strong>{{element.cantidad}}</p>
+                      <p><strong>{{ element.productName }}: </strong>{{element.productAmount}}</p>
                     </div>
                   </b-tooltip>
                   <i class="i-Notepad text-25 text-warning" @click="openHistoryConversation(props.row)" v-b-modal.historyOpenModal style="cursor: pointer; margin-right: 7px;"></i>
@@ -420,61 +420,7 @@
             </button>
           </div>
 
-          <div v-else-if="commentSelectedOption == 'Producto'">
-            <b-form-input @keyup.enter="selectProductos()" v-model="searchedProduct" id="buscador" placeholder="Coloca el nombre del producto"></b-form-input>   
-            <div v-if="loaderProductos == true" style="text-align: center;">
-              <br><br>
-              <span class="spinner-glow spinner-glow-primary"></span>
-            </div>
-            
-            <div class="ul-widget__body" v-else style="max-height: 400px; overflow-y: auto;">
-              <br>
-              <div class="ul-widget1" v-for="producto in productos" :key="producto.codigoProducto">
-                <div class="ul-widget__item ul-widget4__users">
-                  <div class="ul-widget4__img">
-                    <div style="display: flex;">
-                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Extra Ice')" :src="iceLogoSRC"/>
-                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('ICE')" :src="iceLogoSRC"/>
-                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Postre')" :src="postreLogoSRC"/>
-                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Tabaco')" :src="tabacoLogoSRC"/>
-                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Wax')" :src="waxLogoSRC"/>
-                      <img style="width: 30px; height: auto;" v-if="producto.consignacion.includes('Hierba')" :src="hierbaLogoSRC"/>
-                    </div>
-                    <img style="cursor: pointer;" :src="producto.localizacion" alt="N/A"/>
-                  </div>
-                  <div class="ul-widget2__info ul-widget4__users-info">
-                    <a href="#" variant="info" v-if="producto.productosAsociados.length==0" class="ul-widget2__title">{{ producto.descripcion }}</a>
-                    <a href="#" variant="info" v-if="producto.productosAsociados.length!=0" style="cursor: default;" class="ul-widget2__title">{{ producto.descripcion }}</a>
-
-                    <span class="ul-widget2__username">{{ producto.codigoProducto }}</span>
-                    <span style="font-size:8px" class="ul-widget2__username">{{ producto.subFamilia }}</span>
-                    <span class="ul-widget4__number text-success">₡{{ producto.precioVenta }}</span>
-                    
-                    <div v-if="producto.productosAsociados.length != 0">
-                      <div v-for="nivelNicotina in producto.productosAsociados" :key="producto.codigoAsoiado" style="display: inline;"> 
-                        <b-badge variant="dark" style="margin: 3px;">{{nivelNicotina.nicotina}} MG</b-badge>
-                      </div>
-                    </div>
-
-                    <div style="display: flex">
-                      <button v-b-modal.stockModal v-if="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistencia(producto.codigoProducto)">
-                        Stock
-                      </button>
-
-                      <button v-b-modal.stockModal  v-else="producto.productosAsociados.length == 0" class="btn btn-icon btn-warning mr-2" @click="cargarExistenciaNicotina(producto.productosAsociados)">
-                        Stock
-                      </button>
-
-                      <button class="btn btn-icon btn-success mr-2" @click="insertWhatsappConversationProductComment(producto)">
-                        Recomendar
-                      </button>
-
-                    </div> 
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          
         </b-card>
 
         <div v-if="whatsappConversationComments.length > 0">
@@ -2220,7 +2166,7 @@ export default {
 
       commentedWhatsappConversationID: '',
       commentLoader: false,
-      commentOptions: ['Texto', 'Audio', 'Producto'],
+      commentOptions: ['Texto', 'Audio'],
       commentSelectedOption: 'Texto',
       whatsappConversationComments: [],
 
@@ -2782,37 +2728,6 @@ export default {
       })
     },
 
-    insertWhatsappConversationProductComment(product){      
-      axios.post(constants.routes.backendAPI+'/insertWhatsappConversationProductComment', 
-      {
-        'whatsappConversationProductCommentWhatsappConversationID': this.commentedWhatsappConversationID,
-        'whatsappConversationProductCommentName': product.descripcion,
-        'whatsappConversationProductCommentSKU': product.codigoProducto,
-        'whatsappConversationProductCommentImageURL': product.localizacion
-      }).then((response) =>{
-        this.$root.$emit('bv::hide::modal', 'commentsModal');
-        if (response.data.success){
-          this.showNotification('success', 'Comentario generado', 'Comentario generado exitosamente');
-
-          const whatsappConversationCommentsLocalStorage = JSON.parse(localStorage.getItem('whatsappConversationComments'));
-          if (whatsappConversationCommentsLocalStorage[this.commentedWhatsappConversationID]){
-            whatsappConversationCommentsLocalStorage[this.commentedWhatsappConversationID] = whatsappConversationCommentsLocalStorage[this.commentedWhatsappConversationID] + 1;
-          } else {
-            whatsappConversationCommentsLocalStorage[this.commentedWhatsappConversationID] = 1;
-          }
-          localStorage.setItem('whatsappConversationComments', JSON.stringify(whatsappConversationCommentsLocalStorage));
-
-        } else {
-          this.showNotification('danger', 'Error al generar el comentario', 'Ha ocurrido un error inesperado al generar el comentario. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-        }
-      })
-      .catch(() =>{
-        this.$root.$emit('bv::hide::modal', 'commentsModal');
-        this.showNotification('danger', 'Error al generar el comentario', 'Ha ocurrido un error inesperado al generar el comentario. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
-      })
-      
-    },
-
     getAudioClass(){
       if (this.isRecording){
         return 'i-Pause';
@@ -2821,87 +2736,7 @@ export default {
       }
     },
 
-    cargarTesting(codigo){
-      return new Promise((cargarTestingPromiseResolve) => {
-        var me = this;
-        axios.get('https://noah.cr/BackendKingVape/api/ProductosWebs/'+codigo).then(function(response){
-          var textoExistencia = '';
-          for (var indice in response.data){
-            if (textoExistencia == ''){
-              textoExistencia = response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
-            } else {
-              textoExistencia = textoExistencia + '\n' + response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
-            }
-          }
-          cargarTestingPromiseResolve(textoExistencia + '\n\n');
-        }).catch(function(error){
-          alert('Producto no encontrado');
-        });
-      });
-    },
-
-    async cargarExistenciaNicotina(productosPorNicotina){
-      this.stockLoader = true;
-      var texto = '';
-      for (var indiceProducto in productosPorNicotina){
-        var codigoProducto = productosPorNicotina[indiceProducto].codigoAsoiado;
-        var a = await this.cargarTesting(codigoProducto);
-        texto = texto + productosPorNicotina[indiceProducto].nicotina + 'MG:\n' + a;
-      }
-      this.stockLoader = false;
-      this.stockContent = texto;
-    },
-
-    cargarExistencia(codigoProducto){
-      this.stockLoader = true;
-      let me = this;
-      axios.get('https://noah.cr/BackendKingVape/api/ProductosWebs/'+codigoProducto).then(function(response){
-        var textoExistencia = '';
-        for (var indice in response.data){
-          if (textoExistencia == ''){
-            textoExistencia = response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
-          } else {
-            textoExistencia = textoExistencia + '\n' + response.data[indice].sitio + ': ' + response.data[indice].cantidadInvActual;
-          }
-        }
-        me.stockLoader = false;
-        me.stockContent = textoExistencia;
-      }).catch(function(error){
-        me.$bvToast.toast("Ha ocurrido un error inesperado al consultar el stock. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.", {
-          title: "Error al consultar stock",
-          variant: "danger",
-          solid: true
-        });
-      });
-    },
-
-    selectProductos(){
-      let me=this;
-      let Objeto = [];
-      this.loaderProductos = true;
-      axios.get('https://bakend2king.kingvape.cr/api/Productos/BuscadorEnter5/King Vape/'+this.searchedProduct).then((response) => {
-        me.productos = [];
-        Objeto = response.data
-          Objeto.map(function(x){
-            me.productos.push({descripcion:x.descripcion,
-              codigoProducto:x.codigoProducto,
-              consignacion:x.consignacion,
-              precioVenta:x.precioVenta,
-              localizacion:x.localizacion,
-              datosAdicionales:x.subFamilia,
-              ubicacion:x.ubicacion,
-              id: me.productos.length + 2,
-              productosAsociados: x.productosAsociados
-            });
-          });
-          me.loaderProductos = false;
-        }).catch( error => { 
-          this.loaderProductos = false;
-          this.productos = [];
-        } );
-      
-    },
-
+   
     async startRecording() {
       if (this.isRecording == false){
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });

@@ -225,15 +225,15 @@
         styleClass="order-table vgt-table"
         :rows="whatsappInvoiceProducts">
         <template slot="table-row" slot-scope="props">  
-          <div v-if="props.column.field == 'CodigoP'">
-            <VueBarcode :value="props.row.CodigoP" width="1" height="50">
+          <div v-if="props.column.field == 'productID'">
+            <VueBarcode :value="props.row.productID" width="1" height="50">
             </VueBarcode>
           </div>
-          <div v-else-if="props.column.field == 'precio'">
-            ₡{{ parseInt(props.row.precio).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}
+          <div v-else-if="props.column.field == 'productPrice'">
+            ₡{{ parseInt(props.row.productPrice).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3}) }}
           </div>
-          <div v-else-if="props.column.field == 'descuento'">
-            {{ props.row.descuento }} %
+          <div v-else-if="props.column.field == 'productDiscount'">
+            {{ props.row.productDiscount }} %
           </div>
         </template>
       </vue-good-table>
@@ -1486,31 +1486,31 @@ export default {
       whatsappInvoiceProductsColumns: [
         {
           label: "Código",
-          field: "CodigoP",
+          field: "productID",
           thClass: "text-left pl-3",
           tdClass: "text-left pl-3",
         },
         {
           label: "Nombre",
-          field: "descripcion",
+          field: "productName",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
           label: "Cantidad",
-          field: "cantidad",
+          field: "productAmount",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
           label: "Precio",
-          field: "precio",
+          field: "productPrice",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
           label: "Descuento",
-          field: "descuento",
+          field: "productDiscount",
           thClass: "text-left",
           tdClass: "text-left",
         }
