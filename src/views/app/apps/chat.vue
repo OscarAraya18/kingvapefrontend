@@ -3477,6 +3477,7 @@ export default {
       }
     },
 
+
     sortConversations(){
       var conversationsToSort = [];
       for (var activeConversationID in this.activeConversationsAsJSON){
@@ -4039,9 +4040,46 @@ export default {
     },
    
 
+    insertCallcenterBill(){
+      const me = this;
+
+      const localityReconciliation = 
+      {
+        1: 1,
+        3: 4,
+        4: 2,
+        5: 3,
+        6: 7,
+        8: 6,
+        9: 9
+      };
+
+      axios.post('https://hostname.payitcr.com/callcenterBill/functions/insert',
+      {
+        'callcenterBillLocalityID': localityReconciliation[this.selectedLocality],
+        'callcenterBillClientSSN': this.currentActiveConversation.whatsappConversationRecipientID,
+        'callcenterBillClientName': this.currentActiveConversation.whatsappConversationRecipientProfileName,
+        'callcenterBillClientEmail': this.currentActiveConversation.whatsappConversationRecipientEmail,
+        'callcenterBillClientPhoneNumber': this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
+        'callcenterBillAmount': this.calcularTotal,
+        'callcenterBillPaymentType': this.whatsappInvoicePaymentMethod,
+        'callcenterBillPaymentState': this.whatsappInvoicePaymentState,
+        'callcenterBillShippingMethod': this.whatsappInvoiceShippingMethod,
+        'callcenterBillProducts': this.currentActiveConversation.whatsappConversationProducts
+      }).then(function (){
+      }).catch(error => {
+        console.log(error);
+      })
+     
+    },
+
+
+
     async insertWhatsappInvoice(){
       try {
+        this.insertCallcenterBill();
 
+      
         if (this.validateInvoiceInformation()){
 
           this.currentActiveConversation.whatsappConversationRecipientPhoneNumber = (parseInt(this.currentActiveConversation.whatsappConversationRecipientPhoneNumber.replace(/\D/g, ''), 10)).toString();
@@ -4061,9 +4099,6 @@ export default {
           amount = Math.round(amount / 5) * 5;
 
           this.saveContact();
-          
-          
-
           
           axios.post(constants.routes.backendAPI+'/insertWhatsappInvoice',
           {
@@ -4148,6 +4183,7 @@ export default {
           
 
         }
+        
       } catch (e) {
         console.log(e);
         this.showNotification('danger', 'Error de tipado', 'Ha ocurrido un error inesperado de tipado. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.')
