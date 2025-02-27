@@ -4207,7 +4207,8 @@ export default {
         {
           'productSearch': this.selectProductValue
         };
-        await axios.post('https://souqbackend-production.up.railway.app/webpage/productListPageView/selectProduct', selectProductRequestQuery).then((response) => {
+
+        await axios.post('https://hostname.payitcr.com/webpage/productListPageView/selectProduct', selectProductRequestQuery).then((response) => {
           if (response.data.success){
             this.products = response.data.result;
           } else {

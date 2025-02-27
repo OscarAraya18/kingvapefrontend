@@ -59,7 +59,7 @@ export default {
 
   data() {
     return {
-      url: 'https://souqbackend-production.up.railway.app',
+      url: 'https://hostname.payitcr.com',
 
       webpageOrderRows: [],
       webpageOrderColumns:
