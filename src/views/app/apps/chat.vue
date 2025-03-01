@@ -4077,8 +4077,6 @@ export default {
 
     async insertWhatsappInvoice(){
       try {
-        this.insertCallcenterBill();
-
       
         if (this.validateInvoiceInformation()){
 
@@ -4088,6 +4086,7 @@ export default {
 
           this.loaderOrdenEnviada = true;
           this.loading = true;
+          this.insertCallcenterBill();
 
           var subTotal = 0.0;
           var descuento = 0.0;
@@ -4355,11 +4354,7 @@ export default {
       
     },
 
-
-
-
     sendWhatsappFavoriteTextMessage(whatsappTextMessageContent){
-
       const whatsappConversationID = this.currentActiveConversationID;
       const whatsappGeneralMessageRepliedMessageID = this.repliedMessage ? this.repliedMessage.whatsappGeneralMessageID : '';
       const whatsappGeneralMessagePromiseID = Math.floor(Math.random() * 9000000000) + 1000000000;
