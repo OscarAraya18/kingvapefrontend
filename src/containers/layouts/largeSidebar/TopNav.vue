@@ -36,7 +36,7 @@
       </div>
     </b-modal>
 
-    <div class="logo" v-if="agentType != 'localityAgent'">
+    <div class="d-none d-md-block logo" v-if="agentType != 'localityAgent'">
       <a href="https://www.kingvapecr.com" target="_blank">
         <img src="@/assets/images/logo.webp" alt style="width: 80px; height: auto; margin-left: 35px;"/>
       </a>
