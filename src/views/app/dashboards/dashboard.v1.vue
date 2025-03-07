@@ -876,7 +876,7 @@
                                     <div class="text-center pt-4">
                                         <h5 class="card-title mb-2 text-white">Escazu</h5>
                                         <div class="separator border-top mb-2"></div>
-                                        <h3 class="text-white">Ventas <img v-if="!escazuAmountVisible" src="@/assets/dashboard/ojoWhite.png" @click="seeAmount('zapoteAmountVisible', 'zapoteAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; position: relative; left: 10px;"/>
+                                        <h3 class="text-white">Ventas <img v-if="!escazuAmountVisible" src="@/assets/dashboard/ojoWhite.png" @click="seeAmount('escazuAmountVisible', 'escazuAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; position: relative; left: 10px;"/>
                   <p v-else style="font-size: large; margin: 3px;"> ₡{{escazuSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p></h3>
 
                                     </div>
@@ -916,7 +916,7 @@
                                     <div class="text-center pt-4">
                                         <h5 class="card-title mb-2 text-white">Heredia</h5>
                                         <div class="separator border-top mb-2"></div>
-                                        <h3 class="text-white">Ventas <img v-if="!herediaAmountVisible" src="@/assets/dashboard/ojoWhite.png" @click="seeAmount('zapoteAmountVisible', 'zapoteAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; position: relative; left: 10px;"/>
+                                        <h3 class="text-white">Ventas <img v-if="!herediaAmountVisible" src="@/assets/dashboard/ojoWhite.png" @click="seeAmount('herediaAmountVisible', 'herediaAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; position: relative; left: 10px;"/>
                   <p v-else style="font-size: large; margin: 3px;"> ₡{{herediaSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p></h3>
 
                                     </div>
@@ -954,7 +954,7 @@
                         <div class="text-center pt-4">
                             <h5 class="card-title mb-2 text-white">Cartago</h5>
                             <div class="separator border-top mb-2"></div>
-                            <h3 class="text-white">Ventas <img v-if="!cartagoAmountVisible" src="@/assets/dashboard/ojoWhite.png" @click="seeAmount('zapoteAmountVisible', 'zapoteAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; position: relative; left: 10px;"/>
+                            <h3 class="text-white">Ventas <img v-if="!cartagoAmountVisible" src="@/assets/dashboard/ojoWhite.png" @click="seeAmount('cartagoAmountVisible', 'cartagoAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; position: relative; left: 10px;"/>
                       <p v-else style="font-size: large; margin: 3px;"> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p></h3>
 
                         </div>

@@ -390,6 +390,18 @@ export default {
       sinpeColumns: 
       [
         {
+          label: "Aprobado",
+          field: "whatsappInvoiceApproveAction",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
+          label: "Nombre del cliente",
+          field: "whatsappInvoiceClientName",
+          thClass: "text-left",
+          tdClass: "text-left",
+        },
+        {
           label: "ID de la conversación",
           field: "whatsappConversationID",
           thClass: "text-left pl-3",
@@ -404,12 +416,6 @@ export default {
         {
           label: "Número del cliente",
           field: "whatsappInvoiceClientPhoneNumber",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Nombre del cliente",
-          field: "whatsappInvoiceClientName",
           thClass: "text-left",
           tdClass: "text-left",
         },
@@ -434,12 +440,6 @@ export default {
         {
           label: "Mensajero",
           field: "localityAgentName",
-          thClass: "text-left",
-          tdClass: "text-left",
-        },
-        {
-          label: "Aprobado",
-          field: "whatsappInvoiceApproveAction",
           thClass: "text-left",
           tdClass: "text-left",
         },

@@ -755,6 +755,7 @@
                 </div>
               </div>
             </b-card>
+            <br><br><br>
           </b-col>
 
           <b-col cols="12" lg="4" xl="3" md="6" class="text-center">
@@ -847,6 +848,7 @@
                 </div>
               </div>
             </b-card>
+            <br><br><br>
           </b-col>
 
           <b-col cols="12" lg="4" xl="3" md="6" class="text-center">
@@ -939,6 +941,7 @@
                 </div>
               </div>
             </b-card>
+            <br><br><br>
           </b-col>
 
           <b-col cols="12" lg="4" xl="3" md="6" class="text-center">
@@ -1031,6 +1034,7 @@
                 </div>
               </div>
             </b-card>
+            <br><br><br>
           </b-col>
         </b-row>
       </b-container>
