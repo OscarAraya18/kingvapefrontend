@@ -818,163 +818,138 @@
         </b-card>
 
 
-
+    
         <br><br>
+        
         <b-row>
-            <b-col lg="3" sm="6" class="mb-30">
-                <b-card 
-                    no-body
-                    style="max-width:300px;"
-                    class="bg-dark text-white o-hidden mb-30">
-                     <video class="card-video" autoplay loop muted playsinline>
-                        <source src="@/assets/images/Fondo5.mp4" type="video/mp4">
-                        Tu navegador no soporta la reproducción de videos.
-                      </video>
+          <b-col lg="3" sm="6" class="mb-30">
+            <div style="background-color:#fed330 " class="p-4 rounded d-flex align-items-center justify-content-between text-white">
+              <div>
+                <h2 class="text-18 mb-1 text-white">Zapote</h2>
+              </div>
+              <img 
+                v-if="!zapoteAmountVisible" 
+                src="@/assets/dashboard/ojoWhite.png" 
+                @click="seeAmount('zapoteAmountVisible', 'zapoteAmountInterval')" 
+                alt 
+                style="cursor: pointer; height: 20px; width: 25px;"
+              />
+              <p v-else style="font-size: large; margin: 3px;"> ₡{{zapoteSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
+            </div>
 
-                    <div class="card-img-overlay">
 
-                                    <div class="text-center pt-4">
-                                        <h5 class="card-title mb-2 text-white">Zapote</h5>
-                                        <div class="separator border-top mb-2"></div>
-                                        <h3 class="text-white">Ventas <img v-if="!zapoteAmountVisible" src="@/assets/dashboard/ojoWhite.png" @click="seeAmount('zapoteAmountVisible', 'zapoteAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; position: relative; left: 10px;"/>
-                  <p v-else style="font-size: large; margin: 3px;"> ₡{{zapoteSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p></h3>
-
-                                    </div>
-                                    <div class="ul-widget-card__cloud card-icon-bg">
-                                        <div class="ul-widget-card__body">
-                                            <div class="ul-widget-card__weather-info">
-                                                <span>Recibidas</span>
-                                                <span>{{ zapoteNotSelled + zapoteSelled }} </span>
-                                            </div>
-                                            <div class="ul-widget-card__weather-info">
-                                                <span>Vendidas </span>
-                                                <span>{{ zapoteSelled }}</span>
-                                            </div>
-                                            <div class="ul-widget-card__weather-info">
-                                                <span>No vendidas</span>
-                                                <span>{{ zapoteNotSelled }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
+            <b-card>
+                <div class="ul-widget-card__full-status mb-3">
+                    <div class="ul-widget-card__status1">
+                        <span>{{ zapoteNotSelled + zapoteSelled }}</span>
+                        <span class="text-mute">Recibidas</span>
                     </div>
-                </b-card>
-            </b-col>
-            
-            <b-col lg="3" sm="6" class="mb-30">
-                <b-card 
-                    no-body
-                     style="max-width:300px;"
-                    class="bg-dark text-white o-hidden mb-30">
-                     <video class="card-video" autoplay loop muted playsinline>
-                    <source src="@/assets/images/Fondo2.mp4" type="video/mp4">
-                    Tu navegador no soporta la reproducción de videos.
-                  </video>
-
-                    <div class="card-img-overlay">
-
-                                    <div class="text-center pt-4">
-                                        <h5 class="card-title mb-2 text-white">Escazu</h5>
-                                        <div class="separator border-top mb-2"></div>
-                                        <h3 class="text-white">Ventas <img v-if="!escazuAmountVisible" src="@/assets/dashboard/ojoWhite.png" @click="seeAmount('escazuAmountVisible', 'escazuAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; position: relative; left: 10px;"/>
-                  <p v-else style="font-size: large; margin: 3px;"> ₡{{escazuSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p></h3>
-
-                                    </div>
-                                    <div class="ul-widget-card__cloud card-icon-bg">
-                                        <div class="ul-widget-card__body">
-                                            <div class="ul-widget-card__weather-info">
-                                                <span>Recibidas</span>
-                                                <span>{{ escazuNotSelled + escazuSelled }} </span>
-                                            </div>
-                                            <div class="ul-widget-card__weather-info">
-                                                <span>Vendidas </span>
-                                                <span>{{ escazuSelled }}</span>
-                                            </div>
-                                            <div class="ul-widget-card__weather-info">
-                                                <span>No vendidas</span>
-                                                <span>{{ escazuNotSelled }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
+                    <div class="ul-widget-card__status1">
+                        <span>{{ zapoteSelled }}</span>
+                        <span class="text-mute">Vendidas</span>
                     </div>
-                </b-card>
-            </b-col>
-
-            <b-col lg="3" sm="6" class="mb-30">
-                <b-card 
-                    no-body
-                     style="max-width:300px;"
-                    class="bg-dark text-white o-hidden mb-30">
-                     <video class="card-video" autoplay loop muted playsinline>
-                        <source src="@/assets/images/Fondo4.mp4" type="video/mp4">
-                        Tu navegador no soporta la reproducción de videos.
-                      </video>
-
-                    <div class="card-img-overlay">
-
-                                    <div class="text-center pt-4">
-                                        <h5 class="card-title mb-2 text-white">Heredia</h5>
-                                        <div class="separator border-top mb-2"></div>
-                                        <h3 class="text-white">Ventas <img v-if="!herediaAmountVisible" src="@/assets/dashboard/ojoWhite.png" @click="seeAmount('herediaAmountVisible', 'herediaAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; position: relative; left: 10px;"/>
-                  <p v-else style="font-size: large; margin: 3px;"> ₡{{herediaSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p></h3>
-
-                                    </div>
-                                    <div class="ul-widget-card__cloud card-icon-bg">
-                                        <div class="ul-widget-card__body">
-                                            <div class="ul-widget-card__weather-info">
-                                                <span>Recibidas</span>
-                                                <span>{{ herediaNotSelled + herediaSelled }} </span>
-                                            </div>
-                                            <div class="ul-widget-card__weather-info">
-                                                <span>Vendidas </span>
-                                                <span>{{ herediaSelled }}</span>
-                                            </div>
-                                            <div class="ul-widget-card__weather-info">
-                                                <span>No vendidas</span>
-                                                <span>{{ herediaNotSelled }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
+                    <div class="ul-widget-card__status1">
+                        <span>{{ zapoteNotSelled }}</span>
+                        <span class="text-mute">No vendidas</span>
                     </div>
-                </b-card>
+                </div>
+              </b-card>
             </b-col>
             <b-col lg="3" sm="6" class="mb-30">
-                <b-card 
-                    no-body
-                    style="max-width:300px;"
-                    class="bg-dark text-white o-hidden mb-30">
-                    <video class="card-video" autoplay loop muted playsinline>
-                        <source src="@/assets/images/Fondo3.mp4" type="video/mp4">
-                        Tu navegador no soporta la reproducción de videos.
-                      </video>
-                    <div class="card-img-overlay">
-
-                        <div class="text-center pt-4">
-                            <h5 class="card-title mb-2 text-white">Cartago</h5>
-                            <div class="separator border-top mb-2"></div>
-                            <h3 class="text-white">Ventas <img v-if="!cartagoAmountVisible" src="@/assets/dashboard/ojoWhite.png" @click="seeAmount('cartagoAmountVisible', 'cartagoAmountInterval')" alt style="cursor: pointer; height: 20px; width: 25px; position: relative; left: 10px;"/>
-                      <p v-else style="font-size: large; margin: 3px;"> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p></h3>
-
+              <div style="background-color:#db67a3" class="p-4 rounded d-flex align-items-center justify-content-between text-white">
+                    <div>
+                      <h2 class="text-18 mb-1 text-white">Escazu</h2>
+                    </div>
+                    <img 
+                      v-if="!escazuAmountVisible" 
+                      src="@/assets/dashboard/ojoWhite.png" 
+                      @click="seeAmount('escazuAmountVisible', 'escazuAmountInterval')" 
+                      alt 
+                      style="cursor: pointer; height: 20px; width: 25px;"
+                    />
+                    <p v-else style="font-size: large; margin: 3px;"> ₡{{escazuSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
+                  </div>
+              <b-card>
+                    
+                    <div class="ul-widget-card__full-status mb-3">
+                        <div class="ul-widget-card__status1">
+                            <span>{{ escazuNotSelled + escazuSelled }}</span>
+                            <span class="text-mute">Recibidas</span>
                         </div>
-                        <div >
-                            <div class="ul-widget-card__body">
-                                <div class="ul-widget-card__weather-info">
-                                    <span>Recibidas</span>
-                                    <span>{{ cartagoNotSelled + cartagoSelled }} </span>
-                                </div>
-                                <div class="ul-widget-card__weather-info">
-                                    <span>Vendidas </span>
-                                    <span>{{ cartagoSelled }}</span>
-                                </div>
-                                <div class="ul-widget-card__weather-info">
-                                    <span>No vendidas</span>
-                                    <span>{{ cartagoNotSelled }}</span>
-                                </div>
-                            </div>
+                        <div class="ul-widget-card__status1">
+                            <span>{{ escazuSelled }}</span>
+                            <span class="text-mute">Vendidas</span>
                         </div>
+                        <div class="ul-widget-card__status1">
+                            <span>{{ escazuNotSelled }}</span>
+                            <span class="text-mute">No vendidas</span>
+                        </div>
+                    </div>
+                </b-card>
+            </b-col>
 
+            <b-col lg="3" sm="6" class="mb-30">
+              <div style="background-color:#a78dcc " class="p-4 rounded d-flex align-items-center justify-content-between text-white">
+                <div>
+                  <h2 class="text-18 mb-1 text-white">Heredia</h2>
+                </div>
+                <img 
+                  v-if="!herediaAmountVisible" 
+                  src="@/assets/dashboard/ojoWhite.png" 
+                  @click="seeAmount('herediaAmountVisible', 'herediaAmountInterval')" 
+                  alt 
+                  style="cursor: pointer; height: 20px; width: 25px;"
+                />
+                <p v-else style="font-size: large; margin: 3px;"> ₡{{herediaSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
+              </div>
+
+                <b-card>
+                    
+                    <div class="ul-widget-card__full-status mb-3">
+                        <div class="ul-widget-card__status1">
+                            <span>{{ herediaNotSelled + herediaSelled }}</span>
+                            <span class="text-mute">Recibidas</span>
+                        </div>
+                        <div class="ul-widget-card__status1">
+                            <span>{{ herediaSelled }}</span>
+                            <span class="text-mute">Vendidas</span>
+                        </div>
+                        <div class="ul-widget-card__status1">
+                            <span>{{ herediaNotSelled }}</span>
+                            <span class="text-mute">No vendidas</span>
+                        </div>
+                    </div>
+                </b-card>
+            </b-col>
+            <b-col lg="3" sm="6" class="mb-30">
+                <div style="background-color:#55b5ab" class="p-4 rounded d-flex align-items-center justify-content-between text-white">
+                  <div>
+                    <h2 class="text-18 mb-1 text-white">Cartago</h2>
+                  </div>
+                  <img 
+                    v-if="!cartagoAmountVisible" 
+                    src="@/assets/dashboard/ojoWhite.png" 
+                    @click="seeAmount('cartagoAmountVisible', 'cartagoAmountInterval')" 
+                    alt 
+                    style="cursor: pointer; height: 20px; width: 25px;"
+                  />
+                  <p v-else style="font-size: large; margin: 3px;"> ₡{{cartagoSales.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}} </p>
+                </div>
+                <b-card>
+                    
+                    <div class="ul-widget-card__full-status mb-3">
+                        <div class="ul-widget-card__status1">
+                            <span>{{ cartagoNotSelled + cartagoSelled }}</span>
+                            <span class="text-mute">Recibidas</span>
+                        </div>
+                        <div class="ul-widget-card__status1">
+                            <span>{{ cartagoSelled }}</span>
+                            <span class="text-mute">Vendidas</span>
+                        </div>
+                        <div class="ul-widget-card__status1">
+                            <span>{{ cartagoNotSelled }}</span>
+                            <span class="text-mute">No vendidas</span>
+                        </div>
                     </div>
                 </b-card>
             </b-col>
@@ -983,6 +958,7 @@
           <b-row style="background-color: #ebebeb" class="justify-content-center">
             <b-col cols="12" lg="6" md="12" class="text-center" >
 
+             <br><br>
               <div v-if="opcionesGraficoPaquetes && datosGraficoPaquetes.length && datosGraficoDinero.length">
                 <b-row class="justify-content-center">
                   <!-- Gráfico de Paquetes -->
@@ -1010,6 +986,7 @@
                   </b-col>
                 </b-row>
               </div>
+              
             </b-col>
             <b-col cols="12" lg="6" md="12" class="text-center">
               <div>

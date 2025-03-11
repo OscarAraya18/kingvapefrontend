@@ -664,8 +664,8 @@
 
       <br>
       <b-container fluid>
-        <b-row class="justify-content-center">
-          <b-col cols="12" lg="4" xl="3" md="6" class="text-center">
+        <b-row class="justify-content-start flex-nowrap scroll-container">
+          <b-col cols="12" lg="6" xl="3" md="6" class="text-center">
             <b-card style="height: 90vh; background-color: #fed330;">
               <div style="position: absolute; top: 0; left: 0; background-color: gray; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center; color: white;">
                 <h2 style="margin: 0; color: white; font-weight: bolder;">{{ motosZapote }}</h2>
@@ -755,10 +755,9 @@
                 </div>
               </div>
             </b-card>
-            <br><br><br>
           </b-col>
 
-          <b-col cols="12" lg="4" xl="3" md="6" class="text-center">
+          <b-col cols="12" lg="6" xl="3" md="6" class="text-center">
             <b-card style="height: 90vh; background-color: #db67a3;">
               <div style="position: absolute; top: 0; left: 0; background-color: gray; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center; color: white;">
                 <h2 style="margin: 0; color: white; font-weight: bolder;">{{ motosEscazu }}</h2>
@@ -848,10 +847,9 @@
                 </div>
               </div>
             </b-card>
-            <br><br><br>
           </b-col>
 
-          <b-col cols="12" lg="4" xl="3" md="6" class="text-center">
+          <b-col cols="12" lg="6" xl="3" md="6" class="text-center">
             <b-card style="height: 90vh; background-color: #a78dcc;">
               <div style="position: absolute; top: 0; left: 0; background-color: gray; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center; color: white;">
                 <h2 style="margin: 0; color: white; font-weight: bolder;">{{ motosHeredia }}</h2>
@@ -941,10 +939,9 @@
                 </div>
               </div>
             </b-card>
-            <br><br><br>
           </b-col>
 
-          <b-col cols="12" lg="4" xl="3" md="6" class="text-center">
+          <b-col cols="12" lg="6" xl="3" md="6" class="text-center">
             <b-card style="height: 90vh; background-color: #55b5ab;">
               <div style="position: absolute; top: 0; left: 0; background-color: gray; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center; color: white;">
                 <h2 style="margin: 0; color: white; font-weight: bolder;">{{ motosCartago }}</h2>
@@ -1034,7 +1031,6 @@
                 </div>
               </div>
             </b-card>
-            <br><br><br>
           </b-col>
         </b-row>
       </b-container>
@@ -1250,6 +1246,23 @@
 </template>
 
 <style>
+
+.scroll-container {
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch; /* Para mejor experiencia en móviles */
+}
+
+.scroll-container::-webkit-scrollbar {
+  display: none; /* Ocultar scrollbar en móviles */
+}
+
+.b-col {
+  display: inline-block;
+  white-space: normal;
+}
+
 .noliveLogo {
     width: 90px; 
     height: 55px; 

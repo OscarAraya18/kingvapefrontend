@@ -272,7 +272,12 @@
     <b-modal scrollable size="m" centered hide-header hide-footer id="paymentMethodValidatorModal">
       <div>
         <div v-if="currentTransactions != null">
-          <h4><strong>SINPES disponibles:</strong></h4><br>
+          <h4><strong>SINPES disponibles:</strong> <b-button @click="$bvModal.hide('paymentMethodValidatorModal')" variant="danger ripple m-1">
+            Cerrar
+          </b-button></h4>
+          
+
+          <br>
           <b-list-group style="max-height: 600px; overflow-y: auto;">
             <b-list-group-item v-if="currentTransactions.length == 0">No hay SINPES por asociar</b-list-group-item>
             <b-list-group-item @click="syncTransactionToMessage(currentTransaction)" v-for="currentTransaction in currentTransactions" button style="cursor: pointer;">
@@ -389,15 +394,17 @@ export default {
 
       sinpeColumns: 
       [
+
         {
           label: "Aprobado",
           field: "whatsappInvoiceApproveAction",
           thClass: "text-left",
           tdClass: "text-left",
         },
+
         {
-          label: "Nombre del cliente",
-          field: "whatsappInvoiceClientName",
+          label: "Número del cliente",
+          field: "whatsappInvoiceClientPhoneNumber",
           thClass: "text-left",
           tdClass: "text-left",
         },
@@ -414,8 +421,8 @@ export default {
           tdClass: "text-left pl-3",
         },
         {
-          label: "Número del cliente",
-          field: "whatsappInvoiceClientPhoneNumber",
+          label: "Nombre del cliente",
+          field: "whatsappInvoiceClientName",
           thClass: "text-left",
           tdClass: "text-left",
         },
