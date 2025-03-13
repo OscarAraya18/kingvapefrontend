@@ -2352,7 +2352,7 @@ export default {
       whatsappInvoiceShippingMethodOptions: ['Método de envío', 'Retiro en sucursal', 'Envío por motorizado', 'Correos de CR', 'Encomienda', 'Uber Flash'],
       whatsappInvoiceShippingMethod: 'Método de envío',
       
-      whatsappInvoicePaymentMethodOptions: ['Método de pago', 'Efectivo', 'Tarjeta', 'Pago mixto', 'SINPE (confirmado)', 'SINPE (contra entrega)', 'Transferencia'],
+      whatsappInvoicePaymentMethodOptions: ['Método de pago', 'Efectivo', 'Tarjeta', 'Pago mixto', 'SINPE (confirmado)', 'SINPE (contra entrega)', 'Transferencia', 'Página web'],
       whatsappInvoicePaymentMethod: 'Método de pago',
 
       whatsappInvoicePaymentStateOptions: ['Estado del pago', 'Pagado', 'Pendiente', 'Pago parcial'],
