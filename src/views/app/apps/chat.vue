@@ -4054,11 +4054,13 @@ export default {
         9: 9
       };
 
-      axios.post('https://hostname.payitcr.com/callcenterBill/functions/insert',
-      {
+      axios.post('https://hostname.payitcr.com/callcenterBill/functions/insert', {
         'callcenterBillLocalityID': localityReconciliation[this.selectedLocality],
         'callcenterBillClientSSN': this.currentActiveConversation.whatsappConversationRecipientID,
-        'callcenterBillClientName': this.currentActiveConversation.whatsappConversationRecipientProfileName,
+        'callcenterBillClientName': this.currentActiveConversation.whatsappConversationRecipientProfileName
+          .replace(/\(.*?\)/g, '') // Elimina contenido entre paréntesis
+          .replace(/\*.*?\*/g, '') // Elimina contenido entre asteriscos
+          .trim(), // Elimina espacios extra si quedan
         'callcenterBillClientEmail': this.currentActiveConversation.whatsappConversationRecipientEmail,
         'callcenterBillClientPhoneNumber': this.currentActiveConversation.whatsappConversationRecipientPhoneNumber,
         'callcenterBillAmount': this.calcularTotal,
@@ -4066,11 +4068,11 @@ export default {
         'callcenterBillPaymentState': this.whatsappInvoicePaymentState,
         'callcenterBillShippingMethod': this.whatsappInvoiceShippingMethod,
         'callcenterBillProducts': this.currentActiveConversation.whatsappConversationProducts
-      }).then(function (){
+      }).then(function () {
       }).catch(error => {
         console.log(error);
-      })
-     
+      });
+          
     },
 
 
