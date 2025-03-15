@@ -261,6 +261,8 @@
                 <b-dropdown-item style="background-color: #a78dcc" href="#" v-b-modal.herediaConversationsModal>Heredia ({{herediaConversations.length}})</b-dropdown-item>
                 <b-dropdown-item style="background-color: #6473d1" href="#" v-b-modal.metroPlazaConversationsModal>Metro Plaza ({{metroPlazaConversations.length}})</b-dropdown-item>
                 <b-dropdown-item style="background-color: #ff933b" href="#" v-b-modal.sanRafaelConversationsModal>San Rafael ({{sanRafaelConversations.length}})</b-dropdown-item>
+                <b-dropdown-item style="background-color: #96a175" href="#" v-b-modal.ccsurConversationsModal>CC del Sur ({{ccsurConversations.length}})</b-dropdown-item>
+
                 <b-dropdown-item style="background-color: #8fd2ff" href="#" v-b-modal.planetVapeConversationsModal>Planet Vape ({{planetVapeConversations.length}})</b-dropdown-item>
 
                 <b-dropdown-item style="background-color: #dedede" href="#" v-b-modal.pendingConversationsModal>Pendientes ({{pendingConversations.length}})</b-dropdown-item>
@@ -311,6 +313,27 @@
               <br><span class="spinner-glow spinner-glow-primary"></span>
             </div>
           </b-modal>
+          
+          <b-modal scrollable size="m" centered hide-footer id="ccsurConversationsModal" title="Conversaciones pendientes de CC del Sur">
+            <b-list-group v-if="loaders.grabConversation == false">
+              <b-list-group-item v-if="ccsurConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
+              <b-list-group-item @contextmenu.prevent="openDeleteStoreMessageModal(ccsurConversation)" v-for="ccsurConversation in ccsurConversations" @click="grabStoreConversation(ccsurConversation)" button style="cursor: pointer;">
+                <strong>Nombre:</strong> {{ccsurConversation.storeMessageRecipientProfileName}}<br>
+                <strong>Número:</strong> {{parsePhone(ccsurConversation.storeMessageRecipientPhoneNumber)}}<br>
+                <strong>Pedido:</strong> {{ccsurConversation.storeMessageRecipientOrder}}<br>
+                <div style="display: flex;">
+                  <strong>Cédula:</strong>
+                  <div style="margin-left: 3px;" v-if="ccsurConversation.storeMessageRecipientID == 'S'">✔️</div>
+                  <div style="margin-left: 3px;" v-else>❌</div>
+                </div>
+                <strong>Fecha:</strong> {{parseHour(ccsurConversation.storeMessageStartDateTime)}}
+              </b-list-group-item>
+            </b-list-group>
+            <div v-else style="text-align: center;">
+              <br><span class="spinner-glow spinner-glow-primary"></span>
+            </div>
+          </b-modal>
+
           <b-modal scrollable size="m" centered hide-footer id="cartagoConversationsModal" title="Conversaciones pendientes de Cartago">
             <b-list-group v-if="loaders.grabConversation == false">
               <b-list-group-item v-if="cartagoConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
@@ -2195,6 +2218,7 @@ export default {
       metroPlazaConversations: [],
       sanRafaelConversations: [],
       planetVapeConversations: [],
+      ccsurConversations: [],
 
       localityOptions: [],
       selectedLocality: null,
@@ -3144,6 +3168,7 @@ export default {
       this.$root.$emit('bv::hide::modal', 'herediaConversationsModal');
       this.$root.$emit('bv::hide::modal', 'metroPlazaConversationsModal');
       this.$root.$emit('bv::hide::modal', 'sanRafaelConversationsModal');
+      this.$root.$emit('bv::hide::modal', 'ccsurConversationsModal');
 
       this.$root.$emit('bv::hide::modal', 'planetVapeConversationsModal');
       this.$root.$emit('bv::show::modal', 'deleteStoreConversationModal');
@@ -5281,6 +5306,9 @@ export default {
           } else if (storeMessage.storeMessageStoreName == 'Planet Vape'){
             referenciaSucursales[storeMessage.storeMessageRecipientPhoneNumber] = 'P';
             this.planetVapeConversations = this.planetVapeConversations.filter(planetVapeConversation => planetVapeConversation.storeMessageID != storeMessage.storeMessageID);
+          } else if (storeMessage.storeMessageStoreName == 'CC del Sur'){
+            referenciaSucursales[storeMessage.storeMessageRecipientPhoneNumber] = 'CC';
+            this.ccsurConversations = this.ccsurConversations.filter(ccsurConversation => ccsurConversation.storeMessageID != storeMessage.storeMessageID);
           }
           localStorage.setItem('referenciaSucursales', JSON.stringify(referenciaSucursales));
 
@@ -5477,7 +5505,7 @@ export default {
         this.herediaConversations = [];
         this.metroPlazaConversations = [];
         this.sanRafaelConversations = [];
-
+        this.ccsurConversations = [];
         this.planetVapeConversations = [];
         if (response.data.success){
           const selectAllStoreMessageResult = response.data.result;
@@ -5507,6 +5535,8 @@ export default {
               this.sanRafaelConversations.push(newStoreMessageInformation);
             } else if (selectAllStoreMessageResult[storeMessageIndex].storeMessageStoreName == 'Planet Vape'){
               this.planetVapeConversations.push(newStoreMessageInformation);
+            } else if (selectAllStoreMessageResult[storeMessageIndex].storeMessageStoreName == 'CC del Sur'){
+              this.ccsurConversations.push(newStoreMessageInformation);
             }
           }
         } else {
@@ -5585,6 +5615,11 @@ export default {
         this.planetVapeConversations = [];
         newPlanetVapeConversations.push(newWhatsappStoreMessageInformation);
         this.planetVapeConversations = newPlanetVapeConversations;
+      } else if (websocketMessageContent.storeMessageStoreName == 'CC del Sur'){
+        var newccsurConversation = this.ccsurConversations;
+        this.ccsurConversations = [];
+        newccsurConversation.push(newWhatsappStoreMessageInformation);
+        this.ccsurConversations = newccsurConversation;
       }
       this.playSound('receiveWhatsappStoreMessage');
     },
@@ -5655,6 +5690,8 @@ export default {
         this.sanRafaelConversations = this.sanRafaelConversations.filter(metroPlazaConversation => metroPlazaConversation.storeMessageID != storeMessageID);
       } else if (storeMessageStoreName == 'Planet Vape'){
         this.planetVapeConversations = this.planetVapeConversations.filter(planetVapeConversation => planetVapeConversation.storeMessageID != storeMessageID);
+      } else if (storeMessageStoreName == 'CC del Sur'){
+        this.ccsurConversations = this.ccsurConversations.filter(ccsurConversation => ccsurConversation.storeMessageID != storeMessageID);
       }
     },
 
@@ -5822,7 +5859,7 @@ export default {
 		},
 
     textoSucursalesCalcular: function(){
-      const total = this.escazuConversations.length + this.zapoteConversations.length + this.cartagoConversations.length + this.herediaConversations.length + this.metroPlazaConversations.length + + this.sanRafaelConversations.length + this.planetVapeConversations.length + this.pendingConversations.length;
+      const total = this.escazuConversations.length + this.zapoteConversations.length + this.cartagoConversations.length + this.herediaConversations.length + this.metroPlazaConversations.length + + this.sanRafaelConversations.length + this.planetVapeConversations.length + this.ccsurConversations.length + this.pendingConversations.length;
       return this.textoSucursales + '(' + total + ')'
     }
 

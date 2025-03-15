@@ -240,6 +240,8 @@ export default {
           storeMessageStoreName = 'Metro Plaza';
         } else if (localStorage.getItem('localityName') == 'King Vape San Rafael'){
           storeMessageStoreName = 'San Rafael';
+        } else if (localStorage.getItem('localityName') == 'King Vape CC del Sur'){
+          storeMessageStoreName = 'CC del Sur';
         }
       }
       
@@ -300,6 +302,8 @@ export default {
             storeMessageStoreName = 'Metro Plaza';
           } else if (localStorage.getItem('localityName') == 'King Vape San Rafael'){
             storeMessageStoreName = 'San Rafael';
+          } else if (localStorage.getItem('localityName') == 'King Vape CC del Sur'){
+            storeMessageStoreName = 'CC del Sur';
           } else {
             storeMessageStoreName = this.transferLocality;
           }
