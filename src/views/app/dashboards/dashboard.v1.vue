@@ -828,6 +828,12 @@
                 <h2 class="text-18 mb-1 text-white">Zapote</h2>
               </div>
               <img 
+                v-if="zapoteSelled > 80" 
+                src="@/assets/dashboard/fire.gif" 
+                alt 
+                style="cursor: pointer; height: 40px; width: 40px;"
+              />
+              <img 
                 v-if="!zapoteAmountVisible" 
                 src="@/assets/dashboard/ojoWhite.png" 
                 @click="seeAmount('zapoteAmountVisible', 'zapoteAmountInterval')" 
@@ -860,6 +866,12 @@
                     <div>
                       <h2 class="text-18 mb-1 text-white">Escazu</h2>
                     </div>
+                    <img 
+                      v-if="escazuSelled > 60" 
+                      src="@/assets/dashboard/fire.gif" 
+                      alt 
+                      style="cursor: pointer; height: 40px; width: 40px;"
+                    />
                     <img 
                       v-if="!escazuAmountVisible" 
                       src="@/assets/dashboard/ojoWhite.png" 
@@ -894,6 +906,12 @@
                   <h2 class="text-18 mb-1 text-white">Heredia</h2>
                 </div>
                 <img 
+                      v-if="herediaSelled > 60" 
+                      src="@/assets/dashboard/fire.gif" 
+                      alt 
+                      style="cursor: pointer; height: 40px; width: 40px;"
+                    />
+                <img 
                   v-if="!herediaAmountVisible" 
                   src="@/assets/dashboard/ojoWhite.png" 
                   @click="seeAmount('herediaAmountVisible', 'herediaAmountInterval')" 
@@ -926,6 +944,12 @@
                   <div>
                     <h2 class="text-18 mb-1 text-white">Cartago</h2>
                   </div>
+                  <img 
+                      v-if="cartagoSelled > 60" 
+                      src="@/assets/dashboard/fire.gif" 
+                      alt 
+                      style="cursor: pointer; height: 40px; width: 40px;"
+                    />
                   <img 
                     v-if="!cartagoAmountVisible" 
                     src="@/assets/dashboard/ojoWhite.png" 
@@ -986,7 +1010,7 @@
                   </b-col>
                 </b-row>
               </div>
-              
+
             </b-col>
             <b-col cols="12" lg="6" md="12" class="text-center">
               <div>
@@ -1248,7 +1272,6 @@
             :columns="activeConversationsColumns"
             :line-numbers="false"
             styleClass="order-table vgt-table"
-            style="padding: 20px;"
             :rows="activeConversationsRows"
             v-if="view == 'activeConversations'"
           >

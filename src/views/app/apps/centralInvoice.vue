@@ -520,138 +520,108 @@
     </b-modal>
 
     <b-modal id="updateWhatsappInvoiceInformation" size="lg" centered hide-header hide-footer>
+      <!-- Botón de cierre en la esquina superior derecha -->
+      <div class="d-flex justify-content-end">
+        <b-button variant="danger" size="sm" @click="$bvModal.hide('updateWhatsappInvoiceInformation')" class="close-button">
+          ✖
+        </b-button>
+      </div>
+
       <div v-if="updatedWhatsappInvoice">
         <p><strong>ID:</strong> {{ updatedWhatsappInvoice.whatsappInvoiceID }}</p>
         <p><strong>Nombre:</strong> {{ updatedWhatsappInvoice.whatsappInvoiceClientName }}</p>
         <p><strong>Número:</strong> {{ parsePhoneNumber(updatedWhatsappInvoice.whatsappInvoiceClientPhoneNumber) }}</p>
       </div>
-      <br><br>
-      
-      <div style="display: flex;">
-        <div style="width: 50%; margin-right: 50px;">
+
+      <div class="d-flex flex-column flex-md-row w-100 mt-3">
+        <!-- Columna Izquierda -->
+        <div class="w-100 w-md-50 pr-md-3">
           <p><strong>Localidad: </strong></p>
-          <div style="display: flex;">
+          <div class="d-flex align-items-center">
             <b-form-select v-model="updatedWhatsappInvoice.whatsappInvoiceLocalityID" :options="updateWhatsappInvoiceLocalityOptions"></b-form-select>
-            <div class="flex-grow-1"></div>
             <i @click="updateWhatsappInvoiceLocalityID()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
           </div>
-          <br>
-
-          <p><strong>Estado: </strong></p>
-          <div style="display: flex;">
+          
+          <p class="mt-3"><strong>Estado: </strong></p>
+          <div class="d-flex align-items-center">
             <b-form-select v-model="updatedWhatsappInvoice.whatsappInvoiceState" :options="updateWhatsappInvoiceStateOptions"></b-form-select>
-            <div class="flex-grow-1"></div>
             <i @click="updateWhatsappInvoiceState()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
           </div>
-          <br>
 
-          <p><strong>Método de envío: </strong></p>
-          <div style="display: flex;">
+          <p class="mt-3"><strong>Método de envío: </strong></p>
+          <div class="d-flex align-items-center">
             <b-form-select v-model="updatedWhatsappInvoice.whatsappInvoiceShippingMethod" :options="updateWhatsappInvoiceShippingMethodOptions"></b-form-select>
-            <div class="flex-grow-1"></div>
             <i @click="updateWhatsappInvoiceShippingMethod()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
-            <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceShippingMethod'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
           </div>
-          <br>
 
-          <p><strong>Método de pago: </strong></p>
-          <div style="display: flex;">
+          <p class="mt-3"><strong>Método de pago: </strong></p>
+          <div class="d-flex align-items-center">
             <b-form-select v-model="updatedWhatsappInvoice.whatsappInvoicePaymentMethod" :options="updateWhatsappInvoicePaymentMethodOptions"></b-form-select>
-            <div class="flex-grow-1"></div>
             <i @click="updateWhatsappInvoicePaymentMethod()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
-            <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoicePaymentMethod'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
-          </div>
-          <br>
-
-          <p><strong>Estado de pago: </strong></p>
-          <div style="display: flex;">
-            <b-form-select v-model="updatedWhatsappInvoice.whatsappInvoicePaymentState" :options="updateWhatsappInvoicePaymentStateOptions"></b-form-select>
-            <div class="flex-grow-1"></div>
-            <i @click="updateWhatsappInvoicePaymentState()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
-            <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoicePaymentState'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
-          </div>
-          <br>
-
-          <p><strong>Nota de la dirección: </strong></p>
-          <div style="display: flex;">
-            <b-form-textarea no-resize rows="5" class="form-control" placeholder="Coloque una nota de la dirección" v-model="updatedWhatsappInvoice.whatsappInvoiceLocationNote"/>
-            <div class="flex-grow-1"></div>
-            <i @click="updateWhatsappInvoiceLocationNote()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
-            <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceLocationNote'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
-          </div>
-          <br>
-          
-          <p><strong>Nota del envío: </strong></p>
-          <div style="display: flex;">
-            <b-form-textarea no-resize rows="3" class="form-control" placeholder="Coloque una nota del envío" v-model="updatedWhatsappInvoice.whatsappInvoiceShippingNote"/>    
-            <div class="flex-grow-1"></div>
-            <i @click="updateWhatsappInvoiceShippingNote()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
-            <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceShippingNote'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
-          </div>
-          <br>
-
-          <br>
-          <div style="display: flex;">
-            <p><strong>Pedido para hoy: </strong></p>
-            <b-form-checkbox value="1" unchecked-value="0" @input="updateWhatsappInvoiceIsForToday(updatedWhatsappInvoice)" v-model="updatedWhatsappInvoice.whatsappInvoiceIsForToday" style="margin-left: 15px; position: relative; top: -27px" size="lg"></b-form-checkbox>
           </div>
 
-          <div style="display: flex;" v-if="updatedWhatsappInvoice.whatsappInvoicePaymentMethod == 'SINPE (contra entrega)'">
-            <p><strong>SINPE (contra entrega) confirmado: </strong></p>
-            <b-form-checkbox value="1" unchecked-value="0" disabled v-model="updatedWhatsappInvoice.whatsappInvoiceSINPEApproved" style="margin-left: 15px; position: relative; top: -27px" size="lg"></b-form-checkbox>
-          </div>
+          <p class="mt-3"><strong>Nota de la dirección: </strong></p>
+          <b-form-textarea rows="3" v-model="updatedWhatsappInvoice.whatsappInvoiceLocationNote" placeholder="Coloque una nota de la dirección"></b-form-textarea>
 
-
-          <div v-if="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason">
-            <br>
-            <p><strong>Motivo del fallo en la entrega: </strong></p>
-            <div style="display: flex;">
-              <b-form-textarea no-resize rows="3" class="form-control" disabled v-model="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason"/>
-            </div>
-            <br>
-          </div>
-
-          <br>
+          <p class="mt-3"><strong>Nota del envío: </strong></p>
+          <b-form-textarea rows="3" v-model="updatedWhatsappInvoice.whatsappInvoiceShippingNote" placeholder="Coloque una nota del envío"></b-form-textarea>
         </div>
 
-        <div style="width: 50%;">
+        <!-- Columna Derecha -->
+        <div class="w-100 w-md-50 pl-md-3">
           <p v-if="updatedWhatsappInvoice.localityAgentName"><strong>Mensajero: </strong>{{ updatedWhatsappInvoice.localityAgentName }}</p>
-          <p v-else><strong>Mensajero: </strong>No asignado</p> 
-          <br>
+          <p v-else><strong>Mensajero: </strong>No asignado</p>
 
-          <p><strong>Enlace de la ubicación: </strong></p>
-          <div style="display: flex;">
-            <b-form-input v-model="updatedWhatsappInvoice.whatsappInvoiceClientLocationURL" class="mb-3" placeholder="Enlace de la ubicación"></b-form-input>
-            <div class="flex-grow-1"></div>
+          <p class="mt-3"><strong>Enlace de la ubicación: </strong></p>
+          <div class="d-flex align-items-center">
+            <b-form-input v-model="updatedWhatsappInvoice.whatsappInvoiceClientLocationURL" placeholder="Enlace de la ubicación"></b-form-input>
             <i @click="updateWhatsappInvoiceClientLocationURL()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
-            <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceClientLocationURL'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
           </div>
-          <br>
-          
-          <div v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocationURL == ''">
-            <p><strong>Ubicación: </strong></p>
-            <MapComponent v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation" mapHeight="415px" mapWidth="100%" :clientLongitude="getWhatsappInvoiceClientLocation().lng" :clientLatitude="getWhatsappInvoiceClientLocation().lat"></MapComponent>
-            <br>
-            <div style="display: flex;">
-              <b-form-select @change="changeWhatsappInvoiceLocation()" v-model="updatedWhatsappInvoiceLocation" :options="updateWhatsappInvoiceLocationOptions"></b-form-select>
+
+          <div v-if="!updatedWhatsappInvoice.whatsappInvoiceClientLocationURL">
+            <p class="mt-3"><strong>Ubicación:</strong></p>
+            <MapComponent v-if="updatedWhatsappInvoice.whatsappInvoiceClientLocation"
+                          mapHeight="415px"
+                          mapWidth="100%"
+                          :clientLongitude="getWhatsappInvoiceClientLocation().lng"
+                          :clientLatitude="getWhatsappInvoiceClientLocation().lat">
+            </MapComponent>
+            <div class="d-flex align-items-center mt-2">
+              <b-form-select @change="changeWhatsappInvoiceLocation()" 
+                            v-model="updatedWhatsappInvoiceLocation" 
+                            :options="updateWhatsappInvoiceLocationOptions">
+              </b-form-select>
               <i @click="selectWhatsappInvoiceLocations()" class="i-Data-Search text-25 text-info ml-3" style="cursor: pointer"></i>    
               <i @click="updateWhatsappInvoiceClientLocation()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
-              <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceClientLocation'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
             </div>
-          </div >
+          </div>
         </div>
       </div>
 
-      <br><br>
-
-      <div style="text-align: center;">
-        <div v-if="loaderReturned" style="text-align: center;">
-          <br><span class="spinner-glow spinner-glow-primary"></span>
+      <!-- Opciones de confirmación -->
+      <div class="mt-3">
+        <div class="d-flex align-items-center">
+          <p><strong>Pedido para hoy: </strong></p>
+          <b-form-checkbox value="1" unchecked-value="0" v-model="updatedWhatsappInvoice.whatsappInvoiceIsForToday" class="ml-3"></b-form-checkbox>
         </div>
-        <b-button v-else @click="returnWhatsappConversation()" variant="info">Regresar al call center</b-button>
+
+        <div v-if="updatedWhatsappInvoice.whatsappInvoicePaymentMethod === 'SINPE (contra entrega)'" class="d-flex align-items-center mt-3">
+          <p><strong>SINPE (contra entrega) confirmado: </strong></p>
+          <b-form-checkbox value="1" unchecked-value="0" disabled v-model="updatedWhatsappInvoice.whatsappInvoiceSINPEApproved" class="ml-3"></b-form-checkbox>
+        </div>
+
+        <div v-if="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason" class="mt-3">
+          <p><strong>Motivo del fallo en la entrega: </strong></p>
+          <b-form-textarea rows="3" disabled v-model="updatedWhatsappInvoice.whatsappInvoiceNotShippedReason"></b-form-textarea>
+        </div>
       </div>
 
+      <!-- Botón de regreso -->
+      <div class="text-center mt-4">
+        <b-button @click="returnWhatsappConversation()" variant="info">Regresar al call center</b-button>
+      </div>
     </b-modal>
+
 
     <div v-if="agentType == 'central'">
       <div class="d-none d-md-block" 
@@ -664,15 +634,15 @@
 
       <br>
       <b-container fluid>
-        <b-row class="justify-content-start flex-nowrap scroll-container">
+        <b-row class="justify-content-start flex-nowrap scroll-container" >
           <b-col cols="12" lg="6" xl="3" md="6" class="text-center">
-            <b-card style="height: 90vh; background-color: #fed330;">
+            <b-card no-body style="height: 90vh; background-color: #fed330;">
               <div style="position: absolute; top: 0; left: 0; background-color: gray; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center; color: white;">
                 <h2 style="margin: 0; color: white; font-weight: bolder;">{{ motosZapote }}</h2>
               </div>
 
               <div style="display: flex; justify-content: center; width: 100%;">
-                <div style="position: relative; top: -80px; background-color: white; width: 200px; height: 150px; border-radius: 40%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
+                <div style="position: relative; top: -30px; background-color: white; width: 200px; height: 150px; border-radius: 40%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
                   <img src="../../../assets/dashboard/titulozapote.png" style="width: 90%;">
                   <img v-if="(zapoteCentralWhatsappInvoiceAmount + zapoteLocalityWhatsappInvoiceAmount + zapoteShippingWhatsappInvoiceAmount) >= 40" src="../../../assets/dashboard/fire.gif" style="width: 25%;">
                 </div>
@@ -691,13 +661,13 @@
                   </div>
                 </div>
               </div>
-              <div >
+              <div style="width: 100%;" >
                 <div style="width: 100%; background-color: #e3e3e3; position: relative; top: -85px;" :style="getHeight()">
                   <div style="width: 100%; display: flex; justify-content: center;">
                     <div style="width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 15px solid #fed330;"></div>
                   </div>
                   <div>
-                    <div v-for="whatsappInvoice in zapoteWhatsappInvoices" style="padding: 10px 20px 10px 20px;">
+                    <div v-for="whatsappInvoice in zapoteWhatsappInvoices" >
                       <div :class="getAlertAnimation(whatsappInvoice)">
                         <div style="width: 100%; display: flex; justify-content: space-between;">
                           <div v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
@@ -712,7 +682,7 @@
                             </div>
                           </div>
                         </div>
-                        <div style="padding: 0px 10px 0px 10px;">
+                        <div>
                           <div style="display: flex; flex-wrap: wrap; width: 100%; margin: 5px 0px 5px 0px;">
                             <p style="color: #c4c4c4; margin: 0; font-weight: bolder; white-space: nowrap;">NOMBRE:</p>
                             <p v-b-modal.updateWhatsappInvoiceClientNameModal @click="openUpdateWhatsappInvoiceClientName(whatsappInvoice)" style="color: black; margin: 0 0 0 10px; font-weight: bolder; flex: 1; word-wrap: break-word; cursor: pointer;">{{ whatsappInvoice.whatsappInvoiceClientName }}</p>
@@ -758,13 +728,12 @@
           </b-col>
 
           <b-col cols="12" lg="6" xl="3" md="6" class="text-center">
-            <b-card style="height: 90vh; background-color: #db67a3;">
+            <b-card no-body style="height: 90vh; background-color: #db67a3;">
               <div style="position: absolute; top: 0; left: 0; background-color: gray; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center; color: white;">
                 <h2 style="margin: 0; color: white; font-weight: bolder;">{{ motosEscazu }}</h2>
               </div>
-
               <div style="display: flex; justify-content: center; width: 100%;">
-                <div style="position: relative; top: -80px; background-color: white; width: 200px; height: 150px; border-radius: 40%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
+                <div style="position: relative; top: -30px; background-color: white; width: 200px; height: 150px; border-radius: 40%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
                   <img src="../../../assets/dashboard/tituloescazu.png" style="width: 90%;">
                   <img v-if="(escazuCentralWhatsappInvoiceAmount + escazuLocalityWhatsappInvoiceAmount + escazuShippingWhatsappInvoiceAmount) >= 20" src="../../../assets/dashboard/fire.gif" style="width: 25%;">
                 </div>
@@ -783,13 +752,13 @@
                   </div>
                 </div>
               </div>
-              <div style="display: flex; justify-content: center; width: 100%;">
+              <div style="justify-content: center; width: 100%;">
                 <div style="width: 100%; background-color: #e3e3e3; position: relative; top: -85px;" :style="getHeight()">
                   <div style="width: 100%; display: flex; justify-content: center;">
                     <div style="width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 15px solid #db67a3;"></div>
                   </div>
                   <div>
-                    <div v-for="whatsappInvoice in escazuWhatsappInvoices" style="padding: 10px 20px 10px 20px;">
+                    <div v-for="whatsappInvoice in escazuWhatsappInvoices">
                       <div :class="getAlertAnimation(whatsappInvoice)">
                         <div style="width: 100%; display: flex; justify-content: space-between;">
                           <div v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
@@ -850,13 +819,13 @@
           </b-col>
 
           <b-col cols="12" lg="6" xl="3" md="6" class="text-center">
-            <b-card style="height: 90vh; background-color: #a78dcc;">
+            <b-card no-body style="height: 90vh; background-color: #a78dcc;">
               <div style="position: absolute; top: 0; left: 0; background-color: gray; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center; color: white;">
                 <h2 style="margin: 0; color: white; font-weight: bolder;">{{ motosHeredia }}</h2>
               </div>
 
               <div style="display: flex; justify-content: center; width: 100%;">
-                <div style="position: relative; top: -80px; background-color: white; width: 200px; height: 150px; border-radius: 40%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
+                <div style="position: relative; top: -30px; background-color: white; width: 200px; height: 150px; border-radius: 40%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
                   <img src="../../../assets/dashboard/tituloheredia.png" style="width: 90%;">
                   <img v-if="(herediaCentralWhatsappInvoiceAmount + herediaLocalityWhatsappInvoiceAmount + herediaShippingWhatsappInvoiceAmount) >= 20" src="../../../assets/dashboard/fire.gif" style="width: 25%;">
                 </div>
@@ -881,7 +850,7 @@
                     <div style="width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 15px solid #a78dcc;"></div>
                   </div>
                   <div>
-                    <div v-for="whatsappInvoice in herediaWhatsappInvoices" style="padding: 10px 20px 10px 20px;">
+                    <div v-for="whatsappInvoice in herediaWhatsappInvoices">
                       <div :class="getAlertAnimation(whatsappInvoice)">
                         <div style="width: 100%; display: flex; justify-content: space-between;">
                           <div v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">
@@ -942,13 +911,13 @@
           </b-col>
 
           <b-col cols="12" lg="6" xl="3" md="6" class="text-center">
-            <b-card style="height: 90vh; background-color: #55b5ab;">
+            <b-card no-body style="height: 90vh; background-color: #55b5ab;">
               <div style="position: absolute; top: 0; left: 0; background-color: gray; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center; color: white;">
                 <h2 style="margin: 0; color: white; font-weight: bolder;">{{ motosCartago }}</h2>
               </div>
 
               <div style="display: flex; justify-content: center; width: 100%;">
-                <div style="position: relative; top: -80px; background-color: white; width: 200px; height: 150px; border-radius: 40%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
+                <div style="position: relative; top: -30px; background-color: white; width: 200px; height: 150px; border-radius: 40%; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden;">
                   <img src="../../../assets/dashboard/titulocartago.png" style="width: 90%;">
                   <img v-if="(cartagoCentralWhatsappInvoiceAmount + cartagoLocalityWhatsappInvoiceAmount + cartagoShippingWhatsappInvoiceAmount) >= 20" src="../../../assets/dashboard/fire.gif" style="width: 25%;">
                 </div>
@@ -973,7 +942,7 @@
                     <div style="width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 15px solid #55b5ab;"></div>
                   </div>
                   <div>
-                    <div v-for="whatsappInvoice in cartagoWhatsappInvoices" style="padding: 10px 20px 10px 20px;">
+                    <div v-for="whatsappInvoice in cartagoWhatsappInvoices">
                       <div :class="getAlertAnimation(whatsappInvoice)">
                         <div style="width: 100%; display: flex; justify-content: space-between;">
                           <div v-if="whatsappInvoice.whatsappInvoiceState == 'C'" @click="clickOnCentralInvoice(whatsappInvoice)" style="cursor: pointer; width: 45px; height: 45px; border-radius: 0 0 30px 0; display: flex; justify-content: center; align-items: center;" :style="getColor(whatsappInvoice.whatsappInvoiceState)">

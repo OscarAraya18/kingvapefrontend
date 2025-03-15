@@ -4635,6 +4635,9 @@ export default {
       } else if (locationName == 'CC del Sur'){
         var latitud = 9.917513;
         var longitud = -84.071599;
+      } else if (locationName == 'Tres Ríos'){
+        var latitud = 9.917513;
+        var longitud = -84.071599;
       }
       var repliedMessageID = '';
       if (this.repliedMessage != null){
