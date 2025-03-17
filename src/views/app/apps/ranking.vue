@@ -201,7 +201,7 @@ export default {
         'Clara Salablanca': '#b338ff',
         'Rafat J.': '#000000',
         'Jimena Arias': '#ffad42',
-        'Yahaira Castillo': '#bef29b'
+        'Daniela Matamoros': '#bef29b'
       };
       for (var agentIndex in agentNames){
         const agentName = agentNames[agentIndex];
