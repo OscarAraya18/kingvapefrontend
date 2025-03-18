@@ -283,7 +283,6 @@
             <div class="flex-grow-1"></div>
             <i @click="updateWhatsappInvoiceLocationNote()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
             <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceLocationNote'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
-
           </div>
           <br>
 
@@ -561,10 +560,23 @@
           </div>
 
           <p class="mt-3"><strong>Nota de la dirección: </strong></p>
-          <b-form-textarea rows="3" v-model="updatedWhatsappInvoice.whatsappInvoiceLocationNote" placeholder="Coloque una nota de la dirección"></b-form-textarea>
+          <div style="display: flex;">
+            <b-form-textarea no-resize rows="5" class="form-control" placeholder="Coloque una nota de la dirección" v-model="updatedWhatsappInvoice.whatsappInvoiceLocationNote"/>
+            <div class="flex-grow-1"></div>
+            <i @click="updateWhatsappInvoiceLocationNote()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
+            <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceLocationNote'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
+
+          </div>
+          <br>
+
 
           <p class="mt-3"><strong>Nota del envío: </strong></p>
-          <b-form-textarea rows="3" v-model="updatedWhatsappInvoice.whatsappInvoiceShippingNote" placeholder="Coloque una nota del envío"></b-form-textarea>
+          <div style="display: flex;">
+            <b-form-textarea no-resize rows="5" class="form-control" placeholder="Coloque una nota del envío" v-model="updatedWhatsappInvoice.whatsappInvoiceShippingNote"/>    
+            <div class="flex-grow-1"></div>
+            <i @click="updateWhatsappInvoiceShippingNote()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
+            <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceShippingNote'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
+          </div>
         </div>
 
         <!-- Columna Derecha -->
