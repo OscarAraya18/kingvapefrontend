@@ -597,16 +597,26 @@ const router = new Router({
   },
 });
 
-router.beforeEach((to, from, next) => {
-  // If this isn't an initial page load.
-  if (to.path) {
-    // Start the route progress bar.
 
-    NProgress.start();
-    NProgress.set(0.1);
-  }
-  next();
+window.addEventListener('beforeunload', () => {
+  sessionStorage.setItem('isPageReload', 'true');
 });
+
+router.beforeEach((to, from, next) => {
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  // Verificar si la página fue recargada
+  const isRefresh = sessionStorage.getItem('isPageReload') === 'true';
+  
+  // Si fue un refresh y el agente es 'Rafat J.', redirige
+  if (isMobile && isRefresh && localStorage.getItem('agentName') === 'Rafat J.' && to.path !== '/app/dashboards/dashboard.v1') {
+    sessionStorage.removeItem('isPageReload'); // Limpiar el flag después de usarlo
+    next('/app/dashboards/dashboard.v1');
+  } else {
+    next();
+  }
+});
+
 
 router.afterEach(() => {
   // Remove initial loading

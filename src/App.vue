@@ -10,7 +10,6 @@
 <script>
 import { mapGetters } from "vuex";
 
-
 export default {
   data() {
     return {};
@@ -37,7 +36,8 @@ export default {
         dir: this.rtl
       }
     };
-  }
+  },
+  
 };
 </script>
 
