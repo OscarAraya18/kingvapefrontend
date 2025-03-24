@@ -1956,10 +1956,15 @@
                                   <b-modal scrollable size="m" centered hide-header hide-footer id="paymentMethodValidatorModal">
                                     <div>
                                       <div v-if="currentTransactions != null">
-                                        <h4><strong>SINPES disponibles:</strong></h4><br>
+                                        <h4><strong>SINPE disponibles:</strong></h4><br>
+
+                                        <div :style="getLocalityOptionsColorSINPE()">
+                                          <b-form-select  v-model="sinpeLocality" :options="[{'value': null, 'text': 'King Vape Center'}, {'value': 1, 'text': 'King Vape Zapote'}, {'value': 4, 'text': 'King Vape Escazú'}, {'value': 5, 'text': 'King Vape Heredia'}, {'value': 3, 'text': 'King Vape Cartago'}]"/>
+                                        </div>
+                                        <br>
                                         <b-list-group style="max-height: 600px; overflow-y: auto;">
                                           <b-list-group-item v-if="currentTransactions.length == 0">No hay SINPES por asociar</b-list-group-item>
-                                          <b-list-group-item v-b-modal.syncTransactionModal @click="openSyncTransactionModal(currentTransaction)" v-for="currentTransaction in currentTransactions" button style="cursor: pointer;">
+                                          <b-list-group-item v-b-modal.syncTransactionModal @click="openSyncTransactionModal(currentTransaction)" v-for="currentTransaction in (sinpeLocality == null ? currentTransactions.filter(x => x.localityName == 'King Vape Center') : currentTransactions.filter(x => x.localityName == localityOptions.find(locality => locality.value == sinpeLocality).text))" button style="cursor: pointer;">
                                             <strong>Localidad: </strong>{{ currentTransaction.localityName }}<br>
                                             <strong>ID: </strong>{{currentTransaction.SINPEID}}<br>
                                             <strong>Nombre: </strong>{{currentTransaction.SINPEName}}<br>
@@ -2373,6 +2378,7 @@ export default {
       longitud:"",
       locations: [],
       
+      sinpeLocality: null,
 
       whatsappInvoiceShippingMethodOptions: ['Método de envío', 'Retiro en sucursal', 'Envío por motorizado', 'Correos de CR', 'Encomienda', 'Uber Flash'],
       whatsappInvoiceShippingMethod: 'Método de envío',
@@ -2837,6 +2843,11 @@ export default {
 
     getLocalityOptionsColor(){
       var localityColor = this.localityColors[this.selectedLocality] || '#787878';
+      return 'background-color: ' + localityColor + '; padding: 10px;';
+    },
+
+    getLocalityOptionsColorSINPE(){
+      var localityColor = this.localityColors[this.sinpeLocality] || '#787878';
       return 'background-color: ' + localityColor + '; padding: 10px;';
     },
 
