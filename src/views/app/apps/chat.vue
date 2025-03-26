@@ -1208,7 +1208,7 @@
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Metro Plaza')">Metro Plaza</b-dropdown-item>
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('San Rafael')">San Rafael</b-dropdown-item>
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('CC del Sur')">CC del Sur</b-dropdown-item>
-
+                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Tres Ríos')">Tres Ríos</b-dropdown-item>
                   </b-dropdown>
                   <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-right: 10px;" v-if="availableConversation == true">
                     <b-dropdown-item style="z-index: 2000;">
@@ -1781,6 +1781,7 @@
                       <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Metro Plaza')">Metro Plaza</b-dropdown-item>
                       <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('San Rafael')">San Rafael</b-dropdown-item>
                       <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('CC del Sur')">CC del Sur</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Tres Ríos')">Tres Ríos</b-dropdown-item>
 
 
                     </b-dropdown>
@@ -4648,8 +4649,8 @@ export default {
         var latitud = 9.917513;
         var longitud = -84.071599;
       } else if (locationName == 'Tres Ríos'){
-        var latitud = 9.917513;
-        var longitud = -84.071599;
+        var latitud = 9.908846;
+        var longitud = -83.988254;
       }
       var repliedMessageID = '';
       if (this.repliedMessage != null){
