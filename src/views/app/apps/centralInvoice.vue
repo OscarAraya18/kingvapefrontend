@@ -689,8 +689,9 @@
                             <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
                           </div>
                           <div>
-                            <div style="width: 100px; height: 45px; border-radius: 0 0 0 30px; display: flex; justify-content: center; align-items: center; background-color: #c4c4c4;">
+                            <div style="width: 150px; height: 45px; border-radius: 0 0 0 30px; display: flex; justify-content: center; align-items: center; background-color: #c4c4c4;">
                               <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceID }}</h3>
+                              <h3 v-if="whatsappInvoice.newClient" class="newAnimation" style="margin: 0; color: green; font-weight: bolder; margin-left: 10px;">NEW</h3>
                             </div>
                           </div>
                         </div>
@@ -780,8 +781,9 @@
                             <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
                           </div>
                           <div>
-                            <div style="width: 100px; height: 45px; border-radius: 0 0 0 30px; display: flex; justify-content: center; align-items: center; background-color: #c4c4c4;">
+                            <div style="width: 150px; height: 45px; border-radius: 0 0 0 30px; display: flex; justify-content: center; align-items: center; background-color: #c4c4c4;">
                               <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceID }}</h3>
+                              <h3 v-if="whatsappInvoice.newClient" class="newAnimation" style="margin: 0; color: green; font-weight: bolder; margin-left: 10px;">NEW</h3>
                             </div>
                           </div>
                         </div>
@@ -872,8 +874,9 @@
                             <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
                           </div>
                           <div>
-                            <div style="width: 100px; height: 45px; border-radius: 0 0 0 30px; display: flex; justify-content: center; align-items: center; background-color: #c4c4c4;">
+                            <div style="width: 150px; height: 45px; border-radius: 0 0 0 30px; display: flex; justify-content: center; align-items: center; background-color: #c4c4c4;">
                               <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceID }}</h3>
+                              <h3 v-if="whatsappInvoice.newClient" class="newAnimation" style="margin: 0; color: green; font-weight: bolder; margin-left: 10px;">NEW</h3>
                             </div>
                           </div>
                         </div>
@@ -964,8 +967,9 @@
                             <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceState }}</h3>
                           </div>
                           <div>
-                            <div style="width: 100px; height: 45px; border-radius: 0 0 0 30px; display: flex; justify-content: center; align-items: center; background-color: #c4c4c4;">
+                            <div style="width: 150px; height: 45px; border-radius: 0 0 0 30px; display: flex; justify-content: center; align-items: center; background-color: #c4c4c4;">
                               <h3 style="margin: 0; color: white; font-weight: bolder;">{{ whatsappInvoice.whatsappInvoiceID }}</h3>
+                              <h3 v-if="whatsappInvoice.newClient" class="newAnimation" style="margin: 0; color: green; font-weight: bolder; margin-left: 10px;">NEW</h3>
                             </div>
                           </div>
                         </div>
@@ -1126,6 +1130,7 @@
                       <div style="text-align: end; margin-bottom: 10px;">
                         <img v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 33px; height: auto; margin-right: 15px;"/>
                         <br><br>
+                        <h3 v-if="whatsappInvoice.newClient" class="newAnimation" style="color: green; font-weight: bolder; margin-right: 15px;">NEW</h3>
                         <b-badge v-if="whatsappInvoice.whatsappInvoiceState == 'S'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="warning">S</b-badge>
                         <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'R'" @click="clickOnShippingInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">R</b-badge>
                         <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'NE'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">NE</b-badge>
@@ -1168,6 +1173,7 @@
                       <div style="text-align: end; margin-bottom: 10px;">
                         <img v-if="whatsappInvoice.whatsappInvoiceHasBeenUpdated" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 33px; height: auto; margin-right: 15px;"/>
                         <br><br>
+                        <h3 v-if="whatsappInvoice.newClient" class="newAnimation" style="color: green; font-weight: bolder; margin-right: 15px;">NEW</h3>
                         <b-badge v-if="whatsappInvoice.whatsappInvoiceState == 'S'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="warning">S</b-badge>
                         <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'R'" @click="clickOnShippingInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="success">R</b-badge>
                         <b-badge v-else-if="whatsappInvoice.whatsappInvoiceState == 'NE'" @click="clickOnLocalityInvoice(whatsappInvoice)" style="cursor: pointer; margin-right:10px; margin-bottom: 0px; font-size: x-large;" pill variant="info">NE</b-badge>
@@ -1267,6 +1273,24 @@
 
   .hotAnimation {
     animation: aja 1.4s infinite;
+  }
+
+
+  @keyframes newAnimationAnimate {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+
+    }
+  }
+
+  .newAnimation{
+    animation: newAnimationAnimate 3s infinite;
   }
 
 
