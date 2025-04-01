@@ -1237,6 +1237,12 @@ export const smallStoreMaps =
     smallStoreIconSource: 'https://i.postimg.cc/66cXn9SC/4.png',
     smallStoreLatitude: 9.917539,
     smallStoreLongitude: -84.071604
+  },
+  {
+    smallStoreName: 'King Vape Tres Ríos',
+    smallStoreIconSource: 'https://i.postimg.cc/66cXn9SC/4.png',
+    smallStoreLatitude: 9.908841,
+    smallStoreLongitude: -83.988257
   }
 ]
 
