@@ -2034,10 +2034,10 @@
 
                                 <b-form-input v-model="whatsappInvoiceClientLocationURL" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceClientLocationURL', whatsappInvoiceClientLocationURL)" placeholder="Enlace de ubicación" style="margin-bottom: 10px;"></b-form-input>
 
-                          
+                                <p style="margin-top: 20px; margin-bottom: 5px;"><strong>Nota de la dirección:</strong></p>
                                 <b-form-textarea v-model="currentActiveConversation.whatsappConversationRecipientLocationDetails" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceShippingNote', currentActiveConversation.whatsappConversationRecipientLocationDetails)" placeholder="Nota de la dirección" rows="3" style="margin-bottom: 10px;"></b-form-textarea>
-                                <b-form-textarea v-model="currentActiveConversation.whatsappConversationRecipientNote" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceLocationNote', currentActiveConversation.whatsappConversationRecipientNote)" placeholder="Nota del envío" rows="3" style="margin-bottom: 10px;"></b-form-textarea>
-                              
+                                <p style="margin-top: 20px; margin-bottom: 5px;"><strong>Nota adicional:</strong></p>
+                                <b-form-textarea v-model="currentActiveConversation.whatsappConversationRecipientNote" @keyup="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceLocationNote', currentActiveConversation.whatsappConversationRecipientNote)" placeholder="Nota adicional" rows="3" style="margin-bottom: 10px;"></b-form-textarea>
                                 <br>
                                 <b-form-checkbox @input="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceIsForToday', currentActiveConversation.whatsappConversationIsForToday)" v-model="currentActiveConversation.whatsappConversationIsForToday">Pedido para hoy</b-form-checkbox>
                                 <b-form-checkbox style="margin-top: 10px;" @input="changeLocalStorageWhatsappInvoiceInformation('whatsappInvoiceIsFollowup', currentActiveConversation.whatsappInvoiceIsFollowup)" v-model="currentActiveConversation.whatsappInvoiceIsFollowup">Venta por seguimiento</b-form-checkbox>
@@ -4065,7 +4065,7 @@ export default {
         this.showNotification('danger', 'Nota de la ubicación incompleta', 'Por favor, seleccione una nota de la ubicación para generar la orden, e intentelo nuevamente');
         return false;
       } else if (regularExpressionChecker.test(this.currentActiveConversation.whatsappConversationRecipientNote) == false){
-        this.showNotification('danger', 'Nota del envío incompleta', 'Por favor, seleccione una nota del envío para generar la orden, e intentelo nuevamente');
+        this.showNotification('danger', 'Nota adicional incompleta', 'Por favor, seleccione una nota adicional para generar la orden, e intentelo nuevamente');
         return false;
       } 
 

@@ -286,9 +286,9 @@
           </div>
           <br>
 
-          <p><strong>Nota del envío: </strong></p>
+          <p><strong>Nota adicional: </strong></p>
           <div style="display: flex;">
-            <b-form-textarea no-resize rows="5" class="form-control" placeholder="Coloque una nota del envío" v-model="updatedWhatsappInvoice.whatsappInvoiceShippingNote"/>    
+            <b-form-textarea no-resize rows="5" class="form-control" placeholder="Coloque una nota adicional" v-model="updatedWhatsappInvoice.whatsappInvoiceShippingNote"/>    
             <div class="flex-grow-1"></div>
             <i @click="updateWhatsappInvoiceShippingNote()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
             <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceShippingNote'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
@@ -385,9 +385,9 @@
       </div>
       <br>
 
-      <p><strong>Nota del envío: </strong></p>
+      <p><strong>Nota adicional: </strong></p>
       <div style="display: flex;">
-        <b-form-textarea disabled no-resize rows="3" class="form-control" placeholder="Coloque una nota del envío" v-model="updatedWhatsappInvoice.whatsappInvoiceShippingNote"/>    
+        <b-form-textarea disabled no-resize rows="3" class="form-control" placeholder="Coloque una nota adicional" v-model="updatedWhatsappInvoice.whatsappInvoiceShippingNote"/>    
         <div class="flex-grow-1"></div>
       </div>
       <br>
@@ -469,11 +469,11 @@
           <br>
 
           <div style="display: flex;">
-            <p><strong>Nota del envío: </strong></p>
+            <p><strong>Nota adicional: </strong></p>
             <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceShippingNote'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: auto; left: 10px; top:-5px; position: relative;"/>
           </div>
           <div style="display: flex;">
-            <b-form-textarea disabled no-resize rows="5" class="form-control" placeholder="Coloque una nota del envío" v-model="updatedWhatsappInvoice.whatsappInvoiceShippingNote"/>    
+            <b-form-textarea disabled no-resize rows="5" class="form-control" placeholder="Coloque una nota adicional" v-model="updatedWhatsappInvoice.whatsappInvoiceShippingNote"/>    
             <div class="flex-grow-1"></div>
           </div>
           <br>
@@ -570,9 +570,9 @@
           <br>
 
 
-          <p class="mt-3"><strong>Nota del envío: </strong></p>
+          <p class="mt-3"><strong>Nota adicional: </strong></p>
           <div style="display: flex;">
-            <b-form-textarea no-resize rows="5" class="form-control" placeholder="Coloque una nota del envío" v-model="updatedWhatsappInvoice.whatsappInvoiceShippingNote"/>    
+            <b-form-textarea no-resize rows="5" class="form-control" placeholder="Coloque una nota adicional" v-model="updatedWhatsappInvoice.whatsappInvoiceShippingNote"/>    
             <div class="flex-grow-1"></div>
             <i @click="updateWhatsappInvoiceShippingNote()" class="i-Eraser-2 text-25 text-success ml-3" style="cursor: pointer"></i>
             <img v-if="updatedWhatsappInvoice.whatsappInvoiceUpdatedField == 'whatsappInvoiceShippingNote'" class="alertAnimation" src="@/assets/pageAssets/alert.png" alt style="width: 30px; height: 30px; margin-left: 10px;"/>
@@ -1540,7 +1540,7 @@ export default {
 
       updatedWhatsappInvoice: {},
 
-      updateWhatsappInvoiceLocalityOptions: [{value: 1, text: 'King Vape Zapote'}, , {value: 4, text: 'King Vape Escazú'}, {value: 5, text: 'King Vape Heredia'}, {value: 3, text: 'King Vape Cartago'}],
+      updateWhatsappInvoiceLocalityOptions: [{value: 1, text: 'King Vape Zapote'}, {value: 4, text: 'King Vape Escazú'}, {value: 5, text: 'King Vape Heredia'}, {value: 3, text: 'King Vape Cartago'}],
 
       updateWhatsappInvoiceStateOptions: [{value: 'C', text: 'Central'}, , {value: 'S', text: 'Sucursal'}, {value: 'E', text: 'Entregado'}, {value: 'X', text: 'Cancelado'}],
       updateWhatsappInvoiceShippingMethodOptions: [{value: 'Envío por motorizado', text: 'Envío por motorizado'}, {value: 'Retiro en sucursal', text: 'Retiro en sucursal'}, {value: 'Correos de CR', text: 'Correos de CR'}, {value: 'Encomienda', text: 'Encomienda'}, {value: 'Uber Flash', text: 'Uber Flash'}],
