@@ -5,6 +5,59 @@
       <img style="width: 1000px;" :src="bigImageSource">
     </b-modal>
 
+
+    <b-modal scrollable size="lg" centered id="newClientDialog" hide-footer hide-header>
+      <div style="padding: 10px; background-color: #e0e0e0;">
+        <div style="display: flex;">
+          <h2>TOTAL:</h2>
+          <div style="margin-left: auto; display: flex;">
+            <h2>{{ Object.values(nuevosClientes).reduce((total, locality) => total + locality.whatsappInvoice.length, 0)}} órdenes</h2>
+            <h2 style="margin-left: 20px; margin-right: 20px;">-</h2>
+            <h2>₡{{Object.values(nuevosClientes).reduce((total, locality) => total + locality.amount, 0).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</h2>
+          </div>
+        </div>
+      </div>
+      
+      <br><br>
+
+      <div v-for="locality in nuevosClientes">
+        <div style="padding: 10px; background-color: #e0e0e0;">
+          <div style="display: flex;">
+            <h3>{{ locality.localityName }}:</h3>
+            <div style="margin-left: auto; display: flex;">
+              <h3>{{ locality.whatsappInvoice.length }} órdenes</h3>
+              <h3 style="margin-left: 20px; margin-right: 20px;">-</h3>
+              <h3>₡{{locality.amount.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</h3>
+            </div>
+          </div>
+          <vue-good-table
+            :columns="whatsappInvoiceColumns"
+            :line-numbers="false"
+            styleClass="order-table vgt-table"
+            style="margin-top: 15px;"
+            :rows="locality.whatsappInvoice"
+            >
+            <template slot="table-row" slot-scope="props">
+              <div v-if="props.column.field == 'whatsappInvoiceClientPhoneNumber'" v-b-modal.openConversationModal style="cursor: pointer;" @click="openConversation({ 'whatsappConversationID': props.row.whatsappInvoiceWhatsappConversationID })">
+                <p>{{ formatNumber(props.row.whatsappInvoiceClientPhoneNumber) }}</p>
+              </div>
+              <div v-if="props.column.field == 'whatsappInvoiceClientName'" v-b-modal.openConversationModal style="cursor: pointer;" @click="openConversation({ 'whatsappConversationID': props.row.whatsappInvoiceWhatsappConversationID })">
+                <p>{{ props.row.whatsappInvoiceClientName }}</p>
+              </div>
+              <div v-if="props.column.field == 'whatsappInvoiceAmount'" v-b-modal.openConversationModal style="cursor: pointer;" @click="openConversation({ 'whatsappConversationID': props.row.whatsappInvoiceWhatsappConversationID })">
+                <p>₡{{parseInt(props.row.whatsappInvoiceAmount).toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3})}}</p>
+              </div>
+              <div v-if="props.column.field == 'agentName'" v-b-modal.openConversationModal style="cursor: pointer;" @click="openConversation({ 'whatsappConversationID': props.row.whatsappInvoiceWhatsappConversationID })">
+                <div :style="`margin: 5px; border-radius: 10px; text-align: center; background-color: ${props.row.agentColor}; color: ${props.row.agentFontColor}`">{{ props.row.agentName }}</div>
+              </div>
+            </template>
+          </vue-good-table>
+        </div>
+        <br><br>
+      </div>
+    </b-modal>
+
+
     <b-modal scrollable size="m" centered hide-footer id="historyMessageModal" hide-header>
       <div v-if="historyMessageLoader == false && historyMessage != null">
         <p v-if="historyMessage.whatsappGeneralMessageType == 'text'" class="m-0" style="white-space: pre-line; font-size: large;">{{historyMessage.whatsappTextMessageBody}}</p>
@@ -67,14 +120,14 @@
     <br><br>
     <div> 
       <div style="display: flex; justify-content: center; align-items: center;">
-        <b-card style="width: 30%; margin-right: 30px;">
+        <b-card style="width: 30%; margin-right: 30px; cursor: pointer;" @click="openNewClientDialog()">
           <div style="display: flex;">
             <b-card-text style="font-size: x-large;">
               Nuevos clientes:
             </b-card-text>
             <div class="flex-grow-1"></div>
             <b-card-text style="font-size: x-large; color: rgb(52, 52, 142);">
-              {{nuevosClientes}}
+              {{nuevosClientes ? Object.values(nuevosClientes).reduce((total, locality) => total + locality.whatsappInvoice.length, 0) : 0}}
             </b-card-text>
           </div>
         </b-card>
@@ -431,6 +484,7 @@ import router from "../../../router";
 const constants = require('@../../../src/constants.js'); 
 const webSocket = new WebSocket('wss:payitcr.com');
 import MapComponent from "../../../components/mapComponent.vue";
+import { props } from 'vue-barcode';
 
 
 export default {
@@ -492,7 +546,7 @@ export default {
       conversacionesTotales: 0,
       conversacionesVendidas: 0,
       conversacionesNoVendidas: 0,
-      nuevosClientes: 0,
+      nuevosClientes: {},
 
       facturadoPorAgente: [],
       opcionesGraficoCircular: {},
@@ -511,7 +565,16 @@ export default {
 
       zoom: 15,
       bigImageSource: null,
-      isAdmin: false
+      isAdmin: false,
+
+      whatsappInvoiceColumns: 
+      [
+        {label: "Número", field: "whatsappInvoiceClientPhoneNumber", thClass: "text-left", tdClass: "text-left"},
+        {label: "Nombre", field: "whatsappInvoiceClientName", thClass: "text-left", tdClass: "text-left"},
+        {label: "Monto", field: "whatsappInvoiceAmount", thClass: "text-left", tdClass: "text-left"},
+        {label: "Agente", field: "agentName", thClass: "text-left", tdClass: "text-left"}
+      ],
+
     };
   },
 
@@ -552,6 +615,11 @@ export default {
 
 
   methods: {
+
+    openNewClientDialog(){
+      this.$root.$emit('bv::show::modal', 'newClientDialog');
+    },
+
     getAgentColors(agentNames){
       var agentColors = [];
       const colorByAgent = 
@@ -742,9 +810,10 @@ export default {
 
     getInformationByDate(){
       axios.post(constants.routes.backendAPI+'/functions/selectTodayNewClients', {'initialDate': this.rankingInitialDate, 'endDate': this.rankingEndDate}).then((response) =>{
+        
         this.nuevosClientes = response.data.result;
       });
-      
+
       axios.post(constants.routes.backendAPI+'/selectFilteredPieChartInformation',
       {
         initialDate: this.rankingInitialDate,
