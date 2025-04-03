@@ -70,11 +70,11 @@
         <b-card style="width: 30%; margin-right: 30px;">
           <div style="display: flex;">
             <b-card-text style="font-size: x-large;">
-              Conversaciones totales:
+              Nuevos clientes:
             </b-card-text>
             <div class="flex-grow-1"></div>
             <b-card-text style="font-size: x-large; color: rgb(52, 52, 142);">
-              {{conversacionesTotales}}
+              {{nuevosClientes}}
             </b-card-text>
           </div>
         </b-card>
@@ -492,6 +492,7 @@ export default {
       conversacionesTotales: 0,
       conversacionesVendidas: 0,
       conversacionesNoVendidas: 0,
+      nuevosClientes: 0,
 
       facturadoPorAgente: [],
       opcionesGraficoCircular: {},
@@ -740,6 +741,10 @@ export default {
     },
 
     getInformationByDate(){
+      axios.post(constants.routes.backendAPI+'/functions/selectTodayNewClients', {'initialDate': this.rankingInitialDate, 'endDate': this.rankingEndDate}).then((response) =>{
+        this.nuevosClientes = response.data.result;
+      });
+      
       axios.post(constants.routes.backendAPI+'/selectFilteredPieChartInformation',
       {
         initialDate: this.rankingInitialDate,
@@ -825,6 +830,10 @@ export default {
           legend: {fontSize: '20px'},
           colors: this.getAgentColors(this.getAgentLabelsForColors(response.data))
         };
+      });
+
+      axios.post(constants.routes.backendAPI+'/functions/selectTodayNewClients', {'initialDate': this.rankingInitialDate, 'endDate': this.rankingEndDate}).then((response) =>{
+        this.nuevosClientes = response.data.result;
       });
 
       axios.get(constants.routes.backendAPI+'/selectBarChartInformation').then((response) =>{
