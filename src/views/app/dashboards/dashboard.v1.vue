@@ -1207,7 +1207,7 @@
       
       </div>
 
-      <div class="card mb-30">
+      <div class="card mb-30" v-if="view != 'estadisticas'">
 
         
         <b-card class="card-body p-0" style="background-color: #ebebeb;">
@@ -1770,13 +1770,13 @@ export default {
       topSalesReport: null, 
       topSalesReportTable: [
         {
-          label: "Código del producto",
-          field: "productCode",
+          label: "Código",
+          field: "productID",
           thClass: "text-left",
           tdClass: "text-left",
         },
         {
-          label: "Nombre del producto",
+          label: "Nombre",
           field: "productName",
           thClass: "text-left",
           tdClass: "text-left",
