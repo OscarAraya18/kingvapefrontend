@@ -346,7 +346,7 @@
               </div>
 
               <div v-else-if="props.column.field == 'whatsappInvoiceApproveAction'">
-                <p @click="updateWhatsappInvoiceSINPE(props.row.whatsappInvoiceID, props.row.whatsappInvoiceSINPEApproved)" style="position: relative; top: 10px">
+                <p v-b-modal.paymentMethodValidatorModal @click="validatePaymentMethod(props.row)" style="position: relative; top: 10px">
                   {{ props.row.whatsappInvoiceSINPEApproved ? '✅' : '❌'  }}
                 </p>
               </div>
