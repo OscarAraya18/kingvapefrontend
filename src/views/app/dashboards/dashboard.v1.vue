@@ -2415,6 +2415,12 @@ export default {
   },
 
   methods: {
+
+    getLocalityOptionsColorSINPE(){
+      var localityColor = this.localityColors[this.sinpeLocality] || '#787878';
+      return 'background-color: ' + localityColor + '; padding: 10px;';
+    },
+    
     async copyToken(){
       try {
         await navigator.clipboard.writeText(this.tokenValue);

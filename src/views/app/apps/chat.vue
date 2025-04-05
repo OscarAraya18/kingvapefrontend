@@ -1957,7 +1957,7 @@
                                   <b-modal scrollable size="m" centered hide-header hide-footer id="paymentMethodValidatorModal">
                                     <div>
                                       <div v-if="currentTransactions != null">
-                                        <h4><strong>SINPE disponibles:</strong></h4><br>
+                                        <h4><strong>SINPES disponibles:</strong></h4><br>
 
                                         <div :style="getLocalityOptionsColorSINPE()">
                                           <b-form-select  v-model="sinpeLocality" :options="[{'value': null, 'text': 'King Vape Center'}, {'value': 1, 'text': 'King Vape Zapote'}, {'value': 4, 'text': 'King Vape Escazú'}, {'value': 5, 'text': 'King Vape Heredia'}, {'value': 3, 'text': 'King Vape Cartago'}]"/>
