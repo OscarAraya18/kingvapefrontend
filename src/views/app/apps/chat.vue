@@ -262,6 +262,7 @@
                 <b-dropdown-item style="background-color: #6473d1" href="#" v-b-modal.metroPlazaConversationsModal>Metro Plaza ({{metroPlazaConversations.length}})</b-dropdown-item>
                 <b-dropdown-item style="background-color: #ff933b" href="#" v-b-modal.sanRafaelConversationsModal>San Rafael ({{sanRafaelConversations.length}})</b-dropdown-item>
                 <b-dropdown-item style="background-color: #96a175" href="#" v-b-modal.ccsurConversationsModal>CC del Sur ({{ccsurConversations.length}})</b-dropdown-item>
+                <b-dropdown-item style="background-color: #006a9c" href="#" v-b-modal.tresRiosConversationsModal>Tres Rios ({{tresRiosConversations.length}})</b-dropdown-item>
 
                 <b-dropdown-item style="background-color: #8fd2ff" href="#" v-b-modal.planetVapeConversationsModal>Planet Vape ({{planetVapeConversations.length}})</b-dropdown-item>
 
@@ -327,6 +328,26 @@
                   <div style="margin-left: 3px;" v-else>❌</div>
                 </div>
                 <strong>Fecha:</strong> {{parseHour(ccsurConversation.storeMessageStartDateTime)}}
+              </b-list-group-item>
+            </b-list-group>
+            <div v-else style="text-align: center;">
+              <br><span class="spinner-glow spinner-glow-primary"></span>
+            </div>
+          </b-modal>
+
+          <b-modal scrollable size="m" centered hide-footer id="tresRiosConversationsModal" title="Conversaciones pendientes de Tres Rios">
+            <b-list-group v-if="loaders.grabConversation == false">
+              <b-list-group-item v-if="tresRiosConversations.length == 0">No hay conversaciones pendientes</b-list-group-item>
+              <b-list-group-item @contextmenu.prevent="openDeleteStoreMessageModal(tresRiosConversation)" v-for="tresRiosConversation in tresRiosConversations" @click="grabStoreConversation(tresRiosConversation)" button style="cursor: pointer;">
+                <strong>Nombre:</strong> {{tresRiosConversation.storeMessageRecipientProfileName}}<br>
+                <strong>Número:</strong> {{parsePhone(tresRiosConversation.storeMessageRecipientPhoneNumber)}}<br>
+                <strong>Pedido:</strong> {{tresRiosConversation.storeMessageRecipientOrder}}<br>
+                <div style="display: flex;">
+                  <strong>Cédula:</strong>
+                  <div style="margin-left: 3px;" v-if="tresRiosConversation.storeMessageRecipientID == 'S'">✔️</div>
+                  <div style="margin-left: 3px;" v-else>❌</div>
+                </div>
+                <strong>Fecha:</strong> {{parseHour(tresRiosConversation.storeMessageStartDateTime)}}
               </b-list-group-item>
             </b-list-group>
             <div v-else style="text-align: center;">
@@ -2226,6 +2247,7 @@ export default {
       sanRafaelConversations: [],
       planetVapeConversations: [],
       ccsurConversations: [],
+      tresRiosConversations: [],
 
       localityOptions: [],
       selectedLocality: null,
@@ -3182,7 +3204,8 @@ export default {
       this.$root.$emit('bv::hide::modal', 'metroPlazaConversationsModal');
       this.$root.$emit('bv::hide::modal', 'sanRafaelConversationsModal');
       this.$root.$emit('bv::hide::modal', 'ccsurConversationsModal');
-
+      this.$root.$emit('bv::hide::modal', 'tresRiosConversationsModal');
+      this.$root.$emit('bv::hide::modal', 'pendingConversationsModal');
       this.$root.$emit('bv::hide::modal', 'planetVapeConversationsModal');
       this.$root.$emit('bv::show::modal', 'deleteStoreConversationModal');
     },
@@ -4089,7 +4112,8 @@ export default {
         5: 3,
         6: 7,
         8: 6,
-        9: 9
+        9: 9,
+        10: 10
       };
 
       axios.post('https://hostname.payitcr.com/callcenterBill/functions/insert', {
@@ -5325,6 +5349,9 @@ export default {
           } else if (storeMessage.storeMessageStoreName == 'CC del Sur'){
             referenciaSucursales[storeMessage.storeMessageRecipientPhoneNumber] = 'CC';
             this.ccsurConversations = this.ccsurConversations.filter(ccsurConversation => ccsurConversation.storeMessageID != storeMessage.storeMessageID);
+          } else if (storeMessage.storeMessageStoreName == 'Tres Rios'){
+            referenciaSucursales[storeMessage.storeMessageRecipientPhoneNumber] = 'TR';
+            this.tresRiosConversations = this.tresRiosConversations.filter(tresRiosConversation => tresRiosConversation.storeMessageID != storeMessage.storeMessageID);
           }
           localStorage.setItem('referenciaSucursales', JSON.stringify(referenciaSucursales));
 
@@ -5522,6 +5549,7 @@ export default {
         this.metroPlazaConversations = [];
         this.sanRafaelConversations = [];
         this.ccsurConversations = [];
+        this.tresRiosConversations = [];
         this.planetVapeConversations = [];
         if (response.data.success){
           const selectAllStoreMessageResult = response.data.result;
@@ -5553,6 +5581,8 @@ export default {
               this.planetVapeConversations.push(newStoreMessageInformation);
             } else if (selectAllStoreMessageResult[storeMessageIndex].storeMessageStoreName == 'CC del Sur'){
               this.ccsurConversations.push(newStoreMessageInformation);
+            } else if (selectAllStoreMessageResult[storeMessageIndex].storeMessageStoreName == 'Tres Rios'){
+              this.tresRiosConversations.push(newStoreMessageInformation);
             }
           }
         } else {
@@ -5632,10 +5662,15 @@ export default {
         newPlanetVapeConversations.push(newWhatsappStoreMessageInformation);
         this.planetVapeConversations = newPlanetVapeConversations;
       } else if (websocketMessageContent.storeMessageStoreName == 'CC del Sur'){
-        var newccsurConversation = this.ccsurConversations;
+        var newccsurConversations = this.ccsurConversations;
         this.ccsurConversations = [];
-        newccsurConversation.push(newWhatsappStoreMessageInformation);
-        this.ccsurConversations = newccsurConversation;
+        newccsurConversations.push(newWhatsappStoreMessageInformation);
+        this.ccsurConversations = newccsurConversations;
+      } else if (websocketMessageContent.storeMessageStoreName == 'Tres Rios'){
+        var newTresRiosConversations = this.tresRiosConversations;
+        this.tresRiosConversations = [];
+        newTresRiosConversations.push(newWhatsappStoreMessageInformation);
+        this.tresRiosConversations = newTresRiosConversations;
       }
       this.playSound('receiveWhatsappStoreMessage');
     },
@@ -5708,6 +5743,8 @@ export default {
         this.planetVapeConversations = this.planetVapeConversations.filter(planetVapeConversation => planetVapeConversation.storeMessageID != storeMessageID);
       } else if (storeMessageStoreName == 'CC del Sur'){
         this.ccsurConversations = this.ccsurConversations.filter(ccsurConversation => ccsurConversation.storeMessageID != storeMessageID);
+      } else if (storeMessageStoreName == 'Tres Rios'){
+        this.tresRiosConversations = this.tresRiosConversations.filter(tresRiosConversation => tresRiosConversation.storeMessageID != storeMessageID);
       }
     },
 
@@ -5875,7 +5912,7 @@ export default {
 		},
 
     textoSucursalesCalcular: function(){
-      const total = this.escazuConversations.length + this.zapoteConversations.length + this.cartagoConversations.length + this.herediaConversations.length + this.metroPlazaConversations.length + + this.sanRafaelConversations.length + this.planetVapeConversations.length + this.ccsurConversations.length + this.pendingConversations.length;
+      const total = this.escazuConversations.length + this.zapoteConversations.length + this.cartagoConversations.length + this.herediaConversations.length + this.metroPlazaConversations.length + + this.sanRafaelConversations.length + this.planetVapeConversations.length + this.ccsurConversations.length + this.tresRiosConversations.length + this.pendingConversations.length;
       return this.textoSucursales + '(' + total + ')'
     }
 

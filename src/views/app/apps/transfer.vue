@@ -242,6 +242,8 @@ export default {
           storeMessageStoreName = 'San Rafael';
         } else if (localStorage.getItem('localityName') == 'King Vape CC del Sur'){
           storeMessageStoreName = 'CC del Sur';
+        } else if (localStorage.getItem('localityName') == 'King Vape Tres Rios'){
+          storeMessageStoreName = 'Tres Rios';
         }
       }
       
@@ -304,6 +306,8 @@ export default {
             storeMessageStoreName = 'San Rafael';
           } else if (localStorage.getItem('localityName') == 'King Vape CC del Sur'){
             storeMessageStoreName = 'CC del Sur';
+          } else if (localStorage.getItem('localityName') == 'King Vape Tres Rios'){
+            storeMessageStoreName = 'Tres Rios';
           } else {
             storeMessageStoreName = this.transferLocality;
           }

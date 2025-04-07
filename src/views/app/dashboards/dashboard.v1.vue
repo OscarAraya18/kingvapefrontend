@@ -1267,7 +1267,6 @@
             </div>
           </div>
           
-
           <vue-good-table
             :columns="activeConversationsColumns"
             :line-numbers="false"
@@ -1292,6 +1291,9 @@
               </div>
             </template>
           </vue-good-table>
+
+          {{ closedConversationsRows.length }}
+
 
           <vue-good-table
             :columns="closedConversationsColumns"
