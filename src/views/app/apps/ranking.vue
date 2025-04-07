@@ -191,17 +191,15 @@ export default {
       var agentColors = [];
       const colorByAgent = 
       {
-        'Oriana Vargas': '#fff9a6',
         'Sergio Barrot': '#424880',
         'Jose Estrada': '#255c34',
         'Franco Chacon': '#8a8a8a',
-        'Ricardo Chacon': '#e86800',
         'Emma Garcia': '#b5e3eb',
         'Diana Jimenez': '#ffa8b8',
         'Clara Salablanca': '#b338ff',
         'Rafat J.': '#000000',
         'Jimena Arias': '#ffad42',
-        'Daniela Matamoros': '#bef29b'
+        'Jennifer Herrera': '#1b76d1'
       };
       for (var agentIndex in agentNames){
         const agentName = agentNames[agentIndex];
