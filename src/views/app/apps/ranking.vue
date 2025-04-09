@@ -199,7 +199,8 @@ export default {
         'Clara Salablanca': '#b338ff',
         'Rafat J.': '#000000',
         'Jimena Arias': '#ffad42',
-        'Jennifer Herrera': '#1b76d1'
+        'Jennifer Herrera': '#1b76d1',
+        'Ana Muñoz': '#80ffff'
       };
       for (var agentIndex in agentNames){
         const agentName = agentNames[agentIndex];
