@@ -4146,7 +4146,7 @@ export default {
 
           this.currentActiveConversation.whatsappConversationRecipientPhoneNumber = (parseInt(this.currentActiveConversation.whatsappConversationRecipientPhoneNumber.replace(/\D/g, ''), 10)).toString();
           this.repliedMessage = null;
-          this.producto = '';
+          this.selectProductValue = '';
 
           this.loaderOrdenEnviada = true;
           this.loading = true;
@@ -5085,7 +5085,7 @@ export default {
         this.products = [];
         this.repliedMessage = null;
         this.sendEndMessage = false;
-        this.producto = '';
+        this.selectProductValue = '';
         var availableConversation = false;
         for (var activeConversationMessage in currentActiveConversation.whatsappConversationMessages){
           if (currentActiveConversation.whatsappConversationMessages[activeConversationMessage] != null){
