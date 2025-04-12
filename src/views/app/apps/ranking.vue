@@ -200,7 +200,7 @@ export default {
         'Rafat J.': '#000000',
         'Jimena Arias': '#ffad42',
         'Jennifer Herrera': '#1b76d1',
-        'Ana Muñoz': '#80ffff'
+        'Ana Muñoz': '#edb934'
       };
       for (var agentIndex in agentNames){
         const agentName = agentNames[agentIndex];
