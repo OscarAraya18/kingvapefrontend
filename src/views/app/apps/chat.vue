@@ -5076,146 +5076,152 @@ export default {
     },
 
     changeCurrentActiveConversation(currentActiveConversation, activeConversationID){
-      this.toggleMap();
-      this.toggleMap2();
-        this.currentActiveConversationID = activeConversationID;
+      
+      if (this.loading == false && this.loaderOrdenEnviada == false){
+
+      
+
+        this.toggleMap();
+        this.toggleMap2();
+          this.currentActiveConversationID = activeConversationID;
 
 
-        this.currentActiveConversation = currentActiveConversation;
-        this.products = [];
-        this.repliedMessage = null;
-        this.sendEndMessage = false;
-        this.selectProductValue = '';
-        var availableConversation = false;
-        for (var activeConversationMessage in currentActiveConversation.whatsappConversationMessages){
-          if (currentActiveConversation.whatsappConversationMessages[activeConversationMessage] != null){
-            if (currentActiveConversation.whatsappConversationMessages[activeConversationMessage].whatsappGeneralMessageOwnerPhoneNumber != null) {
-              availableConversation = true;
+          this.currentActiveConversation = currentActiveConversation;
+          this.products = [];
+          this.repliedMessage = null;
+          this.sendEndMessage = false;
+          this.selectProductValue = '';
+          var availableConversation = false;
+          for (var activeConversationMessage in currentActiveConversation.whatsappConversationMessages){
+            if (currentActiveConversation.whatsappConversationMessages[activeConversationMessage] != null){
+              if (currentActiveConversation.whatsappConversationMessages[activeConversationMessage].whatsappGeneralMessageOwnerPhoneNumber != null) {
+                availableConversation = true;
+              }
             }
           }
-        }
-        this.availableConversation = availableConversation;
-        
-        const databaseOrders = JSON.parse(localStorage.getItem('ordenesActuales'));
-        if (databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-          this.currentActiveConversation.whatsappConversationProducts = databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber];        
-        }
+          this.availableConversation = availableConversation;
+          
+          const databaseOrders = JSON.parse(localStorage.getItem('ordenesActuales'));
+          if (databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+            this.currentActiveConversation.whatsappConversationProducts = databaseOrders[currentActiveConversation.whatsappConversationRecipientPhoneNumber];        
+          }
 
-        const codigosDescuento = JSON.parse(localStorage.getItem('codigosDescuento'));
-        if (codigosDescuento[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-          this.displayCodigoDescuento = codigosDescuento[currentActiveConversation.whatsappConversationRecipientPhoneNumber];        
-        } else {
-          this.displayCodigoDescuento = null;
-        }
+          const codigosDescuento = JSON.parse(localStorage.getItem('codigosDescuento'));
+          if (codigosDescuento[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+            this.displayCodigoDescuento = codigosDescuento[currentActiveConversation.whatsappConversationRecipientPhoneNumber];        
+          } else {
+            this.displayCodigoDescuento = null;
+          }
 
 
-        const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
-        if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsForToday'] == false || datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsForToday'] == true){
-            this.currentActiveConversation.whatsappConversationIsForToday = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsForToday'];
-          }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappConversationPin'] == false || datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappConversationPin'] == true){
-            this.currentActiveConversation.whatsappConversationPin = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappConversationPin'];
-          }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientName']){
-            this.currentActiveConversation.whatsappConversationRecipientProfileName = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientName'];
-          }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientID']){
-            this.currentActiveConversation.whatsappConversationRecipientID = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientID'];
-          }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientEmail']){
-            this.currentActiveConversation.whatsappConversationRecipientEmail = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientEmail'];
-          }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocalityName']){
-            this.selectedLocality = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocalityName'];
+          const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
+          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]){
+            if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsForToday'] == false || datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsForToday'] == true){
+              this.currentActiveConversation.whatsappConversationIsForToday = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsForToday'];
+            }
+            if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappConversationPin'] == false || datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappConversationPin'] == true){
+              this.currentActiveConversation.whatsappConversationPin = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappConversationPin'];
+            }
+            if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientName']){
+              this.currentActiveConversation.whatsappConversationRecipientProfileName = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientName'];
+            }
+            if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientID']){
+              this.currentActiveConversation.whatsappConversationRecipientID = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientID'];
+            }
+            if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientEmail']){
+              this.currentActiveConversation.whatsappConversationRecipientEmail = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientEmail'];
+            }
+            if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocalityName']){
+              this.selectedLocality = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocalityName'];
+            } else {
+              this.selectedLocality = null;
+            }
+            if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceShippingMethod']){
+              this.whatsappInvoiceShippingMethod = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceShippingMethod'];
+            } else {
+              this.whatsappInvoiceShippingMethod = 'Método de envío';
+            }
+            if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoicePaymentMethod']){
+              this.whatsappInvoicePaymentMethod = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoicePaymentMethod'];
+            } else {
+              this.whatsappInvoicePaymentMethod = 'Método de pago';
+            }
+            if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoicePaymentState']){
+              this.whatsappInvoicePaymentState = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoicePaymentState'];
+            } else {
+              this.whatsappInvoicePaymentState = 'Estado del pago';
+            }
+            
+            if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLatitude']){
+              this.latitud = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLatitude'];
+              this.currentActiveConversation.whatsappConversationRecipientLocations[datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationName']].latitude = this.latitud;
+            } else {
+              this.latitud = 0;
+            }
+
+            if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLongitude']){
+              this.longitud = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLongitude'];
+              this.currentActiveConversation.whatsappConversationRecipientLocations[datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationName']].longitude = this.longitud;
+
+            } else {
+              this.longitud = 0;
+            }
+
+            if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationName']){
+              this.whatsappInvoiceClientLocationName = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationName'];
+            } else {
+              this.whatsappInvoiceClientLocationName = 'Ubicación de envío';
+            }
+
+            if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationURL']){
+              this.whatsappInvoiceClientLocationURL = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationURL'];
+            } else {
+              this.whatsappInvoiceClientLocationURL = '';
+            }
+            if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceShippingNote']){
+              this.currentActiveConversation.whatsappConversationRecipientLocationDetails = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceShippingNote'];
+            }
+            if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocationNote']){
+              this.currentActiveConversation.whatsappConversationRecipientNote = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocationNote'];
+            }
+
+            if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsFollowup'] == false || datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsFollowup'] == true){
+              this.currentActiveConversation.whatsappInvoiceIsFollowup = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsFollowup'];
+            }
+
+            if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['SINPEValidated']){
+              this.currentActiveConversation.SINPEValidated = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['SINPEValidated'];
+            }
+            
           } else {
             this.selectedLocality = null;
-          }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceShippingMethod']){
-            this.whatsappInvoiceShippingMethod = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceShippingMethod'];
-          } else {
             this.whatsappInvoiceShippingMethod = 'Método de envío';
-          }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoicePaymentMethod']){
-            this.whatsappInvoicePaymentMethod = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoicePaymentMethod'];
-          } else {
             this.whatsappInvoicePaymentMethod = 'Método de pago';
-          }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoicePaymentState']){
-            this.whatsappInvoicePaymentState = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoicePaymentState'];
-          } else {
             this.whatsappInvoicePaymentState = 'Estado del pago';
-          }
-          
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLatitude']){
-            this.latitud = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLatitude'];
-            this.currentActiveConversation.whatsappConversationRecipientLocations[datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationName']].latitude = this.latitud;
-          } else {
-            this.latitud = 0;
-          }
-
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLongitude']){
-            this.longitud = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationLongitude'];
-            this.currentActiveConversation.whatsappConversationRecipientLocations[datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationName']].longitude = this.longitud;
-
-          } else {
-            this.longitud = 0;
-          }
-
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationName']){
-            this.whatsappInvoiceClientLocationName = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationName'];
-          } else {
             this.whatsappInvoiceClientLocationName = 'Ubicación de envío';
-          }
-
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationURL']){
-            this.whatsappInvoiceClientLocationURL = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceClientLocationURL'];
-          } else {
+            this.latitud = 0;
+            this.longitud = 0;
             this.whatsappInvoiceClientLocationURL = '';
-          }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceShippingNote']){
-            this.currentActiveConversation.whatsappConversationRecipientLocationDetails = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceShippingNote'];
-          }
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocationNote']){
-            this.currentActiveConversation.whatsappConversationRecipientNote = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceLocationNote'];
-          }
+            this.whatsappInvoiceIsForToday = true;
+            this.whatsappInvoiceIsForToday = true;
 
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsFollowup'] == false || datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsFollowup'] == true){
-            this.currentActiveConversation.whatsappInvoiceIsFollowup = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['whatsappInvoiceIsFollowup'];
+            this.currentActiveConversation.whatsappConversationPin = false;
           }
+          this.scrollDown();
 
-          if (datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['SINPEValidated']){
-            this.currentActiveConversation.SINPEValidated = datosActuales[currentActiveConversation.whatsappConversationRecipientPhoneNumber]['SINPEValidated'];
-          }
-          
-        } else {
-          this.selectedLocality = null;
-          this.whatsappInvoiceShippingMethod = 'Método de envío';
-          this.whatsappInvoicePaymentMethod = 'Método de pago';
-          this.whatsappInvoicePaymentState = 'Estado del pago';
-          this.whatsappInvoiceClientLocationName = 'Ubicación de envío';
-          this.latitud = 0;
-          this.longitud = 0;
-          this.whatsappInvoiceClientLocationURL = '';
-          this.whatsappInvoiceIsForToday = true;
-          this.whatsappInvoiceIsForToday = true;
-
-          this.currentActiveConversation.whatsappConversationPin = false;
-        }
-        this.scrollDown();
-
-        const intervalId = setInterval(() => {
-          if (this.$refs.textoEnviar){
-            if (document.activeElement !== this.$refs.textoEnviar) {
-              this.$refs.textoEnviar.focus();
-              clearInterval(intervalId);
+          const intervalId = setInterval(() => {
+            if (this.$refs.textoEnviar){
+              if (document.activeElement !== this.$refs.textoEnviar) {
+                this.$refs.textoEnviar.focus();
+                clearInterval(intervalId);
+              } else {
+                clearInterval(intervalId);
+              }
             } else {
               clearInterval(intervalId);
             }
-          } else {
-            clearInterval(intervalId);
-          }
-        }, 1);
+          }, 1);
+      }
     },
 
     closeWhatsappDuplicateConversation(){
