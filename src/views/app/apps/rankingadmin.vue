@@ -624,6 +624,7 @@ export default {
       var agentColors = [];
       const colorByAgent = 
       {
+        'Julissa Chavarria': '#2dad9e',
         'Sergio Barrot': '#424880',
         'Jose Estrada': '#255c34',
         'Franco Chacon': '#8a8a8a',
