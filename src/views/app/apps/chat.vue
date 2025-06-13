@@ -549,7 +549,7 @@
           </b-modal>
 
 
-          <b-modal scrollable title="BLACK NOVEMBER" size="m" centered id="promosModal" @ok="sendPromos()">   
+          <b-modal scrollable title="DIA DEL PADRE" size="m" centered id="promosModal" @ok="sendPromos()">   
             <div v-if="loaderPromos == false">
               <b-list-group style="height: 700px; overflow-y: auto;">
 
@@ -1537,8 +1537,8 @@
                   </b-modal>
 
                   
-                  <button v-if="availableConversation == true" id="sendPromos" class="btn btn-icon btn-rounded mr-2" style="background-color: #000000; color: white; display: none;" type="button" @click="openPromosModal()" v-b-modal.promosModal>BLACK</button>
-                  <b-tooltip target="sendPromos">BLACK NOVEMBER</b-tooltip>
+                  <button v-if="availableConversation == true" id="sendPromos" class="btn btn-icon btn-rounded mr-2" style="background-color: #000000; color: white;" type="button" @click="openPromosModal()" v-b-modal.promosModal>DIA DEL PADRE</button>
+                  <b-tooltip target="sendPromos">DIA DEL PADRE</b-tooltip>
 
 			            <button v-if="availableConversation == true" id="sendSticker" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="openSendStickerModal()" v-b-modal.sendStickerModal><i class="i-Teddy-Bear"></i></button>
                   <b-tooltip target="sendSticker">Enviar sticker</b-tooltip>
@@ -1752,7 +1752,7 @@
                     </b-list-group>
                   </b-modal>
 
-                  <button v-if="availableConversation == true" id="sendPromos" class="btn btn-icon btn-rounded mr-2" style="background-color: #faafed; display: none" type="button" @click="openPromosModal()" v-b-modal.promosModal><i class="i-Gift-Box"></i></button>
+                  <button v-if="availableConversation == true" id="sendPromos" class="btn btn-icon btn-rounded mr-2" style="background-color: #000000; color: white;" type="button" @click="openPromosModal()" v-b-modal.promosModal>DIA DEL PADRE</button>
                   <b-tooltip target="sendPromos">Promociones</b-tooltip>
 
 		<button v-if="availableConversation == true" id="sendSticker" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="openSendStickerModal()" v-b-modal.sendStickerModal><i class="i-Teddy-Bear"></i></button>
