@@ -1537,7 +1537,7 @@
                   </b-modal>
 
                   
-                  <button v-if="availableConversation == true" id="sendPromos" class="btn btn-icon btn-rounded mr-2" style="background-color: #000000; color: white;" type="button" @click="openPromosModal()" v-b-modal.promosModal>DIA DEL PADRE</button>
+                  <button v-if="availableConversation == true" id="sendPromos" class="btn btn-icon btn-rounded mr-2" style="background-color: #000000; color: white; display: none;" type="button" @click="openPromosModal()" v-b-modal.promosModal>DIA DEL PADRE</button>
                   <b-tooltip target="sendPromos">DIA DEL PADRE</b-tooltip>
 
 			            <button v-if="availableConversation == true" id="sendSticker" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="openSendStickerModal()" v-b-modal.sendStickerModal><i class="i-Teddy-Bear"></i></button>
@@ -1752,7 +1752,7 @@
                     </b-list-group>
                   </b-modal>
 
-                  <button v-if="availableConversation == true" id="sendPromos" class="btn btn-icon btn-rounded mr-2" style="background-color: #000000; color: white;" type="button" @click="openPromosModal()" v-b-modal.promosModal>DIA DEL PADRE</button>
+                  <button v-if="availableConversation == true" id="sendPromos" class="btn btn-icon btn-rounded mr-2" style="background-color: #000000; color: white; display: none;" type="button" @click="openPromosModal()" v-b-modal.promosModal>DIA DEL PADRE</button>
                   <b-tooltip target="sendPromos">Promociones</b-tooltip>
 
 		<button v-if="availableConversation == true" id="sendSticker" class="btn btn-icon btn-rounded btn-primary mr-2" type="button" @click="openSendStickerModal()" v-b-modal.sendStickerModal><i class="i-Teddy-Bear"></i></button>
