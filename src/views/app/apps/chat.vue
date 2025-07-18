@@ -1230,6 +1230,9 @@
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('San Rafael')">San Rafael</b-dropdown-item>
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('CC del Sur')">CC del Sur</b-dropdown-item>
                     <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Tres Ríos')">Tres Ríos</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Cartago Centro')">Cartago Centro</b-dropdown-item>
+                    <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Plaza Cronos')">Plaza Cronos</b-dropdown-item>
+
                   </b-dropdown>
                   <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-right: 10px;" v-if="availableConversation == true">
                     <b-dropdown-item style="z-index: 2000;">
@@ -1803,7 +1806,8 @@
                       <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('San Rafael')">San Rafael</b-dropdown-item>
                       <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('CC del Sur')">CC del Sur</b-dropdown-item>
                       <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Tres Ríos')">Tres Ríos</b-dropdown-item>
-
+                      <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Cartago Centro')">Cartago Centro</b-dropdown-item>
+                      <b-dropdown-item style="z-index: 2000;" @click="sendWhatsappStoreLocationMessage('Plaza Cronos')">Plaza Cronos</b-dropdown-item>
 
                     </b-dropdown>
                     <b-dropdown dropup variant="primary" text="Ubicaciones" style="margin-left: 10px;" v-if="availableConversation == true">
@@ -4675,7 +4679,14 @@ export default {
       } else if (locationName == 'Tres Ríos'){
         var latitud = 9.908846;
         var longitud = -83.988254;
+      } else if (locationName == 'Cartago Centro'){
+        var latitud = 9.865310;
+        var longitud = -83.924112;
+      } else if (locationName == 'Plaza Cronos'){
+        var latitud = 9.911896;
+        var longitud = -84.016739;
       }
+
       var repliedMessageID = '';
       if (this.repliedMessage != null){
         repliedMessageID = this.repliedMessage.whatsappGeneralMessageID
@@ -5601,6 +5612,7 @@ export default {
     },
 
     selectAllAgentStatus(){
+      console.log(constants.routes.backendAPI + '/selectAllAgentStatus');
       axios.get(constants.routes.backendAPI+'/selectAllAgentStatus').then((response) =>{
         if (response.data.success){
           const agentStatusInformation = response.data.result;
@@ -5612,10 +5624,14 @@ export default {
             }
           }
         } else {
+          console.log('error');
+          console.log(response);
           this.showNotification('danger', 'Error al consultar el estado de los agentes', 'Ha ocurrido un error inesperado al consultar el estado de los agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
         }
       })
-      .catch(() =>{
+      .catch((e) =>{
+        console.log('error');
+        console.log(e);
         this.showNotification('danger', 'Error al consultar el estado de los agentes', 'Ha ocurrido un error inesperado al consultar el estado de los agentes. Si el problema persiste, contacte con su administrador del sistema o con soporte técnico.');
       })
     },
