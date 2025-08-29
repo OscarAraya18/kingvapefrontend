@@ -5440,6 +5440,7 @@ export default {
     },
 
     selectAgentConversations(){
+      const start = new Date();
       this.loaders.activeConversations = true;
       axios.post(constants.routes.backendAPI+'/selectAgentConversations',
       {
@@ -5448,6 +5449,8 @@ export default {
       })
       .then((response) =>{
         if (response.data.success){
+          const end = new Date();
+          console.log('Tiempo de ejecución en consulta de conversaciones activas: ' + (end - start) + 'ms');
           const respondedActiveConversations = response.data.result;
           const ordenesActualesLocalStorage = JSON.parse(localStorage.getItem('ordenesActuales'));
           const datosActuales = JSON.parse(localStorage.getItem('datosActuales'));
