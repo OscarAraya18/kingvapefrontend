@@ -954,10 +954,6 @@ export default {
   },
   async mounted() {
 
-    await this.selectWebpageOrderFromCallcenterCount();
-    this.webpageOrderInterval = setInterval(async () => {
-      await this.selectWebpageOrderFromCallcenterCount();      
-    }, 4000);
 
 
     this.toggleSelectedParentMenu();
